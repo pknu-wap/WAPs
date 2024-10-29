@@ -8,4 +8,16 @@
     border-radius: 10px;
     margin: 0 auto; 
     margin-top: 10px;
+    align-items: center;
+}
+
+.selectedtechstacks{
+    width: 80%;
+    color: #FFFFFF;
+    font-weight: bold;
+    display: flex;
+    gap: 20px;
+    padding-top: 15px ;
+    padding-left: 33px;
+    flex-wrap: wrap; /* 아이템이 컨테이너의 너비를 초과할 경우 줄바꿈 */
 }

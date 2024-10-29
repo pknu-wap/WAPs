@@ -1,14 +1,97 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import "../../assets/ProjectCreation/TechStackSelector.css";
 import TechStackList from "./TechStackList";
 
 const TechStackSelector = () => {
   // 버튼 클릭시 기술 스택 선택창 열기
-  const [content, setContent] = useState();
+  const [content, setContent] = useState(null);
+
+  const [techStacks, setTechStacks] = useState([]);
+  const [selectedTechStack, setSelectedTechStack] = useState(null);
+  const [selectedTechStacks, setSelectedTechStacks] = useState([]);
+
+  const scrollRef = useRef(null);
+
+  // 엔드포인트 정보
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/techStack/list`;
+
+  useEffect(() => {
+    const fetchTechStacks = async () => {
+      try {
+        const response = await axios.get(apiUrl);
+        // 배열이 아닌 경우 빈 배열로 설정
+        setTechStacks(
+          Array.isArray(response.data.techStackResponse)
+            ? response.data.techStackResponse
+            : []
+        );
+      } catch (error) {
+        console.error("Failed to fetch tech stacks:", error);
+        setTechStacks([]); // 오류 발생 시 빈 배열로 초기화
+      }
+    };
+
+    fetchTechStacks();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollRef.current) {
+        const scrollPosition = scrollRef.current.scrollTop;
+        const itemHeight = 26;
+
+        let index = Math.round(scrollPosition / itemHeight);
+        index = Math.max(0, Math.min(index, techStacks.length - 1));
+
+        setSelectedTechStack(techStacks[index].techStackName);
+      }
+    };
+
+    const scrollElement = scrollRef.current;
+
+    if (scrollElement) {
+      scrollElement.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (scrollElement) {
+        scrollElement.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [scrollRef, techStacks]);
+
+  const handleTechStackClick = (techStackName) => {
+    setSelectedTechStack(techStackName);
+
+    setSelectedTechStacks((prevSelected) => {
+      if (prevSelected.includes(techStackName)) {
+        // 이미 선택된 경우 제거
+        return prevSelected.filter((name) => name !== techStackName);
+      } else {
+        // 선택되지 않은 경우 추가
+        return [...prevSelected, techStackName];
+      }
+    });
+    setContent(null);
+    if (scrollRef.current) {
+      const index = techStacks.findIndex(
+        (techStack) => techStack.techStackName === techStackName
+      );
+      const itemHeight = 26;
+      scrollRef.current.scrollTop = index * itemHeight;
+    }
+  };
 
   const handleClickButton = () => {
-    setContent(<TechStackList />);
+    setContent(
+      <TechStackList
+        techStacks={techStacks}
+        scrollRef={scrollRef}
+        handleTechStackClick={handleTechStackClick}
+      />
+    );
   };
   return (
     <div className="teckstackselector-form">
@@ -27,7 +110,12 @@ const TechStackSelector = () => {
           fill="#EFEFEF"
         />
       </svg>
-
+      <div className="selectedtechstacks">
+        {selectedTechStacks &&
+          selectedTechStacks.map((selected) => {
+            return <div>{selected}</div>;
+          })}
+      </div>
       <div>{content}</div>
     </div>
   );

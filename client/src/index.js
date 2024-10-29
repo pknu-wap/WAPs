@@ -4,12 +4,13 @@ import "./index.css";
 import ProjectForm from "./components/ProjectCreation/ProjectForm";
 import TechStackList from "./components/ProjectCreation/TechStackList";
 import reportWebVitals from "./reportWebVitals";
+import TechStackSelector from "./components/ProjectCreation/TechStackSelector";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <ProjectForm />
-    {/* <TechStackList /> */}
+    {/* <TechStackSelector /> */}
   </React.StrictMode>
 );
 
