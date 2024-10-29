@@ -17,9 +17,14 @@ public class TeamMember {
     private Long teamMemberId;
 
     private String memberName;
+
     private String memberRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    public void updateTeamMember(Project project) {
+        this.project = project;
+    }
 }

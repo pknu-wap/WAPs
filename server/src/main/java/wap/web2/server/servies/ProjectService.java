@@ -24,10 +24,13 @@ public class ProjectService {
         String thumbnailUrl = awsUtils.uploadImageToS3(request.getThumbnailS3());
 
         // request.toEntity() 를 호출함으로서 매개변수로 넘어온 객체(request)를 사용
-        Project project = request.toEntity(imageUrls, thumbnailUrl);
+        Project project = request.toEntity(request, imageUrls, thumbnailUrl);
 
         // 양방향 연관관계 데이터 일관성 유지
-        // book.getPages().forEach(page -> page.updateBook(book));
+        project.getTechStacks().forEach(techStack -> techStack.updateTechStack(project));
+        project.getTeamMembers().forEach(teamMember -> teamMember.updateTeamMember(project));
+        project.getImages().forEach(image -> image.updateImage(project));
+
         projectRepository.save(project);
     }
 

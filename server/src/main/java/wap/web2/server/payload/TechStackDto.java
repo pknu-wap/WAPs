@@ -12,7 +12,7 @@ import wap.web2.server.domain.TechStack;
 @AllArgsConstructor
 public class TechStackDto {
     private String techStackName;
-    private String techStackRole;
+    private String techStackType;
 
     // 스트림의 각 요소가 TechStackDto 객체이기 때문에 자기 자신의 필드 값을 활용해 변환이 가능함으로
     // 매개변수 필요 없음
@@ -20,7 +20,7 @@ public class TechStackDto {
     public TechStack toEntity() {
         return TechStack.builder()
                 .techStackName(techStackName)
-                .techStackType(techStackRole)
+                .techStackType(techStackType)
                 .build();
     }
 }

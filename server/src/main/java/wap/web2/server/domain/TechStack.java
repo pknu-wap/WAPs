@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import wap.web2.server.payload.request.ProjectCreateRequest;
 
 @Builder
 @Entity
@@ -16,8 +17,6 @@ public class TechStack {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long techStackId;
 
-    private String image;
-
     private String techStackName;
 
     private String techStackType;
@@ -25,4 +24,8 @@ public class TechStack {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    public void updateTechStack(Project project) {
+        this.project = project;
+    }
 }

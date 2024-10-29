@@ -39,28 +39,27 @@ public class ProjectCreateRequest {
     private String thumbnail;
     private MultipartFile thumbnailS3; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
-    public Project toEntity(List<String> imageUrls, String thumbnailUrl) {
+    public Project toEntity(ProjectCreateRequest request, List<String> imageUrls, String thumbnailUrl) {
 
         List<Image> imagesEntities = imageUrls.stream()
                 .map(ImageDto::toEntity)
                 .collect(Collectors.toList());
 
-        List<TechStack> techStacksEntities = techStack.stream()
+        List<TechStack> techStacksEntities = request.getTechStack().stream()
                 .map(TechStackDto::toEntity)
                 .collect(Collectors.toList());
 
-        List<TeamMember> teamMemberEntities = teamMember.stream()
+        List<TeamMember> teamMemberEntities = request.getTeamMember().stream()
                 .map(TeamMemberDto::toEntity)
                 .collect(Collectors.toList());
 
-        // ProjectCreateRequest 클래스 내에 필드들을 사용 (ProjectCreateRequest 타입의 객체를 사용 했으므로)
         return Project.builder()
-                .title(this.title)
-                .projectType(this.projectType)
-                .content(this.content)
-                .summary(this.summary)
-                .semester(this.semester)
-                .projectYear(this.projectYear)
+                .title(request.getTitle())
+                .projectType(request.getProjectType())
+                .content(request.getContent())
+                .summary(request.getSummary())
+                .semester(request.getSemester())
+                .projectYear(request.getProjectYear())
                 .images(imagesEntities)
                 .techStacks(techStacksEntities)
                 .teamMembers(teamMemberEntities)
