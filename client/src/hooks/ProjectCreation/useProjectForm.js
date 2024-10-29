@@ -32,6 +32,9 @@ const useProjectForm = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
 
+  // 기술 스택 선택 상태
+  const [techStacks, setTechStacks] = useState([]);
+
   // 오류 메시지 상태
   const [errorMessage, setErrorMessage] = useState({});
 
