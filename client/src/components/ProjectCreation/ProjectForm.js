@@ -342,7 +342,7 @@ const ProjectForm = ({ onSubmit }) => {
 
       {/* 기술 스택 선택 */}
       <TechStackSelector />
-      <TechStackList />
+      {/* <TechStackList /> */}
 
       {uploadError && <p className="error-message">{uploadError}</p>}
 

@@ -1,8 +1,15 @@
 import React from "react";
 import { useState } from "react";
 import "../../assets/ProjectCreation/TechStackSelector.css";
+import TechStackList from "./TechStackList";
 
-const TechStackSelector = ({ selectedTechStack, setSelectedTechStack }) => {
+const TechStackSelector = () => {
+  // 버튼 클릭시 기술 스택 선택창 열기
+  const [content, setContent] = useState();
+
+  const handleClickButton = () => {
+    setContent(<TechStackList />);
+  };
   return (
     <div className="teckstackselector-form">
       <svg
@@ -12,7 +19,7 @@ const TechStackSelector = ({ selectedTechStack, setSelectedTechStack }) => {
         viewBox="0 0 31 31"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        onClick={""}
+        onClick={handleClickButton}
         style={{ cursor: "pointer" }}
       >
         <path
@@ -20,6 +27,8 @@ const TechStackSelector = ({ selectedTechStack, setSelectedTechStack }) => {
           fill="#EFEFEF"
         />
       </svg>
+
+      <div>{content}</div>
     </div>
   );
 };
