@@ -7,6 +7,7 @@ import YearScroll from "./YearSelector";
 import RadioButton from "./RadioButton";
 import InputForm from "./InputForm";
 import TechStackSelector from "./TechStackSelector";
+import TechStackList from "./TechStackList";
 
 // 프로젝트 타입
 const projectTypeOptions = ["WEB", "APP", "GAME", "기타"];
@@ -341,6 +342,7 @@ const ProjectForm = ({ onSubmit }) => {
 
       {/* 기술 스택 선택 */}
       <TechStackSelector />
+      <TechStackList />
 
       {uploadError && <p className="error-message">{uploadError}</p>}
 
