@@ -2,9 +2,11 @@ package wap.web2.server.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Entity
 @Getter
 @NoArgsConstructor
@@ -16,11 +18,9 @@ public class TechStack {
 
     private String image;
 
-    @Enumerated(EnumType.STRING)
-    private TechStackName techStackName;
+    private String techStackName;
 
-    @Enumerated(EnumType.STRING)
-    private TechStackType techStackType;
+    private String techStackType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")

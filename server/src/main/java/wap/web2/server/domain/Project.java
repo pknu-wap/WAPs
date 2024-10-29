@@ -2,12 +2,14 @@ package wap.web2.server.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Entity
 @Getter
 @AllArgsConstructor
@@ -28,11 +30,11 @@ public class Project {
 
     private String summary;
 
-    private Long semester;
+    private Integer semester;
 
     private Long vote;
 
-    private Long projectYear;
+    private Integer projectYear;
 
     private String thumbnail;
 

@@ -24,7 +24,7 @@ public class ProjectController {
     public ResponseEntity<?> createProduct(@RequestPart("image") List<MultipartFile> imageFiles,
                                            @RequestPart("thumbnail") MultipartFile thumbnailFile,
                                            @RequestPart("project") ProjectCreateRequest request) throws IOException {
-        // ContentType 이 multipart/form-data 인 file 2종류를 ProjectCreateRequest 에 할당하여 새로운 RequestDto 객체 생성
+        // RequestPart 중 ContentType 형식이 다르게 온 file 2종류를 ProjectCreateRequest 에 할당하여 새로운 RequestDto 객체 생성
         ProjectCreateRequest fullRequest = ProjectCreateRequest.builder()
                                             .title(request.getTitle())
                                             .projectType(request.getProjectType())

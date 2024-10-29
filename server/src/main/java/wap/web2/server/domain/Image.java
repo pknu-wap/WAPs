@@ -2,9 +2,11 @@ package wap.web2.server.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Entity
 @Getter
 @AllArgsConstructor
