@@ -1,27 +1,34 @@
-import React from "react";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "../../assets/ProjectCreation/TechStackSelector.css";
+import "../../assets/ProjectCreation/YearSelector.css";
 import TechStackList from "./TechStackList";
+import useProjectForm from "../../hooks/ProjectCreation/useProjectForm"; // Adjust the path as necessary
+
+const SelectedTechStacks = ({ selectedTechStacks }) => {
+  return (
+    <div className="selectedtechstacks">
+      {selectedTechStacks.map((selected, index) => (
+        <div key={index}>{selected}</div>
+      ))}
+    </div>
+  );
+};
 
 const TechStackSelector = () => {
-  // 버튼 클릭시 기술 스택 선택창 열기
-  const [content, setContent] = useState(null);
-
   const [techStacks, setTechStacks] = useState([]);
-  const [selectedTechStack, setSelectedTechStack] = useState(null);
-  const [selectedTechStacks, setSelectedTechStacks] = useState([]);
-
+  const [showTechStackList, setShowTechStackList] = useState(false);
   const scrollRef = useRef(null);
 
-  // 엔드포인트 정보
+  // Get the toggle function and selected tech stacks from the hook
+  const { selectedTechStacks, toggleTechStack } = useProjectForm();
+
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/techStack/list`;
 
   useEffect(() => {
     const fetchTechStacks = async () => {
       try {
         const response = await axios.get(apiUrl);
-        // 배열이 아닌 경우 빈 배열로 설정
         setTechStacks(
           Array.isArray(response.data.techStackResponse)
             ? response.data.techStackResponse
@@ -29,70 +36,22 @@ const TechStackSelector = () => {
         );
       } catch (error) {
         console.error("Failed to fetch tech stacks:", error);
-        setTechStacks([]); // 오류 발생 시 빈 배열로 초기화
+        setTechStacks([]); // Reset to an empty array on error
       }
     };
 
     fetchTechStacks();
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (scrollRef.current) {
-        const scrollPosition = scrollRef.current.scrollTop;
-        const itemHeight = 26;
-
-        let index = Math.round(scrollPosition / itemHeight);
-        index = Math.max(0, Math.min(index, techStacks.length - 1));
-
-        setSelectedTechStack(techStacks[index].techStackName);
-      }
-    };
-
-    const scrollElement = scrollRef.current;
-
-    if (scrollElement) {
-      scrollElement.addEventListener("scroll", handleScroll);
-    }
-
-    return () => {
-      if (scrollElement) {
-        scrollElement.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, [scrollRef, techStacks]);
+  }, [apiUrl]);
 
   const handleTechStackClick = (techStackName) => {
-    setSelectedTechStack(techStackName);
-
-    setSelectedTechStacks((prevSelected) => {
-      if (prevSelected.includes(techStackName)) {
-        // 이미 선택된 경우 제거
-        return prevSelected.filter((name) => name !== techStackName);
-      } else {
-        // 선택되지 않은 경우 추가
-        return [...prevSelected, techStackName];
-      }
-    });
-    setContent(null);
-    if (scrollRef.current) {
-      const index = techStacks.findIndex(
-        (techStack) => techStack.techStackName === techStackName
-      );
-      const itemHeight = 26;
-      scrollRef.current.scrollTop = index * itemHeight;
-    }
+    toggleTechStack(techStackName); // Call the toggle function from the hook
+    setShowTechStackList(false); // Hide the tech stack list after selection
   };
 
   const handleClickButton = () => {
-    setContent(
-      <TechStackList
-        techStacks={techStacks}
-        scrollRef={scrollRef}
-        handleTechStackClick={handleTechStackClick}
-      />
-    );
+    setShowTechStackList(true);
   };
+
   return (
     <div className="teckstackselector-form">
       <svg
@@ -110,13 +69,17 @@ const TechStackSelector = () => {
           fill="#EFEFEF"
         />
       </svg>
-      <div className="selectedtechstacks">
-        {selectedTechStacks &&
-          selectedTechStacks.map((selected) => {
-            return <div>{selected}</div>;
-          })}
+
+      <SelectedTechStacks selectedTechStacks={selectedTechStacks} />
+      <div>
+        {showTechStackList && (
+          <TechStackList
+            techStacks={techStacks}
+            scrollRef={scrollRef}
+            handleTechStackClick={handleTechStackClick}
+          />
+        )}
       </div>
-      <div>{content}</div>
     </div>
   );
 };

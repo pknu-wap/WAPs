@@ -1,23 +1,25 @@
 .teckstackselector-form {
-    width: 90%;
+    width:80%;
     height: 100%;
-    padding-top: 25px;
-    padding-bottom: 25px;
+    padding: 20px;
     background-color: #2A2A2A;
     color: #7E7E7E;
     border-radius: 10px;
     margin: 0 auto; 
-    margin-top: 10px;
-    align-items: center;
+    justify-content: center;
+    margin-top : 20px;
+    margin-bottom: 20px;
 }
 
 .selectedtechstacks{
-    width: 80%;
+    width: 90%;
     color: #FFFFFF;
     font-weight: bold;
     display: flex;
-    gap: 20px;
+    gap: 15px;
     padding-top: 15px ;
-    padding-left: 33px;
+
     flex-wrap: wrap; /* 아이템이 컨테이너의 너비를 초과할 경우 줄바꿈 */
+    justify-content: center;
 }
+

@@ -94,6 +94,12 @@ const ProjectForm = ({ onSubmit }) => {
     teamMembers,
     thumbnail,
     images,
+    techStacks,
+    setTechStacks,
+    selectedTechStacks,
+    setSelectedTechStacks,
+    selectedTechStack,
+    setSelectedTechStack,
 
     inputTitle,
     inputContent,
@@ -111,6 +117,8 @@ const ProjectForm = ({ onSubmit }) => {
     addTeamMember,
     handleInputLimit,
     handleSubmit,
+
+    toggleTechStack,
   } = useProjectForm();
 
   return (
@@ -341,7 +349,7 @@ const ProjectForm = ({ onSubmit }) => {
       </div>
 
       {/* 기술 스택 선택 */}
-      <TechStackSelector />
+      <TechStackSelector selectedTechStacks={selectedTechStacks} />
       {/* <TechStackList /> */}
 
       {uploadError && <p className="error-message">{uploadError}</p>}
