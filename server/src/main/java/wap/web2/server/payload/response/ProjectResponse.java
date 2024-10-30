@@ -1,13 +1,15 @@
 package wap.web2.server.payload.response;
 
+import java.util.List;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Builder
 @Getter
-@AllArgsConstructor
-public class ProjectInfoResponse {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class ProjectResponse {
 
     private String title;
     private String projectType;
@@ -17,4 +19,6 @@ public class ProjectInfoResponse {
     private Long vote;
     private Long projectYear;
     private String thumbnail;
+
+
 }
