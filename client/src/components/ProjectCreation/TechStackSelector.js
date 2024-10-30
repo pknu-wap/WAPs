@@ -15,13 +15,10 @@ const SelectedTechStacks = ({ selectedTechStacks }) => {
   );
 };
 
-const TechStackSelector = () => {
+const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
   const [techStacks, setTechStacks] = useState([]);
   const [showTechStackList, setShowTechStackList] = useState(false);
   const scrollRef = useRef(null);
-
-  // Get the toggle function and selected tech stacks from the hook
-  const { selectedTechStacks, toggleTechStack } = useProjectForm();
 
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/techStack/list`;
 

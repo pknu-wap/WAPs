@@ -100,9 +100,14 @@ const useProjectForm = () => {
   };
 
   // 팀원 추가 핸들러
+  // 팀원 추가 핸들러
   const addTeamMember = () => {
-    if (teamMembers[teamMembers.length - 1].name.trim() !== "") {
+    const lastMember = teamMembers[teamMembers.length - 1];
+    // 마지막 팀원의 이름이 비어있지 않고, 역할이 비어있지 않은 경우에만 추가
+    if (lastMember.name.trim() !== "" && lastMember.role.trim() !== "") {
       setTeamMembers([...teamMembers, { name: "", image: null, role: "" }]);
+    } else {
+      alert("모든 필드를 입력해 주세요."); // 사용자에게 알림 추가
     }
   };
 
@@ -140,6 +145,22 @@ const useProjectForm = () => {
     });
   };
 
+  const resetForm = () => {
+    setTeamName("");
+    setTitle("");
+    setProjectType("");
+    setContent("");
+    setSummary("");
+    setSemester("");
+    setProjectYear("");
+    setIsLeader(false);
+    setTeamMembers([{ name: "", image: null, role: "" }]);
+    setThumbnail(null);
+    setImages([null, null, null, null]);
+    setErrorMessage({});
+    setUploadError(null);
+  };
+
   // 유효성 검사 함수
   const validateForm = () => {
     const errors = {};
@@ -150,11 +171,11 @@ const useProjectForm = () => {
         fieldName: "teamName",
         message: "팀 이름을 입력해주세요.",
       },
-      {
-        value: title,
-        fieldName: "title",
-        message: "프로젝트 제목을 입력해주세요.",
-      },
+      // {
+      //   value: title,
+      //   fieldName: "title",
+      //   message: "프로젝트 제목을 입력해주세요.",
+      // },
       {
         value: summary,
         fieldName: "summary",
@@ -184,57 +205,57 @@ const useProjectForm = () => {
   };
 
   // 폼 제출 핸들러
-  const handleSubmit = async (e, onSubmit) => {
-    e.preventDefault();
+  // const handleSubmit = async (e, onSubmit) => {
+  //   e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+  //   if (!validateForm()) {
+  //     return;
+  //   }
 
-    const projectData = {
-      teamName,
-      title,
-      projectType,
-      content,
-      summary,
-      semester: parseInt(semester, 10),
-      projectYear: parseInt(projectYear, 10),
+  //   const projectData = {
+  //     teamName,
+  //     title,
+  //     projectType,
+  //     content,
+  //     summary,
+  //     semester: parseInt(semester, 10),
+  //     projectYear: parseInt(projectYear, 10),
 
-      // 팀원 정보
-      teamMembers: teamMembers
-        .filter((m) => m.name.trim() !== "")
-        .map((member) => ({
-          memberName: member.name,
-          memberImage: member.image,
-          memberRole: member.role,
-        })),
-    };
+  //     // 팀원 정보
+  //     teamMembers: teamMembers
+  //       .filter((m) => m.name.trim() !== "")
+  //       .map((member) => ({
+  //         memberName: member.name,
+  //         memberImage: member.image,
+  //         memberRole: member.role,
+  //       })),
+  //   };
 
-    try {
-      setUploading(true);
-      await onSubmit(projectData, thumbnail, images);
-      setUploading(false);
+  //   try {
+  //     setUploading(true);
+  //     await onSubmit(projectData, thumbnail, images);
+  //     setUploading(false);
 
-      // 폼 초기화
-      setTeamName("");
-      setTitle("");
-      setProjectType("");
-      setContent("");
-      setSummary("");
-      setSemester("");
-      setProjectYear("");
-      setIsLeader(false);
-      setTeamMembers([{ name: "", image: null, role: "" }]);
-      setThumbnail(null);
-      setImages([null, null, null, null]);
-      setErrorMessage({});
-      setUploadError(null);
-    } catch (error) {
-      console.error("프로젝트 생성 실패:", error);
-      setUploadError("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
-      setUploading(false);
-    }
-  };
+  //     // 폼 초기화
+  //     setTeamName("");
+  //     setTitle("");
+  //     setProjectType("");
+  //     setContent("");
+  //     setSummary("");
+  //     setSemester("");
+  //     setProjectYear("");
+  //     setIsLeader(false);
+  //     setTeamMembers([{ name: "", image: null, role: "" }]);
+  //     setThumbnail(null);
+  //     setImages([null, null, null, null]);
+  //     setErrorMessage({});
+  //     setUploadError(null);
+  //   } catch (error) {
+  //     console.error("프로젝트 생성 실패:", error);
+  //     setUploadError("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
+  //     setUploading(false);
+  //   }
+  // };
 
   return {
     // 상태
@@ -273,8 +294,9 @@ const useProjectForm = () => {
     handleRoleChange,
     addTeamMember,
     handleInputLimit,
-    handleSubmit,
     toggleTechStack,
+    resetForm,
+    validateForm,
   };
 };
 
