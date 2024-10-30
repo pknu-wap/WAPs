@@ -353,9 +353,16 @@ const ProjectForm = ({ onSubmit }) => {
 
       {uploadError && <p className="error-message">{uploadError}</p>}
 
-      <div>너무 답다비</div>
-      <h1>마에다 리쿠!!</h1>
-      <h2>리쿠야 아프지마삼</h2>
+      {/* 제출 버튼 */}
+      <button
+        type="submit"
+        className={styles.submit_button}
+        disabled={uploading}
+        style={{ marginTop: "20px", marginBottom: "100px", cursor: "pointer" }}
+        onclick={handleSubmit}
+      >
+        제출
+      </button>
     </form>
   );
 };
