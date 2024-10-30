@@ -135,12 +135,29 @@ const useProjectForm = () => {
   };
 
   // 기술 스택 선택 핸들러
-  const toggleTechStack = (techStackName) => {
+  // const toggleTechStack = (techStackName) => {
+  //   setSelectedTechStacks((prevSelected) => {
+  //     if (prevSelected.includes(techStackName)) {
+  //       return prevSelected.filter((name) => name !== techStackName);
+  //     } else {
+  //       return [...prevSelected, techStackName];
+  //     }
+  //   });
+  // };
+
+  // 기술 스택 선택 핸들러
+  const toggleTechStack = (techStack) => {
     setSelectedTechStacks((prevSelected) => {
-      if (prevSelected.includes(techStackName)) {
-        return prevSelected.filter((name) => name !== techStackName);
+      const existing = prevSelected.find(
+        (item) => item.techStackName === techStack.techStackName
+      );
+
+      if (existing) {
+        return prevSelected.filter(
+          (name) => name.techStackName !== techStack.techStackName
+        );
       } else {
-        return [...prevSelected, techStackName];
+        return [...prevSelected, techStack]; // 기술 스택 객체 전체를 추가
       }
     });
   };

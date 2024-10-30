@@ -5,11 +5,23 @@ import "../../assets/ProjectCreation/YearSelector.css";
 import TechStackList from "./TechStackList";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm"; // Adjust the path as necessary
 
+// const SelectedTechStacks = ({ selectedTechStacks }) => {
+//   return (
+//     <div className="selectedtechstacks">
+//       {selectedTechStacks.map((selected, index) => (
+//         <div key={index}>{selected}</div>
+//       ))}
+//     </div>
+//   );
+// };
+
 const SelectedTechStacks = ({ selectedTechStacks }) => {
   return (
     <div className="selectedtechstacks">
       {selectedTechStacks.map((selected, index) => (
-        <div key={index}>{selected}</div>
+        <div key={index}>
+          {selected.techStackName} - {selected.techStackType}
+        </div>
       ))}
     </div>
   );
@@ -40,8 +52,13 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
     fetchTechStacks();
   }, [apiUrl]);
 
-  const handleTechStackClick = (techStackName) => {
-    toggleTechStack(techStackName); // Call the toggle function from the hook
+  // const handleTechStackClick = (techStackName) => {
+  //   toggleTechStack(techStackName); // Call the toggle function from the hook
+  //   setShowTechStackList(false); // Hide the tech stack list after selection
+  // };
+
+  const handleTechStackClick = (techStack) => {
+    toggleTechStack(techStack); // 전체 객체를 전달
     setShowTechStackList(false); // Hide the tech stack list after selection
   };
 

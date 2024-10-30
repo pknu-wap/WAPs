@@ -431,64 +431,126 @@ const ProjectForm = () => {
   } = useProjectForm();
 
   // handleSubmit에서 FormData를 사용하여 서버로 데이터 전송
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project`;
+
+  //   // 1. 프로젝트 데이터 JSON으로 전송
+  //   const projectData = {
+  //     title,
+  //     projectType,
+  //     content,
+  //     summary,
+  //     semester: parseInt(semester),
+  //     projectYear: projectYear,
+  //     teamMember: teamMembers.map((member) => ({
+  //       memberName: member.name,
+  //       memberRole: member.role,
+  //     })),
+  //     // techStack: selectedTechStacks.map((stack) => ({
+  //     //   techStackName: "비밀",
+  //     //   techStackType: "아직",
+  //     // })),
+
+  //     techStack: selectedTechStacks.map((stack, index) => ({
+  //       techStackName: stack,
+  //       techStackType: "기술스택",
+  //     })),
+  //   };
+
+  //   try {
+  //     // 프로젝트 데이터 전송 (application/json)
+  //     await axios.post(apiUrl, projectData, {
+  //       headers: { "Content-Type": "application/json" },
+  //     });
+  //     console.log("프로젝트 데이터 전송 성공");
+
+  //     // 2. 썸네일 및 이미지 데이터 전송 (multipart/form-data)
+  //     const formData = new FormData();
+  //     if (thumbnail) {
+  //       formData.append("thumbnail", thumbnail);
+  //     }
+  //     images.forEach((image, index) => {
+  //       if (image) {
+  //         formData.append(`imageFile[${index}]`, image);
+  //       }
+  //     });
+
+  //     await axios.post(apiUrl, formData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+
+  //     resetForm();
+  //     alert("프로젝트가 성공적으로 생성되었습니다.");
+  //   } catch (error) {
+  //     console.error("프로젝트 생성 실패:", error);
+  //     alert("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project`;
 
-    // 1. 프로젝트 데이터 JSON으로 전송
+    // 1. 첫 번째 요청: 프로젝트 데이터 전송 (application/json)
     const projectData = {
       title,
       projectType,
       content,
       summary,
       semester: parseInt(semester),
-      projectYear: projectYear,
+      projectYear,
       teamMember: teamMembers.map((member) => ({
         memberName: member.name,
         memberRole: member.role,
       })),
-      // techStack: selectedTechStacks.map((stack) => ({
-      //   techStackName: "비밀",
-      //   techStackType: "아직",
-      // })),
-
-      techStack: selectedTechStacks.map((stack, index) => ({
-        techStackName: stack,
-        techStackType: "기술스택",
+      techStack: selectedTechStacks.map((stack) => ({
+        techStackName: stack.techStackName,
+        techStackType: stack.techStackType,
       })),
     };
 
     try {
-      // 프로젝트 데이터 전송 (application/json)
       await axios.post(apiUrl, projectData, {
         headers: { "Content-Type": "application/json" },
       });
       console.log("프로젝트 데이터 전송 성공");
 
-      // 2. 썸네일 및 이미지 데이터 전송 (multipart/form-data)
-      const formData = new FormData();
+      // 2. 두 번째 요청: 썸네일 데이터 전송 (multipart/form-data)
+      const thumbnailFormData = new FormData();
       if (thumbnail) {
-        formData.append("thumbnail", thumbnail);
+        thumbnailFormData.append("thumbnail", thumbnail);
       }
-      images.forEach((image, index) => {
+
+      await axios.post(apiUrl, thumbnailFormData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("썸네일 전송 성공");
+
+      // 3. 세 번째 요청: 이미지 배열 전송 (multipart/form-data)
+      const imageFormData = new FormData();
+      images.forEach((image) => {
         if (image) {
-          formData.append(`imageFile[${index}]`, image);
+          imageFormData.append("image", image);
         }
       });
 
-      await axios.post(apiUrl, formData, {
+      await axios.post(apiUrl, imageFormData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      console.log("이미지 전송 성공");
 
       resetForm();
       alert("프로젝트가 성공적으로 생성되었습니다.");
     } catch (error) {
-      console.log({ selectedTechStacks });
+      console.log(selectedTechStacks);
       console.error("프로젝트 생성 실패:", error);
       alert("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
     }
   };
+
   return (
     <form className={styles.project_form} onSubmit={handleSubmit}>
       <ImageUploader
