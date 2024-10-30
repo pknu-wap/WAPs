@@ -256,6 +256,7 @@ const useProjectForm = () => {
     thumbnail,
     images,
     selectedTechStacks,
+    teamMembers,
 
     inputTitle,
     inputContent,

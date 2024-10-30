@@ -8,6 +8,7 @@ import RadioButton from "./RadioButton";
 import InputForm from "./InputForm";
 import TechStackSelector from "./TechStackSelector";
 import TechStackList from "./TechStackList";
+import TeamMemberInputForm from "./TeamMemberInputForm";
 
 // 프로젝트 타입
 const projectTypeOptions = ["WEB", "APP", "GAME", "기타"];
@@ -25,53 +26,53 @@ const roleOptions = [
   "기타",
 ];
 
-const TeamMemberInput = ({
-  member,
-  index,
-  handleMemberNameChange,
-  handleMemberImageUpload,
-  handleRoleChange,
-  handleMemberNameFocus,
-}) => (
-  <div className="team-member">
-    {/* 팀원 이름 입력 */}
-    <input
-      className="input-field"
-      type="text"
-      placeholder="팀원 이름"
-      value={member.name}
-      onChange={(e) => handleMemberNameChange(e, index)}
-      onFocus={(e) => handleMemberNameFocus(e, index)}
-    />
-    {/* 팀원 이미지 업로드 */}
-    <input
-      className="file-input"
-      type="file"
-      accept="image/*"
-      onChange={(e) => handleMemberImageUpload(e, index)}
-    />
-    {member.image && (
-      <img
-        className="member-image"
-        src={URL.createObjectURL(member.image)}
-        alt={`Member ${index + 1} Image`}
-      />
-    )}
-    {/* 팀원 역할 선택 */}
-    <select
-      className="select-field"
-      value={member.role}
-      onChange={(e) => handleRoleChange(e, index)}
-    >
-      <option value="">역할을 선택해주세요</option>
-      {roleOptions.map((role) => (
-        <option key={role} value={role}>
-          {role}
-        </option>
-      ))}
-    </select>
-  </div>
-);
+// const TeamMemberInput = ({
+//   member,
+//   index,
+//   handleMemberNameChange,
+//   handleMemberImageUpload,
+//   handleRoleChange,
+//   handleMemberNameFocus,
+// }) => (
+//   <div className="team-member">
+//     {/* 팀원 이름 입력 */}
+//     <input
+//       className="input-field"
+//       type="text"
+//       placeholder="팀원 이름"
+//       value={member.name}
+//       onChange={(e) => handleMemberNameChange(e, index)}
+//       onFocus={(e) => handleMemberNameFocus(e, index)}
+//     />
+//     {/* 팀원 이미지 업로드 */}
+//     <input
+//       className="file-input"
+//       type="file"
+//       accept="image/*"
+//       onChange={(e) => handleMemberImageUpload(e, index)}
+//     />
+//     {member.image && (
+//       <img
+//         className="member-image"
+//         src={URL.createObjectURL(member.image)}
+//         alt={`Member ${index + 1} Image`}
+//       />
+//     )}
+//     {/* 팀원 역할 선택 */}
+//     <select
+//       className="select-field"
+//       value={member.role}
+//       onChange={(e) => handleRoleChange(e, index)}
+//     >
+//       <option value="">역할을 선택해주세요</option>
+//       {roleOptions.map((role) => (
+//         <option key={role} value={role}>
+//           {role}
+//         </option>
+//       ))}
+//     </select>
+//   </div>
+// );
 
 const ProjectForm = ({ onSubmit }) => {
   // 커스텀 훅 사용
@@ -329,7 +330,7 @@ const ProjectForm = ({ onSubmit }) => {
       <div className="form-group">
         <label>팀원:</label>
         {teamMembers.map((member, index) => (
-          <TeamMemberInput
+          <TeamMemberInputForm
             key={index}
             member={member}
             index={index}
@@ -337,15 +338,13 @@ const ProjectForm = ({ onSubmit }) => {
             handleMemberImageUpload={handleMemberImageUpload}
             handleRoleChange={handleRoleChange}
             handleMemberNameFocus={handleMemberNameFocus}
+            roleOptions={roleOptions}
+            handleImgUpload={handleImgUpload}
+            errorMessage={errorMessage}
+            addTeamMember={addTeamMember}
+            teamMembers={teamMembers}
           />
         ))}
-        <button
-          className="add-member-btn"
-          type="button"
-          onClick={addTeamMember}
-        >
-          팀원 추가
-        </button>
       </div>
 
       {/* 기술 스택 선택 */}
@@ -354,9 +353,9 @@ const ProjectForm = ({ onSubmit }) => {
 
       {uploadError && <p className="error-message">{uploadError}</p>}
 
-      <button className="submit-btn" type="submit" disabled={uploading}>
-        {uploading ? "업로드 중..." : "프로젝트 생성"}
-      </button>
+      <div>너무 답다비</div>
+      <h1>마에다 리쿠!!</h1>
+      <h2>리쿠야 아프지마삼</h2>
     </form>
   );
 };

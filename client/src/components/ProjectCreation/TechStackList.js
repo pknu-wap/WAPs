@@ -4,7 +4,6 @@ import "../../assets/ProjectCreation/YearSelector.css"; // CSS 파일 경로 추
 const TechStackList = ({ techStacks, scrollRef, handleTechStackClick }) => {
   return (
     <div className="year-selector">
-      <label className="year-label">기술스택</label>
       <div className="scroll-container" ref={scrollRef}>
         {techStacks &&
           techStacks.map((techStack) => (
