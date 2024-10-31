@@ -22,7 +22,7 @@
 }
 
 .waplogo{
-  width: 90px;
+  width: 70px;
   height: auto;
 }
 
@@ -82,27 +82,57 @@ li {
 
 .box {
   width: 340px;
-  height: 110px;
-  background-color: white;
+  height: 200px;
   margin: 10px;
+  background-color: #ffffff;
   padding: 15px;
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   text-align: center;
   cursor: pointer;
-
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-start;
-
+  position: relative; /* 부모 요소를 기준으로 자식 요소의 위치를 설정하기 위해 */
 }
 
-.box h2 {
+.image {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+.project1 {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 이미지 비율을 유지하면서 박스에 맞춰 자르기 */
+}
+
+.titlebox {
+  width: 355px;
+  height: 100px;
+  padding: 15px;
+  background-image: linear-gradient(to top, #00000050, #ffffff00);
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  position: absolute; /* 위치를 자유롭게 조정하기 위해 */
+  bottom: 0; /* 박스의 아래쪽에 위치하도록 설정 */
+  left: 0; /* 박스의 왼쪽을 기준으로 위치 설정 */
+  color: #ffffff;
+}
+
+.titlebox h2 {
   margin: 0;
+  font-size: 25px;
 }
 
-.box p {
+.titlebox p {
   margin: 5px 0 0;
+  font-size: 15px;
 }
 
