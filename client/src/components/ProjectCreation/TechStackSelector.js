@@ -8,7 +8,9 @@ const SelectedTechStacks = ({ selectedTechStacks }) => {
   return (
     <div className="selectedtechstacks">
       {selectedTechStacks.map((selected, index) => (
-        <div key={index}>{selected.techStackName}</div>
+        <div key={index}>
+          {selected.techStackName} - {selected.techStackType}
+        </div>
       ))}
     </div>
   );
