@@ -57,65 +57,6 @@ const ProjectForm = () => {
     validateForm,
   } = useProjectForm();
 
-  // handleSubmit에서 FormData를 사용하여 서버로 데이터 전송
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project`;
-
-  //   // 1. 프로젝트 데이터 JSON으로 전송
-  //   const projectData = {
-  //     title,
-  //     projectType,
-  //     content,
-  //     summary,
-  //     semester: parseInt(semester),
-  //     projectYear: projectYear,
-  //     teamMember: teamMembers.map((member) => ({
-  //       memberName: member.name,
-  //       memberRole: member.role,
-  //     })),
-  //     // techStack: selectedTechStacks.map((stack) => ({
-  //     //   techStackName: "비밀",
-  //     //   techStackType: "아직",
-  //     // })),
-
-  //     techStack: selectedTechStacks.map((stack, index) => ({
-  //       techStackName: stack,
-  //       techStackType: "기술스택",
-  //     })),
-  //   };
-
-  //   try {
-  //     // 프로젝트 데이터 전송 (application/json)
-  //     await axios.post(apiUrl, projectData, {
-  //       headers: { "Content-Type": "application/json" },
-  //     });
-  //     console.log("프로젝트 데이터 전송 성공");
-
-  //     // 2. 썸네일 및 이미지 데이터 전송 (multipart/form-data)
-  //     const formData = new FormData();
-  //     if (thumbnail) {
-  //       formData.append("thumbnail", thumbnail);
-  //     }
-  //     images.forEach((image, index) => {
-  //       if (image) {
-  //         formData.append(`imageFile[${index}]`, image);
-  //       }
-  //     });
-
-  //     await axios.post(apiUrl, formData, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-
-  //     resetForm();
-  //     alert("프로젝트가 성공적으로 생성되었습니다.");
-  //   } catch (error) {
-  //     console.error("프로젝트 생성 실패:", error);
-  //     alert("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     // 기본 이벤트 제거
     e.preventDefault();
@@ -173,7 +114,8 @@ const ProjectForm = () => {
       console.log("프로젝트 생성 성공");
       console.log("프로젝트 데이터:", formData.get("project"));
 
-      resetForm();
+      resetForm(); // 폼 리셋
+      window.location.reload(); // 페이지 리로드
       alert("프로젝트가 성공적으로 생성되었습니다.");
     } catch (error) {
       console.error("프로젝트 생성 실패:", error);
