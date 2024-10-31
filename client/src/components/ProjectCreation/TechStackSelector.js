@@ -3,25 +3,12 @@ import axios from "axios";
 import "../../assets/ProjectCreation/TechStackSelector.css";
 import "../../assets/ProjectCreation/YearSelector.css";
 import TechStackList from "./TechStackList";
-import useProjectForm from "../../hooks/ProjectCreation/useProjectForm"; // Adjust the path as necessary
-
-// const SelectedTechStacks = ({ selectedTechStacks }) => {
-//   return (
-//     <div className="selectedtechstacks">
-//       {selectedTechStacks.map((selected, index) => (
-//         <div key={index}>{selected}</div>
-//       ))}
-//     </div>
-//   );
-// };
 
 const SelectedTechStacks = ({ selectedTechStacks }) => {
   return (
     <div className="selectedtechstacks">
       {selectedTechStacks.map((selected, index) => (
-        <div key={index}>
-          {selected.techStackName} - {selected.techStackType}
-        </div>
+        <div key={index}>{selected.techStackName}</div>
       ))}
     </div>
   );
@@ -45,21 +32,16 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
         );
       } catch (error) {
         console.error("Failed to fetch tech stacks:", error);
-        setTechStacks([]); // Reset to an empty array on error
+        setTechStacks([]);
       }
     };
 
     fetchTechStacks();
   }, [apiUrl]);
 
-  // const handleTechStackClick = (techStackName) => {
-  //   toggleTechStack(techStackName); // Call the toggle function from the hook
-  //   setShowTechStackList(false); // Hide the tech stack list after selection
-  // };
-
   const handleTechStackClick = (techStack) => {
     toggleTechStack(techStack); // 전체 객체를 전달
-    setShowTechStackList(false); // Hide the tech stack list after selection
+    setShowTechStackList(false); // 리스트 숨김
   };
 
   const handleClickButton = () => {
@@ -69,6 +51,8 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
   return (
     <div className="teckstackselector-form">
       <label className="techstack-label">기술스택</label>
+
+      <SelectedTechStacks selectedTechStacks={selectedTechStacks} />
       <div className="techstack-btn">
         <svg
           id="custom_image_uploader"
@@ -87,7 +71,6 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
         </svg>
       </div>
 
-      <SelectedTechStacks selectedTechStacks={selectedTechStacks} />
       <div>
         {showTechStackList && (
           <TechStackList

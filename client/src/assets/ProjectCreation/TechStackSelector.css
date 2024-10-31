@@ -8,16 +8,14 @@
     border-radius: 10px;
     margin: 0 auto; 
     text-align: left;
-    
     margin-top : 20px;
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
-    
-
 }
 
 .techstack-btn{
+    margin-top: 20px;
     text-align: center;
 }
 
@@ -28,7 +26,6 @@
     display: flex;
     gap: 15px;
     padding-top: 15px ;
-
     flex-wrap: wrap; /* 아이템이 컨테이너의 너비를 초과할 경우 줄바꿈 */
     justify-content: center;
 }

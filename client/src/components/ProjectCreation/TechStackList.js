@@ -5,17 +5,6 @@ const TechStackList = ({ techStacks, scrollRef, handleTechStackClick }) => {
   return (
     <div className="year-selector">
       <div className="scroll-container" ref={scrollRef}>
-        {/* {techStacks &&
-          techStacks.map((techStack) => (
-            <p
-              key={techStack.techStackName}
-              className={`year-item ${techStack.techStackName}`}
-              onClick={() => handleTechStackClick(techStack.techStackName)}
-            >
-              {techStack.techStackName} - {techStack.techStackType}
-            </p>
-          ))} */}
-
         {techStacks &&
           techStacks.map((techStack) => (
             <p

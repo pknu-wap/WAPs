@@ -1,9 +1,10 @@
-import React from 'react';
+import React from "react";
+import ProjectForm from "../../components/ProjectCreation/ProjectForm";
 
 const CreatePage = () => {
   return (
     <div>
-      <h2>프로젝트 생성 페이지</h2>
+      <ProjectForm />
     </div>
   );
 };

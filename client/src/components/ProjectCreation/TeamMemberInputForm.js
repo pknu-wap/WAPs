@@ -5,7 +5,6 @@ const TeamMemberInputForm = ({
   member,
   index,
   handleMemberNameChange,
-  errorMessage,
   handleImgUpload,
   handleRoleChange,
   handleMemberNameFocus,
