@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import wap.web2.server.payload.response.ProjectInfoResponse;
 
 @Builder
 @Entity
@@ -49,4 +50,5 @@ public class Project {
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     List<TechStack> techStacks = new ArrayList<>();
+
 }

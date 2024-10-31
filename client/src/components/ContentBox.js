@@ -1,41 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import cat from '../assets/img/cat.png';
+import axios from 'axios';
 
 const ContentBox = () => {
+  const [projects, setProjects] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://15.164.98.72:8080/project/list?semester=2&projectYear=2024');
+        
+        // 응답 데이터를 콘솔에 출력하여 형식을 확인
+        console.log("API 응답 데이터:", response.data);
+        
+        // projectsResponse에 배열이 포함되어 있는지 확인 후 설정
+        if (Array.isArray(response.data.projectsResponse)) {
+          setProjects(response.data.projectsResponse);
+        } else {
+          console.error("API 응답의 projectsResponse가 배열이 아닙니다:", response.data);
+        }
+      } catch (error) {
+        console.error("데이터 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="content-box">
-      <div className="box" onClick={() => navigate("/web")}>
-        <div className="image">
-          <img className="project1" alt="project1" src={cat} /> // 테스트(나중에 백에서 받아오기)
-        </div>
-        <div className="titlebox">
-          <h2>프젝 1</h2>
-          <p>어떠어떠한 웹사이트</p>
-        </div>
-      </div>
-      <div className="box" onClick={() => navigate("/app")}>
-       <div className="titlebox">
-        <h2>프젝 1</h2>
-        <p>어떠어떠한 웹사이트</p>
-       </div>
-      </div>
-      <div className="box" onClick={() => navigate("/web")}>
-       <div className="titlebox">
-        <h2>프젝 1</h2>
-        <p>어떠어떠한 웹사이트</p>
-       </div>
-      </div>
-      <div className="box" onClick={() => navigate("/app")}>
-       <div className="titlebox">
-        <h2>프젝 1</h2>
-        <p>어떠어떠한 웹사이트</p>
-       </div>
-      </div>
+      {Array.isArray(projects) && projects.length > 0 ? (
+        projects.map((project) => (
+          <div key={project.projectId} className="box" onClick={() => navigate("/web")}> 
+            <div className="image">
+              {project.thumbnail && <img className="project-image" alt={project.title} src={project.thumbnail} />}
+            </div>
+            <div className="titlebox">
+              <h2>{project.title}</h2>
+              <p>{project.summary}</p>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p>프로젝트 데이터를 불러오는 중입니다...</p>
+      )}
     </div>
-    
   );
 };
 

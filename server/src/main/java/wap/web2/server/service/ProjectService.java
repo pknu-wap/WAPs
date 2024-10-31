@@ -1,22 +1,25 @@
-package wap.web2.server.servies;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import wap.web2.server.domain.Project;
-import wap.web2.server.payload.request.ProjectCreateRequest;
-import wap.web2.server.repository.ProjectRepository;
-import wap.web2.server.util.AwsUtils;
+package wap.web2.server.service;
 
 import java.io.IOException;
 import java.util.List;
 
-@Service
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.domain.Project;
+import wap.web2.server.payload.request.ProjectCreateRequest;
+import wap.web2.server.payload.response.ProjectInfoResponse;
+import wap.web2.server.repository.ProjectRepository;
+import wap.web2.server.util.AwsUtils;
+
 @RequiredArgsConstructor
+@Service
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final AwsUtils awsUtils;
+
 
     @Transactional
     public void save(ProjectCreateRequest request) throws IOException {
@@ -34,4 +37,8 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
+    public List<ProjectInfoResponse> getProjects(Long year, Long semester) {
+        return projectRepository.findProjectsByYearAndSemester(year, semester)
+            .stream().map(ProjectInfoResponse::from).toList();
+    }
 }
