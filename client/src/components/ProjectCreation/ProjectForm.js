@@ -176,15 +176,6 @@ const ProjectForm = () => {
       resetForm();
       alert("프로젝트가 성공적으로 생성되었습니다.");
     } catch (error) {
-      // JSON 데이터를 문자열로 제대로 추가했는지 확인
-      console.log("프로젝트 데이터 (JSON):", JSON.stringify(projectData));
-
-      // FormData에 각 데이터를 올바르게 추가했는지 확인
-      console.log("프로젝트 데이터 (FormData):", formData.get("project"));
-      console.log("썸네일 데이터:", formData.get("thumbnail"));
-      formData.getAll("imageFile").forEach((image, idx) => {
-        console.log(`이미지 파일 ${idx}:`, image);
-      });
       console.error("프로젝트 생성 실패:", error);
       alert("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
     }
