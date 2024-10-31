@@ -27,11 +27,6 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    @Autowired
-    public ProjectController(ProjectService projectService) {
-        this.projectService = projectService;
-    }
-
     @GetMapping("/list")
     public ResponseEntity<?> getProjects(
         @RequestParam("projectYear") Long year,
@@ -48,7 +43,7 @@ public class ProjectController {
         return new ResponseEntity<>(projectsResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/project")
+    @PostMapping
     public ResponseEntity<?> createProduct(@RequestPart("image") List<MultipartFile> imageFiles,
                                            @RequestPart("thumbnail") MultipartFile thumbnailFile,
                                            @RequestPart("project") ProjectCreateRequest request) throws IOException {

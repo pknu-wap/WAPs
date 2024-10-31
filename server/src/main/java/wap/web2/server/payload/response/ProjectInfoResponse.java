@@ -15,8 +15,8 @@ public class ProjectInfoResponse {
     private String title;
     private String projectType;
     private String summary;
-    private Long semester;
-    private Long projectYear;
+    private Integer semester;
+    private Integer projectYear;
     private String thumbnail;
 
     public static ProjectInfoResponse from(Project project) {
