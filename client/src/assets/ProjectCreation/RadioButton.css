@@ -1,5 +1,5 @@
 .radio-button{
-    width: 342px;
+    width: 90%;
     height: 100%;
     padding-top: 15px;
     padding-bottom: 20px;
@@ -22,7 +22,7 @@
     margin-bottom: 10px;
     font-size: 12px;
 }
-
+  
 .radio-option{
     display: flex;
     justify-content: space-between;

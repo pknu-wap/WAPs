@@ -28,6 +28,9 @@ const useProjectForm = () => {
   const [inputContent, setInputContent] = useState(0);
   const [inputSummary, setInputSummary] = useState(0);
 
+  // 기술 스택 선택 상태
+  const [selectedTechStacks, setSelectedTechStacks] = useState([]);
+
   // 업로드 관련 상태
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
@@ -64,6 +67,19 @@ const useProjectForm = () => {
     }));
   };
 
+  // 썸네일 업로드 핸들러
+  // const handleThumbnailUpload = (file) => {
+  //   if (!file.type.startsWith("image/")) {
+  //     setErrorMessage((prev) => ({
+  //       ...prev,
+  //       thumbnail: "이미지 파일만 업로드할 수 있습니다.",
+  //     }));
+  //     return;
+  //   }
+  //   setThumbnail(file);
+  //   setErrorMessage((prev) => ({ ...prev, thumbnail: "" }));
+  // };
+
   // 팀원 이름 입력 포커스 핸들러
   const handleMemberNameFocus = (e, index) => {
     if (index === 0 && !isLeader) {
@@ -97,12 +113,18 @@ const useProjectForm = () => {
   };
 
   // 팀원 추가 핸들러
+  // 팀원 추가 핸들러
   const addTeamMember = () => {
-    if (teamMembers[teamMembers.length - 1].name.trim() !== "") {
+    const lastMember = teamMembers[teamMembers.length - 1];
+    // 마지막 팀원의 이름이 비어있지 않고, 역할이 비어있지 않은 경우에만 추가
+    if (lastMember.name.trim() !== "" && lastMember.role.trim() !== "") {
       setTeamMembers([...teamMembers, { name: "", image: null, role: "" }]);
+    } else {
+      alert("모든 필드를 입력해 주세요."); // 사용자에게 알림 추가
     }
   };
 
+  // 입력 글자 수 제한 핸들러
   const handleInputLimit = (e) => {
     const { name, value } = e.target;
 
@@ -125,6 +147,50 @@ const useProjectForm = () => {
     }
   };
 
+  // 기술 스택 선택 핸들러
+  // const toggleTechStack = (techStackName) => {
+  //   setSelectedTechStacks((prevSelected) => {
+  //     if (prevSelected.includes(techStackName)) {
+  //       return prevSelected.filter((name) => name !== techStackName);
+  //     } else {
+  //       return [...prevSelected, techStackName];
+  //     }
+  //   });
+  // };
+
+  // 기술 스택 선택 핸들러
+  const toggleTechStack = (techStack) => {
+    setSelectedTechStacks((prevSelected) => {
+      const existing = prevSelected.find(
+        (item) => item.techStackName === techStack.techStackName
+      );
+
+      if (existing) {
+        return prevSelected.filter(
+          (name) => name.techStackName !== techStack.techStackName
+        );
+      } else {
+        return [...prevSelected, techStack]; // 기술 스택 객체 전체를 추가
+      }
+    });
+  };
+
+  const resetForm = () => {
+    setTeamName("");
+    setTitle("");
+    setProjectType("");
+    setContent("");
+    setSummary("");
+    setSemester("");
+    setProjectYear("");
+    setIsLeader(false);
+    setTeamMembers([{ name: "", image: null, role: "" }]);
+    setThumbnail(null);
+    setImages([null, null, null, null]);
+    setErrorMessage({});
+    setUploadError(null);
+  };
+
   // 유효성 검사 함수
   const validateForm = () => {
     const errors = {};
@@ -135,11 +201,11 @@ const useProjectForm = () => {
         fieldName: "teamName",
         message: "팀 이름을 입력해주세요.",
       },
-      {
-        value: title,
-        fieldName: "title",
-        message: "프로젝트 제목을 입력해주세요.",
-      },
+      // {
+      //   value: title,
+      //   fieldName: "title",
+      //   message: "프로젝트 제목을 입력해주세요.",
+      // },
       {
         value: summary,
         fieldName: "summary",
@@ -169,57 +235,57 @@ const useProjectForm = () => {
   };
 
   // 폼 제출 핸들러
-  const handleSubmit = async (e, onSubmit) => {
-    e.preventDefault();
+  // const handleSubmit = async (e, onSubmit) => {
+  //   e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+  //   if (!validateForm()) {
+  //     return;
+  //   }
 
-    const projectData = {
-      teamName,
-      title,
-      projectType,
-      content,
-      summary,
-      semester: parseInt(semester, 10),
-      projectYear: parseInt(projectYear, 10),
+  //   const projectData = {
+  //     teamName,
+  //     title,
+  //     projectType,
+  //     content,
+  //     summary,
+  //     semester: parseInt(semester, 10),
+  //     projectYear: parseInt(projectYear, 10),
 
-      // 팀원 정보
-      teamMembers: teamMembers
-        .filter((m) => m.name.trim() !== "")
-        .map((member) => ({
-          memberName: member.name,
-          memberImage: member.image,
-          memberRole: member.role,
-        })),
-    };
+  //     // 팀원 정보
+  //     teamMembers: teamMembers
+  //       .filter((m) => m.name.trim() !== "")
+  //       .map((member) => ({
+  //         memberName: member.name,
+  //         memberImage: member.image,
+  //         memberRole: member.role,
+  //       })),
+  //   };
 
-    try {
-      setUploading(true);
-      await onSubmit(projectData, thumbnail, images);
-      setUploading(false);
+  //   try {
+  //     setUploading(true);
+  //     await onSubmit(projectData, thumbnail, images);
+  //     setUploading(false);
 
-      // 폼 초기화
-      setTeamName("");
-      setTitle("");
-      setProjectType("");
-      setContent("");
-      setSummary("");
-      setSemester("");
-      setProjectYear("");
-      setIsLeader(false);
-      setTeamMembers([{ name: "", image: null, role: "" }]);
-      setThumbnail(null);
-      setImages([null, null, null, null]);
-      setErrorMessage({});
-      setUploadError(null);
-    } catch (error) {
-      console.error("프로젝트 생성 실패:", error);
-      setUploadError("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
-      setUploading(false);
-    }
-  };
+  //     // 폼 초기화
+  //     setTeamName("");
+  //     setTitle("");
+  //     setProjectType("");
+  //     setContent("");
+  //     setSummary("");
+  //     setSemester("");
+  //     setProjectYear("");
+  //     setIsLeader(false);
+  //     setTeamMembers([{ name: "", image: null, role: "" }]);
+  //     setThumbnail(null);
+  //     setImages([null, null, null, null]);
+  //     setErrorMessage({});
+  //     setUploadError(null);
+  //   } catch (error) {
+  //     console.error("프로젝트 생성 실패:", error);
+  //     setUploadError("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
+  //     setUploading(false);
+  //   }
+  // };
 
   return {
     // 상태
@@ -240,6 +306,8 @@ const useProjectForm = () => {
     teamMembers,
     thumbnail,
     images,
+    selectedTechStacks,
+    teamMembers,
 
     inputTitle,
     inputContent,
@@ -250,13 +318,17 @@ const useProjectForm = () => {
 
     // 핸들러
     handleImgUpload,
+    // handleThumbnailUpload,
+    // handleImageUpload,
     handleMemberNameFocus,
     handleMemberNameChange,
     handleMemberImageUpload,
     handleRoleChange,
     addTeamMember,
     handleInputLimit,
-    handleSubmit,
+    toggleTechStack,
+    resetForm,
+    validateForm,
   };
 };
 

@@ -1,8 +1,9 @@
 .input-form input[type="text"] {
     width: 100%;
+ 
     border: none;
     background-color: transparent;
-    color: #7E7E7E;
+    color: #ffffff;
     outline: none; /* 포커스 시 외곽선 제거 */
 }
 
@@ -16,7 +17,7 @@
 
 
 .input-form {
-    width: 342px;
+    width: 90%;
     height: 100%;
     padding-top: 25px;
     padding-bottom: 25px;
