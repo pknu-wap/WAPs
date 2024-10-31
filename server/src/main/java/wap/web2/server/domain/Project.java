@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import wap.web2.server.payload.response.ProjectResponse;
+import wap.web2.server.payload.response.ProjectInfoResponse;
 
 @Entity
 @Getter
@@ -49,15 +49,4 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     List<TechStack> techStacks = new ArrayList<>();
 
-    public static ProjectResponse toResponse(Project project) {
-        return ProjectResponse.builder()
-            .title(project.getTitle())
-            .projectType(project.getProjectType())
-            .content(project.getContent())
-            .summary(project.getSummary())
-            .semester(project.getSemester())
-            .vote(project.getVote())
-            .projectYear(project.getProjectYear())
-            .build();
-    }
 }
