@@ -1,0 +1,121 @@
+.project_form {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #000000;
+    text-align: center;
+  }
+
+  .image_uploader{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 394px;
+    width: 394px; /* 너비 */
+    max-height: 282px; /* 최대 높이 */
+    height: 282px;
+    margin: 10px auto; /* 가운데 정렬 */
+    background-color: #2A2A2A; /* 배경색 */
+    transition: border-color 0.3s; /* 경계선 색상 변화 애니메이션
+     */
+    color: #EBEBEB;
+  }
+
+.img_upload_btn{
+  display: none;
+}
+
+  
+  .group {
+    margin-bottom: 20px;
+  }
+  
+  .input-field,
+  .select-field,
+  .textarea-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .textarea-field {
+    resize: vertical;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
+  .char-count {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    color: #888;
+  }
+  
+  .thumbnail-preview,
+  .image-preview {
+    margin-top: 10px;
+  }
+  
+  .thumbnail-preview img,
+  .uploaded-image {
+    max-width: 100px;
+    border-radius: 4px;
+  }
+  
+  .submit-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .radio-group {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .radio-option {
+    display: flex;
+    align-items: center;
+  }
+  
+  .add-member-btn {
+    display: block;
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .add-member-btn:hover {
+    background-color: #218838;
+  }
+  
+  .file-input {
+    margin-top: 10px;
+  }
+  
+  .member-image {
+    max-width: 50px;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+  
