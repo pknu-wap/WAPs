@@ -67,19 +67,6 @@ const useProjectForm = () => {
     }));
   };
 
-  // 썸네일 업로드 핸들러
-  // const handleThumbnailUpload = (file) => {
-  //   if (!file.type.startsWith("image/")) {
-  //     setErrorMessage((prev) => ({
-  //       ...prev,
-  //       thumbnail: "이미지 파일만 업로드할 수 있습니다.",
-  //     }));
-  //     return;
-  //   }
-  //   setThumbnail(file);
-  //   setErrorMessage((prev) => ({ ...prev, thumbnail: "" }));
-  // };
-
   // 팀원 이름 입력 포커스 핸들러
   const handleMemberNameFocus = (e, index) => {
     if (index === 0 && !isLeader) {
@@ -188,6 +175,7 @@ const useProjectForm = () => {
     setThumbnail(null);
     setImages([null, null, null, null]);
     setErrorMessage({});
+    setSelectedTechStacks([]);
     setUploadError(null);
   };
 
