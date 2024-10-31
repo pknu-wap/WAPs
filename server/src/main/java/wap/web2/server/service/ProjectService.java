@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wap.web2.server.domain.Project;
-import wap.web2.server.payload.response.ProjectResponse;
+import wap.web2.server.payload.response.ProjectInfoResponse;
 import wap.web2.server.repository.ProjectRepository;
 
 @Service
@@ -17,8 +17,8 @@ public class ProjectService {
         this.projectRepository = projectRepository;
     }
 
-    public List<ProjectResponse> getProjects(Long year, Long semester) {
+    public List<ProjectInfoResponse> getProjects(Long year, Long semester) {
         return projectRepository.findProjectsByYearAndSemester(year, semester)
-            .stream().map(Project::toResponse).toList();
+            .stream().map(ProjectInfoResponse::from).toList();
     }
 }
