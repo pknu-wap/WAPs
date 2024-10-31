@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import wap.web2.server.payload.response.ProjectResponse;
+import wap.web2.server.payload.response.ProjectInfoResponse;
+import wap.web2.server.payload.response.ProjectsResponse;
 import wap.web2.server.service.ProjectService;
 
 @RestController
@@ -23,14 +24,18 @@ public class ProjectController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> getProjectList(
+    public ResponseEntity<?> getProjects(
         @RequestParam("projectYear") Long year,
         @RequestParam("semester") Long semester) {
 
-        List<ProjectResponse> projects = projectService.getProjects(year, semester);
-        if (projects.isEmpty()) {
+        List<ProjectInfoResponse> projects = projectService.getProjects(year, semester);
+        ProjectsResponse projectsResponse = ProjectsResponse.builder()
+            .projectsResponse(projects)
+            .build();
+
+        if (projectsResponse.getProjectsResponse().isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(projects, HttpStatus.OK);
+        return new ResponseEntity<>(projectsResponse, HttpStatus.OK);
     }
 }
