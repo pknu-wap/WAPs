@@ -32,7 +32,7 @@ const ContentBox = () => {
     <div className="content-box">
       {Array.isArray(projects) && projects.length > 0 ? (
         projects.map((project) => (
-          <div key={project.projectId} className="box" onClick={() => navigate(project.link)}>
+          <div key={project.projectId} className="box" onClick={() => navigate("/web")}> 
             <div className="image">
               {project.thumbnail && <img className="project-image" alt={project.title} src={project.thumbnail} />}
             </div>
