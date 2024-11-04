@@ -1,14 +1,14 @@
 import { React } from "react";
-import "../../assets/ProjectCreation/RadioButton.css"; // CSS 파일 경로 추가
+import styles from "../../assets/ProjectCreation/RadioButton.module.css"; // CSS 파일 경로 추가
 
 const RadioButton = ({ labelname, name, options, selected, setSelected }) => {
   return (
-    <div className="radio-button">
-      <label className="button-label">{labelname}</label>
+    <div className={styles.radio_button}>
+      <label className={styles.radio_button_label}>{labelname}</label>
       {options.map((option, index) => (
         <label key={index}>
-          <div className="radio-option">
-            <div className="option-name">
+          <div className={styles.radio_option}>
+            <div>
               <label
                 htmlFor={`${name}-${option}`}
                 style={{
@@ -19,7 +19,7 @@ const RadioButton = ({ labelname, name, options, selected, setSelected }) => {
                 {option}
               </label>
             </div>
-            <div className="option">
+            <div>
               <input
                 id={`${name}-${option}`} // ID 추가
                 type="radio"

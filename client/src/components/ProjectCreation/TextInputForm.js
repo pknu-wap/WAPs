@@ -1,9 +1,10 @@
+// text input 파일
 import React from "react";
-import "../../assets/ProjectCreation/InputForm.css"; // CSS 파일 경로 추가
+import styles from "../../assets/ProjectCreation/TextInputForm.module.css";
 
 // 매개변수로 받아야 하는 것
 // placeholder, maxLen, value, onChange, errorMessage, name
-const InputForm = ({
+const TextInputForm = ({
   name,
   placeholder,
   maxLen,
@@ -12,12 +13,12 @@ const InputForm = ({
   errorMessage = {}, // 기본값 설정
 }) => {
   return (
-    <div className="input-form">
-      <div className="input-field">
+    <div className={styles.text_input_form}>
+      <div className={styles.text_input_field}>
         <div>
           <input
             name={name} // 수정: name의 길이가 아닌 name 자체를 전달
-            className="input-field"
+            className={styles.text_input_field}
             type="text"
             placeholder={placeholder}
             maxLength={maxLen}
@@ -39,4 +40,4 @@ const InputForm = ({
   );
 };
 
-export default InputForm;
+export default TextInputForm;

@@ -5,7 +5,7 @@ import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
 import ImageUploader from "./ImageUploader";
 import YearScroll from "./YearSelector";
 import RadioButton from "./RadioButton";
-import InputForm from "./InputForm";
+import TextInputForm from "./TextInputForm";
 import TechStackSelector from "./TechStackSelector";
 import TeamMemberInputForm from "./TeamMemberInputForm";
 
@@ -159,7 +159,7 @@ const ProjectForm = () => {
         }}
         errorMessage={errorMessage}
       /> */}
-      <InputForm
+      <TextInputForm
         name="title"
         placeholder="프로젝트 명"
         maxLen="20"
@@ -170,7 +170,7 @@ const ProjectForm = () => {
         }}
         errorMessage={errorMessage}
       />
-      <InputForm
+      <TextInputForm
         name="summary"
         placeholder="한줄 소개"
         maxLen="20"
@@ -181,7 +181,7 @@ const ProjectForm = () => {
         }}
         errorMessage={errorMessage}
       />
-      <InputForm
+      <TextInputForm
         name="content"
         placeholder="상세 설명"
         maxLen="600"
