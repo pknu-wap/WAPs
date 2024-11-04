@@ -21,7 +21,7 @@ const useProjectForm = () => {
   ]);
 
   const [thumbnail, setThumbnail] = useState(null);
-  const [images, setImages] = useState([null]); // 1개의 이미지 업로더, formData 전송문제로.. 1개로 수정
+  const [images, setImages] = useState([null, null, null, null]); // 1개의 이미지 업로더, formData 전송문제로.. 1개로 수정
 
   // 입력 필드 글자 수 제한
   const [inputTitle, setInputTitle] = useState(null);
