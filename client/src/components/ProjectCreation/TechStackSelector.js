@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import "../../assets/ProjectCreation/TechStackSelector.css";
-import "../../assets/ProjectCreation/YearSelector.css";
+import styles from "../../assets/ProjectCreation/TechStackSelector.module.css";
 import TechStackList from "./TechStackList";
 
 const SelectedTechStacks = ({ selectedTechStacks }) => {
   return (
-    <div className="selectedtechstacks">
+    <div className={styles.techstack_select}>
       {selectedTechStacks.map((selected, index) => (
         <div key={index}>
           {selected.techStackName} - {selected.techStackType}
@@ -51,11 +50,11 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
   };
 
   return (
-    <div className="teckstackselector-form">
-      <label className="techstack-label">기술스택</label>
+    <div className={styles.teckstack_form}>
+      <label className="techstack_label">기술스택</label>
 
       <SelectedTechStacks selectedTechStacks={selectedTechStacks} />
-      <div className="techstack-btn">
+      <div className={styles.techstack_btn}>
         <svg
           id="custom_image_uploader"
           width="31"

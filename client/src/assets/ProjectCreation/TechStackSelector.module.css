@@ -1,4 +1,4 @@
-.teckstackselector-form {
+.teckstack_form {
     width:90%;
     height: 100%;
     padding-top: 15px;
@@ -14,12 +14,12 @@
     flex-direction: column;
 }
 
-.techstack-btn{
+.techstack_btn{
     margin-top: 20px;
     text-align: center;
 }
 
-.selectedtechstacks{
+.techstack_select{
     width: 100%;
     color: #FFFFFF;
     font-weight: bold;
@@ -30,7 +30,7 @@
     justify-content: center;
 }
 
-.techstack-label{
+.techstack_label{
     margin-top: 10px;
     margin-left: 33px;
     margin-bottom: 10px;
