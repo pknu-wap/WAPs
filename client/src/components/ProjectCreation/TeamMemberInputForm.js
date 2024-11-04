@@ -1,11 +1,11 @@
 import React from "react";
-import "../../assets/ProjectCreation/TeamMemberInputForm.css"; // CSS 파일 경로 추가
+import styles from "../../assets/ProjectCreation/TeamMemberInputForm.module.css"; // CSS 파일 경로 추가
 
 const TeamMemberInputForm = ({
   member,
   index,
   handleMemberNameChange,
-  handleImgUpload,
+  //   handleImgUpload,
   handleRoleChange,
   handleMemberNameFocus,
   roleOptions,
@@ -13,13 +13,13 @@ const TeamMemberInputForm = ({
   handleMemberImageUpload,
   teamMembers,
 }) => (
-  <div className="team-member">
+  <div className={styles.teammember}>
     {index === teamMembers.length - 1 && (
-      <label className="teammember-label">팀원 등록</label>
+      <label className={styles.teammember_label}>팀원 등록</label>
     )}
-    <div className="teammember-form">
+    <div className={styles.teammember_form}>
       {/* 이미지 업로드 SVG */}
-      <div className="image-upload-container">
+      <div className={styles.teammember_image_upload_container}>
         <input
           type="file"
           accept="image/*"
@@ -31,7 +31,7 @@ const TeamMemberInputForm = ({
           <svg
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="image-upload-svg"
+            className={styles.teammember_image_upload_svg}
           >
             <path
               d="M55 27.5C55 42.6878 42.6878 55 27.5 55C12.3122 55 0 42.6878 0 27.5C0 12.3122 12.3122 0 27.5 0C42.6878 0 55 12.3122 55 27.5Z"
@@ -43,10 +43,11 @@ const TeamMemberInputForm = ({
             />
           </svg>
         </label>
+
         {/* 이미지 프리뷰 */}
         {member.image && (
           <img
-            className="member-image"
+            className={styles.teammember_image}
             src={URL.createObjectURL(member.image)}
             alt={`Member ${index + 1} Image`}
           />
@@ -55,7 +56,7 @@ const TeamMemberInputForm = ({
 
       {/* 팀원 이름 입력 */}
       <input
-        className="team-member-input"
+        className={styles.teammember_input}
         type="text"
         placeholder="팀원 이름"
         value={member.name}
@@ -65,7 +66,7 @@ const TeamMemberInputForm = ({
 
       {/* 팀원 역할 선택 */}
       <select
-        className="role-select-field"
+        className={styles.teammember_role_select_field}
         value={member.role}
         onChange={(e) => handleRoleChange(e, index)}
       >
@@ -78,7 +79,7 @@ const TeamMemberInputForm = ({
       </select>
       {index === teamMembers.length - 1 && (
         <button
-          className="add-member-btn"
+          className={styles.teammember_add_btn}
           type="button"
           onClick={addTeamMember}
         >
