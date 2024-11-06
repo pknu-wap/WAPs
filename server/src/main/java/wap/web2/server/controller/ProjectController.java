@@ -1,10 +1,12 @@
 package wap.web2.server.controller;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.payload.request.ProjectCreateRequest;
+import wap.web2.server.payload.response.ProjectDetailsResponse;
 import wap.web2.server.payload.response.ProjectsResponse;
 import wap.web2.server.payload.response.ProjectInfoResponse;
 import wap.web2.server.service.ProjectService;
@@ -65,5 +68,16 @@ public class ProjectController {
 
         projectService.save(fullRequest);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/{projectId}")
+    public ResponseEntity<?> getProject(@PathVariable Long projectId) {
+        Optional<ProjectDetailsResponse> projectDetails = projectService.getProjectDetails(projectId);
+
+        if(projectDetails.isPresent()) {
+            return ResponseEntity.ok(projectDetails.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body("Project not found for id: " + projectId);
     }
 }

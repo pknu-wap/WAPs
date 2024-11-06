@@ -3,12 +3,15 @@ package wap.web2.server.service;
 import java.io.IOException;
 import java.util.List;
 
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.domain.Project;
 import wap.web2.server.payload.request.ProjectCreateRequest;
+import wap.web2.server.payload.response.ProjectDetailsResponse;
 import wap.web2.server.payload.response.ProjectInfoResponse;
 import wap.web2.server.repository.ProjectRepository;
 import wap.web2.server.util.AwsUtils;
@@ -40,5 +43,9 @@ public class ProjectService {
     public List<ProjectInfoResponse> getProjects(Long year, Long semester) {
         return projectRepository.findProjectsByYearAndSemester(year, semester)
             .stream().map(ProjectInfoResponse::from).toList();
+    }
+
+    public Optional<ProjectDetailsResponse> getProjectDetails(Long projectId) {
+        return projectRepository.findById(projectId).map(ProjectDetailsResponse::from);
     }
 }
