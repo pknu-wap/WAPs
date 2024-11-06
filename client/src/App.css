@@ -41,11 +41,13 @@
     left: 0;
     right: 0;
     
+    
 }
 .menu {
-  background-color: #333;
+  width: 380px;
+  height: auto;
+  background-color: #000000;
   color: white;
-  width: 120px;
   padding: 10px;
   position: fixed;
 }

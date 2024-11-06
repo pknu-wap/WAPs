@@ -9,7 +9,7 @@ const ContentBox = () => {
     <div className="content-box">
       <div className="box" onClick={() => navigate("/web")}>
         <div className="image">
-          <img className="project1" alt="project1" src={cat} /> // 테스트(나중에 백에서 받아오기)
+          <img className="project1" alt="project1" src={cat} />
         </div>
         <div className="titlebox">
           <h2>프젝 1</h2>
