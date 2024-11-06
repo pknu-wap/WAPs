@@ -9,9 +9,7 @@ import ProjectDetailForm from "./components/ProjectDetail/ProjectDetailForm";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    {/* <App /> */}
-    {/* <ProjectDetailPage /> */}
-    <ProjectDetailForm />
+    <App />
   </React.StrictMode>
 );
 

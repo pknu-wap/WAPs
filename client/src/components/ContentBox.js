@@ -40,7 +40,9 @@ const ContentBox = () => {
           <div
             key={project.projectId}
             className="box"
-            onClick={() => navigate("/web")}
+            onClick={() =>
+              navigate({ pathname: `/project/${project.projectId}` })
+            }
           >
             <div className="image">
               {project.thumbnail && (
