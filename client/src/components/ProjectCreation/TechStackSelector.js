@@ -51,7 +51,7 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
 
   return (
     <div className={styles.teckstack_form}>
-      <label className="techstack_label">기술스택</label>
+      <label className={styles.techstack_label}>기술스택</label>
 
       <SelectedTechStacks selectedTechStacks={selectedTechStacks} />
       <div className={styles.techstack_btn}>
