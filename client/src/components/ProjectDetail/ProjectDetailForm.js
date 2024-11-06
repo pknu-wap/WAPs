@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import styles from "../../assets/ProjectDetail/ProjectDetailForm.module.css";
 import dogImage from "../../assets/img/dog.png"; // 이미지 파일 import
 import useProjectDetailForm from "../../hooks/ProjectDetail/useProjectDetailForm";
@@ -28,7 +29,46 @@ const ProjectDetailForm = () => {
     setProjectYear,
     setTeamMembers,
     setTechStacks,
+    setImages,
   } = useProjectDetailForm(id);
+
+  // 서버경로
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/${id}`;
+
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      try {
+        const response = await axios.get(apiUrl);
+        const data = response.data;
+
+        // 받아온 데이터에서 썸네일 이미지를 설정
+        setThumnail_image(data.thumnail);
+        setTitle(data.title);
+        setProjectType(data.projectType);
+        setSummary(data.summary);
+        setContent(data.content);
+        setSemester(data.semester);
+        setProjectYear(data.projectYear);
+        setTeamMembers(data.teamMembers);
+        setTechStacks(data.techStacks);
+        setImages(data.images);
+      } catch (error) {
+        console.error("Failed to fetch project details", error);
+        setThumnail_image("");
+        setTitle("");
+        setProjectType("");
+        setSummary("");
+        setContent("");
+        setSemester("");
+        setProjectYear("");
+        setTeamMembers([]);
+        setTechStacks([]);
+        setImages([null, null, null, null]);
+      }
+    };
+
+    fetchProjectDetails();
+  }, [apiUrl]);
 
   return (
     <div className={styles.project_detail_form}>

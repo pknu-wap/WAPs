@@ -33,6 +33,7 @@ const useProjectDetailForm = () => {
     techStacks,
     setTechStacks,
     images,
+    setImages,
   };
 };
 export default useProjectDetailForm;

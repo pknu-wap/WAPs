@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import ProjectDetailForm from "../components/ProjectDetail/ProjectDetailForm";
@@ -14,7 +15,7 @@ const ProjectDetailPage = () => {
   return (
     <div className="container">
       <Header toggleMenu={toggleMenu} />
-      {/* <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} /> */}
+      <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
         <ProjectDetailForm />
       </main>
