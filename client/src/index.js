@@ -3,11 +3,15 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import App from "./App";
+import ProjectDetailPage from "./pages/ProjectDetailPage";
+import ProjectDetailForm from "./components/ProjectDetail/ProjectDetailForm";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    {/* <App /> */}
+    {/* <ProjectDetailPage /> */}
+    <ProjectDetailForm />
   </React.StrictMode>
 );
 

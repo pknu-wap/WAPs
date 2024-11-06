@@ -1,0 +1,149 @@
+.project_detail_form{
+    max-width: 400px;
+    height: 100%;
+    margin: 0 auto;
+    background-color: #000000;
+    text-align: center;
+    color: #FFFFFF;
+    padding-bottom: 20px;
+}
+
+.thumnail_image{
+    width: 100%;
+    max-width: 400px;
+}
+
+.project_detail_box{
+    margin: 0 auto;
+    width: 90%;
+    text-align: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+}
+
+.project_detail_title{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.project_info{
+    margin-top: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: right;
+}
+
+.project_year_info{
+    width: 100%;
+    gap: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.project_type_info{
+    display: flex-end;
+}
+
+.title{
+    font-size: 24px; 
+    font-weight: bold;
+}
+
+.project_detail_content{
+    color: #D6D6D6;
+    font-size: 12px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.project_detail_content div{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.image{
+    width: 100%;
+    max-width: 400px;
+}
+
+.images{
+   
+      display: flex;
+      flex-direction: column; /* 세로로 정렬 */
+      align-items: center; /* 왼쪽 정렬 (필요 시 center로 변경 가능) */
+      justify-content: center; /* 가운데 정렬 */
+    gap: 10px; /* 자식 요소 사이의 간격 */
+}
+
+.projectListInfo{
+    margin: 0 auto;
+    width: 90%;
+    text-align: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.teamMembers{
+    font-size: 10px;
+    margin-bottom: 12px;
+}
+
+.teamMembers label{
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.member{
+    margin-top: 12px;
+    display: flex;
+    gap: 14px;
+}
+
+.memberInfo{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.memberName{
+    font-weight: 600;
+}
+
+.memberRole{
+    color: #808080;
+}
+
+
+.techStacks{
+    font-size: 10px;
+    margin-bottom: 12px;
+}
+
+.techStack{
+    margin-top: 12px;
+    display: flex;
+    gap: 14px;
+}
+
+.techStacks label{
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.techStackInfo{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+.techStackName{
+    font-weight: 600;
+}
+
+.techStackType{
+    color: #808080;
+}
