@@ -6,8 +6,7 @@ import dogImage from "../../assets/img/dog.png"; // 이미지 파일 import
 import useProjectDetailForm from "../../hooks/ProjectDetail/useProjectDetailForm";
 
 const ProjectDetailForm = () => {
-  const { id } = useParams();
-
+  const { projectId } = useParams();
   const {
     thumnail_image,
     title,
@@ -30,10 +29,10 @@ const ProjectDetailForm = () => {
     setTeamMembers,
     setTechStacks,
     setImages,
-  } = useProjectDetailForm(id);
+  } = useProjectDetailForm();
 
   // 서버경로
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/${id}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/${projectId}`;
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -68,7 +67,19 @@ const ProjectDetailForm = () => {
     };
 
     fetchProjectDetails();
-  }, [apiUrl]);
+  }, [
+    apiUrl,
+    setThumnail_image,
+    setTitle,
+    setProjectType,
+    setSummary,
+    setContent,
+    setSemester,
+    setProjectYear,
+    setTeamMembers,
+    setTechStacks,
+    setImages,
+  ]);
 
   return (
     <div className={styles.project_detail_form}>
