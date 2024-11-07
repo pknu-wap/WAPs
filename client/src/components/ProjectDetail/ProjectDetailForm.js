@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import styles from "../../assets/ProjectDetail/ProjectDetailForm.module.css";
-import dogImage from "../../assets/img/dog.png"; // 이미지 파일 import
+import dogImage from "../../assets/img/dog.png";
 import useProjectDetailForm from "../../hooks/ProjectDetail/useProjectDetailForm";
 
 const ProjectDetailForm = () => {
@@ -40,7 +40,6 @@ const ProjectDetailForm = () => {
         const response = await axios.get(apiUrl);
         const data = response.data;
 
-        // 받아온 데이터에서 썸네일 이미지를 설정
         setThumnail_image(data.thumnail);
         setTitle(data.title);
         setProjectType(data.projectType);
@@ -106,7 +105,7 @@ const ProjectDetailForm = () => {
         </div>
         <div className={styles.project_detail_content}>
           <div className={styles.summary}>
-            {summary ? summary : "요약 내용이 없습니다."}
+            {summary ? summary : "No Summary"}
           </div>
           <div className={styles.content}>
             {content
