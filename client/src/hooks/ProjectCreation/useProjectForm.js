@@ -38,6 +38,9 @@ const useProjectForm = () => {
   // 오류 메시지 상태
   const [errorMessage, setErrorMessage] = useState({});
 
+  // Pin 입력 상태
+  const [pin, setPin] = useState("");
+
   // 핸들러 함수들
 
   // 썸네일 및 일반 이미지 업로드 핸들러
@@ -232,6 +235,7 @@ const useProjectForm = () => {
     images,
     selectedTechStacks,
     teamMembers,
+    pin,
 
     inputTitle,
     inputContent,
@@ -249,6 +253,7 @@ const useProjectForm = () => {
     addTeamMember,
     handleInputLimit,
     toggleTechStack,
+    setPin,
     resetForm,
     validateForm,
   };

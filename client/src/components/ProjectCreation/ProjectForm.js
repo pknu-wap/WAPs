@@ -8,6 +8,7 @@ import RadioButton from "./RadioButton";
 import TextInputForm from "./TextInputForm";
 import TechStackSelector from "./TechStackSelector";
 import TeamMemberInputForm from "./TeamMemberInputForm";
+import InputPin from "./InputPin";
 
 const projectTypeOptions = ["WEB", "APP", "GAME", "기타"];
 const roleOptions = [
@@ -45,6 +46,7 @@ const ProjectForm = () => {
     uploading,
     uploadError,
     errorMessage,
+    pin,
     handleImgUpload,
     handleMemberNameFocus,
     handleMemberNameChange,
@@ -54,6 +56,7 @@ const ProjectForm = () => {
     handleInputLimit,
     toggleTechStack,
     resetForm,
+    setPin,
     validateForm,
   } = useProjectForm();
 
@@ -228,6 +231,8 @@ const ProjectForm = () => {
         selectedTechStacks={selectedTechStacks}
         toggleTechStack={toggleTechStack}
       />
+
+      <InputPin pin={pin} setPin={setPin} />
       {uploadError && <p className="error-message">{uploadError}</p>}
       <button
         type="submit"
