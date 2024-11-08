@@ -240,7 +240,7 @@ const ProjectForm = () => {
         disabled={uploading}
         style={{ marginTop: "20px", marginBottom: "100px", cursor: "pointer" }}
       >
-        제출
+        프로젝트 생성
       </button>
     </form>
   );

@@ -68,12 +68,13 @@
     border-radius: 4px;
   }
   
-  .submit-btn {
+  .submit_button {
+    width: 158px;
     padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
+    background-color: #02FF2E;
+    color: #000000;
     border: none;
-    border-radius: 4px;
+    border-radius: 100px;
     font-size: 16px;
     cursor: pointer;
   }
