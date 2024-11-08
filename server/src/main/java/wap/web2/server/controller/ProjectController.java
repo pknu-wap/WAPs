@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import wap.web2.server.ouath2.security.CurrentUser;
+import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.payload.request.ProjectCreateRequest;
 import wap.web2.server.payload.response.ProjectDetailsResponse;
 import wap.web2.server.payload.response.ProjectsResponse;
@@ -47,7 +48,8 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@RequestPart("image") List<MultipartFile> imageFiles,
+    public ResponseEntity<?> createProduct(@CurrentUser UserPrincipal userPrincipal,
+                                           @RequestPart("image") List<MultipartFile> imageFiles,
                                            @RequestPart("thumbnail") MultipartFile thumbnailFile,
                                            @RequestPart("project") ProjectCreateRequest request) throws IOException {
         // RequestPart 중 ContentType 형식이 다르게 온 file 2종류를 ProjectCreateRequest 에 할당하여 새로운 RequestDto 객체 생성
@@ -66,7 +68,7 @@ public class ProjectController {
                                             .thumbnailS3(thumbnailFile) // thumbnail file 초기화
                                             .build();
 
-        projectService.save(fullRequest);
+        projectService.save(fullRequest, userPrincipal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

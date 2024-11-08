@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
-import wap.web2.server.domain.Image;
-import wap.web2.server.domain.Project;
-import wap.web2.server.domain.TeamMember;
-import wap.web2.server.domain.TechStack;
+import wap.web2.server.domain.*;
 import wap.web2.server.payload.ImageDto;
 import wap.web2.server.payload.TeamMemberDto;
 import wap.web2.server.payload.TechStackDto;
@@ -39,7 +36,8 @@ public class ProjectCreateRequest {
     private String thumbnail;
     private MultipartFile thumbnailS3; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
-    public Project toEntity(ProjectCreateRequest request, List<String> imageUrls, String thumbnailUrl) {
+    public Project toEntity(ProjectCreateRequest request, List<String> imageUrls, String thumbnailUrl,
+                            User user) {
 
         List<Image> imagesEntities = imageUrls.stream()
                 .map(ImageDto::toEntity)
@@ -54,6 +52,7 @@ public class ProjectCreateRequest {
                 .collect(Collectors.toList());
 
         return Project.builder()
+                .user(user)
                 .title(request.getTitle())
                 .projectType(request.getProjectType())
                 .content(request.getContent())
