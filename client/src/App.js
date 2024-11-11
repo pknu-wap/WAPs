@@ -9,6 +9,7 @@ import Map from "./pages/menu/Map";
 import MyPage from "./pages/menu/MyPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import AppPage from "./pages/project/AppPage";
+import MainPage from "./pages/MainPage";
 import "./App.css";
 
 function App() {
@@ -25,6 +26,9 @@ function App() {
               <Route path="/vote" element={<Vote />} />
               <Route path="/map" element={<Map />} />
               <Route path="/MyPage" element={<MyPage />} />
+
+              {/* 메인페이지 경로 추가 */}
+              <Route path="/MainPage" element={<MainPage />} />
 
               <Route
                 path="/project/:projectId"

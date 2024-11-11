@@ -5,6 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import App from "./App";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import ProjectDetailForm from "./components/ProjectDetail/ProjectDetailForm";
+import MainPage from "./pages/MainPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

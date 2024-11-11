@@ -86,7 +86,7 @@ li {
   margin: 10px;
   background-color: #ffffff;
   padding: 15px;
-  text-align:left;
+  text-align: center;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -96,23 +96,13 @@ li {
 }
 
 .image {
-
-  width: 100%; /* 부모 요소에 맞춰 가로 채우기 */
-  height: 100%; /* 부모 요소에 맞춰 세로 채우기 */
-  overflow: hidden;
-}
-
-.project-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* 이미지가 박스를 꽉 채우도록 설정 */
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
 }
-
-
-
 .project1 {
   width: 100%;
   height: 100%;
@@ -143,7 +133,6 @@ li {
 
 .titlebox p {
   margin: 5px 0 0;
-  font-size: 12px;
-  text-align:left;
+  font-size: 15px;
 }
 
