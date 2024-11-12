@@ -9,12 +9,19 @@ const Menu = ({ menuOpen, toggleMenu }) => {
       {menuOpen && (
         <nav className="menu">
           <ul>
-            <li onClick={() => { navigate("/login"); toggleMenu(); }}>로그인</li>
-            <li onClick={() => { navigate("/project"); toggleMenu(); }}>프로젝트</li>
-            <li onClick={() => { navigate("/CreatePage"); toggleMenu(); }}>프로젝트 생성</li>
-            <li onClick={() => { navigate("/vote"); toggleMenu(); }}>투표</li>
-            <li onClick={() => { navigate("/map"); toggleMenu(); }}>위치도</li>
-            <li onClick={() => { navigate("/MyPage"); toggleMenu(); }}>마이페이지</li>
+            <hr className='startLine'></hr>
+            <li onClick={() => { navigate("/login"); toggleMenu(); }}>Login</li>
+            <hr className='line'></hr>
+            <li onClick={() => { navigate("/project"); toggleMenu(); }}>Projects</li>
+            <hr className='line'></hr>
+            <li onClick={() => { navigate("/vote"); toggleMenu(); }}>Vote</li>
+            <hr className='line'></hr>
+            <li onClick={() => { navigate("/CreatePage"); toggleMenu(); }}>Create Project</li>
+            <hr className='line'></hr>
+            <li onClick={() => { navigate("/MyPage"); toggleMenu(); }}>My page</li>
+            <hr className='line'></hr>
+            <li onClick={() => { navigate("/map"); toggleMenu(); }}>Map</li>
+            <hr className='startLine'></hr>
           </ul>
         </nav>
       )}

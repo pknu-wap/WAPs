@@ -19,9 +19,11 @@
   right: 0;
   top: 0;
   
+
 }
 
 .waplogo{
+  padding-top: 5px;
   width: 70px;
   height: auto;
 }
@@ -45,11 +47,21 @@
 }
 .menu {
   width: 380px;
-  height: auto;
+  height: 100%;
   background-color: #000000;
   color: white;
   padding: 10px;
   position: fixed;
+}
+
+.startLine{
+  border-width:3px 0 0 0;
+  border-color:#fff;
+}
+
+.line{
+  border-width:0.7px 0 0 0;
+  border-color:#fff;
 }
 
 .menu ul{
@@ -61,7 +73,12 @@
 .menu li{
   margin-right: 40px; /* 각 아이템 간의 간격 조절 */
   color: white;
-  padding: 5px;
+  padding: 10px;
+  font-size: x-large;
+  font-weight:700;
+  font-family: "Inter", sans-serif;
+  font-style: normal;
+  
 }
 
 
@@ -79,7 +96,6 @@ li {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 15px;
 }
 
 .box {
