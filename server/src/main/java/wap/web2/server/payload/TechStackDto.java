@@ -23,4 +23,13 @@ public class TechStackDto {
                 .techStackType(techStackType)
                 .build();
     }
+
+    // TechStack 을 TechStackDto 로 변환하는 정적 팩토리 메서드
+    // 엔티티를 바로 Response 로 바꿀 시 TechStack 의 Project 필드로 인해 연쇄적으로 데이터가 쌓임
+    public static TechStackDto from(TechStack techStack) {
+        return TechStackDto.builder()
+            .techStackName(techStack.getTechStackName())
+            .techStackType(techStack.getTechStackType())
+            .build();
+    }
 }

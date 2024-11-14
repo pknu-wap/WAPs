@@ -20,4 +20,11 @@ public class ImageDto {
                 .imageFile(imageFile)
                 .build();
     }
+
+    // Image Entity를 ImageDto로 변환하는 정적 팩토리 메서드
+    public static ImageDto from(Image image) {
+        return ImageDto.builder()
+            .imageFile(image.getImageFile())
+            .build();
+    }
 }

@@ -9,6 +9,9 @@ import wap.web2.server.domain.Image;
 import wap.web2.server.domain.Project;
 import wap.web2.server.domain.TeamMember;
 import wap.web2.server.domain.TechStack;
+import wap.web2.server.payload.ImageDto;
+import wap.web2.server.payload.TeamMemberDto;
+import wap.web2.server.payload.TechStackDto;
 
 @Builder
 @Getter
@@ -24,11 +27,18 @@ public class ProjectDetailsResponse {
     private Long vote;
     private Integer projectYear;
     private String thumbnail;
-    private List<TeamMember> teamMember;
-    private List<TechStack> techStack;
-    private List<Image> images;
+    private List<TeamMemberDto> teamMember;
+    private List<TechStackDto> techStack;
+    private List<ImageDto> images;
 
     public static ProjectDetailsResponse from(Project project) {
+        List<TeamMemberDto> teamMembers = project.getTeamMembers().stream()
+            .map(TeamMemberDto::from).toList();
+        List<ImageDto> images = project.getImages().stream()
+            .map(ImageDto::from).toList();
+        List<TechStackDto> techStacks = project.getTechStacks().stream()
+            .map(TechStackDto::from).toList();
+
         return ProjectDetailsResponse.builder()
             .projectId(project.getProjectId())
             .title(project.getTitle())
@@ -39,9 +49,9 @@ public class ProjectDetailsResponse {
             .vote(project.getVote())
             .projectYear(project.getProjectYear())
             .thumbnail(project.getThumbnail())
-            .teamMember(project.getTeamMembers())
-            .techStack(project.getTechStacks())
-            .images(project.getImages())
+            .teamMember(teamMembers)
+            .techStack(techStacks)
+            .images(images)
             .build();
     }
 }
