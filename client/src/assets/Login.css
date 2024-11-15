@@ -1,0 +1,62 @@
+/* Login.css */
+.login-page {
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 20px;
+    padding-top: 20px;
+  }
+  
+  .login-page .logo-image {
+    width: 140px;
+    margin-bottom: 40px;
+  }
+  
+  .login-page .login-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .login-page .login-button {
+    width: 90%;
+    margin: 0 auto;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+  }
+  
+  .login-page .kakao {
+    background-color: #fee500;
+    color: #000;
+  }
+  
+  .login-page .google {
+    background-color: #4285f4;
+    color: #fff;
+  }
+  
+  .login-page .apple {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .login-page .primary {
+    background-color: #00e676;
+    color: #000;
+    margin-top: 20px;
+  }
+  
+  .login-page .login-button:hover {
+    opacity: 0.9;
+  }
+  
