@@ -1,17 +1,17 @@
 import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import Login from './Login'; // Login 컴포넌트 임포트
+import Callback from './Callback';
 
-function KakaoLogin() {
-  const handleKakaoLogin = () => {
-    // 백엔드에서 설정한 카카오 로그인 URL로 리다이렉션
-    window.location.href = '/oauth2/authorization/kakao';
-  };
-
+const KakaoLogin = () => {
   return (
     <div>
-      <h1>소셜 로그인</h1>
-      <button onClick={handleKakaoLogin}>카카오로 로그인</button>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/oauth/callback" element={<Callback />} />
+      </Routes>
     </div>
   );
-}
+};
 
 export default KakaoLogin;

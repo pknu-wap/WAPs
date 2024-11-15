@@ -5,21 +5,28 @@ const Callback = () => {
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    // 카카오 API를 통해 사용자 정보를 가져옴
-    window.Kakao.API.request({
-      url: '/v2/user/me',
-      success: (res) => {
-        const formattedUserInfo = {
-          userId: res.id,
-          userName: res.kakao_account.profile.nickname,
-          userEmail: res.kakao_account.email,
-        };
-        setUserInfo(formattedUserInfo);
-      },
-      fail: (err) => {
-        console.error('사용자 정보 요청 실패:', err);
-      },
-    });
+    // URL에서 access token 추출
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get('access_token');
+
+    if (accessToken) {
+      // 사용자 정보를 가져오는 요청
+      axios.get('http://15.164.98.72:8080/user/me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        setUserInfo({
+          userId: response.data.id,
+          userName: response.data.kakao_account.profile.nickname,
+          userEmail: response.data.kakao_account.email,
+        });
+      })
+      .catch((error) => {
+        console.error('사용자 정보 요청 실패:', error);
+      });
+    }
   }, []);
 
   return (

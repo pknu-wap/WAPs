@@ -4,7 +4,7 @@ import logo from '../../assets/img/WAP_white_NoBG.png';
 
 const Login = () => {
   const handleKakaoLogin = () => {
-    // 카카오 로그인 함수 (구현된 함수 호출)
+    window.location.href = 'http://15.164.98.72:8080/oauth2/authorization/kakao'; // 서버 배포 주소 사용
   };
 
   const handleGoogleLogin = () => {
