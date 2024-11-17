@@ -121,7 +121,7 @@ const ProjectDetailForm = () => {
             <img
               key={index}
               className={styles.image}
-              src={image["imageFile"] || dogImage} // image가 null이면 기본 이미지를 표시
+              src={image ? image["imageFile"] : dogImage} // image가 null이면 기본 이미지를 표시
               alt={`Fetched content ${index + 1}`}
             />
           ))
