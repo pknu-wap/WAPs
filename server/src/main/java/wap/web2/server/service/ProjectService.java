@@ -55,4 +55,19 @@ public class ProjectService {
     public Optional<ProjectDetailsResponse> getProjectDetails(Long projectId) {
         return projectRepository.findById(projectId).map(ProjectDetailsResponse::from);
     }
+
+    @Transactional
+    public void update(Long projectId, ProjectCreateRequest request, UserPrincipal userPrincipal) throws IOException {
+
+
+        //요청토큰에 해당하는 user 를 꺼내옴
+        User user = userRepository.findById(userPrincipal.getId()).get();
+
+        Project project = projectRepository.findByProjectIdAndUser(projectId, user.getId());
+
+        List<String> imageUrls = awsUtils.uploadImagesToS3(request.getImageS3());
+        String thumbnailUrl = awsUtils.uploadImageToS3(request.getThumbnailS3());
+
+        project.update(request, imageUrls, thumbnailUrl);
+    }
 }
