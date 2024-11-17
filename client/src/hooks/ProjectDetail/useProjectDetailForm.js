@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const useProjectDetailForm = () => {
-  const [thumnail_image, setThumnail_image] = useState("");
+  const [thumnail_image, setThumnail_image] = useState();
   const [title, setTitle] = useState("");
   const [projectType, setProjectType] = useState("");
   const [summary, setSummary] = useState("");
