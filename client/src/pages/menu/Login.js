@@ -1,18 +1,17 @@
 import React from 'react';
 import '../../assets/Login.css';
 import logo from '../../assets/img/WAP_white_NoBG.png';
+import { isAuthenticated } from '../../utils/auth'; // '../utils/auth'를 '../../utils/auth'로 변경
+
 
 const Login = () => {
   const handleKakaoLogin = () => {
-    window.location.href = 'http://15.164.98.72:8080/oauth2/authorization/kakao'; // 서버 배포 주소 사용
+    window.location.href = 'http://15.164.98.72:8080/oauth2/authorization/kakao'; // 서버 배포 주소
   };
 
-  const handleGoogleLogin = () => {
-    // 구글 로그인 함수 (구현된 함수 호출)
-  };
-
-  const handleAppleLogin = () => {
-    // 애플 로그인 함수 (구현된 함수 호출)
+  const handleLoginSuccess = (token) => {
+    localStorage.setItem('token', token); // 토큰 저장
+    window.location.href = '/'; // 홈으로 리다이렉트
   };
 
   return (
@@ -22,14 +21,7 @@ const Login = () => {
         <button className="login-button kakao" onClick={handleKakaoLogin}>
           <span>카카오로 로그인</span>
         </button>
-        <button className="login-button google" onClick={handleGoogleLogin}>
-          <span>구글로 로그인</span>
-        </button>
-        <button className="login-button apple" onClick={handleAppleLogin}>
-          <span>애플로 로그인</span>
-        </button>
       </div>
-      <button className="login-button primary">로그인</button>
     </div>
   );
 };

@@ -10,6 +10,8 @@ import MyPage from "./pages/menu/MyPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import AppPage from "./pages/project/AppPage";
 import MainPage from "./pages/MainPage";
+import PrivateRoute from "./components/Login/PrivateRoute"; // PrivateRoute 추가
+import Callback from "./components/Login/Callback"; // Callback 추가
 import "./App.css";
 
 function App() {
@@ -21,11 +23,19 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login/*" element={<Login />} />
-              <Route path="/CreatePage" element={<CreatePage />} />
+
+              {/* 로그인 콜백 경로 추가 */}
+              <Route path="/oauth/callback" element={<Callback />} />
+
+              {/* 보호된 경로 */}
+              <Route element={<PrivateRoute />}>
+                <Route path="/CreatePage" element={<CreatePage />} />
+                <Route path="/vote" element={<Vote />} />
+                <Route path="/MyPage" element={<MyPage />} />
+              </Route>
+
               <Route path="/project" element={<Project />} />
-              <Route path="/vote" element={<Vote />} />
               <Route path="/map" element={<Map />} />
-              <Route path="/MyPage" element={<MyPage />} />
               <Route path="/MainPage" element={<MainPage />} />
               <Route path="/project/:projectId" element={<ProjectDetailPage />} />
               <Route path="/app" element={<AppPage />} />
