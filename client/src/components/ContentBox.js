@@ -6,12 +6,12 @@ const ContentBox = () => {
   const [projects, setProjects] = useState([]);
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
-  const apiURL = `${process.env.REACT_APP_API_URL_PROXY}/project/list?semester=2&projectYear=${currentYear}`;
+  const apiUrl = `${process.env.REACT_APP_API_URL}/api/project/list?semester=2&projectYear=${currentYear}`;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(apiURL);
+        const response = await axios.get(apiUrl);
 
         // 응답 데이터를 콘솔에 출력하여 형식을 확인
         console.log("API 응답 데이터:", response.data);
