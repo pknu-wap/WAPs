@@ -32,7 +32,7 @@ const ProjectDetailForm = () => {
   } = useProjectDetailForm();
 
   // 서버경로
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/${projectId}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}`;
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
