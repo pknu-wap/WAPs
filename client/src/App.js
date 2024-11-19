@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/menu/Login";
 import Project from "./pages/menu/Project";
 import CreatePage from "./pages/menu/CreatePage";
-import Vote from "./pages/menu/Vote";
+import VotePage from "./pages/VotePage";
 import Map from "./pages/menu/Map";
 import MyPage from "./pages/menu/MyPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
@@ -24,7 +24,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/CreatePage" element={<CreatePage />} />
               <Route path="/project" element={<Project />} />
-              <Route path="/vote" element={<Vote />} />
+              <Route path="/vote" element={<VotePage />} />
               <Route path="/map" element={<Map />} />
               <Route path="/MyPage" element={<MyPage />} />
 
