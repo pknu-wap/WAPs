@@ -2,18 +2,31 @@ import React from "react";
 import "../../assets/Login.css";
 import logo from "../../assets/img/WAP_white_NoBG.png";
 import img from "../../assets/img/pngwing.com.png";
-import { useNavigate } from "react-router-dom"; // useNavigate import 추가
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const navigate = useNavigate(); // useNavigate 호출
+  const navigate = useNavigate();
 
   const handleKakaoLogin = () => {
-    window.location.href = "http://15.164.98.72:8080/oauth2/authorization/kakao"; // 서버 배포 주소
+    try {
+      console.log("Redirecting to Kakao login...");
+
+      // 현재 URL을 리다이렉트 URI로 설정
+      const redirectUri = encodeURIComponent(window.location.href);
+      const kakaoLoginUrl = `http://15.164.98.72:8080/oauth2/authorization/kakao?redirect_uri=${redirectUri}`;
+
+      console.log("Kakao login URL:", kakaoLoginUrl);
+
+      // 카카오 인증 URL로 리디렉션
+      window.location.href = kakaoLoginUrl;
+    } catch (error) {
+      console.error("Error during Kakao login redirect:", error);
+    }
   };
 
   const handleProceedWithoutLogin = () => {
-    // 로그인 없이 진행
-    navigate("/"); // 메인 화면으로 이동
+    console.log("Proceeding without login...");
+    navigate("/"); // 메인 페이지로 이동
   };
 
   return (
@@ -21,10 +34,11 @@ const Login = () => {
       <img src={logo} alt="WAP Logo" className="logo-image" />
       <div className="login-buttons">
         <button className="login-button kakao" onClick={handleKakaoLogin}>
-          <img src={img} alt="Kakao Logo" className="Kakao-image" /><span>카카오로 로그인</span>
+          <img src={img} alt="Kakao Logo" className="Kakao-image" />
+          <span>카카오로 로그인</span>
         </button>
         <button
-          className="login-button no-login" // 추가 스타일링 클래스
+          className="login-button no-login"
           onClick={handleProceedWithoutLogin}
         >
           <span>로그인 없이 진행</span>

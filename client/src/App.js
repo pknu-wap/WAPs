@@ -10,40 +10,40 @@ import MyPage from "./pages/menu/MyPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import AppPage from "./pages/project/AppPage";
 import MainPage from "./pages/MainPage";
-import PrivateRoute from "./components/Login/PrivateRoute"; // PrivateRoute 추가
-import Callback from "./components/Login/Callback"; // Callback 추가
+import PrivateRoute from "./components/Login/PrivateRoute";
+import Callback from "./components/Login/Callback";
 import "./App.css";
 
 function App() {
   return (
-    <>
-      <body>
-        <div className="container">
-          <Router>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login/*" element={<Login />} />
+    <Router>
+      <div className="container">
+        <Routes>
+          {/* 기본 홈 화면 */}
+          <Route path="/" element={<Home />} />
 
-              {/* 로그인 콜백 경로 추가 */}
-              <Route path="/oauth/callback" element={<Callback />} />
+          {/* 로그인 화면 */}
+          <Route path="/login" element={<Login />} />
 
-              {/* 보호된 경로 */}
-              <Route element={<PrivateRoute />}>
-                <Route path="/CreatePage" element={<CreatePage />} />
-                <Route path="/vote" element={<Vote />} />
-                <Route path="/MyPage" element={<MyPage />} />
-              </Route>
+          {/* 카카오 로그인 콜백 */}
+          <Route path="/oauth/callback" element={<Callback />} />
 
-              <Route path="/project" element={<Project />} />
-              <Route path="/map" element={<Map />} />
-              <Route path="/MainPage" element={<MainPage />} />
-              <Route path="/project/:projectId" element={<ProjectDetailPage />} />
-              <Route path="/app" element={<AppPage />} />
-            </Routes>
-          </Router>
-        </div>
-      </body>
-    </>
+          {/* 보호된 경로 */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/CreatePage" element={<CreatePage />} />
+            <Route path="/vote" element={<Vote />} />
+            <Route path="/MyPage" element={<MyPage />} />
+          </Route>
+
+          {/* 프로젝트 관련 경로 */}
+          <Route path="/project" element={<Project />} />
+          <Route path="/map" element={<Map />} />
+          <Route path="/MainPage" element={<MainPage />} />
+          <Route path="/project/:projectId" element={<ProjectDetailPage />} />
+          <Route path="/app" element={<AppPage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
