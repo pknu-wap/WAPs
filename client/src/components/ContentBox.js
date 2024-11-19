@@ -41,7 +41,7 @@ const ContentBox = () => {
             key={project.projectId}
             className="box"
             onClick={() =>
-              navigate({ pathname: `/project/${project.projectId}` })
+              navigate({ pathname: `/project/${project.projectId}` }, 1000)
             }
           >
             <div className="image">

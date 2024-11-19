@@ -17,4 +17,25 @@
     opacity: 0;
     transition: transform 500ms ease, opacity 500ms ease;
   }
+
+  /* ContentBox.css */
+.fade-slide-enter {
+    opacity: 0; /* 투명하게 시작 */
+    transform: scale(0.9); /* 약간 작게 시작 */
+  }
+  .fade-slide-enter-active {
+    opacity: 1; /* 점점 선명해짐 */
+    transform: scale(1); /* 원래 크기로 확장 */
+    transition: opacity 500ms ease, transform 500ms ease;
+  }
+  .fade-slide-exit {
+    opacity: 1; /* 완전히 보이는 상태에서 시작 */
+    transform: scale(1); /* 원래 크기에서 시작 */
+  }
+  .fade-slide-exit-active {
+    opacity: 0; /* 점점 투명해짐 */
+    transform: scale(0.9); /* 축소 */
+    transition: opacity 500ms ease, transform 500ms ease;
+  }
+  
   
