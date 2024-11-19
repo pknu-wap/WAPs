@@ -1,0 +1,20 @@
+/* assets/transition.css */
+.slide-enter {
+    transform: translateX(100%); /* 오른쪽에서 시작 */
+    opacity: 0;
+  }
+  .slide-enter-active {
+    transform: translateX(0); /* 중앙으로 이동 */
+    opacity: 1;
+    transition: transform 500ms ease, opacity 500ms ease;
+  }
+  .slide-exit {
+    transform: translateX(0); /* 중앙에서 시작 */
+    opacity: 1;
+  }
+  .slide-exit-active {
+    transform: translateX(-100%); /* 왼쪽으로 이동 */
+    opacity: 0;
+    transition: transform 500ms ease, opacity 500ms ease;
+  }
+  
