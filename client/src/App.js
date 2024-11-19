@@ -19,16 +19,14 @@ function App() {
         <div class="container">
           <Router>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<MainPage />} />
+              <Route path="/HomePage" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/CreatePage" element={<CreatePage />} />
               <Route path="/project" element={<Project />} />
               <Route path="/vote" element={<Vote />} />
               <Route path="/map" element={<Map />} />
               <Route path="/MyPage" element={<MyPage />} />
-
-              {/* 메인페이지 경로 추가 */}
-              <Route path="/MainPage" element={<MainPage />} />
 
               <Route
                 path="/project/:projectId"

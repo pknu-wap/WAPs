@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import styles from "../assets/Main/Main.module.css";
@@ -9,6 +10,8 @@ const MainPage = () => {
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className={styles.mainContainer}>
@@ -33,7 +36,13 @@ const MainPage = () => {
             <p>그리고 하고 있는 프로젝트들을 둘러보세요</p>
           </div>
 
-          <button type="submit" className={styles.submit_button}>
+          <button
+            type="submit"
+            className={styles.submit_button}
+            onClick={() => {
+              navigate("/HomePage");
+            }}
+          >
             <div></div>
             Projects
             <svg
