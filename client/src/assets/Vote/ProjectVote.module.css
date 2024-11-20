@@ -1,0 +1,91 @@
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+.project_vote_form{
+    max-width: 400px;
+    height: 100%;
+    margin: 0 auto;
+    background-color: #000000;
+    text-align: center;
+    color: #FFFFFF;
+    padding-bottom: 20px;
+    font-family: 'Pretendard-Regular';
+}
+
+.title_form{
+    margin: 0 auto;
+    width: 90%;
+    text-align: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.title{
+    color: #FFFFFF;
+    font-size: 24px;
+    margin: 0px;
+    font-weight: 400;
+}
+
+.title_caption{
+    color: #707070;
+    font-size: 12px;
+}
+
+.project_list_form{
+    width: 90%;
+
+    margin: 0 auto;
+    text-align: center;
+    
+}
+.project_list_box{
+    width: 100%;
+    background-color: #2A2A2A;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    margin-bottom: 10px;
+    
+}
+.project_thumbnail {
+    margin: 10px;
+    width: 120px; /* 원하는 가로 크기 */
+    height: 60px;
+    overflow: hidden; /* 박스를 넘어가는 이미지 숨김 */
+    position: relative;
+}
+
+.thumbnail_image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 비율 유지하며 박스를 꽉 채움 */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+.project_title_form{
+    margin: 0 auto;
+    width: 100%;
+    text-align: left;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.title{
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 400;
+}
+.summary{
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 400;
+}
