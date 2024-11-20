@@ -102,4 +102,17 @@ public class ProjectController {
         projectService.update(projectId, fullRequest, userPrincipal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @DeleteMapping("{projectId}")
+    public ResponseEntity<?> deleteProject(@PathVariable Long projectId, @CurrentUser UserPrincipal user) {
+        try {
+            projectService.delete(projectId, user);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("An unexpected error occurred.");
+        }
+    }
 }
