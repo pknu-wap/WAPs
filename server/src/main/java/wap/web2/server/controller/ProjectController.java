@@ -54,6 +54,7 @@ public class ProjectController {
                                             .summary(request.getSummary())
                                             .semester(request.getSemester())
                                             .projectYear(request.getProjectYear())
+                                            .password(request.getPassword())
                                             .teamMember(request.getTeamMember())
                                             .techStack(request.getTechStack())
                                             .image(request.getImage())
@@ -62,8 +63,18 @@ public class ProjectController {
                                             .thumbnailS3(thumbnailFile) // thumbnail file 초기화
                                             .build();
 
-        projectService.save(fullRequest, userPrincipal);
-        return new ResponseEntity<>(HttpStatus.OK);
+        // 비밀번호가 null 인지 체크
+        if (fullRequest.getPassword() == null) {
+            return ResponseEntity.status(400).body("비밀번호를 입력하세요.");
+        }
+
+        String result = projectService.save(fullRequest, userPrincipal);
+
+        if (result.equals("비밀번호가 틀렸습니다.")) {
+            return ResponseEntity.status(401).body(result);
+        } else {
+            return ResponseEntity.status(201).body(result);
+        }
     }
 
     @GetMapping("/{projectId}")
