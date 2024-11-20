@@ -29,7 +29,7 @@ public class ProjectService {
     private final AwsUtils awsUtils;
 
     @Value("${project.password}")
-    private Integer projectPassword;
+    private String projectPassword;
 
     @Transactional
     public String save(ProjectCreateRequest request, UserPrincipal userPrincipal) throws IOException {
@@ -68,9 +68,11 @@ public class ProjectService {
     }
 
     @Transactional
-    public void update(Long projectId, ProjectCreateRequest request, UserPrincipal userPrincipal) throws IOException {
+    public String update(Long projectId, ProjectCreateRequest request, UserPrincipal userPrincipal) throws IOException {
 
-
+        if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
+            return "비밀번호가 틀렸습니다.";
+        }
         //요청토큰에 해당하는 user 를 꺼내옴
         User user = userRepository.findById(userPrincipal.getId()).get();
 
@@ -80,5 +82,8 @@ public class ProjectService {
         String thumbnailUrl = awsUtils.uploadImageToS3(request.getThumbnailS3());
 
         project.update(request, imageUrls, thumbnailUrl);
+
+        return "수정되었습니다.";
+
     }
 }
