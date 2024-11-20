@@ -25,7 +25,6 @@ public class ProjectCreateRequest {
     private String summary;
     private Integer semester;
     private Integer projectYear;
-    private Integer password;
 
     // teamMemberDto : List 데이터 처리를 위해 Dto 클래스를 따로 생성하여 이용
     private List<TeamMemberDto> teamMember;

@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.domain.Project;
@@ -28,17 +27,9 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final AwsUtils awsUtils;
 
-    @Value("${project.password}")
-    private Integer projectPassword;
 
     @Transactional
-    public String save(ProjectCreateRequest request, UserPrincipal userPrincipal) throws IOException {
-
-
-        if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
-            return "비밀번호가 틀렸습니다.";
-        }
-
+    public void save(ProjectCreateRequest request, UserPrincipal userPrincipal) throws IOException {
         //요청토큰에 해당하는 user 를 꺼내옴
         User user = userRepository.findById(userPrincipal.getId()).get();
 
@@ -54,8 +45,6 @@ public class ProjectService {
         project.getImages().forEach(image -> image.updateImage(project));
 
         projectRepository.save(project);
-
-        return "등록되었습니다.";
     }
 
     public List<ProjectInfoResponse> getProjects(Long year, Long semester) {
