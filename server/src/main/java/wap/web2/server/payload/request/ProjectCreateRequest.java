@@ -25,15 +25,16 @@ public class ProjectCreateRequest {
     private String summary;
     private Integer semester;
     private Integer projectYear;
+    private String password;
 
     // teamMemberDto : List 데이터 처리를 위해 Dto 클래스를 따로 생성하여 이용
     private List<TeamMemberDto> teamMember;
     private List<TechStackDto> techStack;
 
-    private List<ImageDto> image;
+    private List<ImageDto> image; // toEntity 용
     private List<MultipartFile> imageS3; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
-    private String thumbnail;
+    private String thumbnail; // toEntity
     private MultipartFile thumbnailS3; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
     public Project toEntity(ProjectCreateRequest request, List<String> imageUrls, String thumbnailUrl,

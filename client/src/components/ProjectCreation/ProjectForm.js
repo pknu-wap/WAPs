@@ -65,7 +65,7 @@ const ProjectForm = () => {
     e.preventDefault();
 
     // 서버경로
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project`;
+    const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project`;
 
     // formdata 생성
     const formData = new FormData();

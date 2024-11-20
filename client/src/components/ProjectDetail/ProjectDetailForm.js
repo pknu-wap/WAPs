@@ -32,7 +32,7 @@ const ProjectDetailForm = () => {
   } = useProjectDetailForm();
 
   // 서버경로
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/${projectId}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}`;
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -40,19 +40,19 @@ const ProjectDetailForm = () => {
         const response = await axios.get(apiUrl);
         const data = response.data;
 
-        setThumnail_image(data.thumnail);
+        setThumnail_image(data.thumbnail);
         setTitle(data.title);
         setProjectType(data.projectType);
         setSummary(data.summary);
         setContent(data.content);
         setSemester(data.semester);
         setProjectYear(data.projectYear);
-        setTeamMembers(data.teamMembers);
-        setTechStacks(data.techStacks);
+        setTeamMembers(data.teamMember);
+        setTechStacks(data.techStack);
         setImages(data.images);
       } catch (error) {
         console.error("Failed to fetch project details", error);
-        setThumnail_image("");
+        setThumnail_image();
         setTitle("");
         setProjectType("");
         setSummary("");
@@ -121,7 +121,7 @@ const ProjectDetailForm = () => {
             <img
               key={index}
               className={styles.image}
-              src={image || dogImage} // image가 null이면 기본 이미지를 표시
+              src={image ? image["imageFile"] : dogImage} // image가 null이면 기본 이미지를 표시
               alt={`Fetched content ${index + 1}`}
             />
           ))
@@ -136,8 +136,8 @@ const ProjectDetailForm = () => {
             {teamMembers && teamMembers.length > 0 ? (
               teamMembers.map((member, index) => (
                 <div className={styles.memberInfo} key={index}>
-                  <div className={styles.memberName}>{member.name}</div>
-                  <div className={styles.memberRole}>{member.role}</div>
+                  <div className={styles.memberName}>{member.memberName}</div>
+                  <div className={styles.memberRole}>{member.memberRole}</div>
                 </div>
               ))
             ) : (

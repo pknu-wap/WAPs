@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.domain.Project;
@@ -27,9 +28,17 @@ public class ProjectService {
     private final UserRepository userRepository;
     private final AwsUtils awsUtils;
 
+    @Value("${project.password}")
+    private String projectPassword;
 
     @Transactional
-    public void save(ProjectCreateRequest request, UserPrincipal userPrincipal) throws IOException {
+    public String save(ProjectCreateRequest request, UserPrincipal userPrincipal) throws IOException {
+
+
+        if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
+            return "비밀번호가 틀렸습니다.";
+        }
+
         //요청토큰에 해당하는 user 를 꺼내옴
         User user = userRepository.findById(userPrincipal.getId()).get();
 
@@ -45,6 +54,8 @@ public class ProjectService {
         project.getImages().forEach(image -> image.updateImage(project));
 
         projectRepository.save(project);
+
+        return "등록되었습니다.";
     }
 
     public List<ProjectInfoResponse> getProjects(Long year, Long semester) {
@@ -54,5 +65,38 @@ public class ProjectService {
 
     public Optional<ProjectDetailsResponse> getProjectDetails(Long projectId) {
         return projectRepository.findById(projectId).map(ProjectDetailsResponse::from);
+    }
+
+    @Transactional
+    public String update(Long projectId, ProjectCreateRequest request, UserPrincipal userPrincipal) throws IOException {
+
+        if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
+            return "비밀번호가 틀렸습니다.";
+        }
+        //요청토큰에 해당하는 user 를 꺼내옴
+        User user = userRepository.findById(userPrincipal.getId()).get();
+
+        Project project = projectRepository.findByProjectIdAndUser(projectId, user.getId());
+
+        List<String> imageUrls = awsUtils.uploadImagesToS3(request.getImageS3());
+        String thumbnailUrl = awsUtils.uploadImageToS3(request.getThumbnailS3());
+
+        project.update(request, imageUrls, thumbnailUrl);
+
+        return "수정되었습니다.";
+
+    }
+
+    @Transactional
+    public void delete(Long projectId, UserPrincipal userPrincipal) {
+        User user = userRepository.findById(userPrincipal.getId())
+            .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
+
+        Project project = projectRepository.findByProjectIdAndUser(projectId, user.getId());
+
+        if(project == null) {
+            throw new IllegalArgumentException("[ERROR] 해당 사용자에게 삭제 권한이 없습니다.");
+        }
+        projectRepository.delete(project);
     }
 }
