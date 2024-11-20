@@ -19,7 +19,7 @@ function App() {
       <div className="container">
         <Routes>
           {/* 기본 홈 화면 */}
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<MainPage />} />
 
           {/* 로그인 화면 */}
           <Route path="/login" element={<Login />} />
@@ -33,9 +33,9 @@ function App() {
           <Route path="/MyPage" element={<MyPage />} />
 
           {/* 프로젝트 관련 경로 */}
+          <Route path="/HomePage" element={<Home />} />
           <Route path="/project" element={<Project />} />
           <Route path="/map" element={<Map />} />
-          <Route path="/MainPage" element={<MainPage />} />
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
           <Route path="/app" element={<AppPage />} />
         </Routes>
