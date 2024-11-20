@@ -10,7 +10,6 @@ import MyPage from "./pages/menu/MyPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import AppPage from "./pages/project/AppPage";
 import MainPage from "./pages/MainPage";
-import PrivateRoute from "./components/Login/PrivateRoute";
 import Callback from "./components/Login/Callback";
 import "./App.css";
 
@@ -28,12 +27,10 @@ function App() {
           {/* 카카오 로그인 콜백 */}
           <Route path="/oauth/callback" element={<Callback />} />
 
-          {/* 보호된 경로 */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/CreatePage" element={<CreatePage />} />
-            <Route path="/vote" element={<Vote />} />
-            <Route path="/MyPage" element={<MyPage />} />
-          </Route>
+          {/* 경로 */}
+          <Route path="/CreatePage" element={<CreatePage />} />
+          <Route path="/vote" element={<Vote />} />
+          <Route path="/MyPage" element={<MyPage />} />
 
           {/* 프로젝트 관련 경로 */}
           <Route path="/project" element={<Project />} />
