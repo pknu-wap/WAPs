@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 import styles from '../styles/Header.module.css';
 
 function Header() {
@@ -23,16 +24,19 @@ function Header() {
   };
 
   useEffect(() => {
-    // 현재 URL에서 토큰을 가져옴
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
+
     if (token) {
       handleLoginSuccess(token);
+
       // URL에서 토큰 제거
       window.history.replaceState({}, document.title, window.location.pathname);
+      navigate('/MainPage');
     } else {
       const storedToken = Cookies.get('authToken');
       const storedUserName = Cookies.get('userName');
+
       if (!storedUserName && storedToken) {
         fetchUserInfo(storedToken);
       } else {
@@ -47,21 +51,29 @@ function Header() {
   };
 
   const fetchUserInfo = (token) => {
-    fetch('http://15.164.98.72:8080/user/me', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        Cookies.set('userName', data.userName, { expires: 7 });
-        Cookies.set('authToken', token, { expires: 7 });
-        setUserName(data.userName);
+    axios
+      .get('http://15.164.98.72:8080/user/me', {
+        headers: {
+          Authorization: `Bearer ${token}`, // JWT 토큰을 Authorization 헤더에 추가
+        },
       })
-      .catch((error) =>
-        console.error('사용자 정보를 가져오는 동안 에러 발생:', error)
-      );
+      .then((response) => {
+        if (response.status !== 200) {
+          console.error('Unexpected status code:', response.status);
+          return; // 상태 코드가 200이 아닌 경우 처리 중단
+        }
+
+        // 사용자 정보를 쿠키에 저장
+        Cookies.set('userName', response.data.userName, { expires: 7 });
+        Cookies.set('authToken', token, { expires: 7 });
+
+        setUserName(response.data.userName); // 상태 업데이트
+      })
+      .catch((error) => {
+        console.error('Failed to fetch user info:', error);
+        Cookies.remove('authToken'); // 인증 실패 시 토큰 삭제
+        navigate('/login'); // 로그인 페이지로 리다이렉트
+      });
   };
 
   return (

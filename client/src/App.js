@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/menu/Login";
 import Project from "./pages/menu/Project";
 import CreatePage from "./pages/menu/CreatePage";
-import Vote from "./pages/Vote";
+import Vote from "./pages/menu/Vote";
 import Map from "./pages/menu/Map";
 import MyPage from "./pages/menu/MyPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
