@@ -3,7 +3,14 @@ import dogImage from "../../assets/img/dog.png";
 import styles from "../../assets/Vote/ProjectVote.module.css";
 import sub_styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import VoteProjectList from "./VoteProjectList";
+import useProjectvoteForm from "../../hooks/Projectvote/useProjectVoteForm";
 const VoteForm = () => {
+  const { selectedProjects, handleProjectSelect, setSelectedProjects } =
+    useProjectvoteForm();
+
+  // 선택된 프로젝트 출려
+  console.log("선택된 프로젝트:", selectedProjects);
+
   return (
     <div className={styles.project_vote_form}>
       <div className={styles.title_form}>
@@ -12,7 +19,11 @@ const VoteForm = () => {
         <p className={styles.title_caption}>최대 3개</p>
       </div>
 
-      <VoteProjectList />
+      <VoteProjectList
+        handleProjectSelect={handleProjectSelect}
+        selectedProjects={selectedProjects}
+        setSelectedProjects={setSelectedProjects}
+      />
 
       <button
         type="submit"

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../../assets/Vote/ProjectVote.module.css";
 
-const VoteProjectList = () => {
+const VoteProjectList = ({
+  handleProjectSelect,
+  selectedProjects,
+  setSelectedProjects,
+}) => {
   const [projects, setProjects] = useState([]);
-  const navigate = useNavigate();
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/list?semester=2&projectYear=${currentYear}`;
 
@@ -14,10 +16,8 @@ const VoteProjectList = () => {
       try {
         const response = await axios.get(apiUrl);
 
-        // 응답 데이터를 콘솔에 출력하여 형식을 확인
         console.log("API 응답 데이터:", response.data);
 
-        // projectsResponse에 배열이 포함되어 있는지 확인 후 설정
         if (Array.isArray(response.data.projectsResponse)) {
           setProjects(response.data.projectsResponse);
         } else {
@@ -32,30 +32,48 @@ const VoteProjectList = () => {
     };
 
     fetchData();
-  }, [currentYear]); // currentYear가 변경될 때마다 fetchData 호출
+  }, [currentYear]);
 
   return (
     <div className={styles.project_list_form}>
       {Array.isArray(projects) && projects.length > 0 ? (
-        projects.map((project, index) => (
-          <div key={project.projectId} className={styles.project_list_box}>
-            <div style={{ marginTop: 10, fontSize: 20 }}>{index + 1}</div>
-            {project.thumbnail && (
-              <div className={styles.project_thumbnail}>
-                <img
-                  className={styles.thumbnail_image}
-                  alt={project.title}
-                  src={project.thumbnail}
-                />
-              </div>
-            )}
+        projects.map((project, index) => {
+          const isSelected = selectedProjects.includes(project.projectId);
 
-            <div className={styles.project_title_form}>
-              <h2 className={styles.title}>{project.title}</h2>
-              <p className={styles.summary}>{project.summary}</p>
+          return (
+            <div
+              key={project.projectId}
+              className={`${styles.project_list_box} ${
+                isSelected ? styles.selected : ""
+              }`}
+              onClick={() => handleProjectSelect(project.projectId)}
+            >
+              <div className={styles.inform_box}>
+                <div style={{ marginTop: 10, fontSize: 20 }}>{index + 1}</div>
+                {project.thumbnail && (
+                  <div className={styles.project_thumbnail}>
+                    <img
+                      className={styles.thumbnail_image}
+                      alt={project.title}
+                      src={project.thumbnail}
+                    />
+                  </div>
+                )}
+
+                <div className={styles.project_title_form}>
+                  <h2
+                    className={`${styles.title} ${
+                      isSelected ? styles.selected_title : ""
+                    }`}
+                  >
+                    {project.title}
+                  </h2>
+                  <p className={styles.summary}>{project.summary}</p>
+                </div>
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       ) : (
         <p>프로젝트 데이터를 불러오는 중입니다...</p>
       )}
