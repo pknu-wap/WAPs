@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
 import ImageUploader from "./ImageUploader";
@@ -24,6 +25,7 @@ const roleOptions = [
 ];
 
 const ProjectForm = () => {
+  const token = Cookies.get("authToken");
   const {
     // teamName,
     // setTeamName,
@@ -113,7 +115,10 @@ const ProjectForm = () => {
     try {
       // 모든 데이터를 한 번에 전송
       await axios.post(apiUrl, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       console.log("프로젝트 생성 성공");
