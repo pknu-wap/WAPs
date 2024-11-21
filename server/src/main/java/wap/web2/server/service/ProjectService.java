@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.domain.Project;
 import wap.web2.server.domain.User;
+import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.payload.request.ProjectCreateRequest;
 import wap.web2.server.payload.response.ProjectDetailsResponse;
@@ -65,6 +66,24 @@ public class ProjectService {
 
     public Optional<ProjectDetailsResponse> getProjectDetails(Long projectId) {
         return projectRepository.findById(projectId).map(ProjectDetailsResponse::from);
+    }
+
+    public ProjectDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
+        if (userPrincipal == null) {
+            throw new IllegalArgumentException();
+        }
+
+        User user = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id"));
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("프로젝트가 없습니다."));
+
+        if (!project.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("수정 권한이 없습니다.");
+        }
+
+        return ProjectDetailsResponse.from(project);
     }
 
     @Transactional

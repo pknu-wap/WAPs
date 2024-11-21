@@ -88,6 +88,19 @@ public class ProjectController {
             .body("Project not found for id: " + projectId);
     }
 
+    @GetMapping("/{projectId}/update")
+    public ResponseEntity<?> getProjectDetailsForUpdate(@PathVariable Long projectId, @CurrentUser UserPrincipal userPrincipal) {
+        try {
+            // 프로젝트 상세 정보를 가져오는 서비스 호출
+            ProjectDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            // 유효하지 않은 유저 ID
+            return ResponseEntity.status(403).body("수정 권한이 없습니다.");
+        }
+    }
+
+
     @PutMapping("{projectId}")
     public ResponseEntity<?> updateProject(@PathVariable Long projectId,
                                            @CurrentUser UserPrincipal userPrincipal,
