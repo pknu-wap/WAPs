@@ -15,6 +15,7 @@
   margin-left: 33px;
   margin-bottom: 3px;
   font-size: 12px;
+  color: #EBEBEB;
 }
 
   
@@ -49,7 +50,6 @@
   
   .year-item {
     height: 10px; /* 각 아이템의 높이 */
-
     padding: 2px 0;
     text-align: left;
     cursor: pointer;

@@ -1,0 +1,41 @@
+/* assets/transition.css */
+.slide-enter {
+    transform: translateX(100%); /* 오른쪽에서 시작 */
+    opacity: 0;
+  }
+  .slide-enter-active {
+    transform: translateX(0); /* 중앙으로 이동 */
+    opacity: 1;
+    transition: transform 500ms ease, opacity 500ms ease;
+  }
+  .slide-exit {
+    transform: translateX(0); /* 중앙에서 시작 */
+    opacity: 1;
+  }
+  .slide-exit-active {
+    transform: translateX(-100%); /* 왼쪽으로 이동 */
+    opacity: 0;
+    transition: transform 500ms ease, opacity 500ms ease;
+  }
+
+  /* ContentBox.css */
+.fade-slide-enter {
+    opacity: 0; /* 투명하게 시작 */
+    transform: scale(0.9); /* 약간 작게 시작 */
+  }
+  .fade-slide-enter-active {
+    opacity: 1; /* 점점 선명해짐 */
+    transform: scale(1); /* 원래 크기로 확장 */
+    transition: opacity 500ms ease, transform 500ms ease;
+  }
+  .fade-slide-exit {
+    opacity: 1; /* 완전히 보이는 상태에서 시작 */
+    transform: scale(1); /* 원래 크기에서 시작 */
+  }
+  .fade-slide-exit-active {
+    opacity: 0; /* 점점 투명해짐 */
+    transform: scale(0.9); /* 축소 */
+    transition: opacity 500ms ease, transform 500ms ease;
+  }
+  
+  

@@ -1,5 +1,6 @@
 package wap.web2.server.ouath2.config;
 
+import org.springframework.http.HttpMethod;
 import wap.web2.server.ouath2.security.CustomUserDetailsService;
 import wap.web2.server.ouath2.security.RestAuthenticationEntryPoint;
 import wap.web2.server.ouath2.security.TokenAuthenticationFilter;
@@ -99,9 +100,11 @@ public class SecurityConfig {
                         "/**.jpg",
                         "/**.html",
                         "/**.css",
-                        "/**.js",
-                            "/**") // 모든 요청에 로그인인증 필요 없음
+                        "/**.js")
                         .permitAll()
+                    .requestMatchers(HttpMethod.GET,
+                            "/project/**", "/techStack/**")
+                    .permitAll()
                     .requestMatchers("/auth/**", "/oauth2/**")
                         .permitAll()
                     .anyRequest()

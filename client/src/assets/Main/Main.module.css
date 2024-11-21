@@ -1,0 +1,88 @@
+@font-face {
+    font-family: 'DOSMyungjo';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_eight@1.0/DOSMyungjo.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+.mainContainer{
+    margin: 0 auto;
+    max-width: 400px;
+    height: 100%;
+    justify-content: space-between; /* 상하 여백 균등 분배 */
+}
+
+.titleBox{
+    margin-top: 50px;
+    margin-left: 40px;
+    font-size: 52px;
+    color: white;
+    font-family: 'DOSMyungjo';
+    height: 100%;
+}
+
+.rectangle{
+    width: 26px;
+    height: 23px;
+    background: #02FF2E;
+}
+
+.title p {
+    line-height: 0; /* 기본보다 작은 값으로 줄여 간격을 좁힘 */
+}
+
+.title p::first-letter {
+    color: #02FF2E; /* 원하는 색상으로 설정 */
+}
+
+.line{
+    width: 0px;
+    height: 128px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    border: 1px solid #B0B0B0;
+}
+
+.caption1{
+    font-size: 20px;
+    color: white;
+    font-family: 'DOSMyungjo';
+}
+
+.caption2{
+    font-size: 14px;
+    color: white;
+    font-family: 'Pretendard-Regular';
+}
+
+
+.submit_button {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 158px; /* 버튼 너비 설정 */
+    height: 42px; /* 버튼 높이 설정 */
+    padding: 4px 10px; /* 패딩을 줄여 버튼 크기 축소 */
+    background-color: #00FF00;
+    color: black;
+    border: none;
+    border-radius: 9999px;
+    font-size: 18px; /* 글씨 크기 */
+    font-weight: bold;
+    cursor: pointer;
+    gap: 10px; /* 텍스트와 아이콘 간 간격 */
+}
+
+
+.footer{
+    height: 200px;
+}
+

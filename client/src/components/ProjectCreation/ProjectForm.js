@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
 import ImageUploader from "./ImageUploader";
 import YearScroll from "./YearSelector";
 import RadioButton from "./RadioButton";
-import InputForm from "./InputForm";
+import TextInputForm from "./TextInputForm";
 import TechStackSelector from "./TechStackSelector";
 import TeamMemberInputForm from "./TeamMemberInputForm";
+import InputPin from "./InputPin";
 
 const projectTypeOptions = ["WEB", "APP", "GAME", "기타"];
 const roleOptions = [
@@ -45,6 +46,7 @@ const ProjectForm = () => {
     uploading,
     uploadError,
     errorMessage,
+    password,
     handleImgUpload,
     handleMemberNameFocus,
     handleMemberNameChange,
@@ -54,74 +56,16 @@ const ProjectForm = () => {
     handleInputLimit,
     toggleTechStack,
     resetForm,
+    setPassword,
     validateForm,
   } = useProjectForm();
-
-  // handleSubmit에서 FormData를 사용하여 서버로 데이터 전송
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project`;
-
-  //   // 1. 프로젝트 데이터 JSON으로 전송
-  //   const projectData = {
-  //     title,
-  //     projectType,
-  //     content,
-  //     summary,
-  //     semester: parseInt(semester),
-  //     projectYear: projectYear,
-  //     teamMember: teamMembers.map((member) => ({
-  //       memberName: member.name,
-  //       memberRole: member.role,
-  //     })),
-  //     // techStack: selectedTechStacks.map((stack) => ({
-  //     //   techStackName: "비밀",
-  //     //   techStackType: "아직",
-  //     // })),
-
-  //     techStack: selectedTechStacks.map((stack, index) => ({
-  //       techStackName: stack,
-  //       techStackType: "기술스택",
-  //     })),
-  //   };
-
-  //   try {
-  //     // 프로젝트 데이터 전송 (application/json)
-  //     await axios.post(apiUrl, projectData, {
-  //       headers: { "Content-Type": "application/json" },
-  //     });
-  //     console.log("프로젝트 데이터 전송 성공");
-
-  //     // 2. 썸네일 및 이미지 데이터 전송 (multipart/form-data)
-  //     const formData = new FormData();
-  //     if (thumbnail) {
-  //       formData.append("thumbnail", thumbnail);
-  //     }
-  //     images.forEach((image, index) => {
-  //       if (image) {
-  //         formData.append(`imageFile[${index}]`, image);
-  //       }
-  //     });
-
-  //     await axios.post(apiUrl, formData, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-
-  //     resetForm();
-  //     alert("프로젝트가 성공적으로 생성되었습니다.");
-  //   } catch (error) {
-  //     console.error("프로젝트 생성 실패:", error);
-  //     alert("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
-  //   }
-  // };
 
   const handleSubmit = async (e) => {
     // 기본 이벤트 제거
     e.preventDefault();
 
     // 서버경로
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project`;
+    const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project`;
 
     // formdata 생성
     const formData = new FormData();
@@ -142,6 +86,8 @@ const ProjectForm = () => {
         techStackName: stack.techStackName,
         techStackType: stack.techStackType,
       })),
+
+      password,
     };
 
     // blob 객체에 JSON 데이터 추가
@@ -173,18 +119,13 @@ const ProjectForm = () => {
       console.log("프로젝트 생성 성공");
       console.log("프로젝트 데이터:", formData.get("project"));
 
-      resetForm();
+      resetForm(); // 폼 리셋
+      window.location.reload(); // 페이지 리로드
       alert("프로젝트가 성공적으로 생성되었습니다.");
+      console.log(formData);
     } catch (error) {
-      // JSON 데이터를 문자열로 제대로 추가했는지 확인
-      console.log("프로젝트 데이터 (JSON):", JSON.stringify(projectData));
+      console.log("프로젝트 데이터:", formData.get("project"));
 
-      // FormData에 각 데이터를 올바르게 추가했는지 확인
-      console.log("프로젝트 데이터 (FormData):", formData.get("project"));
-      console.log("썸네일 데이터:", formData.get("thumbnail"));
-      formData.getAll("imageFile").forEach((image, idx) => {
-        console.log(`이미지 파일 ${idx}:`, image);
-      });
       console.error("프로젝트 생성 실패:", error);
       alert("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
     }
@@ -225,7 +166,7 @@ const ProjectForm = () => {
         }}
         errorMessage={errorMessage}
       /> */}
-      <InputForm
+      <TextInputForm
         name="title"
         placeholder="프로젝트 명"
         maxLen="20"
@@ -236,7 +177,7 @@ const ProjectForm = () => {
         }}
         errorMessage={errorMessage}
       />
-      <InputForm
+      <TextInputForm
         name="summary"
         placeholder="한줄 소개"
         maxLen="20"
@@ -247,7 +188,7 @@ const ProjectForm = () => {
         }}
         errorMessage={errorMessage}
       />
-      <InputForm
+      <TextInputForm
         name="content"
         placeholder="상세 설명"
         maxLen="600"
@@ -294,14 +235,18 @@ const ProjectForm = () => {
         selectedTechStacks={selectedTechStacks}
         toggleTechStack={toggleTechStack}
       />
+
+      <InputPin password={password} setPassword={setPassword} />
+
       {uploadError && <p className="error-message">{uploadError}</p>}
+
       <button
         type="submit"
         className={styles.submit_button}
         disabled={uploading}
         style={{ marginTop: "20px", marginBottom: "100px", cursor: "pointer" }}
       >
-        제출
+        프로젝트 생성
       </button>
     </form>
   );

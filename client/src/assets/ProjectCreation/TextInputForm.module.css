@@ -1,13 +1,12 @@
-.input-form input[type="text"] {
+.text_input_form input[type="text"] {
     width: 100%;
- 
     border: none;
     background-color: transparent;
     color: #ffffff;
     outline: none; /* 포커스 시 외곽선 제거 */
 }
 
-.input-field {
+.text_input_field {
     width: 80%;
     margin: 0 auto;
     font-size: 14px;
@@ -15,8 +14,7 @@
     justify-content: space-between;
 }
 
-
-.input-form {
+.text_input_form {
     width: 90%;
     height: 100%;
     padding-top: 25px;
@@ -27,3 +25,11 @@
     margin: 0 auto; 
     margin-top: 10px;
 }
+
+.text_input_field {
+    width: 80%;
+    margin: 0 auto;
+    font-size: 14px;
+    display: flex;
+}
+

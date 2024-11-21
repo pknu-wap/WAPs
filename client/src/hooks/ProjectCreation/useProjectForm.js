@@ -9,6 +9,7 @@ const useProjectForm = () => {
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
   const [semester, setSemester] = useState(""); // 1,2
+  const [password, setPassword] = useState("");
 
   // 프로젝트 년도 선택 상태관리
   // 원래 ""이었으나, null로 변경 -> "" 설정하고 props 전달하니까 "is not a function"
@@ -21,7 +22,7 @@ const useProjectForm = () => {
   ]);
 
   const [thumbnail, setThumbnail] = useState(null);
-  const [images, setImages] = useState([null, null, null, null]); // 4개의 이미지 업로더
+  const [images, setImages] = useState([null, null, null, null]);
 
   // 입력 필드 글자 수 제한
   const [inputTitle, setInputTitle] = useState(null);
@@ -66,19 +67,6 @@ const useProjectForm = () => {
       [key]: "",
     }));
   };
-
-  // 썸네일 업로드 핸들러
-  // const handleThumbnailUpload = (file) => {
-  //   if (!file.type.startsWith("image/")) {
-  //     setErrorMessage((prev) => ({
-  //       ...prev,
-  //       thumbnail: "이미지 파일만 업로드할 수 있습니다.",
-  //     }));
-  //     return;
-  //   }
-  //   setThumbnail(file);
-  //   setErrorMessage((prev) => ({ ...prev, thumbnail: "" }));
-  // };
 
   // 팀원 이름 입력 포커스 핸들러
   const handleMemberNameFocus = (e, index) => {
@@ -148,17 +136,6 @@ const useProjectForm = () => {
   };
 
   // 기술 스택 선택 핸들러
-  // const toggleTechStack = (techStackName) => {
-  //   setSelectedTechStacks((prevSelected) => {
-  //     if (prevSelected.includes(techStackName)) {
-  //       return prevSelected.filter((name) => name !== techStackName);
-  //     } else {
-  //       return [...prevSelected, techStackName];
-  //     }
-  //   });
-  // };
-
-  // 기술 스택 선택 핸들러
   const toggleTechStack = (techStack) => {
     setSelectedTechStacks((prevSelected) => {
       const existing = prevSelected.find(
@@ -188,7 +165,9 @@ const useProjectForm = () => {
     setThumbnail(null);
     setImages([null, null, null, null]);
     setErrorMessage({});
+    setSelectedTechStacks([]);
     setUploadError(null);
+    setPassword("");
   };
 
   // 유효성 검사 함수
@@ -234,59 +213,6 @@ const useProjectForm = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // 폼 제출 핸들러
-  // const handleSubmit = async (e, onSubmit) => {
-  //   e.preventDefault();
-
-  //   if (!validateForm()) {
-  //     return;
-  //   }
-
-  //   const projectData = {
-  //     teamName,
-  //     title,
-  //     projectType,
-  //     content,
-  //     summary,
-  //     semester: parseInt(semester, 10),
-  //     projectYear: parseInt(projectYear, 10),
-
-  //     // 팀원 정보
-  //     teamMembers: teamMembers
-  //       .filter((m) => m.name.trim() !== "")
-  //       .map((member) => ({
-  //         memberName: member.name,
-  //         memberImage: member.image,
-  //         memberRole: member.role,
-  //       })),
-  //   };
-
-  //   try {
-  //     setUploading(true);
-  //     await onSubmit(projectData, thumbnail, images);
-  //     setUploading(false);
-
-  //     // 폼 초기화
-  //     setTeamName("");
-  //     setTitle("");
-  //     setProjectType("");
-  //     setContent("");
-  //     setSummary("");
-  //     setSemester("");
-  //     setProjectYear("");
-  //     setIsLeader(false);
-  //     setTeamMembers([{ name: "", image: null, role: "" }]);
-  //     setThumbnail(null);
-  //     setImages([null, null, null, null]);
-  //     setErrorMessage({});
-  //     setUploadError(null);
-  //   } catch (error) {
-  //     console.error("프로젝트 생성 실패:", error);
-  //     setUploadError("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
-  //     setUploading(false);
-  //   }
-  // };
-
   return {
     // 상태
     teamName,
@@ -308,6 +234,7 @@ const useProjectForm = () => {
     images,
     selectedTechStacks,
     teamMembers,
+    password,
 
     inputTitle,
     inputContent,
@@ -318,8 +245,6 @@ const useProjectForm = () => {
 
     // 핸들러
     handleImgUpload,
-    // handleThumbnailUpload,
-    // handleImageUpload,
     handleMemberNameFocus,
     handleMemberNameChange,
     handleMemberImageUpload,
@@ -327,6 +252,7 @@ const useProjectForm = () => {
     addTeamMember,
     handleInputLimit,
     toggleTechStack,
+    setPassword,
     resetForm,
     validateForm,
   };

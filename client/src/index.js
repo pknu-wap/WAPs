@@ -1,16 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import TechStackList from "./components/ProjectCreation/TechStackList";
 import reportWebVitals from "./reportWebVitals";
-import TechStackSelector from "./components/ProjectCreation/TechStackSelector";
-import App from './App';
+import App from "./App";
+import ProjectDetailPage from "./pages/ProjectDetailPage";
+import ProjectDetailForm from "./components/ProjectDetail/ProjectDetailForm";
+import MainPage from "./pages/MainPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <App />
-    {/* <TechStackSelector /> */}
   </React.StrictMode>
 );
 

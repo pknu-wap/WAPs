@@ -1,23 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import "../../assets/ProjectCreation/TechStackSelector.css";
-import "../../assets/ProjectCreation/YearSelector.css";
+import styles from "../../assets/ProjectCreation/TechStackSelector.module.css";
 import TechStackList from "./TechStackList";
-import useProjectForm from "../../hooks/ProjectCreation/useProjectForm"; // Adjust the path as necessary
-
-// const SelectedTechStacks = ({ selectedTechStacks }) => {
-//   return (
-//     <div className="selectedtechstacks">
-//       {selectedTechStacks.map((selected, index) => (
-//         <div key={index}>{selected}</div>
-//       ))}
-//     </div>
-//   );
-// };
 
 const SelectedTechStacks = ({ selectedTechStacks }) => {
   return (
-    <div className="selectedtechstacks">
+    <div className={styles.techstack_select}>
       {selectedTechStacks.map((selected, index) => (
         <div key={index}>
           {selected.techStackName} - {selected.techStackType}
@@ -32,7 +20,7 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
   const [showTechStackList, setShowTechStackList] = useState(false);
   const scrollRef = useRef(null);
 
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/techStack/list`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/techStack/list`;
 
   useEffect(() => {
     const fetchTechStacks = async () => {
@@ -45,21 +33,16 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
         );
       } catch (error) {
         console.error("Failed to fetch tech stacks:", error);
-        setTechStacks([]); // Reset to an empty array on error
+        setTechStacks([]);
       }
     };
 
     fetchTechStacks();
   }, [apiUrl]);
 
-  // const handleTechStackClick = (techStackName) => {
-  //   toggleTechStack(techStackName); // Call the toggle function from the hook
-  //   setShowTechStackList(false); // Hide the tech stack list after selection
-  // };
-
   const handleTechStackClick = (techStack) => {
     toggleTechStack(techStack); // 전체 객체를 전달
-    setShowTechStackList(false); // Hide the tech stack list after selection
+    setShowTechStackList(false); // 리스트 숨김
   };
 
   const handleClickButton = () => {
@@ -67,9 +50,11 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
   };
 
   return (
-    <div className="teckstackselector-form">
-      <label className="techstack-label">기술스택</label>
-      <div className="techstack-btn">
+    <div className={styles.teckstack_form}>
+      <label className={styles.techstack_label}>기술스택</label>
+
+      <SelectedTechStacks selectedTechStacks={selectedTechStacks} />
+      <div className={styles.techstack_btn}>
         <svg
           id="custom_image_uploader"
           width="31"
@@ -87,7 +72,6 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
         </svg>
       </div>
 
-      <SelectedTechStacks selectedTechStacks={selectedTechStacks} />
       <div>
         {showTechStackList && (
           <TechStackList

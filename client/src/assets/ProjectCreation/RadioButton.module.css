@@ -1,4 +1,4 @@
-.radio-button{
+.radio_button{
     width: 90%;
     height: 100%;
     padding-top: 15px;
@@ -16,14 +16,15 @@
     font-size:12px;
 }
 
-.button-label { /* .radio-button 내부의 직접적인 label만 선택 */
+.radio_button_label { /* .radio-button 내부의 직접적인 label만 선택 */
     margin-top: 10px;
     margin-left: 33px;
     margin-bottom: 10px;
     font-size: 12px;
+    color: #EBEBEB;
 }
   
-.radio-option{
+.radio_option{
     display: flex;
     justify-content: space-between;
 
@@ -33,7 +34,7 @@
     width: 80%;
 }
 
-.radio-option input[type="radio"]{
+.radio_option input[type="radio"]{
     -webkit-appearance: none; 
     -moz-appearance: none;
     appearance: none; 
@@ -46,7 +47,7 @@
     cursor: pointer;
 }
 
-.radio-option input[type='radio']:checked {
+.radio_option input[type='radio']:checked {
     box-shadow: 0 0 0 1.5px #02FF2E;
     background-color: #02FF2E; 
     border: 3px solid #2A2A2A; 

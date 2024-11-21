@@ -1,4 +1,4 @@
-.teckstackselector-form {
+.teckstack_form {
     width:90%;
     height: 100%;
     padding-top: 15px;
@@ -8,32 +8,29 @@
     border-radius: 10px;
     margin: 0 auto; 
     text-align: left;
-    
     margin-top : 20px;
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
-    
-
 }
 
-.techstack-btn{
+.techstack_btn{
+    margin-top: 20px;
     text-align: center;
 }
 
-.selectedtechstacks{
+.techstack_select{
     width: 100%;
     color: #FFFFFF;
     font-weight: bold;
     display: flex;
     gap: 15px;
     padding-top: 15px ;
-
     flex-wrap: wrap; /* 아이템이 컨테이너의 너비를 초과할 경우 줄바꿈 */
     justify-content: center;
 }
 
-.techstack-label{
+.techstack_label{
     margin-top: 10px;
     margin-left: 33px;
     margin-bottom: 10px;

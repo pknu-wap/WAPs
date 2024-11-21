@@ -1,0 +1,36 @@
+.input_pin_form{
+    width:90%;
+    height: 100%;
+    padding-top: 15px;
+    padding-bottom: 20px;
+    background-color: #2A2A2A;
+    color: #7E7E7E;
+    border-radius: 10px;
+    margin: 0 auto; 
+    margin-top : 20px;
+    margin-bottom: 20px;
+}
+
+.input_pin_label{
+    margin-top: 10px;
+    margin-left: 33px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #EBEBEB;
+}
+
+.input_pin_box{
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.input_pin_box input[type="text"] {
+    
+    border: none;
+    background-color: transparent;
+    color: #ffffff;
+    outline: none; /* 포커스 시 외곽선 제거 */
+    font-size: 10px;
+}
