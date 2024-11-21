@@ -5,10 +5,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import wap.web2.server.domain.Image;
-import wap.web2.server.domain.Project;
-import wap.web2.server.domain.TeamMember;
-import wap.web2.server.domain.TechStack;
+import wap.web2.server.domain.*;
+import wap.web2.server.payload.CommentDto;
 import wap.web2.server.payload.ImageDto;
 import wap.web2.server.payload.TeamMemberDto;
 import wap.web2.server.payload.TechStackDto;
@@ -30,6 +28,7 @@ public class ProjectDetailsResponse {
     private List<TeamMemberDto> teamMember;
     private List<TechStackDto> techStack;
     private List<ImageDto> images;
+    private List<CommentDto> comments;
 
     public static ProjectDetailsResponse from(Project project) {
         List<TeamMemberDto> teamMembers = project.getTeamMembers().stream()
@@ -38,6 +37,8 @@ public class ProjectDetailsResponse {
             .map(ImageDto::from).toList();
         List<TechStackDto> techStacks = project.getTechStacks().stream()
             .map(TechStackDto::from).toList();
+        List<CommentDto> comments = project.getComments().stream()
+                .map(CommentDto::from).toList();
 
         return ProjectDetailsResponse.builder()
             .projectId(project.getProjectId())
@@ -52,6 +53,7 @@ public class ProjectDetailsResponse {
             .teamMember(teamMembers)
             .techStack(techStacks)
             .images(images)
+                .comments(comments)
             .build();
     }
 }
