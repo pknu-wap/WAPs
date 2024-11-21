@@ -86,4 +86,17 @@ public class ProjectService {
         return "수정되었습니다.";
 
     }
+
+    @Transactional
+    public void delete(Long projectId, UserPrincipal userPrincipal) {
+        User user = userRepository.findById(userPrincipal.getId())
+            .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
+
+        Project project = projectRepository.findByProjectIdAndUser(projectId, user.getId());
+
+        if(project == null) {
+            throw new IllegalArgumentException("[ERROR] 해당 사용자에게 삭제 권한이 없습니다.");
+        }
+        projectRepository.delete(project);
+    }
 }
