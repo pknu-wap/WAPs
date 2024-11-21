@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "../../assets/ProjectCreation/InputPin.module.css";
 
-const InputPin = ({ pin, setPin }) => {
+const InputPin = ({ password, setPassword }) => {
   return (
     <div className={styles.input_pin_form}>
       <div className={styles.input_pin_box}>
@@ -10,8 +10,8 @@ const InputPin = ({ pin, setPin }) => {
         <input
           type="text"
           placeholder="인증번호를 입력해주세요."
-          value={pin}
-          onChange={(e) => setPin(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
       </div>
     </div>
