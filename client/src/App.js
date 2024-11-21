@@ -11,6 +11,7 @@ import ProjectDetailPage from "./pages/ProjectDetailPage";
 import AppPage from "./pages/project/AppPage";
 import MainPage from "./pages/MainPage";
 import Callback from "./components/Login/Callback";
+import ProtectedPage from "./components/Login/ProtectedPage";
 import "./App.css";
 
 function App() {
@@ -24,20 +25,21 @@ function App() {
           {/* 로그인 화면 */}
           <Route path="/login" element={<Login />} />
 
-          {/* 카카오 로그인 콜백 */}
+          {/* 카카오 인증 Callback */}
           <Route path="/oauth/callback" element={<Callback />} />
 
           {/* 경로 */}
           <Route path="/CreatePage" element={<CreatePage />} />
           <Route path="/vote" element={<Vote />} />
           <Route path="/MyPage" element={<MyPage />} />
-
-          {/* 프로젝트 관련 경로 */}
           <Route path="/HomePage" element={<Home />} />
           <Route path="/project" element={<Project />} />
           <Route path="/map" element={<Map />} />
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
           <Route path="/app" element={<AppPage />} />
+
+          {/* 보호된 페이지 */}
+          <Route path="/protected" element={<ProtectedPage />} />
         </Routes>
       </div>
     </Router>

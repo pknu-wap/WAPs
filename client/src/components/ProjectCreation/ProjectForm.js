@@ -232,8 +232,10 @@ const ProjectForm = () => {
         toggleTechStack={toggleTechStack}
       />
 
-      <InputPin pin={pin} setPin={setPin} />
-      {uploadError && <p className="error-message">{uploadError}</p>}
+      {/* <InputPin pin={pin} setPin={setPin} />
+
+      {uploadError && <p className="error-message">{uploadError}</p>} */}
+
       <button
         type="submit"
         className={styles.submit_button}

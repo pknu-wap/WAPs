@@ -10,15 +10,11 @@ const Login = () => {
   const handleKakaoLogin = () => {
     try {
       console.log("Redirecting to Kakao login...");
-
-      // 현재 URL을 리다이렉트 URI로 설정
-      const redirectUri = encodeURIComponent(window.location.href);
-      const kakaoLoginUrl = `http://15.164.98.72:8080/oauth2/authorization/kakao?redirect_uri=${redirectUri}`;
+      const redirectUri = encodeURIComponent(`${window.location.origin}/oauth/callback`);
+      const kakaoLoginUrl = `${process.env.REACT_APP_API_BASE_URL}/oauth2/authorization/kakao?redirect_uri=${redirectUri}`;
 
       console.log("Kakao login URL:", kakaoLoginUrl);
-
-      // 카카오 인증 URL로 리디렉션
-      window.location.href = kakaoLoginUrl;
+      window.location.href = kakaoLoginUrl; // 카카오 인증 URL로 리디렉션
     } catch (error) {
       console.error("Error during Kakao login redirect:", error);
     }
