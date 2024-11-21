@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
@@ -46,7 +46,7 @@ const ProjectForm = () => {
     uploading,
     uploadError,
     errorMessage,
-    pin,
+    password,
     handleImgUpload,
     handleMemberNameFocus,
     handleMemberNameChange,
@@ -56,7 +56,7 @@ const ProjectForm = () => {
     handleInputLimit,
     toggleTechStack,
     resetForm,
-    setPin,
+    setPassword,
     validateForm,
   } = useProjectForm();
 
@@ -86,6 +86,8 @@ const ProjectForm = () => {
         techStackName: stack.techStackName,
         techStackType: stack.techStackType,
       })),
+
+      password,
     };
 
     // blob 객체에 JSON 데이터 추가
@@ -122,6 +124,8 @@ const ProjectForm = () => {
       alert("프로젝트가 성공적으로 생성되었습니다.");
       console.log(formData);
     } catch (error) {
+      console.log("프로젝트 데이터:", formData.get("project"));
+
       console.error("프로젝트 생성 실패:", error);
       alert("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
     }
@@ -232,7 +236,8 @@ const ProjectForm = () => {
         toggleTechStack={toggleTechStack}
       />
 
-      <InputPin pin={pin} setPin={setPin} />
+      <InputPin password={password} setPassword={setPassword} />
+
       {uploadError && <p className="error-message">{uploadError}</p>}
       <button
         type="submit"

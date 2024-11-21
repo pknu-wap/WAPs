@@ -9,6 +9,7 @@ const useProjectForm = () => {
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
   const [semester, setSemester] = useState(""); // 1,2
+  const [password, setPassword] = useState("");
 
   // 프로젝트 년도 선택 상태관리
   // 원래 ""이었으나, null로 변경 -> "" 설정하고 props 전달하니까 "is not a function"
@@ -37,9 +38,6 @@ const useProjectForm = () => {
 
   // 오류 메시지 상태
   const [errorMessage, setErrorMessage] = useState({});
-
-  // Pin 입력 상태
-  const [pin, setPin] = useState("");
 
   // 핸들러 함수들
 
@@ -169,6 +167,7 @@ const useProjectForm = () => {
     setErrorMessage({});
     setSelectedTechStacks([]);
     setUploadError(null);
+    setPassword("");
   };
 
   // 유효성 검사 함수
@@ -235,7 +234,7 @@ const useProjectForm = () => {
     images,
     selectedTechStacks,
     teamMembers,
-    pin,
+    password,
 
     inputTitle,
     inputContent,
@@ -253,7 +252,7 @@ const useProjectForm = () => {
     addTeamMember,
     handleInputLimit,
     toggleTechStack,
-    setPin,
+    setPassword,
     resetForm,
     validateForm,
   };
