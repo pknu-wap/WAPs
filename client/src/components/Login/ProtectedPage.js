@@ -15,11 +15,14 @@ const ProtectedPage = () => {
       }
 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/user/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         setUserInfo(response.data);
         console.log("User info received:", response.data);

@@ -12,6 +12,7 @@ import AppPage from "./pages/project/AppPage";
 import MainPage from "./pages/MainPage";
 import Callback from "./components/Login/Callback";
 import ProtectedPage from "./components/Login/ProtectedPage";
+import VotePage from "./pages/VotePage";
 import "./App.css";
 
 function App() {
@@ -30,7 +31,7 @@ function App() {
 
           {/* 경로 */}
           <Route path="/CreatePage" element={<CreatePage />} />
-          <Route path="/vote" element={<Vote />} />
+          <Route path="/vote" element={<VotePage />} />
           <Route path="/MyPage" element={<MyPage />} />
           <Route path="/HomePage" element={<Home />} />
           <Route path="/project" element={<Project />} />
