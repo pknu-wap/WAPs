@@ -1,19 +1,26 @@
 package wap.web2.server.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import wap.web2.server.payload.TeamMemberDto;
 import wap.web2.server.payload.TechStackDto;
 import wap.web2.server.payload.request.ProjectCreateRequest;
-import wap.web2.server.payload.response.ProjectInfoResponse;
 
 @Builder
 @Entity
@@ -38,7 +45,8 @@ public class Project {
 
     private Integer semester;
 
-    private Long vote;
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long vote = 0L;
 
     private Integer projectYear;
 
@@ -75,11 +83,11 @@ public class Project {
         this.images.clear();
         if (imageUrls != null && !imageUrls.isEmpty()) {
             List<Image> newImages = imageUrls.stream()
-                    .map(imageDto -> Image.builder()
-                            .imageFile(imageDto)
-                            .project(this) // 연관관계 설정
-                            .build()) // Builder 사용
-                    .collect(Collectors.toList());
+                .map(imageDto -> Image.builder()
+                    .imageFile(imageDto)
+                    .project(this) // 연관관계 설정
+                    .build()) // Builder 사용
+                .collect(Collectors.toList());
             this.images.addAll(newImages);
         }
 
@@ -87,8 +95,8 @@ public class Project {
         this.teamMembers.clear();
         if (request.getTeamMember() != null && !request.getTeamMember().isEmpty()) {
             List<TeamMember> newTeamMembers = request.getTeamMember().stream()
-                    .map(TeamMemberDto::toEntity) // DTO → 엔티티 변환
-                    .collect(Collectors.toList());
+                .map(TeamMemberDto::toEntity) // DTO → 엔티티 변환
+                .collect(Collectors.toList());
             this.teamMembers.addAll(newTeamMembers);
         }
 
@@ -96,8 +104,8 @@ public class Project {
         this.techStacks.clear();
         if (request.getTechStack() != null && !request.getTechStack().isEmpty()) {
             List<TechStack> newTechStacks = request.getTechStack().stream()
-                    .map(TechStackDto::toEntity) // DTO → 엔티티 변환
-                    .collect(Collectors.toList());
+                .map(TechStackDto::toEntity) // DTO → 엔티티 변환
+                .collect(Collectors.toList());
             this.techStacks.addAll(newTechStacks);
         }
 
