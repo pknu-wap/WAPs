@@ -45,8 +45,7 @@ public class Project {
 
     private Integer semester;
 
-    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
-    private Long vote = 0L;
+    private Long vote;
 
     private Integer projectYear;
 
