@@ -50,6 +50,7 @@ const ProjectForm = () => {
     errorMessage,
     password,
     handleImgUpload,
+    handleRemoveImage,
     handleMemberNameFocus,
     handleMemberNameChange,
     handleMemberImageUpload,
@@ -143,6 +144,7 @@ const ProjectForm = () => {
         imgName={thumbnail}
         errorMessage={errorMessage.thumbnail}
         handleImgUpload={(file) => handleImgUpload(file, "thumbnail")}
+        handleRemoveImage={() => handleRemoveImage("thumbnail", null)}
         type="thumbnail"
       />
       <YearScroll setSelectedYear={setProjectYear} selectedYear={projectYear} />
@@ -213,6 +215,7 @@ const ProjectForm = () => {
             imgName={images[index]}
             errorMessage={errorMessage[`image${index}`]}
             handleImgUpload={(file) => handleImgUpload(file, "image", index)}
+            handleRemoveImage={() => handleRemoveImage("image", index)}
             type="image"
           />
         ))}

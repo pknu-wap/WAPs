@@ -68,6 +68,17 @@ const useProjectForm = () => {
     }));
   };
 
+  // 이미지 삭제 핸들러
+  const handleRemoveImage = (type, index = null) => {
+    if (type === "thumbnail") {
+      setThumbnail(null);
+    } else if (type === "image") {
+      const newImages = [...images];
+      newImages[index] = null; // 해당 이미지만 삭제
+      setImages(newImages);
+    }
+  };
+
   // 팀원 이름 입력 포커스 핸들러
   const handleMemberNameFocus = (e, index) => {
     if (index === 0 && !isLeader) {
@@ -245,6 +256,7 @@ const useProjectForm = () => {
 
     // 핸들러
     handleImgUpload,
+    handleRemoveImage,
     handleMemberNameFocus,
     handleMemberNameChange,
     handleMemberImageUpload,

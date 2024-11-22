@@ -2,7 +2,13 @@
 import React, { useRef } from "react";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 
-const ImageUploader = ({ imgText, imgName, errorMessage, handleImgUpload }) => {
+const ImageUploader = ({
+  imgText,
+  imgName,
+  errorMessage,
+  handleImgUpload,
+  handleRemoveImage,
+}) => {
   // useRef는 참조하는요소
   const fileInputRef = useRef(null);
 
@@ -56,7 +62,11 @@ const ImageUploader = ({ imgText, imgName, errorMessage, handleImgUpload }) => {
 
       {/* imgName이 있으면 프리뷰 표시 */}
       {imgName && imgName instanceof File && (
-        <div className="Image-preview">
+        <div
+          className="Image-preview"
+          onClick={() => handleRemoveImage()} // 클릭 시 이미지 삭제
+          style={{ cursor: "pointer" }}
+        >
           <img
             src={URL.createObjectURL(imgName)}
             alt="Image Preview"
