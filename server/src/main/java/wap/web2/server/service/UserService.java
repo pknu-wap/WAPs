@@ -17,11 +17,9 @@ public class UserService {
     //유저 정보 조회
     public UserResponse getUserDetail(UserPrincipal userPrincipal) {
         User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+            .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
 
         return UserResponse.of(user);
     }
-
-
 }
 
