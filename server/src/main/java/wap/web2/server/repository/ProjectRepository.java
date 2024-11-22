@@ -13,4 +13,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("SELECT b FROM Project b WHERE b.projectId = :projectId AND b.user.id = :userId")
     Project findByProjectIdAndUser(@Param("projectId") Long projectId, @Param("userId") Long userId);
+
+    @Query("SELECT p FROM Project p WHERE p.projectYear = :year AND p.semester = :semester ORDER BY p.projectId DESC")
+    List<Project> findProjectsByYearAndSemesterOrderByProjectIdDesc(@Param("year") Long year, @Param("semester") Long semester);
+
 }
