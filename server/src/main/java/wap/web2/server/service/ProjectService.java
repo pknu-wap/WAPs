@@ -60,7 +60,7 @@ public class ProjectService {
     }
 
     public List<ProjectInfoResponse> getProjects(Long year, Long semester) {
-        return projectRepository.findProjectsByYearAndSemester(year, semester)
+        return projectRepository.findProjectsByYearAndSemesterOrderByProjectIdDesc(year, semester)
             .stream().map(ProjectInfoResponse::from).toList();
     }
 

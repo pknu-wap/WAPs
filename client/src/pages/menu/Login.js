@@ -10,7 +10,9 @@ const Login = () => {
   const handleKakaoLogin = () => {
     try {
       console.log("Redirecting to Kakao login...");
-      const redirectUri = encodeURIComponent(`${window.location.origin}/oauth/callback`);
+      const redirectUri = encodeURIComponent(
+        `${window.location.origin}/oauth/callback`
+      );
       const kakaoLoginUrl = `${process.env.REACT_APP_API_BASE_URL}/oauth2/authorization/kakao?redirect_uri=${redirectUri}`;
 
       console.log("Kakao login URL:", kakaoLoginUrl);
