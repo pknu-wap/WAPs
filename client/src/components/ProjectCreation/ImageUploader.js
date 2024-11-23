@@ -61,14 +61,17 @@ const ImageUploader = ({
       )}
 
       {/* imgName이 있으면 프리뷰 표시 */}
-      {imgName && imgName instanceof File && (
+      {/* 이미자 파일인경우, src인경우, 이미지 파일이 아닌경우   */}
+      {imgName && (imgName instanceof File || typeof imgName === "string") && (
         <div
           className="Image-preview"
           onClick={() => handleRemoveImage()} // 클릭 시 이미지 삭제
           style={{ cursor: "pointer" }}
         >
           <img
-            src={URL.createObjectURL(imgName)}
+            src={
+              imgName instanceof File ? URL.createObjectURL(imgName) : imgName
+            }
             alt="Image Preview"
             style={{
               width: "100%",

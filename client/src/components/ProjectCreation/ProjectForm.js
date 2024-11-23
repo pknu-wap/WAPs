@@ -162,17 +162,6 @@ const ProjectForm = () => {
         selected={projectType}
         setSelected={setProjectType}
       />
-      {/* <InputForm
-        name="teamName"
-        placeholder="팀명"
-        maxLen="20"
-        value={teamName}
-        onChange={(e) => {
-          setTeamName(e.target.value);
-          handleInputLimit(e);
-        }}
-        errorMessage={errorMessage}
-      /> */}
       <TextInputForm
         name="title"
         placeholder="프로젝트 명"

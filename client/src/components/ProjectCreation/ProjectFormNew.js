@@ -74,8 +74,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         existingProject.semester ? existingProject.semester.toString() : "1"
       );
       setProjectYear(existingProject.projectYear || new Date().getFullYear());
-      setPassword(existingProject.password || "");
-      // Set other fields such as team members, images, and tech stacks
     }
   }, [isEdit, existingProject]);
 
@@ -148,7 +146,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     <form className={styles.project_form} onSubmit={handleSubmit}>
       <ImageUploader
         imgText={"메인 이미지 등록"}
-        imgName={thumbnail}
+        imgName={existingProject ? existingProject.thumbnail : thumbnail}
         errorMessage={errorMessage.thumbnail}
         handleImgUpload={(file) => handleImgUpload(file, "thumbnail")}
         handleRemoveImage={() => handleRemoveImage("thumbnail", null)}
