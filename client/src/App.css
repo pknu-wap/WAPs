@@ -71,14 +71,14 @@
 }
 
 .menu li{
-  margin-right: 40px; /* 각 아이템 간의 간격 조절 */
+  margin-right: 0px; /* 각 아이템 간의 간격 조절 */
   color: white;
   padding: 10px;
   font-size: x-large;
   font-weight:700;
   font-family: "Inter", sans-serif;
   font-style: normal;
-  
+  margin-bottom: 17px;
 }
 
 
