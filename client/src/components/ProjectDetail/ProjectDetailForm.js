@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Cookies from "js-cookie";
 import axios from "axios";
 import styles from "../../assets/ProjectDetail/ProjectDetailForm.module.css";
 import dogImage from "../../assets/img/dog.png";
 import useProjectDetailForm from "../../hooks/ProjectDetail/useProjectDetailForm";
+import EditButton from "./EditButton";
+import { useNavigate } from "react-router-dom";
 
 const ProjectDetailForm = () => {
   const { projectId } = useParams();
+  const navigate = useNavigate();
+
   const {
     thumnail_image,
     title,
@@ -82,6 +87,8 @@ const ProjectDetailForm = () => {
 
   return (
     <div className={styles.project_detail_form}>
+      {/* 수정 버튼 항상 활성화 */}
+
       <img
         className={styles.thumnail_image}
         src={thumnail_image ? thumnail_image : dogImage}
@@ -172,6 +179,9 @@ const ProjectDetailForm = () => {
           </div>
         </div>
       </div>
+      {/* 수정 버튼 */}
+      {/* 수정 버튼 */}
+      <EditButton projectId={projectId} />
     </div>
   );
 };

@@ -13,6 +13,7 @@ import MainPage from "./pages/MainPage";
 import Callback from "./components/Login/Callback";
 import ProtectedPage from "./components/Login/ProtectedPage";
 import VotePage from "./pages/VotePage";
+import ProjectEditPage from "./pages/ProjectEditPage";
 import "./App.css";
 
 function App() {
@@ -37,6 +38,10 @@ function App() {
           <Route path="/project" element={<Project />} />
           <Route path="/map" element={<Map />} />
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
+          <Route
+            path="/project/edit/:projectId"
+            element={<ProjectEditPage />}
+          />
           <Route path="/app" element={<AppPage />} />
 
           {/* 보호된 페이지 */}
