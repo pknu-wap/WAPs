@@ -34,7 +34,7 @@ const EditButton = ({ projectId }) => {
     } catch (error) {
       if (error.response && error.response.status === 403) {
         alert("수정 권한이 없습니다.");
-        navigate(); // 수정 권한이 없으면 이전 페이지로 리디렉션
+        navigate(); // 수정 권한이 없다면 그대로 유지
       } else {
         alert("서버 오류가 발생했습니다.");
       }

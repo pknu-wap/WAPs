@@ -29,7 +29,7 @@ const Menu = ({ menuOpen, toggleMenu }) => {
                 </li>
                 <li
                   onClick={() => {
-                    navigate("/CreatePage");
+                    navigate("/project/create");
                     toggleMenu();
                   }}
                 >
