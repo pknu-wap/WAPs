@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode"; // named export로 변경
+import { jwtDecode } from "jwt-decode"; // JWT 디코딩 모듈
 import styles from "../../assets/ProjectDetail/ProjectDetailForm.module.css";
 import dogImage from "../../assets/img/dog.png";
 
@@ -18,7 +18,6 @@ const ProjectDetailForm = () => {
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
-        // API 호출로 프로젝트 데이터 가져오기
         const response = await axios.get(apiUrl, {
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
@@ -28,9 +27,9 @@ const ProjectDetailForm = () => {
         console.log("API 응답 데이터:", data);
 
         if (token) {
-          const decodedToken = jwtDecode(token); // 수정된 함수명 사용
+          const decodedToken = jwtDecode(token); // JWT 디코딩
           console.log("디코딩된 토큰:", decodedToken);
-        
+
           // 토큰에서 추출한 ID와 프로젝트 작성자 ID 비교
           if (decodedToken.userId === data.ownerId) {
             setIsOwner(true);
@@ -38,7 +37,6 @@ const ProjectDetailForm = () => {
             setIsOwner(false);
           }
         }
-        
       } catch (error) {
         console.error("프로젝트 정보 가져오기 실패:", error);
         alert("프로젝트 정보를 불러오는 데 실패했습니다.");
@@ -49,7 +47,6 @@ const ProjectDetailForm = () => {
     fetchProjectDetails();
   }, [apiUrl, token, navigate]);
 
-  // 프로젝트 삭제 요청
   const handleDelete = async () => {
     if (!window.confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
       return;
@@ -78,26 +75,104 @@ const ProjectDetailForm = () => {
 
   return (
     <div className={styles.project_detail_form}>
+      {/* 프로젝트 썸네일 */}
       <img
         className={styles.thumnail_image}
         src={projectData.thumbnail || dogImage}
         alt="Project Thumbnail"
       />
+
+      {/* 프로젝트 제목 및 정보 */}
       <div className={styles.project_detail_box}>
         <div className={styles.project_detail_title}>
-          <h1>{projectData.title || "제목 없음"}</h1>
+          <div className={styles.title}>{projectData.title || "제목 없음"}</div>
           <div className={styles.project_info}>
-            <span>년도: {projectData.projectYear}</span> |{" "}
-            <span>학기: {projectData.semester}</span>
+            <div className={styles.project_year_info}>
+              <div className={styles.projectYear}>
+                {projectData.projectYear || "연도 없음"}
+              </div>
+              <div>-</div>
+              <div className={styles.semester}>
+                {projectData.semester || "학기 정보 없음"}
+              </div>
+            </div>
+            <div className={styles.project_type_info}>
+              {projectData.projectType || "프로젝트 타입 없음"}
+            </div>
           </div>
         </div>
-        <div className={styles.project_detail_content}>
-          <p>{projectData.content || "내용이 없습니다."}</p>
+      </div>
+
+      {/* 프로젝트 내용 */}
+      <div className={styles.project_detail_content}>
+        <div className={styles.summary}>
+          {projectData.summary || "요약 정보 없음"}
+        </div>
+        <div className={styles.content}>
+          {projectData.content || "내용이 없습니다."}
+        </div>
+      </div>
+    
+      {/* 이미지 섹션 */}
+      <div className={styles.images}>
+        {projectData.images && projectData.images.length > 0 ? (
+          projectData.images.map((image, index) => (
+            <img
+              key={index}
+              className={styles.image}
+              src={image.imageFile || dogImage}
+              alt={`이미지 ${index + 1}`}
+            />
+          ))
+        ) : (
+          <img className={styles.image} src={dogImage} alt="기본 이미지" />
+        )}
+      </div>
+
+      {/* 팀원 정보 */}
+      <div className={styles.projectListInfo}>
+        <div className={styles.teamMembers}>
+          <label>Team</label>
+          <div className={styles.member}>
+            {projectData.teamMember && projectData.teamMember.length > 0 ? (
+              projectData.teamMember.map((member, index) =>
+                member.memberName && member.memberRole ? ( // 이름과 역할이 있는 경우만 렌더링
+                  <div className={styles.memberInfo} key={index}>
+                    <div className={styles.memberName}>{member.memberName}</div>
+                    <div className={styles.memberRole}>{member.memberRole}</div>
+                  </div>
+                ) : null // 이름이나 역할이 없는 경우 렌더링하지 않음
+              )
+            ) : (
+              <p>팀원 정보가 없습니다.</p>
+            )}
+          </div>
+        </div>
+
+        {/* 기술 스택 정보 */}
+        <div className={styles.techStacks}>
+          <label>Stack</label>
+          <div className={styles.techStack}>
+            {projectData.techStack && projectData.techStack.length > 0 ? (
+              projectData.techStack.map((techStack, index) => (
+                <div className={styles.techStackInfo} key={index}>
+                  <div className={styles.techStackName}>
+                    {techStack.techStackName || "스택 이름 없음"}
+                  </div>
+                  <div className={styles.techStackType}>
+                    {techStack.techStackType || "스택 타입 없음"}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p>기술 스택 정보가 없습니다.</p>
+            )}
+          </div>
         </div>
       </div>
 
       {/* 삭제 버튼 */}
-      {isOwner ? (
+      {isOwner && token && (
         <button
           onClick={handleDelete}
           className={styles.delete_button}
@@ -113,8 +188,6 @@ const ProjectDetailForm = () => {
         >
           삭제하기
         </button>
-      ) : (
-        <p>이 프로젝트를 삭제할 권한이 없습니다.</p>
       )}
     </div>
   );
