@@ -105,9 +105,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET,
                             "/project/**", "/techStack/**")
                     .permitAll()
-                    .requestMatchers("/comment/**")
-                    .permitAll()
-                    .requestMatchers("/auth/**", "/oauth2/**")
+                    .requestMatchers("/comment/**","/auth/**", "/oauth2/**")
                         .permitAll()
                     .anyRequest()
                         .authenticated()

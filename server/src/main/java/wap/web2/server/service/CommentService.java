@@ -6,8 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.domain.Comment;
 import wap.web2.server.domain.Project;
 import wap.web2.server.payload.request.CommentCreateRequest;
+import wap.web2.server.payload.request.CommentDeleteRequest;
 import wap.web2.server.repository.CommentRepository;
 import wap.web2.server.repository.ProjectRepository;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -24,6 +27,19 @@ public class CommentService {
         Comment comment = request.toEntity(project);
 
         commentRepository.save(comment);
+    }
+
+    @Transactional
+    public boolean deleteCommentByPassword(Long commentId, CommentDeleteRequest request) {
+        Optional<Comment> optionalBook = commentRepository.findById(commentId);
+        if (optionalBook.isPresent()) {
+            Comment comment = optionalBook.get();
+            if (comment.getPassword().equals(request.getPassword())) {
+                commentRepository.delete(comment);
+                return true;
+            }
+        }
+        return false;
     }
 
 
