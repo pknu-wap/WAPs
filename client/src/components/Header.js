@@ -2,40 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import wapLogo from "../assets/img/WAP_white_NoBG.png";
+import Menu from "./Menu";
 
-const Header = ({ toggleMenu }) => {
-  const [userName, setUserName] = useState(null);
+const Header = () => {
+  const [userName, setUserName] = useState(Cookies.get("userName") || null); // 쿠키에서 초기값 가져오기
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  // 사용자 정보를 가져오는 함수
-  const fetchUserInfo = (token) => {
-    fetch(`${process.env.REACT_APP_API_BASE_URL_PROXY}/api/user/me`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch user info.");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // 사용자 이름 및 토큰 쿠키에 저장
-        Cookies.set("userName", data.userName, { expires: 7 });
-        Cookies.set("authToken", token, { expires: 7 });
-        setUserName(data.userName); // 상태 업데이트
-      })
-      .catch((error) =>
-        console.error("사용자 정보를 가져오는 동안 에러 발생:", error)
-      );
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
   };
 
   useEffect(() => {
     const token = Cookies.get("authToken");
-    if (token) {
-      fetchUserInfo(token); // 토큰이 있으면 사용자 정보 가져오기
+    const savedUserName = Cookies.get("userName");
+    if (token && savedUserName) {
+      setUserName(savedUserName); // 쿠키에 저장된 사용자 이름 설정
     }
   }, []);
 
@@ -46,47 +28,36 @@ const Header = ({ toggleMenu }) => {
     navigate("/login");
   };
 
+  const handleLogin = () => {
+    navigate("/login", { state: { from: window.location.pathname } });
+  };
+
   return (
-    <header className="App-header">
-      {/* 로고 */}
-      <div className="logo">
-        <img
-          className="waplogo"
-          alt="wap"
-          src={wapLogo}
-          onClick={() => navigate("/HomePage")}
-          style={{
-            cursor: "pointer",
-          }}
-        />
-      </div>
+    <>
+      <header className="App-header">
+        <div className="logo">
+          <img
+            className="waplogo"
+            alt="wap"
+            src={wapLogo}
+            onClick={() => navigate("/HomePage")}
+            style={{ cursor: "pointer" }}
+          />
+        </div>
 
-      {/* 사용자 정보 및 로그인/로그아웃 버튼 */}
-      <div className="user-info">
-        {userName ? (
-          <>
-            <span className="welcome-message">{userName}님 환영합니다!</span>
-            <button className="auth-button" onClick={handleLogout}>
-              로그아웃
-            </button>
-          </>
-        ) : (
-          <button
-            className="auth-button"
-            onClick={() =>
-              navigate("/login", { state: { from: window.location.pathname } })
-            }
-          >
-            로그인
-          </button>
-        )}
-      </div>
+        <div className="menu-icon" onClick={toggleMenu}>
+          {menuOpen ? "✕" : "☰"}
+        </div>
+      </header>
 
-      {/* 메뉴 아이콘 */}
-      <div className="menu-icon" onClick={toggleMenu}>
-        &#9776;
-      </div>
-    </header>
+      <Menu
+        menuOpen={menuOpen}
+        toggleMenu={toggleMenu}
+        userName={userName}
+        handleLogin={handleLogin}
+        handleLogout={handleLogout}
+      />
+    </>
   );
 };
 

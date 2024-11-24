@@ -22,6 +22,7 @@ const Callback = () => {
         Cookies.set("userName", data.userName, { expires: 7 });
         Cookies.set("authToken", token, { expires: 7 });
         console.log("사용자 정보:", data);
+        alert("로그인에 성공했습니다!");
         navigate("/"); // 메인 페이지로 리다이렉트
       })
       .catch((error) => {
@@ -36,7 +37,7 @@ const Callback = () => {
     const token = params.get("token");
 
     if (token) {
-      fetchUserInfo(token); // 로그인 성공 후 사용자 정보 가져오기
+      fetchUserInfo(token);
     } else {
       alert("인증 코드가 없습니다. 다시 로그인해주세요.");
       navigate("/login");
