@@ -43,21 +43,19 @@ const useProjectForm = () => {
 
   // 썸네일 및 일반 이미지 업로드 핸들러
   const handleImgUpload = (file, type, index = null) => {
-    if (!file.type.startsWith("image/")) {
+    // 파일이 없는 경우 또는 파일 타입이 유효하지 않은 경우를 먼저 확인
+    if (!file || !file.type || !file.type.startsWith("image/")) {
       const key = type === "thumbnail" ? "thumbnail" : `image${index}`;
-      setErrorMessage((prev) => ({
-        ...prev,
-        [key]: "이미지 파일만 업로드할 수 있습니다.",
-      }));
+
       return;
     }
 
     if (type === "thumbnail") {
-      setThumbnail(file);
+      setThumbnail(file); // 썸네일 설정
     } else if (type === "image") {
-      const newImages = [...images];
-      newImages[index] = file;
-      setImages(newImages);
+      const newImages = [...images]; // 기존 이미지 배열 복사
+      newImages[index] = file; // 해당 인덱스에 파일 추가
+      setImages(newImages); // 업데이트된 배열 설정
     }
 
     // 에러 메시지 초기화
@@ -242,7 +240,9 @@ const useProjectForm = () => {
     setProjectYear,
     teamMembers,
     thumbnail,
+    setThumbnail,
     images,
+    setImages,
     selectedTechStacks,
     teamMembers,
     password,

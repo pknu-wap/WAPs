@@ -44,6 +44,9 @@ const ProjectPage = () => {
             }
           );
           setProjectData(response.data);
+
+          // 가져온 데이터 표시
+          console.log("프로젝트 상세 정보:", response.data);
         } catch (error) {
           console.error("프로젝트 상세 정보 가져오기 실패:", error);
           alert("프로젝트 정보를 가져오는 데 실패했습니다.");

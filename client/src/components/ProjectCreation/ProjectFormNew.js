@@ -27,6 +27,7 @@ const roleOptions = [
 ];
 
 const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
+  const maxImageCount = 4; // 최대 이미지 업로드 개수
   const token = Cookies.get("authToken");
   const {
     title,
@@ -43,7 +44,9 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     setProjectYear,
     teamMembers,
     thumbnail,
+    setThumbnail,
     images,
+    setImages,
     selectedTechStacks,
     uploading,
     uploadError,
@@ -74,6 +77,16 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         existingProject.semester ? existingProject.semester.toString() : "1"
       );
       setProjectYear(existingProject.projectYear || new Date().getFullYear());
+      setThumbnail(existingProject.thumbnail || null);
+
+      // 존재하는 이미지만 표시
+      existingProject.images.forEach((image, index) => {
+        setImages((prev) => {
+          const newImages = [...prev];
+          newImages[index] = image["imageFile"];
+          return newImages;
+        });
+      });
     }
   }, [isEdit, existingProject]);
 
@@ -146,7 +159,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     <form className={styles.project_form} onSubmit={handleSubmit}>
       <ImageUploader
         imgText={"메인 이미지 등록"}
-        imgName={existingProject ? existingProject.thumbnail : thumbnail}
+        imgName={thumbnail}
         errorMessage={errorMessage.thumbnail}
         handleImgUpload={(file) => handleImgUpload(file, "thumbnail")}
         handleRemoveImage={() => handleRemoveImage("thumbnail", null)}
@@ -200,7 +213,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         }}
         errorMessage={errorMessage}
       />
-      <div className="form-group">
+      {/* <div className="form-group">
         <label>이미지 업로드:</label>
         {images.map((img, index) => (
           <ImageUploader
@@ -213,7 +226,34 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
             type="image"
           />
         ))}
+      </div> */}
+
+      <div className={styles.images}>
+        {images.map((image, index) => (
+          <ImageUploader
+            key={index}
+            imgName={image} // 이미 URL로 추출한 이미지 전달
+            imgText={`이미지 업로드 ${index + 1}`}
+            handleRemoveImage={() => handleRemoveImage("image", index)}
+            type="image"
+          />
+        ))}
+
+        {/* 남은 업로더 공간 표시 */}
+        {Array.from({ length: maxImageCount - images.length }).map(
+          (_, index) => (
+            <ImageUploader
+              key={images.length + index}
+              imgText={`이미지 업로드 ${images.length + index + 1}`}
+              handleImgUpload={(file) =>
+                handleImgUpload(file, "image", images.length + index)
+              }
+              type="image"
+            />
+          )
+        )}
       </div>
+
       <div className="form-group">
         <label>팀원:</label>
         {teamMembers.map((member, index) => (
