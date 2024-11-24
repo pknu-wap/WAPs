@@ -169,3 +169,23 @@ li {
   font-size: 15px; /* 폰트 크기는 최신 CSS에 맞게 유지 */
   text-align: left; /* 왼쪽 정렬 추가 */
 }
+
+
+.welcome-message{
+  margin-right: 40px; /* 각 아이템 간의 간격 조절 */
+  color: white;
+  padding: 10px;
+  font-size: 120%;
+  font-weight: 700;
+  font-family: "Inter", sans-serif;
+  font-style: normal;
+  cursor: pointer;
+}
+
+.auth-text{
+  text-align: right;
+  padding-right: 5%;
+  margin-top: 5%;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+}
