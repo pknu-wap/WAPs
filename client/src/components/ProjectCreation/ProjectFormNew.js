@@ -74,7 +74,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       setContent(existingProject.content || "");
       setSummary(existingProject.summary || "");
       setSemester(
-        existingProject.semester ? existingProject.semester.toString() : "1"
+        existingProject.semester ? existingProject.semester.toString() : ""
       );
       setProjectYear(existingProject.projectYear || new Date().getFullYear());
       setThumbnail(existingProject.thumbnail || null);
@@ -213,6 +213,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         }}
         errorMessage={errorMessage}
       />
+
       {/* <div className="form-group">
         <label>이미지 업로드:</label>
         {images.map((img, index) => (
@@ -232,8 +233,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         {images.map((image, index) => (
           <ImageUploader
             key={index}
-            imgName={image} // 이미 URL로 추출한 이미지 전달
-            imgText={`이미지 업로드 ${index + 1}`}
+            imgText={`이미지 등록 ${index + 1}`}
+            imgName={images[index]}
+            errorMessage={errorMessage[`image${index}`]}
+            handleImgUpload={(file) => handleImgUpload(file, "image", index)}
             handleRemoveImage={() => handleRemoveImage("image", index)}
             type="image"
           />
@@ -243,11 +246,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         {Array.from({ length: maxImageCount - images.length }).map(
           (_, index) => (
             <ImageUploader
-              key={images.length + index}
-              imgText={`이미지 업로드 ${images.length + index + 1}`}
-              handleImgUpload={(file) =>
-                handleImgUpload(file, "image", images.length + index)
-              }
+              key={index}
+              imgText={`이미지 등록 ${index + 1}`}
+              imgName={images[index]}
+              errorMessage={errorMessage[`image${index}`]}
+              handleImgUpload={(file) => handleImgUpload(file, "image", index)}
+              handleRemoveImage={() => handleRemoveImage("image", index)}
               type="image"
             />
           )
