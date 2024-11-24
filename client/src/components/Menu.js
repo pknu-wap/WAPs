@@ -41,7 +41,7 @@ const Menu = ({ menuOpen, toggleMenu, userName, handleLogin, handleLogout }) => 
             <hr className="line"></hr>
             <li
               onClick={() => {
-                navigate("/project");
+                navigate("/HomePage");
                 toggleMenu();
               }}
             >
@@ -67,15 +67,6 @@ const Menu = ({ menuOpen, toggleMenu, userName, handleLogin, handleLogout }) => 
               }}
             >
               Map
-            </li>
-            <hr className="line"></hr>
-            <li
-              onClick={() => {
-                navigate("/MyPage");
-                toggleMenu();
-              }}
-            >
-              My page
             </li>
             <hr className="startLine"></hr>
           </ul>
