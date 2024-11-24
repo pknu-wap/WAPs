@@ -54,7 +54,7 @@ const Menu = ({
               Projects
             </li>
             <hr className="line"></hr>
-            <li onClick={() => handleNavigationWithAuth("/CreatePage")}>
+            <li onClick={() => handleNavigationWithAuth("/project/create")}>
               Create Project
             </li>
             <hr className="line"></hr>
