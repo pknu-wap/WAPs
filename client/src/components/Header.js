@@ -2,26 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import wapLogo from "../assets/img/WAP_white_NoBG.png";
-import Menu from "./Menu"; // Menu 컴포넌트 임포트
+import Menu from "./Menu";
 
 const Header = () => {
-  const [userName, setUserName] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false); // menuOpen 상태 추가
+  const [userName, setUserName] = useState(Cookies.get("userName") || null); // 쿠키에서 초기값 가져오기
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
-  // 사용자 정보를 가져오는 함수
-  const fetchUserInfo = (token) => {
-    // ... 기존 코드 그대로 유지 ...
-  };
-
   useEffect(() => {
     const token = Cookies.get("authToken");
-    if (token) {
-      fetchUserInfo(token); // 토큰이 있으면 사용자 정보 가져오기
+    const savedUserName = Cookies.get("userName");
+    if (token && savedUserName) {
+      setUserName(savedUserName); // 쿠키에 저장된 사용자 이름 설정
     }
   }, []);
 
@@ -32,51 +28,35 @@ const Header = () => {
     navigate("/login");
   };
 
+  const handleLogin = () => {
+    navigate("/login", { state: { from: window.location.pathname } });
+  };
+
   return (
     <>
       <header className="App-header">
-        {/* 로고 */}
         <div className="logo">
           <img
             className="waplogo"
             alt="wap"
             src={wapLogo}
             onClick={() => navigate("/HomePage")}
-            style={{
-              cursor: "pointer",
-            }}
+            style={{ cursor: "pointer" }}
           />
         </div>
 
-        {/* 사용자 정보 및 로그인/로그아웃 버튼 */}
-        <div className="user-info">
-          {userName ? (
-            <>
-              <span className="welcome-message">{userName}님 환영합니다!</span>
-              <button className="auth-button" onClick={handleLogout}>
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <button
-              className="auth-button"
-              onClick={() =>
-                navigate("/login", { state: { from: window.location.pathname } })
-              }
-            >
-              로그인
-            </button>
-          )}
-        </div>
-
-        {/* 메뉴 아이콘 */}
         <div className="menu-icon" onClick={toggleMenu}>
-          {menuOpen ? "✕" : "☰"} {/* 메뉴가 열려 있을 때 "✕" 표시, 닫혔을 때 "☰" 표시 */}
+          {menuOpen ? "✕" : "☰"}
         </div>
       </header>
 
-      {/* 메뉴 컴포넌트 추가 */}
-      <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      <Menu
+        menuOpen={menuOpen}
+        toggleMenu={toggleMenu}
+        userName={userName}
+        handleLogin={handleLogin}
+        handleLogout={handleLogout}
+      />
     </>
   );
 };
