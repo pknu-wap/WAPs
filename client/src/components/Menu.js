@@ -1,14 +1,25 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const Menu = ({ menuOpen, toggleMenu, userName, handleLogin, handleLogout }) => {
   const navigate = useNavigate();
+
+  const handleNavigationWithAuth = (path) => {
+    const token = Cookies.get("authToken");
+    if (!token) {
+      alert("해당 페이지는 로그인을 해야 접속 가능합니다.");
+      navigate("/login");
+    } else {
+      navigate(path);
+      toggleMenu();
+    }
+  };
 
   return (
     <div className="menuContainer">
       {menuOpen && (
         <nav className="menu">
-          {/* 메뉴 상단: 000님 환영합니다 */}
           <div className="menu-header">
             {userName ? (
               <p className="welcome-message">{userName}님 환영합니다!</p>
@@ -17,7 +28,6 @@ const Menu = ({ menuOpen, toggleMenu, userName, handleLogin, handleLogout }) => 
             )}
           </div>
 
-          {/* 메뉴 리스트 */}
           <ul>
             <hr className="startLine"></hr>
             <li
@@ -39,19 +49,13 @@ const Menu = ({ menuOpen, toggleMenu, userName, handleLogin, handleLogout }) => 
             </li>
             <hr className="line"></hr>
             <li
-              onClick={() => {
-                navigate("/CreatePage");
-                toggleMenu();
-              }}
+              onClick={() => handleNavigationWithAuth("/CreatePage")}
             >
               Create Project
             </li>
             <hr className="line"></hr>
             <li
-              onClick={() => {
-                navigate("/vote");
-                toggleMenu();
-              }}
+              onClick={() => handleNavigationWithAuth("/vote")}
             >
               Vote
             </li>
@@ -76,7 +80,6 @@ const Menu = ({ menuOpen, toggleMenu, userName, handleLogin, handleLogout }) => 
             <hr className="startLine"></hr>
           </ul>
 
-          {/* 메뉴 하단: 로그인/로그아웃 텍스트 */}
           <div className="auth-section">
             {userName ? (
               <p
@@ -88,7 +91,7 @@ const Menu = ({ menuOpen, toggleMenu, userName, handleLogin, handleLogout }) => 
               >
                 로그아웃
               </p>
-            ) : null /* 비로그인 상태에서는 아무것도 표시하지 않음 */}
+            ) : null}
           </div>
         </nav>
       )}
