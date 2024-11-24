@@ -3,24 +3,12 @@ import axios from "axios";
 import styles from "../../assets/ProjectCreation/TechStackSelector.module.css";
 import TechStackList from "./TechStackList";
 
-const SelectedTechStacks = ({ selectedTechStacks, toggleTechStack }) => {
-  const handleRemoveTechStack = (techStack) => {
-    toggleTechStack(techStack); // toggleTechStack에서 제거하는 기능을 구현
-  };
-
+const SelectedTechStacks = ({ selectedTechStacks }) => {
   return (
     <div className={styles.techstack_select}>
       {selectedTechStacks.map((selected, index) => (
-        <div key={index} className={styles.selected_tech_stack}>
-          <span>
-            {selected.techStackName} - {selected.techStackType}
-          </span>
-          <button
-            className={styles.remove_button}
-            onClick={() => handleRemoveTechStack(selected)} // 취소 버튼 클릭 시 제거
-          >
-            X
-          </button>
+        <div key={index}>
+          {selected.techStackName} - {selected.techStackType}
         </div>
       ))}
     </div>
@@ -65,10 +53,7 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
     <div className={styles.teckstack_form}>
       <label className={styles.techstack_label}>기술스택</label>
 
-      <SelectedTechStacks
-        selectedTechStacks={selectedTechStacks}
-        toggleTechStack={toggleTechStack}
-      />
+      <SelectedTechStacks selectedTechStacks={selectedTechStacks} />
       <div className={styles.techstack_btn}>
         <svg
           id="custom_image_uploader"

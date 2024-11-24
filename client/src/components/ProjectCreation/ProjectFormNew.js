@@ -9,6 +9,7 @@ import RadioButton from "./RadioButton";
 import TextInputForm from "./TextInputForm";
 import TechStackSelector from "./TechStackSelector";
 import TeamMemberInputForm from "./TeamMemberInputForm";
+import TeamMemberInputNew from "./TeamMemberInputNew";
 import InputPin from "./InputPin";
 
 // 사용성을 높인 버전의 프로젝트 생성 폼
@@ -88,7 +89,19 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           return newImages;
         });
       });
-      setTeamMembers(existingProject.teamMember || []);
+
+      // 멤버가 존재하면 추가
+      if (existingProject.teamMember) {
+        existingProject.teamMember.forEach((member, index) => {
+          //기존 배열에 member만 추가
+          setTeamMembers((prev) => {
+            const newMembers = [...prev];
+            newMembers[index] = member;
+            return newMembers;
+          });
+        });
+      }
+
       setSelectedTechStacks(existingProject.techStack || []);
     }
   }, [isEdit, existingProject]);
@@ -96,6 +109,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project`;
+    const formData = new FormData();
 
     const projectData = {
       title,
@@ -105,21 +119,26 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       semester: parseInt(semester),
       projectYear,
       teamMember: teamMembers.map((member) => ({
-        memberName: member.name,
-        memberRole: member.role,
+        memberName: member.memberName,
+        memberRole: member.memberRole,
       })),
       techStack: selectedTechStacks.map((stack) => ({
         techStackName: stack.techStackName,
         techStackType: stack.techStackType,
       })),
+
       password,
     };
 
-    const formData = new FormData();
-    formData.append(
-      "project",
-      new Blob([JSON.stringify(projectData)], { type: "application/json" })
-    );
+    // blob 객체에 JSON 데이터 추가
+    const blob = new Blob([JSON.stringify(projectData)], {
+      type: "application/json",
+    });
+    // JSON 데이터 추가
+    formData.append("project", blob);
+
+    // JSON 데이터를 텍스트로 직접 추가
+    // formData.append("project", JSON.stringify(projectData));
 
     if (thumbnail) {
       formData.append("thumbnail", thumbnail);
@@ -133,7 +152,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
 
     try {
       if (isEdit) {
-        await axios.put(`${apiUrl}/${existingProject.id}`, formData, {
+        await axios.put(`${apiUrl}/${existingProject.projectId}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
@@ -154,6 +173,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       window.location.reload();
     } catch (error) {
       console.error("프로젝트 요청 실패:", error);
+      // FormData 내용 출력
+      formData.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });
+      console.log(title);
+
       alert("프로젝트 요청에 실패했습니다. 다시 시도해 주세요.");
     }
   };
@@ -216,7 +241,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         }}
         errorMessage={errorMessage}
       />
-
       {/* <div className="form-group">
         <label>이미지 업로드:</label>
         {images.map((img, index) => (
@@ -231,7 +255,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           />
         ))}
       </div> */}
-
       <div className={styles.images}>
         {images.map((image, index) => (
           <ImageUploader
@@ -260,7 +283,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           )
         )}
       </div>
-
       <div className="form-group">
         <label>팀원:</label>
         {teamMembers.map((member, index) => (
@@ -277,18 +299,24 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
             errorMessage={errorMessage}
             addTeamMember={addTeamMember}
             teamMembers={teamMembers}
+            setTeamMembers={setTeamMembers}
           />
         ))}
       </div>
+
+      {/* <div className="form-group">
+        <label>팀원:</label>
+        {teamMembers.map((member, index) => (
+          <TeamMemberInputNew initialTeamMember={teamMembers} />
+        ))}
+      </div> */}
+
       <TechStackSelector
         selectedTechStacks={selectedTechStacks}
         toggleTechStack={toggleTechStack}
       />
-
       <InputPin password={password} setPassword={setPassword} />
-
       {uploadError && <p className="error-message">{uploadError}</p>}
-
       <button
         type="submit"
         className={styles.submit_button}

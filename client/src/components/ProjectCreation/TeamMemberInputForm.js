@@ -5,13 +5,13 @@ const TeamMemberInputForm = ({
   member,
   index,
   handleMemberNameChange,
-  //   handleImgUpload,
   handleRoleChange,
   handleMemberNameFocus,
   roleOptions,
   addTeamMember,
   handleMemberImageUpload,
   teamMembers,
+  setTeamMembers,
 }) => (
   <div className={styles.teammember}>
     {index === teamMembers.length - 1 && (

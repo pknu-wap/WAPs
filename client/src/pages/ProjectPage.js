@@ -101,14 +101,6 @@ const ProjectPage = () => {
     <div>
       <Header toggleMenu={toggleMenu} />
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
-      <h1
-        style={{
-          color: "white",
-        }}
-      >
-        {/* // 조건부 렌더링 */}
-        {isEditMode ? "프로젝트 수정" : "새 프로젝트 생성"}
-      </h1>
       <ProjectFormNew
         isEdit={isEditMode}
         existingProject={isEditMode ? projectData : null}
