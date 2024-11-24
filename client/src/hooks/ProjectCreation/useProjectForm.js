@@ -18,7 +18,7 @@ const useProjectForm = () => {
   // 팀장 선택 상태관리
   const [isLeader, setIsLeader] = useState(false);
   const [teamMembers, setTeamMembers] = useState([
-    { name: "", image: null, role: "" },
+    { memberName: "", image: null, memberRole: "" },
   ]);
 
   const [thumbnail, setThumbnail] = useState(null);
@@ -43,21 +43,20 @@ const useProjectForm = () => {
 
   // 썸네일 및 일반 이미지 업로드 핸들러
   const handleImgUpload = (file, type, index = null) => {
-    if (!file.type.startsWith("image/")) {
+    // 파일이 없는 경우 또는 파일 타입이 유효하지 않은 경우를 먼저 확인
+    if (!file || !file.type || !file.type.startsWith("image/")) {
       const key = type === "thumbnail" ? "thumbnail" : `image${index}`;
-      setErrorMessage((prev) => ({
-        ...prev,
-        [key]: "이미지 파일만 업로드할 수 있습니다.",
-      }));
+
       return;
     }
 
     if (type === "thumbnail") {
-      setThumbnail(file);
+      setThumbnail(file); // 썸네일 설정
     } else if (type === "image") {
-      const newImages = [...images];
-      newImages[index] = file;
-      setImages(newImages);
+      const newImages = [...images]; // 기존 이미지 배열 복사
+      newImages[index] = file; // 해당 인덱스에 파일 추가
+      setImages(newImages); // 업데이트된 배열 설정
+      console.log(images);
     }
 
     // 에러 메시지 초기화
@@ -90,7 +89,7 @@ const useProjectForm = () => {
   // 팀원 이름 변경 핸들러
   const handleMemberNameChange = (e, index) => {
     const newTeamMembers = [...teamMembers];
-    newTeamMembers[index].name = e.target.value;
+    newTeamMembers[index].memberName = e.target.value;
     setTeamMembers(newTeamMembers);
   };
 
@@ -107,7 +106,7 @@ const useProjectForm = () => {
   // 팀원 역할 변경 핸들러
   const handleRoleChange = (e, index) => {
     const newTeamMembers = [...teamMembers];
-    newTeamMembers[index].role = e.target.value;
+    newTeamMembers[index].memberRole = e.target.value;
     setTeamMembers(newTeamMembers);
   };
 
@@ -116,12 +115,23 @@ const useProjectForm = () => {
   const addTeamMember = () => {
     const lastMember = teamMembers[teamMembers.length - 1];
     // 마지막 팀원의 이름이 비어있지 않고, 역할이 비어있지 않은 경우에만 추가
-    if (lastMember.name.trim() !== "" && lastMember.role.trim() !== "") {
-      setTeamMembers([...teamMembers, { name: "", image: null, role: "" }]);
+    if (
+      lastMember.memberName.trim() !== "" &&
+      lastMember.memberRole.trim() !== ""
+    ) {
+      setTeamMembers([...teamMembers, { memberName: "", memberRole: "" }]);
+      console.log(teamMembers);
     } else {
       alert("모든 필드를 입력해 주세요."); // 사용자에게 알림 추가
     }
   };
+
+  // const addTeamMember = () => {
+  //   setTeamMembers((prevMembers) => [
+  //     ...prevMembers,
+  //     { memberName: "", memberRole: "", image: null }, // 새 팀원 초기값 설정
+  //   ]);
+  // };
 
   // 입력 글자 수 제한 핸들러
   const handleInputLimit = (e) => {
@@ -191,11 +201,7 @@ const useProjectForm = () => {
         fieldName: "teamName",
         message: "팀 이름을 입력해주세요.",
       },
-      // {
-      //   value: title,
-      //   fieldName: "title",
-      //   message: "프로젝트 제목을 입력해주세요.",
-      // },
+
       {
         value: summary,
         fieldName: "summary",
@@ -242,9 +248,13 @@ const useProjectForm = () => {
     setProjectYear,
     teamMembers,
     thumbnail,
+    setThumbnail,
     images,
+    setImages,
     selectedTechStacks,
+    setSelectedTechStacks,
     teamMembers,
+    setTeamMembers,
     password,
 
     inputTitle,

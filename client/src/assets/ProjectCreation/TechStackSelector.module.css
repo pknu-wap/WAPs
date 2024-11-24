@@ -20,13 +20,13 @@
 }
 
 .techstack_select{
-    width: 100%;
+    width: 80%;
     color: #FFFFFF;
-    font-weight: bold;
     display: flex;
     gap: 15px;
     padding-top: 15px ;
     flex-wrap: wrap; /* 아이템이 컨테이너의 너비를 초과할 경우 줄바꿈 */
+    margin: 0 auto;
     justify-content: center;
 }
 

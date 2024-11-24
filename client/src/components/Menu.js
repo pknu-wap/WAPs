@@ -2,7 +2,13 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
-const Menu = ({ menuOpen, toggleMenu, userName, handleLogin, handleLogout }) => {
+const Menu = ({
+  menuOpen,
+  toggleMenu,
+  userName,
+  handleLogin,
+  handleLogout,
+}) => {
   const navigate = useNavigate();
 
   const handleNavigationWithAuth = (path) => {
@@ -48,17 +54,11 @@ const Menu = ({ menuOpen, toggleMenu, userName, handleLogin, handleLogout }) => 
               Projects
             </li>
             <hr className="line"></hr>
-            <li
-              onClick={() => handleNavigationWithAuth("/CreatePage")}
-            >
+            <li onClick={() => handleNavigationWithAuth("/project/create")}>
               Create Project
             </li>
             <hr className="line"></hr>
-            <li
-              onClick={() => handleNavigationWithAuth("/vote")}
-            >
-              Vote
-            </li>
+            <li onClick={() => handleNavigationWithAuth("/vote")}>Vote</li>
             <hr className="line"></hr>
             <li
               onClick={() => {

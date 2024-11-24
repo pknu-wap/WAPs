@@ -11,6 +11,7 @@ import MainPage from "./pages/MainPage";
 import Callback from "./components/Login/Callback";
 import ProtectedPage from "./components/Login/ProtectedPage";
 import VotePage from "./pages/VotePage";
+import ProjectPage from "./pages/ProjectPage";
 import "./App.css";
 
 function App() {
@@ -20,15 +21,12 @@ function App() {
         <Routes>
           {/* 기본 홈 화면 */}
           <Route path="/" element={<MainPage />} />
-
           {/* 로그인 화면 */}
           <Route path="/login" element={<Login />} />
-
           {/* 카카오 인증 Callback */}
           <Route path="/oauth/callback" element={<Callback />} />
-
           {/* 경로 */}
-          <Route path="/CreatePage" element={<CreatePage />} />
+          <Route path="/project/create" element={<ProjectPage />} />
           <Route path="/vote" element={<VotePage />} />
           <Route path="/HomePage" element={<Home />} />
           <Route path="/project" element={<Project />} />

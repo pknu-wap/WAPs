@@ -31,6 +31,7 @@ const VoteForm = () => {
       // JSON 데이터를 전송
       const response = await axios.post(apiUrl, projectData, {
         headers: {
+          // json 형식으로 설정하니까 투표가 된 듯 함.
           "Content-Type": "application/json", // JSON 형식으로 설정
           Authorization: `Bearer ${token}`, // 인증 토큰 추가
         },
