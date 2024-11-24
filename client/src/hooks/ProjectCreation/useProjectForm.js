@@ -244,7 +244,9 @@ const useProjectForm = () => {
     images,
     setImages,
     selectedTechStacks,
+    setSelectedTechStacks,
     teamMembers,
+    setTeamMembers,
     password,
 
     inputTitle,

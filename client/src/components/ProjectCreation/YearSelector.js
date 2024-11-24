@@ -52,6 +52,15 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
     };
   }, [setSelectedYear]);
 
+  // 만약 이미 년도가 선택되어 있다면 해당 년도로 스크롤 이동
+  useEffect(() => {
+    if (scrollRef.current) {
+      const index = years.indexOf(selectedYear);
+      const itemHeight = 26;
+      scrollRef.current.scrollTop = index * itemHeight;
+    }
+  }, [selectedYear]);
+
   // 날짜 배열 생성
   const years = generateYear();
 

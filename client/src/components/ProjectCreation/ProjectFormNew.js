@@ -43,11 +43,13 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     projectYear,
     setProjectYear,
     teamMembers,
+    setTeamMembers,
     thumbnail,
     setThumbnail,
     images,
     setImages,
     selectedTechStacks,
+    setSelectedTechStacks,
     uploading,
     uploadError,
     errorMessage,
@@ -69,16 +71,15 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   // 기존 데이터 초기화
   useEffect(() => {
     if (isEdit && existingProject) {
-      setTitle(existingProject.title || "");
-      setProjectType(existingProject.projectType || "");
-      setContent(existingProject.content || "");
-      setSummary(existingProject.summary || "");
+      setThumbnail(existingProject.thumbnail || null);
+      setProjectYear(existingProject.projectYear || new Date().getFullYear());
       setSemester(
         existingProject.semester ? existingProject.semester.toString() : ""
       );
-      setProjectYear(existingProject.projectYear || new Date().getFullYear());
-      setThumbnail(existingProject.thumbnail || null);
-
+      setProjectType(existingProject.projectType || "");
+      setTitle(existingProject.title || "");
+      setSummary(existingProject.summary || "");
+      setContent(existingProject.content || "");
       // 존재하는 이미지만 표시
       existingProject.images.forEach((image, index) => {
         setImages((prev) => {
@@ -87,6 +88,8 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           return newImages;
         });
       });
+      setTeamMembers(existingProject.teamMember || []);
+      setSelectedTechStacks(existingProject.techStack || []);
     }
   }, [isEdit, existingProject]);
 

@@ -59,7 +59,7 @@ const TeamMemberInputForm = ({
         className={styles.teammember_input}
         type="text"
         placeholder="팀원 이름"
-        value={member.name}
+        value={member.memberName}
         onChange={(e) => handleMemberNameChange(e, index)}
         onFocus={(e) => handleMemberNameFocus(e, index)}
       />
@@ -67,7 +67,7 @@ const TeamMemberInputForm = ({
       {/* 팀원 역할 선택 */}
       <select
         className={styles.teammember_role_select_field}
-        value={member.role}
+        value={member.memberRole}
         onChange={(e) => handleRoleChange(e, index)}
       >
         <option value="">역할</option>
