@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
@@ -28,6 +29,7 @@ const roleOptions = [
 ];
 
 const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
+  const { projectId } = useParams();
   const maxImageCount = 4; // 최대 이미지 업로드 개수
   const token = Cookies.get("authToken");
   const {
@@ -137,9 +139,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     // JSON 데이터 추가
     formData.append("project", blob);
 
-    // JSON 데이터를 텍스트로 직접 추가
-    // formData.append("project", JSON.stringify(projectData));
-
     if (thumbnail) {
       formData.append("thumbnail", thumbnail);
     }
@@ -152,7 +151,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
 
     try {
       if (isEdit) {
-        await axios.put(`${apiUrl}/${existingProject.projectId}`, formData, {
+        await axios.put(`${apiUrl}/${projectId}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
@@ -173,13 +172,16 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       window.location.reload();
     } catch (error) {
       console.error("프로젝트 요청 실패:", error);
-      // FormData 내용 출력
-      formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
-      });
-      console.log(title);
+      // 에러 출력
 
       alert("프로젝트 요청에 실패했습니다. 다시 시도해 주세요.");
+
+      if (error.response && error.response.status === 400) {
+        console.error("Request failed with status code 400");
+        console.error("Headers sent:", error.config.headers);
+        console.error("Data sent:", error.config.data);
+        console.error("Status text:", error.response.statusText);
+      }
     }
   };
 

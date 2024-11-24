@@ -118,10 +118,7 @@ const useProjectForm = () => {
       lastMember.memberName.trim() !== "" &&
       lastMember.memberRole.trim() !== ""
     ) {
-      setTeamMembers([
-        ...teamMembers,
-        { memberName: "", image: null, memberRole: "" },
-      ]);
+      setTeamMembers([...teamMembers, { memberName: "", memberRole: "" }]);
       console.log(teamMembers);
     } else {
       alert("모든 필드를 입력해 주세요."); // 사용자에게 알림 추가
