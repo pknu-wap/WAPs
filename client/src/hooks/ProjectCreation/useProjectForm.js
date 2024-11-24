@@ -56,6 +56,7 @@ const useProjectForm = () => {
       const newImages = [...images]; // 기존 이미지 배열 복사
       newImages[index] = file; // 해당 인덱스에 파일 추가
       setImages(newImages); // 업데이트된 배열 설정
+      console.log(images);
     }
 
     // 에러 메시지 초기화
