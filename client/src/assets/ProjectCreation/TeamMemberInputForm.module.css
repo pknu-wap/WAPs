@@ -21,12 +21,12 @@ svg{
     height: 55px;
 }
 
-.teammember_form{
-    margin: 0 auto;
-    width: 85%;
+.teammember_form {
+    width: 100%;
     display: flex;
-    align-items: center;
-    gap: 5px;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    gap: 5px; /* 요소 간의 간격 */
 }
 
 .teammember_label{
