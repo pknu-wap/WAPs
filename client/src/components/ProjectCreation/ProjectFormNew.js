@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
 import axios from "axios";
 import Cookies from "js-cookie";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
@@ -32,6 +33,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const { projectId } = useParams();
   const maxImageCount = 4; // 최대 이미지 업로드 개수
   const token = Cookies.get("authToken");
+  const navigate = useNavigate(); // navigate 함수
   const {
     title,
     setTitle,
@@ -165,6 +167,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           },
         });
         alert("프로젝트가 성공적으로 수정되었습니다.");
+        navigate(`/project/${projectId}`);
       } else {
         await axios.post(apiUrl, formData, {
           headers: {
@@ -173,6 +176,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           },
         });
         alert("프로젝트가 성공적으로 생성되었습니다.");
+        navigate(`/HomePage`);
       }
 
       resetForm();
