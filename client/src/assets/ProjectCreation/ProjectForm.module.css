@@ -18,8 +18,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    max-width: 394px;
-    width: 394px; /* 너비 */
+  
+    width: 100%; /* 너비 */
     max-height: 282px; /* 최대 높이 */
     height: 282px;
     margin: 10px auto; /* 가운데 정렬 */
