@@ -89,7 +89,7 @@ const ProjectDetailForm = () => {
     <div className={styles.project_detail_form}>
       <img
         className={styles.thumnail_image}
-        src={thumnail_image ? thumnail_image : dogImage}
+        src={thumnail_image ? thumnail_image : null}
         alt={thumnail_image ? "Fetched content" : "Default content"}
       />
       <div className={styles.project_detail_box}>
@@ -98,7 +98,7 @@ const ProjectDetailForm = () => {
           <div className={styles.project_info}>
             <div className={styles.project_year_info}>
               <div className={styles.projectYear}>
-                {projectYear ? projectYear : "2999"}
+                {projectYear ? projectYear : "No Year"}
               </div>
               <div>-</div>
               <div className={styles.semester}>{semester ? semester : "1"}</div>
@@ -113,9 +113,7 @@ const ProjectDetailForm = () => {
             {summary ? summary : "No Summary"}
           </div>
           <div className={styles.content}>
-            {content
-              ? content
-              : "내용이 없습니다. 내용이 많을 때 어떻게 되는지 테스트 중입니다. 내용이 없어요!!! 있었는데? 아니 없어요. 있었는데? 아니 없어요 그냥....내용이 없습니다.내용이 많을 때 어떻게 되는지 테스트 중입니다. 내용이 없어요!!! 있었는데? 아니 없어요. 있었는데?                                                 아니 없어요 그냥....내용이 없습니다.내용이 많을 때 어떻게 되는지 테스트 중입니다. 내용이 없어요!!! 있었는데? 아니 없어요. 있었는데? 아니 없어요 그냥....내용이 없습니다.내용이 많을 때 어떻게 되는지 테스트 중입니다. 내용이 없어요!!! 있었는데? 아니 없어요. 있었는데? 아니 없어요 그냥....내용이 없습니다.내용이 많을 때 어떻게 되는지 테스트 중입니다. 내용이 없어요!!! 있었는데? 아니 없어요. 있었는데? 아니 없어요 그냥....내용이 없습니다.내용이 많을 때 어떻게 되는지 테스트 중입니다. 내용이 없어요!!! 있었는데? 아니 없어요. 있었는데? 아니 없어요 그냥....내용이 없습니다.내용이 많을 때 어떻게 되는지 테스트 중입니다. 내용이 없어요!!! 있었는데? 아니 없어요. 있었는데? 아니 없어요 그냥....내용이 없습니다.내용이 많을 때 어떻게 되는지 테스트 중입니다. 내용이 없어요!!! 있었는데? 아니 없어요. 있었는데? 아니 없어요 그냥...."}
+            {content ? content : "No Content"}
           </div>
         </div>
       </div>
@@ -126,7 +124,7 @@ const ProjectDetailForm = () => {
             <img
               key={index}
               className={styles.image}
-              src={image ? image["imageFile"] : dogImage} // image가 null이면 기본 이미지를 표시
+              src={image ? image["imageFile"] : null} // image가 null이면 기본 이미지를 표시
               alt={`Fetched content ${index + 1}`}
             />
           ))
