@@ -1,11 +1,12 @@
-.container{
+/* 컨테이너 스타일 */
+.container {
   background-color: black;
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
-  
 }
 
+/* 헤더 스타일 */
 .App-header {
   display: flex;
   justify-content: space-between;
@@ -17,52 +18,73 @@
   top: 0;
   left: 0;
   right: 0;
-  top: 0;
-  
 }
 
-.waplogo{
+/* 로고 스타일 */
+.waplogo {
   width: 70px;
   height: auto;
 }
 
+/* 메뉴 아이콘 스타일 */
 .menu-icon {
   cursor: pointer;
   font-size: 25px;
+}
 
+/* 메뉴 컨테이너 스타일 */
+.menuContainer {
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  right: 0;
+  position: sticky;
+  z-index: 100;
+  top: 30px;
+  left: 0;
+  right: 0;
 }
-.menuContainer{
-    display: flex;
-    justify-content: flex-end; /* 오른쪽 정렬 */
-    right: 0;
-    position: sticky;
-    z-index: 100;
-    top: 30px;
-    left: 0;
-    right: 0;
-    
-}
+
+/* 메뉴 스타일 */
 .menu {
-  background-color: #333;
+  width: 380px;
+  height: 100%;
+  background-color: #000000;
   color: white;
-  width: 120px;
   padding: 10px;
   position: fixed;
 }
 
-.menu ul{
+/* 메뉴 구분선 스타일 */
+.startLine {
+  border: none;
+  border-top: 3px solid #fff;
+}
+
+.line {
+  border: none;
+  border-top: 0.7px solid #fff;
+}
+
+/* 메뉴 리스트 스타일 */
+.menu ul {
   list-style-type: none; /* 기본 리스트 스타일 제거 */
   padding: 0;
   margin: 0;
 }
 
-.menu li{
+.menu li {
   margin-right: 40px; /* 각 아이템 간의 간격 조절 */
   color: white;
-  padding: 5px;
+  padding: 10px;
+  font-size: x-large;
+  font-weight: 700;
+  font-family: "Inter", sans-serif;
+  font-style: normal;
+  cursor: pointer;
+  margin-bottom: 17px;
 }
 
-
+/* 일반 ul, li 스타일 */
 ul {
   list-style-type: none;
   padding: 0;
@@ -70,9 +92,9 @@ ul {
 
 li {
   padding: 10px 0;
-  
 }
 
+/* 콘텐츠 박스 스타일 */
 .content-box {
   display: flex;
   flex-direction: column;
@@ -86,7 +108,7 @@ li {
   margin: 10px;
   background-color: #ffffff;
   padding: 15px;
-  text-align:left;
+  text-align: left; /* 왼쪽 정렬로 수정 */
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -95,13 +117,14 @@ li {
   position: relative; /* 부모 요소를 기준으로 자식 요소의 위치를 설정하기 위해 */
 }
 
+/* 이미지 컨테이너 스타일 */
 .image {
-
   width: 100%; /* 부모 요소에 맞춰 가로 채우기 */
   height: 100%; /* 부모 요소에 맞춰 세로 채우기 */
   overflow: hidden;
 }
 
+/* 프로젝트 이미지 스타일 */
 .project-image {
   width: 100%;
   height: 100%;
@@ -111,14 +134,14 @@ li {
   left: 0;
 }
 
-
-
+/* 프로젝트1 이미지 스타일 */
 .project1 {
   width: 100%;
   height: 100%;
   object-fit: cover; /* 이미지 비율을 유지하면서 박스에 맞춰 자르기 */
 }
 
+/* 타이틀 박스 스타일 */
 .titlebox {
   width: 355px;
   height: 100px;
@@ -143,7 +166,26 @@ li {
 
 .titlebox p {
   margin: 5px 0 0;
-  font-size: 12px;
-  text-align:left;
+  font-size: 15px; /* 폰트 크기는 최신 CSS에 맞게 유지 */
+  text-align: left; /* 왼쪽 정렬 추가 */
 }
 
+
+.welcome-message{
+  margin-right: 40px; /* 각 아이템 간의 간격 조절 */
+  color: white;
+  padding: 10px;
+  font-size: 120%;
+  font-weight: 700;
+  font-family: "Inter", sans-serif;
+  font-style: normal;
+  cursor: pointer;
+}
+
+.auth-text{
+  text-align: right;
+  padding-right: 5%;
+  margin-top: 5%;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+}

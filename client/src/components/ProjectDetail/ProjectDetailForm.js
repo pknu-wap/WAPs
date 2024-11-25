@@ -6,12 +6,15 @@ import { jwtDecode } from "jwt-decode"; // JWT 디코딩 모듈
 import styles from "../../assets/ProjectDetail/ProjectDetailForm.module.css";
 import dogImage from "../../assets/img/dog.png";
 
+
 const ProjectDetailForm = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+
   const token = Cookies.get("authToken"); // 로그인한 사용자 토큰
   const [isOwner, setIsOwner] = useState(false); // 작성자인지 확인
   const [projectData, setProjectData] = useState(null); // 프로젝트 데이터
+
 
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}`;
 
@@ -171,6 +174,7 @@ const ProjectDetailForm = () => {
         </div>
       </div>
 
+
       {/* 삭제 버튼 */}
       {isOwner && token && (
         <button
@@ -189,6 +193,7 @@ const ProjectDetailForm = () => {
           삭제하기
         </button>
       )}
+
     </div>
   );
 };

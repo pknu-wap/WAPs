@@ -5,20 +5,21 @@ const TeamMemberInputForm = ({
   member,
   index,
   handleMemberNameChange,
-  //   handleImgUpload,
   handleRoleChange,
   handleMemberNameFocus,
   roleOptions,
   addTeamMember,
   handleMemberImageUpload,
   teamMembers,
+  setTeamMembers,
+  handleRemoveTeamMember,
 }) => (
   <div className={styles.teammember}>
     {index === teamMembers.length - 1 && (
       <label className={styles.teammember_label}>팀원 등록</label>
     )}
     <div className={styles.teammember_form}>
-      {/* 이미지 업로드 SVG */}
+      {/*   
       <div className={styles.teammember_image_upload_container}>
         <input
           type="file"
@@ -42,24 +43,24 @@ const TeamMemberInputForm = ({
               fill="#232323"
             />
           </svg>
-        </label>
+        </label> */}
 
-        {/* 이미지 프리뷰 */}
-        {member.image && (
+      {/* 이미지 프리뷰 */}
+      {/* {member.image && (
           <img
             className={styles.teammember_image}
             src={URL.createObjectURL(member.image)}
             alt={`Member ${index + 1} Image`}
           />
-        )}
-      </div>
+        )} */}
+      {/* </div> */}
 
       {/* 팀원 이름 입력 */}
       <input
         className={styles.teammember_input}
         type="text"
         placeholder="팀원 이름"
-        value={member.name}
+        value={member.memberName}
         onChange={(e) => handleMemberNameChange(e, index)}
         onFocus={(e) => handleMemberNameFocus(e, index)}
       />
@@ -67,7 +68,7 @@ const TeamMemberInputForm = ({
       {/* 팀원 역할 선택 */}
       <select
         className={styles.teammember_role_select_field}
-        value={member.role}
+        value={member.memberRole}
         onChange={(e) => handleRoleChange(e, index)}
       >
         <option value="">역할</option>
@@ -77,6 +78,19 @@ const TeamMemberInputForm = ({
           </option>
         ))}
       </select>
+
+      {/* 삭제 버튼 */}
+      {/*등록된 팀원인 경우에만 삭제 버튼 표시 */}
+      {index !== teamMembers.length - 1 && (
+        <button
+          className={styles.teammember_remove_btn}
+          type="button"
+          onClick={() => handleRemoveTeamMember(index)}
+        >
+          삭제
+        </button>
+      )}
+      {/* 등록 버튼 */}
       {index === teamMembers.length - 1 && (
         <button
           className={styles.teammember_add_btn}

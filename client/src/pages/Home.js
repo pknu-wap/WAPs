@@ -13,7 +13,7 @@ const Home = () => {
 
   return (
     <div>
-      <Header toggleMenu={toggleMenu} />
+      <Header menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
         <ContentBox />
