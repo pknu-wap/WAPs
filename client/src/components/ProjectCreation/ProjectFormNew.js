@@ -183,12 +183,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
 
       alert("프로젝트 요청에 실패했습니다. 다시 시도해 주세요.");
 
-      if (error.response && error.response.status === 400) {
-        console.error("Request failed with status code 400");
-        console.error("Headers sent:", error.config.headers);
-        console.error("Data sent:", error.config.data);
-        console.error("Status text:", error.response.statusText);
-      }
+      console.log(formData);
     }
   };
 

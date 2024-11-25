@@ -32,7 +32,7 @@ function App() {
           <Route path="/project" element={<Project />} />
           <Route path="/map" element={<Map />} />
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
-
+          <Route path="/project/edit/:projectId" element={<ProjectPage />} />
           {/* 보호된 페이지 */}
           <Route path="/protected" element={<ProtectedPage />} />
         </Routes>

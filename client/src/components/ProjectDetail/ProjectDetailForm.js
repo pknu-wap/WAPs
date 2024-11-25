@@ -178,7 +178,7 @@ const ProjectDetailForm = () => {
         </div>
       </div>
       {/* 수정 버튼 */}
-      {/* <EditButton projectId={projectId} /> */}
+      <EditButton projectId={projectId} />
     </div>
   );
 };
