@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
+import styles from "../../assets/ProjectDetail/EditButton.module.css";
 
 const EditButton = ({ projectId }) => {
   const navigate = useNavigate();
@@ -41,7 +42,11 @@ const EditButton = ({ projectId }) => {
     }
   };
 
-  return <button onClick={handleEditClick}>수정하기</button>;
+  return (
+    <button className={styles.edit_button} onClick={handleEditClick}>
+      수정하기
+    </button>
+  );
 };
 
 export default EditButton;
