@@ -64,6 +64,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     handleMemberImageUpload,
     handleRoleChange,
     addTeamMember,
+    handleRemoveTeamMember,
     handleInputLimit,
     toggleTechStack,
     resetForm,
@@ -306,6 +307,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
             handleImgUpload={handleImgUpload}
             errorMessage={errorMessage}
             addTeamMember={addTeamMember}
+            handleRemoveTeamMember={handleRemoveTeamMember}
             teamMembers={teamMembers}
             setTeamMembers={setTeamMembers}
           />

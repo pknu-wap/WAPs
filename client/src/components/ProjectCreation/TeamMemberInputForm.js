@@ -12,6 +12,7 @@ const TeamMemberInputForm = ({
   handleMemberImageUpload,
   teamMembers,
   setTeamMembers,
+  handleRemoveTeamMember,
 }) => (
   <div className={styles.teammember}>
     {index === teamMembers.length - 1 && (
@@ -77,6 +78,19 @@ const TeamMemberInputForm = ({
           </option>
         ))}
       </select>
+
+      {/* 삭제 버튼 */}
+      {/*등록된 팀원인 경우에만 삭제 버튼 표시 */}
+      {index !== teamMembers.length - 1 && (
+        <button
+          className={styles.teammember_remove_btn}
+          type="button"
+          onClick={() => handleRemoveTeamMember(index)}
+        >
+          삭제
+        </button>
+      )}
+      {/* 등록 버튼 */}
       {index === teamMembers.length - 1 && (
         <button
           className={styles.teammember_add_btn}

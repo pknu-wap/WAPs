@@ -65,6 +65,15 @@ text-align: left;
     color: #FFFFFF; /* 선택된 역할 색상 */
 }
 
+.teammember_remove_btn{
+    width: 43px;
+    height: 25px;
+    border: 0px;
+    cursor: pointer;
+    border-radius: 20px;
+    font-size: 10px;
+}
+
 .teammember_add_btn{
     width: 43px;
     height: 25px;

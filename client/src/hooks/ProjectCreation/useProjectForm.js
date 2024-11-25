@@ -126,6 +126,13 @@ const useProjectForm = () => {
     }
   };
 
+  // 팀원 삭제 핸들러
+  const handleRemoveTeamMember = (index) => {
+    const newTeamMembers = teamMembers.filter((_, i) => i !== index);
+    setTeamMembers(newTeamMembers);
+    console.log(teamMembers);
+  };
+
   // const addTeamMember = () => {
   //   setTeamMembers((prevMembers) => [
   //     ...prevMembers,
@@ -272,6 +279,7 @@ const useProjectForm = () => {
     handleMemberImageUpload,
     handleRoleChange,
     addTeamMember,
+    handleRemoveTeamMember,
     handleInputLimit,
     toggleTechStack,
     setPassword,
