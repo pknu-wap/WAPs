@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode"; // JWT 디코딩 모듈
 import styles from "../../assets/ProjectDetail/ProjectDetailForm.module.css";
 import dogImage from "../../assets/img/dog.png";
+import EditButton from "./EditButton";
 
 const ProjectDetailForm = () => {
   const { projectId } = useParams();
@@ -102,15 +103,15 @@ const ProjectDetailForm = () => {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* 프로젝트 내용 */}
-      <div className={styles.project_detail_content}>
-        <div className={styles.summary}>
-          {projectData.summary || "요약 정보 없음"}
-        </div>
-        <div className={styles.content}>
-          {projectData.content || "내용이 없습니다."}
+        {/* 프로젝트 내용 */}
+        <div className={styles.project_detail_content}>
+          <div className={styles.summary}>
+            {projectData.summary || "요약 정보 없음"}
+          </div>
+          <div className={styles.content}>
+            {projectData.content || "내용이 없습니다."}
+          </div>
         </div>
       </div>
 
