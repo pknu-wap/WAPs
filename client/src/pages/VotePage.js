@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import VoteForm from "../components/Vote/VoteForm";
+import FloatingButton from "../components/FloatingButton";
 
 const VotePage = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,6 +18,7 @@ const VotePage = () => {
       <main>
         <VoteForm />
       </main>
+      <FloatingButton />
     </div>
   );
 };

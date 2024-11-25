@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import Header from '../components/Header';
-import Menu from '../components/Menu';
-import ContentBox from '../components/ContentBox';
-
+import React, { useState } from "react";
+import Header from "../components/Header";
+import Menu from "../components/Menu";
+import ContentBox from "../components/ContentBox";
+import FloatingButton from "../components/FloatingButton";
 
 const Home = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,6 +18,7 @@ const Home = () => {
       <main>
         <ContentBox />
       </main>
+      <FloatingButton />
     </div>
   );
 };

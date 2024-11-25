@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Menu from "../components/Menu";
 import ProjectDetailForm from "../components/ProjectDetail/ProjectDetailForm";
 import App from "../App.css";
+import FloatingButton from "../components/FloatingButton";
 
 const ProjectDetailPage = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -19,6 +20,7 @@ const ProjectDetailPage = () => {
       <main>
         <ProjectDetailForm />
       </main>
+      <FloatingButton />
     </div>
   );
 };
