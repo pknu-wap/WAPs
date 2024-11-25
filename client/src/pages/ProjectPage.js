@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import ProjectFormNew from "../components/ProjectCreation/ProjectFormNew";
-
+import FloatingButton from "../components/FloatingButton";
 // 프로젝트 생성 및 수정 페이지 (조건분 렌더링)
 
 const ProjectPage = () => {
@@ -106,6 +106,7 @@ const ProjectPage = () => {
         existingProject={isEditMode ? projectData : null}
         onSubmit={handleSubmit}
       />
+      <FloatingButton />
     </div>
   );
 };
