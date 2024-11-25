@@ -17,6 +17,7 @@ import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.payload.request.ProjectCreateRequest;
 import wap.web2.server.payload.response.ProjectDetailsResponse;
 import wap.web2.server.payload.response.ProjectInfoResponse;
+import wap.web2.server.payload.response.ProjectUpdateDetailsResponse;
 import wap.web2.server.repository.ProjectRepository;
 import wap.web2.server.repository.UserRepository;
 import wap.web2.server.util.AwsUtils;
@@ -68,7 +69,7 @@ public class ProjectService {
         return projectRepository.findById(projectId).map(ProjectDetailsResponse::from);
     }
 
-    public ProjectDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
+    public ProjectUpdateDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
         if (userPrincipal == null) {
             throw new IllegalArgumentException();
         }
@@ -83,7 +84,7 @@ public class ProjectService {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
         }
 
-        return ProjectDetailsResponse.from(project);
+        return ProjectUpdateDetailsResponse.from(project);
     }
 
     @Transactional

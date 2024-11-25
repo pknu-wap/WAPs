@@ -11,6 +11,7 @@ import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.payload.request.ProjectCreateRequest;
 import wap.web2.server.payload.response.ProjectDetailsResponse;
+import wap.web2.server.payload.response.ProjectUpdateDetailsResponse;
 import wap.web2.server.payload.response.ProjectsResponse;
 import wap.web2.server.payload.response.ProjectInfoResponse;
 import wap.web2.server.service.ProjectService;
@@ -92,7 +93,7 @@ public class ProjectController {
     public ResponseEntity<?> getProjectDetailsForUpdate(@PathVariable Long projectId, @CurrentUser UserPrincipal userPrincipal) {
         try {
             // 프로젝트 상세 정보를 가져오는 서비스 호출
-            ProjectDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
+            ProjectUpdateDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (IllegalArgumentException ex) {
             // 유효하지 않은 유저 ID
