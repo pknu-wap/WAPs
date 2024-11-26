@@ -44,7 +44,7 @@ const ContentBox = () => {
               navigate({ pathname: `/project/${project.projectId}` }, 1000)
             }
           >
-            <div className="image">
+            <div className="image mount1">
               {project.thumbnail && (
                 <img
                   className="project-image"

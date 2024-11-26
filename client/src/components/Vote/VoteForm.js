@@ -72,7 +72,7 @@ const VoteForm = () => {
   };
 
   return (
-    <div className={styles.project_vote_form}>
+    <div className={`${styles.project_vote_form} ${styles.mount1}`}>
       <div className={styles.title_form}>
         <div className={styles.title}>마음에 드는 프로젝트에</div>
         <div className={styles.title}>투표해주세요</div>

@@ -15,6 +15,17 @@
     padding-bottom: 20px;
     font-family: 'Pretendard-Regular';
 }
+
+.mount1{ animation: 0.7s ease-in-out loadEffect1; }
+
+@keyframes loadEffect1 {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
   
 
 .thumnail_image{
@@ -159,3 +170,29 @@
 .techStackType{
     color: #808080;
 }
+
+.delete_button{
+    width: 80px;
+    padding: 10px 20px;
+    background-color: red;
+    color: #ffffff;
+    border: none;
+    border-radius: 100px;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: 'Pretendard-Regular';
+}
+
+.delete_button:hover{
+    background-color: #ffffff;
+    color: red;
+}
+
+.buttons{
+    margin-top: 50px;
+    margin-right: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+

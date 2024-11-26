@@ -76,7 +76,7 @@ const ProjectDetailForm = () => {
   }
 
   return (
-    <div className={styles.project_detail_form}>
+    <div className={`${styles.project_detail_form} ${styles.mount1}`}>
       {/* 프로젝트 썸네일 */}
       <img
         className={styles.thumnail_image}
@@ -178,27 +178,20 @@ const ProjectDetailForm = () => {
         </div>
       </div>
 
-      {/* 삭제 버튼 */}
-      {isOwner && token && (
-        <button
-          onClick={handleDelete}
-          className={styles.delete_button}
-          style={{
-            backgroundColor: "red",
-            color: "white",
-            padding: "10px 20px",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            marginTop: "20px",
-          }}
-        >
-          삭제하기
-        </button>
-      )}
+      <div className={styles.buttons}>
+        {isOwner && token && (
+          <>
+            <button onClick={handleDelete} className={styles.delete_button}>
+              삭제하기
+            </button>
+            {/* 수정 버튼 */}
+            <EditButton projectId={projectId} />
+          </>
+        )}
+      </div>
 
       {/* 수정 버튼 */}
-      <EditButton projectId={projectId} />
+      {/* <EditButton projectId={projectId} /> */}
     </div>
   );
 };

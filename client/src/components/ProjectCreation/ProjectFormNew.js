@@ -192,7 +192,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   };
 
   return (
-    <form className={styles.project_form} onSubmit={handleSubmit}>
+    <form
+      className={`${styles.project_form} ${styles.mount1}`}
+      onSubmit={handleSubmit}
+    >
       <ImageUploader
         imgText={"메인 이미지 등록"}
         imgName={thumbnail}

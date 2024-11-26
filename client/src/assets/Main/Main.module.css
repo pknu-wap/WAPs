@@ -19,6 +19,18 @@
     justify-content: space-between; /* 상하 여백 균등 분배 */
 }
 
+.mount1{ animation: 0.7s ease-in-out loadEffect1; }
+
+@keyframes loadEffect1 {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+  
+
 .titleBox{
     margin-top: 50px;
     margin-left: 40px;
