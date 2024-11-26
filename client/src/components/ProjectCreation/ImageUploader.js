@@ -64,10 +64,13 @@ const ImageUploader = ({
       {/* 이미자 파일인경우, src인경우, 이미지 파일이 아닌경우   */}
       {imgName && (imgName instanceof File || typeof imgName === "string") && (
         <div
-          className="Image-preview"
+          className={styles.image_preview}
           onClick={() => handleRemoveImage()} // 클릭 시 이미지 삭제
           style={{ cursor: "pointer" }}
         >
+          <div className={styles.preview_text}>
+            이미지를 클릭하면 삭제됩니다.
+          </div>
           <img
             src={
               imgName instanceof File ? URL.createObjectURL(imgName) : imgName

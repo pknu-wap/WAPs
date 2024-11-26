@@ -140,4 +140,21 @@
     border-radius: 4px;
     margin-right: 10px;
   }
+
+  .image_preview{
+    position: relative; /* 텍스트 배치 기준점 */
+  }
+
   
+  .preview_text {
+    position: absolute; /* 텍스트를 이미지 위에 배치 */
+    top: 80%;
+    right: 0%;
+    color: white; /* 텍스트 색상 */
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명 검정 배경 */
+    padding: 5px 10px; /* 텍스트 주위 여백 */
+    border-radius: 5px; /* 배경 둥글게 */
+    font-size: 10px;
+    z-index: 1; /* 텍스트가 이미지보다 위에 표시되도록 */
+    font-family: 'Pretendard-Regular';
+  }
