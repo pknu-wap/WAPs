@@ -233,7 +233,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       <TextInputForm
         name="summary"
         placeholder="한줄 소개"
-        maxLen="20"
+        maxLen="80"
         value={summary}
         onChange={(e) => {
           setSummary(e.target.value);
@@ -244,7 +244,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       <TextInputForm
         name="content"
         placeholder="상세 설명"
-        maxLen="600"
+        maxLen="3000"
         value={content}
         onChange={(e) => {
           setContent(e.target.value);
