@@ -72,7 +72,17 @@ const ProjectDetailForm = () => {
   };
 
   if (!projectData) {
-    return <p>Loading...</p>;
+    return (
+      <p
+        style={{
+          fontSize: "16px",
+          textAlign: "center",
+          marginTop: "20px",
+        }}
+      >
+        프로젝트 정보를 불러오고 있습니다.
+      </p>
+    );
   }
 
   return (

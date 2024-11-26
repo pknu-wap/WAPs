@@ -295,7 +295,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         )}
       </div>
       <div className="form-group">
-        <label>팀원:</label>
         {teamMembers.map((member, index) => (
           <TeamMemberInputForm
             key={index}

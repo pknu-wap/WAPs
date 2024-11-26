@@ -4,6 +4,12 @@
   font-weight: 400;
   font-style: normal;
 }
+html{
+  font-family: 'Pretendard-Regular';
+  height: 100%;
+  color: white;
+  margin: 0 auto;
+}
 
 /* 컨테이너 스타일 */
 .container {
