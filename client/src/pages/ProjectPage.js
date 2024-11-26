@@ -38,7 +38,7 @@ const ProjectPage = () => {
 
         try {
           const response = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}`,
+            `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}/update`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }

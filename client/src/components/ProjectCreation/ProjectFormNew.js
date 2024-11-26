@@ -87,14 +87,14 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       setSummary(existingProject.summary || "");
       setContent(existingProject.content || "");
       // 존재하는 이미지만 표시
-      existingProject.images.forEach((image, index) => {
-        setImages((prev) => {
-          const newImages = [...prev];
-          newImages[index] = image["imageFile"];
-          return newImages;
-        });
-      });
-
+      // existingProject.images.forEach((image, index) => {
+      //   setImages((prev) => {
+      //     const newImages = [...prev];
+      //     newImages[index] = image["imageFile"];
+      //     return newImages;
+      //   });
+      // });
+      setImages(existingProject.images || [null, null, null, null]);
       // 멤버가 존재하면 추가
       if (existingProject.teamMember) {
         existingProject.teamMember.forEach((member, index) => {
