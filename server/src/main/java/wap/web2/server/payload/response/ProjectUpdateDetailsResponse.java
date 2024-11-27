@@ -25,14 +25,11 @@ public class ProjectUpdateDetailsResponse {
     private Long vote;
     private Integer projectYear;
     private List<TeamMemberDto> teamMember;
-    private List<TechStackDto> techStack;
     private List<CommentDto> comments;
 
     public static ProjectUpdateDetailsResponse from(Project project) {
         List<TeamMemberDto> teamMembers = project.getTeamMembers().stream()
                 .map(TeamMemberDto::from).toList();
-        List<TechStackDto> techStacks = project.getTechStacks().stream()
-                .map(TechStackDto::from).toList();
         List<CommentDto> comments = project.getComments().stream()
                 .map(CommentDto::from).toList();
 
@@ -46,7 +43,6 @@ public class ProjectUpdateDetailsResponse {
                 .vote(project.getVote())
                 .projectYear(project.getProjectYear())
                 .teamMember(teamMembers)
-                .techStack(techStacks)
                 .comments(comments)
                 .build();
     }
