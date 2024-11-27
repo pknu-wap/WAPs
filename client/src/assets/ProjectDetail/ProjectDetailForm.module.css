@@ -195,4 +195,7 @@
     justify-content: flex-end;
     gap: 5px;
 }
+.footer{
+    height: 200px;
+}
 

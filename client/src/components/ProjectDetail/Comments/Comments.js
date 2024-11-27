@@ -64,7 +64,7 @@ const Comments = ({ projectId }) => {
           "Content-Type": "application/json",
         },
       });
-      alert("프로젝트가 성공적으로 생성되었습니다.");
+      alert("댓글이 작성되었습니다.");
 
       resetForm();
       window.location.reload();
@@ -77,13 +77,6 @@ const Comments = ({ projectId }) => {
   //
   return (
     <div>
-      <hr
-        style={{
-          width: "100%",
-          margin: "30px 0",
-          border: "1px solid #363636",
-        }}
-      />
       <h4 className={styles.comments_title}>댓글</h4>
 
       <div className={styles.comments}>
