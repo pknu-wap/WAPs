@@ -1,9 +1,28 @@
 import React, { useRef, useState } from "react";
+import axios from "axios";
+import { navigate } from "react-router-dom";
 import styles from "../../../assets/ProjectDetail/Comments/Comments.module.css";
+import userImage from "../../../assets/img/WAP_white_NoBG.png";
 
 const Comments = ({ projectId }) => {
+  // 입력창 크기 조절을 위한 상태
   const [comments, setComments] = useState("");
   const textAreaRef = useRef(null); // textarea DOM 참조
+
+  // 닉네임
+  const [userName, setUserName] = useState("");
+  // 비밀번호
+  const [password, setPassword] = useState("");
+
+  // 닉네임 핸들러
+  const handleUserNameChange = (e) => {
+    setUserName(e.target.value);
+  };
+
+  // 비밀번호 핸들러
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
 
   const handleCommentsChange = (e) => {
     setComments(e.target.value);
@@ -17,6 +36,45 @@ const Comments = ({ projectId }) => {
     }
     handleCommentsChange(e); // 원래 onChange 호출
   };
+
+  const resetForm = () => {
+    setComments("");
+    setUserName("");
+    setPassword("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!password) {
+      alert("비밀번호를 입력해 주세요.");
+      return;
+    }
+    const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/comment/${projectId}`;
+
+    const commentsData = {
+      commentContent: comments,
+      commenter: userName,
+      password,
+    };
+
+    try {
+      await axios.post(apiUrl, commentsData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      alert("프로젝트가 성공적으로 생성되었습니다.");
+
+      resetForm();
+      window.location.reload();
+    } catch (error) {
+      console.error("댓글 작성 실패:", error);
+      alert("댓글 작성에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  //
   return (
     <div>
       <hr
@@ -26,16 +84,15 @@ const Comments = ({ projectId }) => {
           border: "1px solid #363636",
         }}
       />
-
       <h4 className={styles.comments_title}>댓글</h4>
 
       <div className={styles.comments}>
-        <div className={styles.comments_form}>
+        <div className={styles.user_info}>
           <div className={styles.comments_icon}>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 50 50"
+            {/* <svg
+              width="15"
+              height="15"
+              viewBox="0 0 55 55"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -59,9 +116,31 @@ const Comments = ({ projectId }) => {
                 />
                 <circle cx="17.2437" cy="15.1802" r="6.04395" fill="#707070" />
               </g>
-            </svg>
+            </svg> */}
+            <img className={styles.user_image} alt="user" src={userImage} />
           </div>
-
+          <div className={styles.nickname}>
+            <textarea
+              className={styles.nickname_input}
+              rows={1} // 최소 줄 수
+              cols={7}
+              placeholder="닉네임"
+              spellCheck={false} // 스펠링 체크 끄기
+              onChange={handleUserNameChange}
+            />
+          </div>
+          <div className={styles.password}>
+            <textarea
+              className={styles.password_input}
+              rows={1} // 최소 줄 수
+              cols={7}
+              placeholder="비밀번호"
+              spellCheck={false} // 스펠링 체크 끄기
+              onChange={handlePasswordChange}
+            />
+          </div>
+        </div>
+        <div className={styles.comments_form}>
           <div className={styles.comments_input_form}>
             <textarea
               className={styles.comments_input}
@@ -73,8 +152,9 @@ const Comments = ({ projectId }) => {
               style={{ overflow: "hidden", resize: "none" }} // 스크롤 숨기고 크기 조정 비활성화
               ref={textAreaRef} // ref 추가
             />
-
-            <button className={styles.comments_button}>댓글 달기</button>
+            <button className={styles.comments_button} onClick={handleSubmit}>
+              댓글 달기
+            </button>
           </div>
         </div>
       </div>

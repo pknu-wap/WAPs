@@ -30,13 +30,46 @@ button{
     gap: 15px;
 }
 
-.comments_icon{
-    width: 10%;
+.user_info {
+    display: flex;
+    gap: 5px; /* 간격 조정 */
+    align-items: center;
+    width: 100%; /* 부모 크기에 맞춤 */
+    margin-bottom: 5px; /* 하단 여백 */
 }
 
-#mask0_654_57{
-    mask-type:alpha
+.comments_icon {
+    width: 10%;
 }
+.user_image{
+    width: 100%;
+}
+
+.nickname,
+.password {
+    flex-grow: 1; /* 남은 공간을 동일하게 분배 */
+    border-radius: 15px;
+    border: #363636 1px solid;
+    display: flex; /* 입력 필드 가운데 정렬 */
+    align-items: center;
+    justify-content: center;
+    color: #898989;
+}
+
+.nickname_input,
+.password_input {
+    width: 100%; /* 입력 필드가 컨테이너를 채우도록 설정 */
+    font-size: 10px;
+    
+    color: #ffffff;
+    background-color: transparent;
+    padding: 5px 10px;
+    margin: 0; /* 여백 제거 */
+    resize: none; /* 크기 조정 비활성화 */
+    border: none; /* 테두리 제거 */
+}
+
+
 .comments_input_form{
     width: 100%;
     height: 100%;
@@ -45,7 +78,7 @@ button{
     padding: 10px 10px;
     display: flex;
     align-items: center;
-    color: #494949;
+    color: #898989;
     background-color: transparent;
     border-radius: 15px;
     border: #363636 1px solid;
