@@ -91,6 +91,7 @@
     font-weight: bold;
     cursor: pointer;
     gap: 10px; /* 텍스트와 아이콘 간 간격 */
+    font-family: 'Pretendard-Regular';
 }
 
 
