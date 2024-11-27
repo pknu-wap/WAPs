@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode"; // JWT 디코딩 모듈
 import styles from "../../assets/ProjectDetail/ProjectDetailForm.module.css";
 import dogImage from "../../assets/img/dog.png";
 import EditButton from "./EditButton";
+import Comments from "./Comments/Comments";
 
 const ProjectDetailForm = () => {
   const { projectId } = useParams();
@@ -200,8 +201,7 @@ const ProjectDetailForm = () => {
         )}
       </div>
 
-      {/* 수정 버튼 */}
-      {/* <EditButton projectId={projectId} /> */}
+      <Comments projectId={projectId} />
     </div>
   );
 };

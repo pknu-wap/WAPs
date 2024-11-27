@@ -1,0 +1,79 @@
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+button{
+	all: unset;
+}
+
+.comments{
+    width: 90%;
+    margin: 0 auto;
+    margin-bottom: 30px;
+    font-family: 'Pretendard-Regular';
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+}
+
+.comments_title{
+    text-align: left;
+    margin-left: 20px;
+}
+
+.comments_form{
+    display: flex;
+    gap: 15px;
+}
+
+.comments_icon{
+    width: 10%;
+}
+
+#mask0_654_57{
+    mask-type:alpha
+}
+.comments_input_form{
+    width: 100%;
+    height: 100%;
+    font-size: 10px;
+    margin: 0 auto;
+    padding: 10px 10px;
+    display: flex;
+    align-items: center;
+    color: #494949;
+    background-color: transparent;
+    border-radius: 15px;
+    border: #363636 1px solid;
+    position: relative;
+}
+
+.comments_input{
+    color: #ffffff;
+    background-color: transparent;
+    width: 81%;
+    height: 100%;
+    font-size: 10px;
+}
+
+.comments_button{
+    background-color: #363636;
+    color: #898989;
+    font-size: 7px;
+    border-radius: 100px;
+    width: 15%;
+    height: 20px;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.comments_button:hover{
+    background-color: #898989;
+    color: #363636;
+}
