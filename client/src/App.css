@@ -14,7 +14,7 @@
   display: flex;
   justify-content: space-between;
   padding: 20px;
-  background-color: black;
+  background-color: rgb(0, 0, 0);
   color: white;
 }
 
@@ -47,10 +47,11 @@ html{
 
 /* 컨테이너 스타일 */
 .container {
-  background-color: black;
+  background-color: rgb(0, 0, 0);
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
+  border: 2px;
 }
 
 /* 헤더 스타일 */
@@ -246,4 +247,13 @@ li {
   margin-top: 5%;
   font-family: "Inter", sans-serif;
   font-weight: 700;
+}
+
+
+.project-container {
+  border: 2px solid black; /* 테두리 두께와 색상 */
+  border-radius: 10px;     /* 모서리를 둥글게 (옵션) */
+  padding: 20px;           /* 테두리와 내용 사이의 여백 */
+  margin: 20px auto;       /* 페이지 중앙으로 맞추기 */
+  max-width: 800px;        /* 적당한 최대 너비 설정 (필요시) */
 }
