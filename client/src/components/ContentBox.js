@@ -4,19 +4,22 @@ import axios from "axios";
 
 const ContentBox = () => {
   const [projects, setProjects] = useState([]);
+  const [isMounted, setIsMounted] = useState(false); // 일정 시간 후 마운트될 상태
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/list?semester=2&projectYear=${currentYear}`;
 
   useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsMounted(true); // 일정 시간 후에 마운트 상태 변경
+    }, 700); // 3초 후에 마운트 상태 변경 (3000ms)
+
+    // API 호출 함수
     const fetchData = async () => {
       try {
         const response = await axios.get(apiUrl);
-
-        // 응답 데이터를 콘솔에 출력하여 형식을 확인
         console.log("API 응답 데이터:", response.data);
 
-        // projectsResponse에 배열이 포함되어 있는지 확인 후 설정
         if (Array.isArray(response.data.projectsResponse)) {
           setProjects(response.data.projectsResponse);
         } else {
@@ -30,8 +33,17 @@ const ContentBox = () => {
       }
     };
 
-    fetchData();
+    fetchData(); // API 호출
+
+    // 클린업 함수: 컴포넌트 언마운트 시 타임아웃 정리
+    return () => clearTimeout(timeoutId);
   }, [currentYear]); // currentYear가 변경될 때마다 fetchData 호출
+
+  if (!isMounted) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "1rem" }}>로딩 중...</div>
+    ); // 일정 시간 후 컴포넌트가 마운트되지 않으면 로딩 표시
+  }
 
   return (
     <div className="content-box mount1">
@@ -41,7 +53,7 @@ const ContentBox = () => {
             key={project.projectId}
             className="box"
             onClick={() =>
-              navigate({ pathname: `/project/${project.projectId}` }, 1000)
+              navigate({ pathname: `/project/${project.projectId}` }, 500)
             }
           >
             <div className="image">
