@@ -73,6 +73,17 @@ const ProjectDetailForm = () => {
     }
   };
 
+  // 줄바꿈 렌더링
+  const formatText = (text) => {
+    if (!text) return text;
+    return text.split("\n").map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
+  };
+
   if (!projectData) {
     return (
       <p
@@ -119,10 +130,10 @@ const ProjectDetailForm = () => {
         {/* 프로젝트 내용 */}
         <div className={styles.project_detail_content}>
           <div className={styles.summary}>
-            {projectData.summary || "요약 정보 없음"}
+            {formatText(projectData.summary) || "요약 정보 없음"}
           </div>
           <div className={styles.content}>
-            {projectData.content || "내용이 없습니다."}
+            {formatText(projectData.content) || "내용이 없습니다."}
           </div>
         </div>
       </div>
