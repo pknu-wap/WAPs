@@ -112,6 +112,7 @@
 .teamMembers{
     font-size: 10px;
     margin-bottom: 12px;
+    width: 100%;
 }
 
 .teamMembers label{
@@ -123,32 +124,39 @@
     margin-top: 12px;
     display: flex;
     gap: 14px;
+    width: 100%;
+    flex-wrap: wrap; /* 줄바꿈 활성화 */
 }
 
 .memberInfo{
     display: flex;
     flex-direction: column;
     gap: 4px;
+
 }
 
 .memberName{
     font-weight: 600;
+    width: 100%;
 }
 
 .memberRole{
     color: #808080;
+    width: 100%;
 }
 
 
 .techStacks{
     font-size: 10px;
     margin-bottom: 12px;
+ 
 }
 
 .techStack{
     margin-top: 12px;
     display: flex;
     gap: 14px;
+    flex-wrap: wrap; /* 줄바꿈 활성화 */
 }
 
 .techStacks label{
