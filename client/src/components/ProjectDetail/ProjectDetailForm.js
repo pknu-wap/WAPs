@@ -99,7 +99,7 @@ const ProjectDetailForm = () => {
   }
 
   return (
-    <div className={`${styles.project_detail_form} ${styles.mount1}`}>
+    <div className={`${styles.project_detail_form}`}>
       {/* 프로젝트 썸네일 */}
       <img
         className={styles.thumnail_image}
