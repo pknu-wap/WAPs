@@ -12,11 +12,18 @@ const ContentBox = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [projects, setProjects] = useState([]);
+  const [isMounted, setIsMounted] = useState(false); // 일정 시간 후 마운트될 상태
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/list?semester=2&projectYear=${currentYear}`;
 
   useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setIsMounted(true); // 일정 시간 후에 마운트 상태 변경
+    }, 700); // 3초 후에 마운트 상태 변경 (3000ms)
+
+    // API 호출 함수
     const fetchData = async () => {
       const token = Cookies.get("authToken"); // 토큰을 가져옴
       if (!token) {
@@ -30,9 +37,9 @@ const ContentBox = () => {
         });
 
         // 응답 데이터를 콘솔에 출력하여 형식을 확인
+
         console.log("API 응답 데이터:", response.data);
 
-        // projectsResponse에 배열이 포함되어 있는지 확인 후 설정
         if (Array.isArray(response.data.projectsResponse)) {
           setData(response.data.projectsResponse);
           setFilteredData(response.data.projectsResponse);
@@ -46,7 +53,10 @@ const ContentBox = () => {
       }
     };
 
-    fetchData();
+    fetchData(); // API 호출
+
+    // 클린업 함수: 컴포넌트 언마운트 시 타임아웃 정리
+    return () => clearTimeout(timeoutId);
   }, [currentYear]); // currentYear가 변경될 때마다 fetchData 호출
 
   useEffect(() => {
@@ -70,7 +80,9 @@ const ContentBox = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ textAlign: "center", marginTop: "1rem" }}>로딩 중...</div>
+    ); // 일정 시간 후 컴포넌트가 마운트되지 않으면 로딩 표시
   }
 
   return (
@@ -92,9 +104,13 @@ const ContentBox = () => {
         </div>
       </div>
 
-      <div className="content-box">
+      <div className="content-box mount1">
         {filteredData.map((item, index) => (
-          <div key={index} className="box" onClick={() => navigate(`/project/${item.projectId}`)}>
+          <div
+            key={index}
+            className="box"
+            onClick={() => navigate(`/project/${item.projectId}`)}
+          >
             <div className="image">
               {item.thumbnail && (
                 <img

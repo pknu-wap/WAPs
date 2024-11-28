@@ -6,6 +6,8 @@ import { jwtDecode } from "jwt-decode"; // JWT 디코딩 모듈
 import styles from "../../assets/ProjectDetail/ProjectDetailForm.module.css";
 import dogImage from "../../assets/img/dog.png";
 import EditButton from "./EditButton";
+import Comments from "./Comments/Comments";
+import CommentsList from "./Comments/CommentsList";
 
 const ProjectDetailForm = () => {
   const { projectId } = useParams();
@@ -14,6 +16,7 @@ const ProjectDetailForm = () => {
   const token = Cookies.get("authToken"); // 로그인한 사용자 토큰
   const [isOwner, setIsOwner] = useState(false); // 작성자인지 확인
   const [projectData, setProjectData] = useState(null); // 프로젝트 데이터
+  const [isDataLoaded, setIsDataLoaded] = useState(false); // 데이터 로딩 완료 여부
 
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}`;
 
@@ -39,6 +42,12 @@ const ProjectDetailForm = () => {
             setIsOwner(false);
           }
         }
+
+        // 일정 시간 후 데이터 렌더링을 완료하도록 설정
+        new Promise((resolve) => setTimeout(resolve, 500)) // 1초 후 resolve
+          .then(() => {
+            setIsDataLoaded(true); // 1초 후 데이터 로딩 완료 표시
+          });
       } catch (error) {
         console.error("프로젝트 정보 가져오기 실패:", error);
         alert("프로젝트 정보를 불러오는 데 실패했습니다.");
@@ -71,7 +80,18 @@ const ProjectDetailForm = () => {
     }
   };
 
-  if (!projectData) {
+  // 줄바꿈 렌더링
+  const formatText = (text) => {
+    if (!text) return text;
+    return text.split("\n").map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        <br />
+      </React.Fragment>
+    ));
+  };
+
+  if (!projectData || !isDataLoaded) {
     return (
       <p
         style={{
@@ -80,7 +100,7 @@ const ProjectDetailForm = () => {
           marginTop: "20px",
         }}
       >
-        프로젝트 정보를 불러오고 있습니다.
+        프로젝트 정보를 불러오고 있습니다...
       </p>
     );
   }
@@ -117,10 +137,10 @@ const ProjectDetailForm = () => {
         {/* 프로젝트 내용 */}
         <div className={styles.project_detail_content}>
           <div className={styles.summary}>
-            {projectData.summary || "요약 정보 없음"}
+            {formatText(projectData.summary) || "요약 정보 없음"}
           </div>
           <div className={styles.content}>
-            {projectData.content || "내용이 없습니다."}
+            {formatText(projectData.content) || "내용이 없습니다."}
           </div>
         </div>
       </div>
@@ -200,8 +220,30 @@ const ProjectDetailForm = () => {
         )}
       </div>
 
-      {/* 수정 버튼 */}
-      {/* <EditButton projectId={projectId} /> */}
+      <div>
+        <hr
+          style={{
+            width: "100%",
+            margin: "30px 0",
+            border: "1px solid #363636",
+          }}
+        />
+        <Comments projectId={projectId} />
+        {projectData.comments && projectData.comments.length > 0 && (
+          <>
+            <hr
+              style={{
+                width: "90%",
+                margin: "0 auto",
+                marginBottom: "20px",
+                border: "1px solid #363636",
+              }}
+            />
+            <CommentsList comments={projectData.comments} />
+          </>
+        )}
+      </div>
+      <div className={styles.footer}></div>
     </div>
   );
 };
