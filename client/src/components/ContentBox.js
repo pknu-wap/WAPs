@@ -34,7 +34,7 @@ const ContentBox = () => {
   }, [currentYear]); // currentYear가 변경될 때마다 fetchData 호출
 
   return (
-    <div className="content-box">
+    <div className="content-box mount1">
       {Array.isArray(projects) && projects.length > 0 ? (
         projects.map((project) => (
           <div
@@ -44,7 +44,7 @@ const ContentBox = () => {
               navigate({ pathname: `/project/${project.projectId}` }, 1000)
             }
           >
-            <div className="image mount1">
+            <div className="image">
               {project.thumbnail && (
                 <img
                   className="project-image"

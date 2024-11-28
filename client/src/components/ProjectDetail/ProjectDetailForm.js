@@ -16,6 +16,7 @@ const ProjectDetailForm = () => {
   const token = Cookies.get("authToken"); // 로그인한 사용자 토큰
   const [isOwner, setIsOwner] = useState(false); // 작성자인지 확인
   const [projectData, setProjectData] = useState(null); // 프로젝트 데이터
+  const [isDataLoaded, setIsDataLoaded] = useState(false); // 데이터 로딩 완료 여부
 
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}`;
 
@@ -41,6 +42,12 @@ const ProjectDetailForm = () => {
             setIsOwner(false);
           }
         }
+
+        // 일정 시간 후 데이터 렌더링을 완료하도록 설정
+        new Promise((resolve) => setTimeout(resolve, 500)) // 1초 후 resolve
+          .then(() => {
+            setIsDataLoaded(true); // 1초 후 데이터 로딩 완료 표시
+          });
       } catch (error) {
         console.error("프로젝트 정보 가져오기 실패:", error);
         alert("프로젝트 정보를 불러오는 데 실패했습니다.");
@@ -84,7 +91,7 @@ const ProjectDetailForm = () => {
     ));
   };
 
-  if (!projectData) {
+  if (!projectData || !isDataLoaded) {
     return (
       <p
         style={{
@@ -93,13 +100,13 @@ const ProjectDetailForm = () => {
           marginTop: "20px",
         }}
       >
-        프로젝트 정보를 불러오고 있습니다.
+        프로젝트 정보를 불러오고 있습니다...
       </p>
     );
   }
 
   return (
-    <div className={`${styles.project_detail_form}`}>
+    <div className={`${styles.project_detail_form} ${styles.mount1}`}>
       {/* 프로젝트 썸네일 */}
       <img
         className={styles.thumnail_image}
