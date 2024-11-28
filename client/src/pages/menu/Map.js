@@ -15,9 +15,18 @@ const Map = () => {
           <h1 className='roomNum'>303호</h1>
           <Room303/>
         </div>
-        <div className='room'>306호</div>
-        <div className='room'>307호</div>
-        <div className='room'>308호</div>
+        <div className='room'>
+          <h1 className='roomNum'>306호</h1>
+          <Room306/>
+        </div>
+        <div className='room'>
+          <h1 className='roomNum'>307호</h1>
+          <Room307/>
+        </div>
+        <div className='room'>
+          <h1 className='roomNum'>308호</h1>
+          <Room308/>
+        </div>
       </div>
     </div>
   );

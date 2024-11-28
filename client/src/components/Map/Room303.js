@@ -7,18 +7,10 @@ const Room303 = () => {
     <>
     <div className="room-container">
       <div className="booths">
-        <div className="booth1">
-          <Link to="/project/hooked-free">Hooked & Free</Link>
-        </div>
-        <div className="booth2">
-          <Link to="/project/cano">CANO</Link>
-        </div>
-        <div className="booth3">
-          <Link to="/project/exiled-knight">The Exiled Knight</Link>
-        </div>
-        <div className="booth4">
-          <Link to="/project/pland">플랜드</Link>
-        </div>
+          <Link to="/project/2" className="booth1">Hooked & Free</Link>
+          <Link to="/project/cano" className="booth2">CANO</Link>
+          <Link to="/project/12" className="booth3">The Exiled Knight</Link>
+          <Link to="/project/pland" className="booth4">플랜드</Link>
       </div>
     </div>
     <div className="door1"></div>

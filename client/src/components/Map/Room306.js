@@ -4,15 +4,17 @@ import "../../assets/Map/Room.css";
 
 const Room306 = () => {
   return (
+    <>
     <div className="room-container">
-      <h2>306호</h2>
       <div className="booths">
-        <Link to="/project/hooked-free" className="booth">Hooked & Free</Link>
-        <Link to="/project/cano" className="booth">CANO</Link>
-        <Link to="/project/exiled-knight" className="booth">The Exiled Knight</Link>
-        <Link to="/project/pland" className="booth">플랜드</Link>
+        <div className="door2"></div>
+          <Link to="/project/hooked-free" className="booth1">AromaPlayer</Link>
+          <Link to="/project/cano" className="booth2" >GAN-Z</Link>
+          <Link to="/project/8" className="booth3">WABI</Link>
+          <Link to="/project/pland" className="booth4">북플레이리스트</Link>
       </div>
     </div>
+    </>
   );
 };
 
