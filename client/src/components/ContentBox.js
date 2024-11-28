@@ -77,20 +77,8 @@ const ContentBox = () => {
     <div>
       <div className="filter-container">
         <div className="filter-dropdown">
-          <button onClick={toggleYearAccordion} className="dropdown-button">
-            {yearAccordionOpen ? 'Year ▼' : 'Year ▲'}
-          </button>
-          {yearAccordionOpen && (
-            <div className="dropdown-content">
-              <button onClick={() => handleFilterChange('All')}>All</button>
-              <button onClick={() => handleFilterChange('2024-1')}>2024-1</button>
-              <button onClick={() => handleFilterChange('2024-2')}>2024-2</button>
-            </div>
-          )}
-        </div>
-        <div className="filter-dropdown">
           <button onClick={toggleTypeAccordion} className="dropdown-button">
-            {typeAccordionOpen ? 'Type ▼' : 'Type ▲'}
+            {typeAccordionOpen ? 'Type ▲' : 'Type ▼'}
           </button>
           {typeAccordionOpen && (
             <div className="dropdown-content">

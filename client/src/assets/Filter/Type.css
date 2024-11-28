@@ -1,11 +1,10 @@
 .filter-container {
     display: flex;
-    justify-content: space-between;
-    padding: 1rem;
+    justify-content: flex-end;
     background-color: #f8f9fa;
-    border-bottom: 1px solid #ddd;
     position: relative;
-    z-index: 10;
+    background-color: #000000;
+    margin-right: 5%;
   }
   
   
@@ -14,10 +13,10 @@
   }
   
   .dropdown-button {
-    background-color: #007bff;
+    background-color: #000000;
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
+
     font-size: 1rem;
     cursor: pointer;
     border-radius: 4px;
@@ -25,22 +24,24 @@
   }
   
   .dropdown-button:hover {
-    background-color: #0056b3;
+    background-color: #000000;
   }
   
   .dropdown-content {
     position: absolute;
     top: 100%;
-    left: 0;
-    background-color: white;
+    left: 50%;
+    background-color: rgba(0, 0, 0, 0.236);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
     overflow: hidden;
-    z-index: 1000;
+    z-index: 50;
+    margin-right: 15%;
+    transform: translateX(-50%);
   }
   
   .dropdown-content button {
-    background-color: white;
+    background-color: rgba(207, 207, 207, 0.521);
     color: #333;
     padding: 0.75rem 1.5rem;
     width: 100%;
@@ -51,7 +52,7 @@
   }
   
   .dropdown-content button:hover {
-    background-color: #f1f1f1;
+    background-color: #f1f1f1d7;
   }
   
   .content {
