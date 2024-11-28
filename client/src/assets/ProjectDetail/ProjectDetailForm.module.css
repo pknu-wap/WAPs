@@ -87,6 +87,10 @@
 
 }
 
+.summary{
+    font-size: 14px;
+}
+
 .image{
     width: 100%;
     max-width: 400px;
