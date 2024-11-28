@@ -72,16 +72,29 @@ text-align: left;
     cursor: pointer;
     border-radius: 20px;
     font-size: 10px;
+    background-color: #EFEFEF;
+    color: #000000;
+    text-align: center;
 }
 
 .teammember_add_btn{
     width: 43px;
     height: 25px;
- 
- border: 0px;
+    background-color: #EFEFEF;
+    color: #000000;   
+    border: 0px;
     cursor: pointer;
     border-radius: 20px;
     font-size: 10px;
+    text-align: center;
+}
+
+.teammember_remove_btn:hover{
+    background-color: #D9D9D9;
+}
+
+.teammember_add_btn:hover{
+    background-color: #D9D9D9;
 }
 
 .teammember_image_upload_container {
