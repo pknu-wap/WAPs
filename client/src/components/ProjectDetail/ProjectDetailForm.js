@@ -211,16 +211,19 @@ const ProjectDetailForm = () => {
           }}
         />
         <Comments projectId={projectId} />
-        <hr
-          style={{
-            width: "90%",
-            margin: "0 auto",
-            marginBottom: "20px",
-            border: "1px solid #363636",
-          }}
-        />
-
-        <CommentsList comments={projectData.comments} />
+        {projectData.comments && projectData.comments.length > 0 && (
+          <>
+            <hr
+              style={{
+                width: "90%",
+                margin: "0 auto",
+                marginBottom: "20px",
+                border: "1px solid #363636",
+              }}
+            />
+            <CommentsList comments={projectData.comments} />
+          </>
+        )}
       </div>
       <div className={styles.footer}></div>
     </div>
