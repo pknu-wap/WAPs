@@ -40,7 +40,7 @@ const Header = () => {
             className="waplogo"
             alt="wap"
             src={wapLogo}
-            onClick={() => navigate("/HomePage")}
+            onClick={() => navigate("/")}
             style={{ cursor: "pointer" }}
           />
         </div>
