@@ -2,7 +2,7 @@
   "dependencies": {
     "js-cookie": "^3.0.5",
 
-    "react-router-dom": "^7.0.1"
+    "react-router-dom": "^7.0.1",
 
     "jwt-decode": "^4.0.0"
 
