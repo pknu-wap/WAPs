@@ -24,8 +24,8 @@ const Menu = ({
   };
 
   useEffect(() => {
-    // 특정 시간을 설정 (2024년 11월 29일 오후 6시 30분)
-    const allowedDate = new Date("2024-11-29T18:30:00");
+    // 특정 시간을 설정 (2024년 11월 29일 오후 6시)
+    const allowedDate = new Date("2024-11-29T18:00:00");
     const now = new Date();
 
     if (now >= allowedDate) {
@@ -44,7 +44,7 @@ const Menu = ({
     if (canNavigate) {
       handleNavigationWithAuth("/vote"); // 이동할 페이지 경로
     } else {
-      alert("투표는 2024년 11월 29일 오후 6시 30분부터 가능합니다.");
+      alert("투표는 2024년 11월 29일 오후 6시부터 가능합니다.");
     }
   };
 

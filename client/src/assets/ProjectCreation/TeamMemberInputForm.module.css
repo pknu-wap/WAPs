@@ -40,11 +40,11 @@ text-align: left;
 .teammember_input{
     width: 85px;
     height: 23px;
-    font-size: 10px;
+    font-size: 12px;
     border: 0px;
     border-radius: 20px;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
     background-color: #4A4A4A;
     color: #ffffff;
    
@@ -55,7 +55,7 @@ text-align: left;
     width: 85px;
     height: 25px;
     border-radius: 20px;
-    font-size: 10px;
+    font-size: 12px;
     border: 0px;
     color: #ffffff;
     background-color: #4A4A4A;
@@ -71,7 +71,7 @@ text-align: left;
     border: 0px;
     cursor: pointer;
     border-radius: 20px;
-    font-size: 10px;
+    font-size: 13px;
     background-color: #EFEFEF;
     color: #000000;
     text-align: center;
@@ -85,7 +85,7 @@ text-align: left;
     border: 0px;
     cursor: pointer;
     border-radius: 20px;
-    font-size: 10px;
+    font-size: 13px;
     text-align: center;
 }
 

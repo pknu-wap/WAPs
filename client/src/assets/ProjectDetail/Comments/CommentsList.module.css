@@ -44,26 +44,22 @@
 
 .commenter{
     width: 100%;
-    font-size: 12px;
+    font-size: 14px;
     color: #B2B2B2;
 }
 
 .commentContent{
     width: 100%;
-    font-size: 10px;
+    font-size: 13px;
     color: #ffffff;
 }
 
 .close {
-
     width: 20px;
     height: 20px;
     color: #fff;
     text-align: center;
-
-
     font-size: 15px;
-
     cursor: pointer;
 }
 

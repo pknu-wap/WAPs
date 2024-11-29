@@ -16,7 +16,8 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
     for (let year = startYear; year <= endYear; year++) {
       years.push(year);
     }
-
+    // 역순 정렬
+    years.reverse();
     return years;
   };
 

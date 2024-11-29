@@ -13,8 +13,7 @@
     font-family: 'Pretendard-Regular';
   }
 
-
-  .mount1{ animation: 0.7s ease-in-out loadEffect1; }
+.mount1{ animation: 0.7s ease-in-out loadEffect1; }
 
 @keyframes loadEffect1 {
     0%{
@@ -31,7 +30,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-  
     width: 100%; /* 너비 */
     max-height: 282px; /* 최대 높이 */
     height: 282px;

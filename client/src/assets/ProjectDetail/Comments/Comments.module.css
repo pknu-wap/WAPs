@@ -17,7 +17,6 @@ button{
     align-items: center;
     justify-content: center;
     text-align: center;
-
 }
 
 .comments_title{
@@ -59,7 +58,7 @@ button{
 .nickname_input,
 .password_input {
     width: 100%; /* 입력 필드가 컨테이너를 채우도록 설정 */
-    font-size: 10px;
+    font-size: 13px;
     
     color: #ffffff;
     background-color: transparent;
@@ -68,7 +67,6 @@ button{
     resize: none; /* 크기 조정 비활성화 */
     border: none; /* 테두리 제거 */
 }
-
 
 .comments_input_form{
     width: 100%;
@@ -90,13 +88,13 @@ button{
     background-color: transparent;
     width: 81%;
     height: 100%;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .comments_button{
     background-color: #363636;
     color: #898989;
-    font-size: 7px;
+    font-size: 9px;
     border-radius: 100px;
     width: 15%;
     height: 20px;

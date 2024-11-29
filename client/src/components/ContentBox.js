@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import '../assets/Filter/Type.css';
-import '../App.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Cookies from "js-cookie";
+import "../assets/Filter/Type.css";
+import "../App.css";
+import LoadingImage from "../assets/img/WAP_white_NoBG.png";
 
 const ContentBox = () => {
-  const [filter, setFilter] = useState('All');
+  const [filter, setFilter] = useState("All");
   const [yearAccordionOpen, setYearAccordionOpen] = useState(false);
   const [typeAccordionOpen, setTypeAccordionOpen] = useState(false);
   const [data, setData] = useState([]);
@@ -21,20 +22,12 @@ const ContentBox = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setIsMounted(true); // 일정 시간 후에 마운트 상태 변경
-    }, 700); // 3초 후에 마운트 상태 변경 (3000ms)
+    }, 700);
 
     // API 호출 함수
     const fetchData = async () => {
-      const token = Cookies.get("authToken"); // 토큰을 가져옴
-      if (!token) {
-        console.error("No authentication token found.");
-        return;
-      }
-
       try {
-        const response = await axios.get(apiUrl, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(apiUrl);
 
         // 응답 데이터를 콘솔에 출력하여 형식을 확인
 
@@ -44,11 +37,14 @@ const ContentBox = () => {
           setData(response.data.projectsResponse);
           setFilteredData(response.data.projectsResponse);
         } else {
-          console.error("API 응답의 projectsResponse가 배열이 아닙니다:", response.data);
+          console.error(
+            "API 응답의 projectsResponse가 배열이 아닙니다:",
+            response.data
+          );
         }
         setIsLoading(false);
       } catch (error) {
-        console.error('Failed to fetch project data:', error);
+        console.error("Failed to fetch project data:", error);
         setIsLoading(false);
       }
     };
@@ -60,10 +56,14 @@ const ContentBox = () => {
   }, [currentYear]); // currentYear가 변경될 때마다 fetchData 호출
 
   useEffect(() => {
-    if (filter === 'All') {
+    if (filter === "All") {
       setFilteredData(data);
     } else {
-      setFilteredData(data.filter(item => item.projectType.toLowerCase() === filter.toLowerCase()));
+      setFilteredData(
+        data.filter(
+          (item) => item.projectType.toLowerCase() === filter.toLowerCase()
+        )
+      );
     }
   }, [filter, data]);
 
@@ -81,7 +81,17 @@ const ContentBox = () => {
 
   if (isLoading) {
     return (
-      <div style={{ textAlign: "center", marginTop: "1rem" }}>로딩 중...</div>
+      <img
+        src={LoadingImage}
+        style={{
+          width: "150px",
+          //페이지 정중앙에 위치
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      />
     ); // 일정 시간 후 컴포넌트가 마운트되지 않으면 로딩 표시
   }
 
@@ -90,15 +100,15 @@ const ContentBox = () => {
       <div className="filter-container">
         <div className="filter-dropdown">
           <button onClick={toggleTypeAccordion} className="dropdown-button">
-            {typeAccordionOpen ? 'Type ▲' : 'Type ▼'}
+            {typeAccordionOpen ? "Type ▲" : "Type ▼"}
           </button>
           {typeAccordionOpen && (
             <div className="dropdown-content">
-              <button onClick={() => handleFilterChange('All')}>All</button>
-              <button onClick={() => handleFilterChange('App')}>App</button>
-              <button onClick={() => handleFilterChange('Web')}>Web</button>
-              <button onClick={() => handleFilterChange('Game')}>Game</button>
-              <button onClick={() => handleFilterChange('Etc')}>Etc</button>
+              <button onClick={() => handleFilterChange("All")}>All</button>
+              <button onClick={() => handleFilterChange("App")}>App</button>
+              <button onClick={() => handleFilterChange("Web")}>Web</button>
+              <button onClick={() => handleFilterChange("Game")}>Game</button>
+              <button onClick={() => handleFilterChange("Etc")}>Etc</button>
             </div>
           )}
         </div>
