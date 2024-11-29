@@ -12,13 +12,14 @@ const TeamMemberInputForm = ({
   handleMemberImageUpload,
   teamMembers,
   setTeamMembers,
+  handleRemoveTeamMember,
 }) => (
   <div className={styles.teammember}>
     {index === teamMembers.length - 1 && (
       <label className={styles.teammember_label}>팀원 등록</label>
     )}
     <div className={styles.teammember_form}>
-      {/* 이미지 업로드 SVG */}
+      {/*   
       <div className={styles.teammember_image_upload_container}>
         <input
           type="file"
@@ -42,17 +43,17 @@ const TeamMemberInputForm = ({
               fill="#232323"
             />
           </svg>
-        </label>
+        </label> */}
 
-        {/* 이미지 프리뷰 */}
-        {member.image && (
+      {/* 이미지 프리뷰 */}
+      {/* {member.image && (
           <img
             className={styles.teammember_image}
             src={URL.createObjectURL(member.image)}
             alt={`Member ${index + 1} Image`}
           />
-        )}
-      </div>
+        )} */}
+      {/* </div> */}
 
       {/* 팀원 이름 입력 */}
       <input
@@ -77,6 +78,19 @@ const TeamMemberInputForm = ({
           </option>
         ))}
       </select>
+
+      {/* 삭제 버튼 */}
+      {/*등록된 팀원인 경우에만 삭제 버튼 표시 */}
+      {index !== teamMembers.length - 1 && (
+        <button
+          className={styles.teammember_remove_btn}
+          type="button"
+          onClick={() => handleRemoveTeamMember(index)}
+        >
+          삭제
+        </button>
+      )}
+      {/* 등록 버튼 */}
       {index === teamMembers.length - 1 && (
         <button
           className={styles.teammember_add_btn}

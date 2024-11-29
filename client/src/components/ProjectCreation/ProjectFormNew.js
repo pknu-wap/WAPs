@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
 import axios from "axios";
 import Cookies from "js-cookie";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
@@ -32,6 +33,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const { projectId } = useParams();
   const maxImageCount = 4; // 최대 이미지 업로드 개수
   const token = Cookies.get("authToken");
+  const navigate = useNavigate(); // navigate 함수
   const {
     title,
     setTitle,
@@ -64,6 +66,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     handleMemberImageUpload,
     handleRoleChange,
     addTeamMember,
+    handleRemoveTeamMember,
     handleInputLimit,
     toggleTechStack,
     resetForm,
@@ -84,14 +87,14 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       setSummary(existingProject.summary || "");
       setContent(existingProject.content || "");
       // 존재하는 이미지만 표시
-      existingProject.images.forEach((image, index) => {
-        setImages((prev) => {
-          const newImages = [...prev];
-          newImages[index] = image["imageFile"];
-          return newImages;
-        });
-      });
-
+      // existingProject.images.forEach((image, index) => {
+      //   setImages((prev) => {
+      //     const newImages = [...prev];
+      //     newImages[index] = image["imageFile"];
+      //     return newImages;
+      //   });
+      // });
+      setImages(existingProject.images || [null, null, null, null]);
       // 멤버가 존재하면 추가
       if (existingProject.teamMember) {
         existingProject.teamMember.forEach((member, index) => {
@@ -164,6 +167,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           },
         });
         alert("프로젝트가 성공적으로 수정되었습니다.");
+        navigate(`/project/${projectId}`);
       } else {
         await axios.post(apiUrl, formData, {
           headers: {
@@ -172,6 +176,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           },
         });
         alert("프로젝트가 성공적으로 생성되었습니다.");
+        navigate(`/HomePage`);
       }
 
       resetForm();
@@ -182,17 +187,15 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
 
       alert("프로젝트 요청에 실패했습니다. 다시 시도해 주세요.");
 
-      if (error.response && error.response.status === 400) {
-        console.error("Request failed with status code 400");
-        console.error("Headers sent:", error.config.headers);
-        console.error("Data sent:", error.config.data);
-        console.error("Status text:", error.response.statusText);
-      }
+      console.log(formData);
     }
   };
 
   return (
-    <form className={styles.project_form} onSubmit={handleSubmit}>
+    <form
+      className={`${styles.project_form} ${styles.mount1}`}
+      onSubmit={handleSubmit}
+    >
       <ImageUploader
         imgText={"메인 이미지 등록"}
         imgName={thumbnail}
@@ -230,7 +233,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       <TextInputForm
         name="summary"
         placeholder="한줄 소개"
-        maxLen="20"
+        maxLen="80"
         value={summary}
         onChange={(e) => {
           setSummary(e.target.value);
@@ -241,7 +244,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       <TextInputForm
         name="content"
         placeholder="상세 설명"
-        maxLen="600"
+        maxLen="3000"
         value={content}
         onChange={(e) => {
           setContent(e.target.value);
@@ -292,7 +295,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         )}
       </div>
       <div className="form-group">
-        <label>팀원:</label>
         {teamMembers.map((member, index) => (
           <TeamMemberInputForm
             key={index}
@@ -306,6 +308,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
             handleImgUpload={handleImgUpload}
             errorMessage={errorMessage}
             addTeamMember={addTeamMember}
+            handleRemoveTeamMember={handleRemoveTeamMember}
             teamMembers={teamMembers}
             setTeamMembers={setTeamMembers}
           />

@@ -15,6 +15,8 @@ public class Comment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
+    @Lob
+    @Column(length = 9000) // 글 내용은 길이 9000 (한글 기준 3000자)
     private String commentContent;
 
     private String commenter;

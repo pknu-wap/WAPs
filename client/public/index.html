@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/WAP.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"
+    user-scalable="no" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
@@ -25,6 +26,18 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Waps</title>
+
+    <style>
+      /* html과 body 태그의 높이를 100%로 설정 */
+      html, body {
+        width: 400px;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: black;
+        color: #ffffff;
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

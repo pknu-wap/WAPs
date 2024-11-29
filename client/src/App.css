@@ -1,3 +1,50 @@
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+/* 헤더 스타일 수정 */
+.App-header {
+  position: fixed; /* 헤더를 고정된 위치로 설정 */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 101; /* 사이드바 위에 나타나도록 높은 z-index 설정 */
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: black;
+  color: white;
+}
+
+/* 모바일 화면을 위한 미디어 쿼리 수정 */
+@media (max-width: 768px) {
+  .menu {
+    position: fixed; /* 사이드바를 고정된 위치로 변경 */
+    top: 60px; /* 헤더 높이만큼 아래쪽으로 사이드바 위치 조정 */
+    left: 0;
+    width: 200px; /* 모바일 환경에서 사이드바 너비 조정 */
+    height: calc(100vh - 60px); /* 헤더 높이를 제외한 화면 높이 */
+    box-sizing: border-box; /* 패딩 포함하여 사이즈 계산 */
+    z-index: 100; /* 헤더 아래에 위치하도록 설정 */
+  }
+
+  .content {
+    margin-top: 60px; /* 헤더 높이만큼 콘텐츠 여백 설정 */
+    margin-left: 250px; /* 사이드바 너비만큼 콘텐츠 여백 설정 */
+  }
+}
+
+
+
+html{
+  font-family: 'Pretendard-Regular';
+  height: 100%;
+  color: white;
+  margin: 0 auto;
+}
+
 /* 컨테이너 스타일 */
 .container {
   background-color: black;
@@ -41,7 +88,6 @@
   z-index: 100;
   top: 30px;
   left: 0;
-  right: 0;
 }
 
 /* 메뉴 스타일 */
@@ -100,6 +146,18 @@ li {
   flex-direction: column;
   align-items: center;
   margin-top: 15px;
+  font-family: 'Pretendard-Regular';
+}
+
+.mount1{ animation: 0.7s ease-in-out loadEffect1; }
+
+@keyframes loadEffect1 {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
 }
 
 .box {

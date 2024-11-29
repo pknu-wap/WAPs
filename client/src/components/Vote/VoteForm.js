@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import dogImage from "../../assets/img/dog.png";
+import { useNavigate } from "react-router-dom";
 import styles from "../../assets/Vote/ProjectVote.module.css";
 import sub_styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import VoteProjectList from "./VoteProjectList";
@@ -13,6 +13,8 @@ const VoteForm = () => {
   const resetForm = () => {
     setSelectedProjects([]);
   };
+
+  const navigate = useNavigate();
   // 선택된 프로젝트 출려
   console.log("선택된 프로젝트:", selectedProjects);
   const handleSubmit = async (e) => {
@@ -39,20 +41,24 @@ const VoteForm = () => {
 
       // 투표 성공 시
       alert("투표가 완료되었습니다.");
-
-      console.log("투표 성공");
-      console.log("투표 데이터:", response.data);
-
       resetForm(); // 폼 리셋
       window.location.reload(); // 페이지 리로드
+      navigate("/HomePage");
     } catch (error) {
       // 에러 발생 정보
       if (error.response) {
         // 서버에서 응답을 받았을 경우
-        console.error("투표 실패:", error.response);
-        alert(
-          `투표 실패: ${error.response.data.message || "알 수 없는 오류 발생"}`
-        );
+        if (error.response.status === 401) {
+          // 인증 실패 시
+          alert("이미 투표를 하셨습니다. ");
+          navigate("/HomePage");
+        } else if (error.response.status === 404) {
+          alert("프로젝트가 존재하지 않습니다.");
+          navigate("/HomePage");
+        } else {
+          alert("알 수 없는 오류 발생");
+          navigate("/HomePage");
+        }
       } else if (error.request) {
         // 서버로 요청을 했지만 응답이 없을 경우
         console.error("서버 응답 없음:", error.request);
@@ -66,7 +72,7 @@ const VoteForm = () => {
   };
 
   return (
-    <div className={styles.project_vote_form}>
+    <div className={`${styles.project_vote_form} ${styles.mount1}`}>
       <div className={styles.title_form}>
         <div className={styles.title}>마음에 드는 프로젝트에</div>
         <div className={styles.title}>투표해주세요</div>

@@ -16,6 +16,17 @@
     font-family: 'Pretendard-Regular';
 }
 
+.mount1{ animation: 0.7s ease-in-out loadEffect1; }
+
+@keyframes loadEffect1 {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+
 .title_form{
     margin: 0 auto;
     width: 90%;
@@ -105,9 +116,11 @@
     font-weight: 400;
 }
 
+
 .selected_title {
     color: #02FF2E; /* 선택된 프로젝트의 테두리 색상 */
 }
+
 .summary{
     color: #FFFFFF;
     font-size: 10px;

@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+  }
+
 .project_detail_form{
     max-width: 400px;
     height: 100%;
@@ -6,7 +13,24 @@
     text-align: center;
     color: #FFFFFF;
     padding-bottom: 20px;
+    font-family: 'Pretendard-Regular';
 }
+
+.mount1{ animation: 0.7s ease-in-out loadEffect1; }
+
+@keyframes loadEffect1 {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+
+/*
+단어 렌더링 관련 css 설정
+*/
+/* ProjectDetailForm.module.css */
 
 .thumnail_image{
     width: 100%;
@@ -31,7 +55,7 @@
 
 .project_info{
     margin-top: 5px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     text-align: right;
 }
@@ -41,6 +65,7 @@
     gap: 5px;
     display: flex;
     justify-content: space-between;
+
 }
 
 .project_type_info{
@@ -48,20 +73,27 @@
 }
 
 .title{
-    font-size: 24px; 
+    font-size: 26px; 
     font-weight: bold;
 }
 
 .project_detail_content{
     color: #D6D6D6;
-    font-size: 12px;
+    font-size: 14px;
     margin-top: 24px;
     margin-bottom: 24px;
+    
 }
 
 .project_detail_content div{
+
     margin-top: 10px;
     margin-bottom: 10px;
+
+}
+
+.summary{
+    font-size: 16px;
 }
 
 .image{
@@ -87,50 +119,58 @@
 }
 
 .teamMembers{
-    font-size: 10px;
+    font-size: 13px;
     margin-bottom: 12px;
+    width: 100%;
 }
 
 .teamMembers label{
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .member{
     margin-top: 12px;
     display: flex;
     gap: 14px;
+    width: 100%;
+    flex-wrap: wrap; /* 줄바꿈 활성화 */
 }
 
 .memberInfo{
     display: flex;
     flex-direction: column;
     gap: 4px;
+
 }
 
 .memberName{
     font-weight: 600;
+    width: 100%;
 }
 
 .memberRole{
     color: #808080;
+    width: 100%;
 }
 
 
 .techStacks{
-    font-size: 10px;
+    font-size: 13px;
     margin-bottom: 12px;
+ 
 }
 
 .techStack{
     margin-top: 12px;
     display: flex;
     gap: 14px;
+    flex-wrap: wrap; /* 줄바꿈 활성화 */
 }
 
 .techStacks label{
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .techStackInfo{
@@ -147,3 +187,32 @@
 .techStackType{
     color: #808080;
 }
+
+.delete_button{
+    width: 80px;
+    padding: 10px 20px;
+    background-color: red;
+    color: #ffffff;
+    border: none;
+    border-radius: 100px;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: 'Pretendard-Regular';
+}
+
+.delete_button:hover{
+    background-color: #ffffff;
+    color: red;
+}
+
+.buttons{
+    margin-top: 50px;
+    margin-right: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+.footer{
+    height: 200px;
+}
+
