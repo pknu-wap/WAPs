@@ -46,9 +46,9 @@ const ProjectPage = () => {
           setProjectData(response.data);
 
           // 가져온 데이터 표시
-          console.log("프로젝트 상세 정보:", response.data);
+          // console.log("프로젝트 상세 정보:", response.data);
         } catch (error) {
-          console.error("프로젝트 상세 정보 가져오기 실패:", error);
+          // console.error("프로젝트 상세 정보 가져오기 실패:", error);
           alert("프로젝트 정보를 가져오는 데 실패했습니다.");
         } finally {
           setIsLoading(false);
@@ -86,7 +86,7 @@ const ProjectPage = () => {
       alert(`프로젝트가 성공적으로 ${isEditMode ? "수정" : "생성"}되었습니다.`);
       navigate("/projects"); // 프로젝트 리스트 페이지로 이동
     } catch (error) {
-      console.error(`${isEditMode ? "수정" : "생성"} 실패:`, error);
+      // console.error(`${isEditMode ? "수정" : "생성"} 실패:`, error);
       alert(
         `프로젝트 ${
           isEditMode ? "수정" : "생성"

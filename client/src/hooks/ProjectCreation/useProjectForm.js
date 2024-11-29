@@ -56,7 +56,7 @@ const useProjectForm = () => {
       const newImages = [...images]; // 기존 이미지 배열 복사
       newImages[index] = file; // 해당 인덱스에 파일 추가
       setImages(newImages); // 업데이트된 배열 설정
-      console.log(images);
+      // console.log(images);
     }
 
     // 에러 메시지 초기화
@@ -120,7 +120,7 @@ const useProjectForm = () => {
       lastMember.memberRole.trim() !== ""
     ) {
       setTeamMembers([...teamMembers, { memberName: "", memberRole: "" }]);
-      console.log(teamMembers);
+      // console.log(teamMembers);
     } else {
       alert("모든 필드를 입력해 주세요."); // 사용자에게 알림 추가
     }
@@ -130,7 +130,7 @@ const useProjectForm = () => {
   const handleRemoveTeamMember = (index) => {
     const newTeamMembers = teamMembers.filter((_, i) => i !== index);
     setTeamMembers(newTeamMembers);
-    console.log(teamMembers);
+    // console.log(teamMembers);
   };
 
   // const addTeamMember = () => {

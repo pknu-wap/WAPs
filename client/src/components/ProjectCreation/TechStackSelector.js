@@ -32,7 +32,7 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
             : []
         );
       } catch (error) {
-        console.error("Failed to fetch tech stacks:", error);
+        // console.error("Failed to fetch tech stacks:", error);
         setTechStacks([]);
       }
     };

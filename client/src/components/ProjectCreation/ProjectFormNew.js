@@ -182,12 +182,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       resetForm();
       window.location.reload();
     } catch (error) {
-      console.error("프로젝트 요청 실패:", error);
+      // console.error("프로젝트 요청 실패:", error);
       // 에러 출력
 
       alert("프로젝트 요청에 실패했습니다. 다시 시도해 주세요.");
 
-      console.log(formData);
+      // console.log(formData);
     }
   };
 

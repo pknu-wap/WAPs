@@ -30,11 +30,11 @@ const ProjectDetailForm = () => {
 
         const data = response.data;
         setProjectData(data); // 프로젝트 데이터 설정
-        console.log("API 응답 데이터:", data);
+        // console.log("API 응답 데이터:", data);
 
         if (token) {
           const decodedToken = jwtDecode(token); // JWT 디코딩
-          console.log("디코딩된 토큰:", decodedToken);
+          // console.log("디코딩된 토큰:", decodedToken);
 
           // 토큰에서 추출한 ID와 프로젝트 작성자 ID 비교
           if (decodedToken.userId === data.ownerId) {
@@ -50,7 +50,7 @@ const ProjectDetailForm = () => {
             setIsDataLoaded(true); // 1초 후 데이터 로딩 완료 표시
           });
       } catch (error) {
-        console.error("프로젝트 정보 가져오기 실패:", error);
+        // console.error("프로젝트 정보 가져오기 실패:", error);
         alert("프로젝트 정보를 불러오는 데 실패했습니다.");
         navigate("/");
       }
@@ -76,7 +76,7 @@ const ProjectDetailForm = () => {
         alert("프로젝트 삭제에 실패했습니다.");
       }
     } catch (error) {
-      console.error("프로젝트 삭제 중 오류 발생:", error);
+      // console.error("프로젝트 삭제 중 오류 발생:", error);
       alert("프로젝트 삭제에 실패했습니다. 다시 시도해주세요.");
     }
   };

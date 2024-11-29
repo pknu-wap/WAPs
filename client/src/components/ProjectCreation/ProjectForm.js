@@ -122,17 +122,17 @@ const ProjectForm = () => {
         },
       });
 
-      console.log("프로젝트 생성 성공");
-      console.log("프로젝트 데이터:", formData.get("project"));
+      // console.log("프로젝트 생성 성공");
+      // console.log("프로젝트 데이터:", formData.get("project"));
 
       resetForm(); // 폼 리셋
       window.location.reload(); // 페이지 리로드
       alert("프로젝트가 성공적으로 생성되었습니다.");
-      console.log(formData);
+      // console.log(formData);
     } catch (error) {
-      console.log("프로젝트 데이터:", formData.get("project"));
+      // console.log("프로젝트 데이터:", formData.get("project"));
 
-      console.error("프로젝트 생성 실패:", error);
+      // console.error("프로젝트 생성 실패:", error);
       alert("프로젝트 생성에 실패했습니다. 다시 시도해 주세요.");
     }
   };

@@ -16,7 +16,7 @@ const VoteForm = () => {
 
   const navigate = useNavigate();
   // 선택된 프로젝트 출려
-  console.log("선택된 프로젝트:", selectedProjects);
+  // console.log("선택된 프로젝트:", selectedProjects);
   const handleSubmit = async (e) => {
     // 기본 이벤트 제거
     e.preventDefault();
@@ -61,11 +61,11 @@ const VoteForm = () => {
         }
       } else if (error.request) {
         // 서버로 요청을 했지만 응답이 없을 경우
-        console.error("서버 응답 없음:", error.request);
+        // console.error("서버 응답 없음:", error.request);
         alert("서버 응답이 없습니다. 나중에 다시 시도해주세요.");
       } else {
         // 요청을 설정하는 중에 발생한 에러
-        console.error("Error", error.message);
+        // console.error("Error", error.message);
         alert(`오류 발생: ${error.message}`);
       }
     }

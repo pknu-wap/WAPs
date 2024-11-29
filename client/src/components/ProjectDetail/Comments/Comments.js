@@ -4,6 +4,7 @@ import { navigate } from "react-router-dom";
 import styles from "../../../assets/ProjectDetail/Comments/Comments.module.css";
 import userImage from "../../../assets/img/WAP_white_NoBG.png";
 
+// 댓글 : 작성 + 받아오기(컴포넌트)
 const Comments = ({ projectId }) => {
   // 입력창 크기 조절을 위한 상태
   const [comments, setComments] = useState("");
@@ -69,7 +70,7 @@ const Comments = ({ projectId }) => {
       resetForm();
       window.location.reload();
     } catch (error) {
-      console.error("댓글 작성 실패:", error);
+      // console.error("댓글 작성 실패:", error);
       alert("댓글 작성에 실패했습니다. 다시 시도해주세요.");
     }
   };

@@ -16,18 +16,18 @@ const VoteProjectList = ({
       try {
         const response = await axios.get(apiUrl);
 
-        console.log("API 응답 데이터:", response.data);
+        // console.log("API 응답 데이터:", response.data);
 
         if (Array.isArray(response.data.projectsResponse)) {
           setProjects(response.data.projectsResponse);
         } else {
-          console.error(
-            "API 응답의 projectsResponse가 배열이 아닙니다:",
-            response.data
-          );
+          // console.error(
+          //   "API 응답의 projectsResponse가 배열이 아닙니다:",
+          //   response.data
+          // );
         }
       } catch (error) {
-        console.error("데이터 가져오는 중 오류 발생:", error);
+        // console.error("데이터 가져오는 중 오류 발생:", error);
       }
     };
 
