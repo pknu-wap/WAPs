@@ -33,7 +33,7 @@ const VotePage = () => {
       <main>
         <VoteForm />
       </main>
-      {/* <FloatingButton /> */}
+      <FloatingButton />
     </div>
   );
 };

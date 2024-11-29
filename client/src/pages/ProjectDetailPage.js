@@ -20,7 +20,7 @@ const ProjectDetailPage = () => {
       <main>
         <ProjectDetailForm />
       </main>
-      {/* <FloatingButton /> */}
+      <FloatingButton />
     </div>
   );
 };
