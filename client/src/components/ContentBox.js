@@ -26,16 +26,8 @@ const ContentBox = () => {
 
     // API 호출 함수
     const fetchData = async () => {
-      const token = Cookies.get("authToken"); // 토큰을 가져옴
-      if (!token) {
-        console.error("No authentication token found.");
-        return;
-      }
-
       try {
-        const response = await axios.get(apiUrl, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(apiUrl);
 
         // 응답 데이터를 콘솔에 출력하여 형식을 확인
 
