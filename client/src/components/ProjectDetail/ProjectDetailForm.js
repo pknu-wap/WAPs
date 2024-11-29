@@ -8,6 +8,7 @@ import dogImage from "../../assets/img/dog.png";
 import EditButton from "./EditButton";
 import Comments from "./Comments/Comments";
 import CommentsList from "./Comments/CommentsList";
+import LoadingImage from "../../assets/img/WAP_white_NoBG.png";
 
 const ProjectDetailForm = () => {
   const { projectId } = useParams();
@@ -44,7 +45,7 @@ const ProjectDetailForm = () => {
         }
 
         // 일정 시간 후 데이터 렌더링을 완료하도록 설정
-        new Promise((resolve) => setTimeout(resolve, 500)) // 1초 후 resolve
+        new Promise((resolve) => setTimeout(resolve, 600)) // 0.6초 후 resolve
           .then(() => {
             setIsDataLoaded(true); // 1초 후 데이터 로딩 완료 표시
           });
@@ -93,15 +94,17 @@ const ProjectDetailForm = () => {
 
   if (!projectData || !isDataLoaded) {
     return (
-      <p
+      <img
+        src={LoadingImage}
         style={{
-          fontSize: "16px",
-          textAlign: "center",
-          marginTop: "20px",
+          width: "150px",
+          //페이지 정중앙에 위치
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
         }}
-      >
-        프로젝트 정보를 불러오고 있습니다...
-      </p>
+      />
     );
   }
 
