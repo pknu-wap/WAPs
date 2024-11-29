@@ -45,7 +45,7 @@ const ProjectDetailForm = () => {
         }
 
         // 일정 시간 후 데이터 렌더링을 완료하도록 설정
-        new Promise((resolve) => setTimeout(resolve, 600)) // 0.6초 후 resolve
+        new Promise((resolve) => setTimeout(resolve, 400)) // 0.6초 후 resolve
           .then(() => {
             setIsDataLoaded(true); // 1초 후 데이터 로딩 완료 표시
           });

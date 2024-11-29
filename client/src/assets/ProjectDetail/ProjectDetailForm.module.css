@@ -14,8 +14,6 @@
     color: #FFFFFF;
     padding-bottom: 20px;
     font-family: 'Pretendard-Regular';
-    animation: smoothAppear 1s;
-    
 }
 
 .mount1{ animation: 0.7s ease-in-out loadEffect1; }
@@ -57,7 +55,7 @@
 
 .project_info{
     margin-top: 5px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     text-align: right;
 }
@@ -75,13 +73,13 @@
 }
 
 .title{
-    font-size: 24px; 
+    font-size: 26px; 
     font-weight: bold;
 }
 
 .project_detail_content{
     color: #D6D6D6;
-    font-size: 12px;
+    font-size: 14px;
     margin-top: 24px;
     margin-bottom: 24px;
     
@@ -95,7 +93,7 @@
 }
 
 .summary{
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .image{
@@ -121,14 +119,14 @@
 }
 
 .teamMembers{
-    font-size: 10px;
+    font-size: 13px;
     margin-bottom: 12px;
     width: 100%;
 }
 
 .teamMembers label{
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .member{
@@ -158,7 +156,7 @@
 
 
 .techStacks{
-    font-size: 10px;
+    font-size: 13px;
     margin-bottom: 12px;
  
 }
@@ -172,7 +170,7 @@
 
 .techStacks label{
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .techStackInfo{

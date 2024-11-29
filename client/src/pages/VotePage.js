@@ -15,7 +15,7 @@ const VotePage = () => {
   };
 
   useEffect(() => {
-    // 허용된 시간 설정 (2024년 11월 29일 오후 6시 30분)
+    // 허용된 시간 설정 (2024년 11월 29일 오후 6시)
     const allowedDate = new Date("2024-11-29T18:00:00");
     const now = new Date();
 
