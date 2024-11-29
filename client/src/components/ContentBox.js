@@ -10,14 +10,14 @@ const ContentBox = () => {
   const [filter, setFilter] = useState("All");
   const [yearAccordionOpen, setYearAccordionOpen] = useState(false);
   const [typeAccordionOpen, setTypeAccordionOpen] = useState(false);
+  const [semesterFilter, setSemesterFilter] = useState({ year: new Date().getFullYear(), semester: 2 }); // 기본값: 현재 연도와 2학기
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [projects, setProjects] = useState([]);
   const [isMounted, setIsMounted] = useState(false); // 일정 시간 후 마운트될 상태
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/list?semester=2&projectYear=${currentYear}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/list`;
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -27,10 +27,14 @@ const ContentBox = () => {
     // API 호출 함수
     const fetchData = async () => {
       try {
-        const response = await axios.get(apiUrl);
+        const response = await axios.get(apiUrl, {
+          params: {
+            semester: semesterFilter.semester,
+            projectYear: semesterFilter.year,
+          },
+        });
 
         // 응답 데이터를 콘솔에 출력하여 형식을 확인
-
         console.log("API 응답 데이터:", response.data);
 
         if (Array.isArray(response.data.projectsResponse)) {
@@ -53,7 +57,7 @@ const ContentBox = () => {
 
     // 클린업 함수: 컴포넌트 언마운트 시 타임아웃 정리
     return () => clearTimeout(timeoutId);
-  }, [currentYear]); // currentYear가 변경될 때마다 fetchData 호출
+  }, [semesterFilter]); // 학기 필터가 변경될 때마다 fetchData 호출
 
   useEffect(() => {
     if (filter === "All") {
@@ -79,6 +83,11 @@ const ContentBox = () => {
     setTypeAccordionOpen(!typeAccordionOpen);
   };
 
+  const handleSemesterChange = (year, semester) => {
+    setSemesterFilter({ year, semester });
+    setYearAccordionOpen(false); // 드롭다운 닫기
+  };
+
   if (isLoading) {
     return (
       <img
@@ -99,6 +108,7 @@ const ContentBox = () => {
     <div>
       <div className="filter-container">
         <div className="filter-dropdown">
+          {/* 유형 필터 드롭다운 */}
           <button onClick={toggleTypeAccordion} className="dropdown-button">
             {typeAccordionOpen ? "Type ▲" : "Type ▼"}
           </button>
@@ -108,7 +118,24 @@ const ContentBox = () => {
               <button onClick={() => handleFilterChange("App")}>App</button>
               <button onClick={() => handleFilterChange("Web")}>Web</button>
               <button onClick={() => handleFilterChange("Game")}>Game</button>
-              <button onClick={() => handleFilterChange("Etc")}>Etc</button>
+              <button onClick={() => handleFilterChange("기타")}>Etc</button>
+            </div>
+          )}
+        </div>
+
+        {/* 학기 필터 드롭다운 */}
+        <div className="filter-dropdown">
+          <button onClick={toggleYearAccordion} className="dropdown-button">
+            {yearAccordionOpen ? "Semester ▲" : "Semester ▼"}
+          </button>
+          {yearAccordionOpen && (
+            <div className="dropdown-content">
+              <button onClick={() => handleSemesterChange(currentYear, 1)}>
+                1학기
+              </button>
+              <button onClick={() => handleSemesterChange(currentYear, 2)}>
+                2학기
+              </button>
             </div>
           )}
         </div>
