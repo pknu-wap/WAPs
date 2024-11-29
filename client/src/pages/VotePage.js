@@ -4,8 +4,10 @@ import Header from "../components/Header";
 import Menu from "../components/Menu";
 import VoteForm from "../components/Vote/VoteForm";
 import FloatingButton from "../components/FloatingButton";
+import Cookies from "js-cookie";
 
 const VotePage = () => {
+  const token = Cookies.get("authToken");
   const [menuOpen, setMenuOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -23,6 +25,12 @@ const VotePage = () => {
       // 아직 허용되지 않은 시간인 경우
       alert("투표는 2024년 11월 29일 오후 6시부터 가능합니다.");
       navigate(-1); // 이전 페이지로 이동
+    }
+
+    if (!token) {
+      // 토큰이 없는 경우
+      alert("로그인이 필요합니다.");
+      navigate("/login"); // 로그인 페이지로 이
     }
   }, [navigate]);
 
