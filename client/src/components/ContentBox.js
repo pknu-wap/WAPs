@@ -10,7 +10,10 @@ const ContentBox = () => {
   const [filter, setFilter] = useState("All");
   const [yearAccordionOpen, setYearAccordionOpen] = useState(false);
   const [typeAccordionOpen, setTypeAccordionOpen] = useState(false);
-  const [semesterFilter, setSemesterFilter] = useState({ year: new Date().getFullYear(), semester: 2 }); // 기본값: 현재 연도와 2학기
+  const [semesterFilter, setSemesterFilter] = useState({
+    year: new Date().getFullYear(),
+    semester: 2,
+  }); // 기본값: 현재 연도와 2학기
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -110,7 +113,7 @@ const ContentBox = () => {
         <div className="filter-dropdown">
           {/* 유형 필터 드롭다운 */}
           <button onClick={toggleTypeAccordion} className="dropdown-button">
-            {typeAccordionOpen ? "Type ▲" : "Type ▼"}
+            {typeAccordionOpen ? "Project Type ▲" : "Project Type ▼"}
           </button>
           {typeAccordionOpen && (
             <div className="dropdown-content">
