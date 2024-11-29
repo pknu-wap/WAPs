@@ -18,6 +18,7 @@ public enum TechStackName {
     FLASK("Flask"),
     EXPRESS("Express"),
     NODE_JS("Node.js"),
+    FAST_API("FastApi"),
 
     // Mobile App
     FLUTTER("Flutter"),
@@ -37,7 +38,13 @@ public enum TechStackName {
 
     // 게임
     UNITY("Unity"),
-    UNREAL_ENGINE("Unreal Engine");
+    UNREAL_ENGINE("Unreal Engine"),
+
+    // AI
+    TORCH("torch"),
+    TENSERFLOW("tenserflow"),
+    YOLO("YOLO");
+
 
     private final String name;
 

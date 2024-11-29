@@ -29,6 +29,7 @@ public class TechStackInfoResponse {
             case FLASK:
             case EXPRESS:
             case NODE_JS:
+            case FAST_API:
                 return TechStackType.BACK;
             case FLUTTER:
             case REACT_NATIVE:
@@ -47,6 +48,10 @@ public class TechStackInfoResponse {
             case UNITY:
             case UNREAL_ENGINE:
                 return TechStackType.GAME;
+            case TORCH:
+            case YOLO:
+            case TENSERFLOW:
+                return TechStackType.AI;
             default:
                 throw new IllegalArgumentException("Unknown TechStackName: " + techStackName);
         }

@@ -8,7 +8,8 @@ public enum TechStackType {
     BACK("Back"),
     APP("App"),
     DEPLOYMENT("Deployment"),
-    GAME("Game");
+    GAME("Game"),
+    AI("AI");
 
     private final String type;
 
