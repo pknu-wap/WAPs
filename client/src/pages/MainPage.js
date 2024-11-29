@@ -17,13 +17,13 @@ const MainPage = () => {
 
   const handleButtonClick = () => {
     setInTransition(true); // 트랜지션 시작
-    setTimeout(() => navigate("/HomePage"), 400); // 애니메이션 완료 후 이동
+    setTimeout(() => navigate("/HomePage"), 500); // 애니메이션 완료 후 이동
   };
 
   return (
     <CSSTransition
       in={!inTransition} // 트랜지션이 진행 중인지 여부
-      timeout={500} // 트랜지션 시간
+      timeout={700} // 트랜지션 시간
       classNames="slide" // 애니메이션 클래스명
       unmountOnExit
     >
