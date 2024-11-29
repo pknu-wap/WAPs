@@ -18,7 +18,7 @@ const Home = () => {
       <main>
         <ContentBox />
       </main>
-      <FloatingButton />
+      {/* <FloatingButton /> */}
     </div>
   );
 };

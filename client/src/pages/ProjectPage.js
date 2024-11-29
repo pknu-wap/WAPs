@@ -106,7 +106,7 @@ const ProjectPage = () => {
         existingProject={isEditMode ? projectData : null}
         onSubmit={handleSubmit}
       />
-      <FloatingButton />
+      {/* <FloatingButton /> */}
     </div>
   );
 };
