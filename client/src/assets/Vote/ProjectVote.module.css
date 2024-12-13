@@ -37,7 +37,7 @@
 
 .title{
     color: #FFFFFF;
-    font-size: 24px;
+ 
     margin: 0px;
     font-weight: 400;
 }
@@ -80,27 +80,35 @@
 
 .inform_box{
     width: 100%;
-
-    padding: 3px;
-
+    padding-top: 2px; 
+    padding-bottom: 2px;   
+    padding-left: 3px;
+    padding-right: 3px;
     display: flex;
     flex-direction: row;
-    
+    align-items: flex-start;
 }
 
 .project_thumbnail {
     margin: 10px;
-    width: 110px; /* 원하는 가로 크기 */
-    height: 50px;
-    overflow: hidden; /* 박스를 넘어가는 이미지 숨김 */
+    width: 110px; /* 8의 비율 */
+    height: 50px; /* 6의 비율 */
+    overflow: hidden; /* 박스를 넘어가는 부분 숨김 */
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000; /* 배경색 추가 (이미지가 비어있는 경우 대비) */
+  
 }
 
 .thumbnail_image {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 비율 유지하며 박스를 꽉 채움 */
+    object-fit: cover; /* 비율을 유지하며 박스 크기에 맞게 채우기 */
+    object-position: center; /* 중앙 기준으로 자르기 */
 }
+
 
 
 .project_title_form{
@@ -108,12 +116,20 @@
     width: 100%;
     text-align: left;
     margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+height: 50px;
+
 }
 
 .title{
     color: #FFFFFF;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
+    margin: 0;
+    flex-grow: 0; /* title은 추가 공간을 차지하지 않도록 설정 */
+
 }
 
 
@@ -123,6 +139,8 @@
 
 .summary{
     color: #FFFFFF;
-    font-size: 10px;
+    font-size: 8px ;
     font-weight: 400;
+    margin: 0;
+    flex-grow: 0; /* summary도 추가 공간을 차지하지 않도록 설정 */
 }

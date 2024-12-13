@@ -49,7 +49,7 @@ const VoteProjectList = ({
               onClick={() => handleProjectSelect(project.projectId)}
             >
               <div className={styles.inform_box}>
-                <div style={{ marginTop: 10, fontSize: 20 }}>{index + 1}</div>
+                <div style={{ marginTop: 10, fontSize: 18 }}>{index + 1}</div>
                 {project.thumbnail && (
                   <div className={styles.project_thumbnail}>
                     <img

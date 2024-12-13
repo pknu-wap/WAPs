@@ -74,8 +74,22 @@ const VoteForm = () => {
   return (
     <div className={`${styles.project_vote_form} ${styles.mount1}`}>
       <div className={styles.title_form}>
-        <div className={styles.title}>마음에 드는 프로젝트에</div>
-        <div className={styles.title}>투표해주세요</div>
+        <div
+          className={styles.title}
+          style={{
+            fontSize: "22px",
+          }}
+        >
+          마음에 드는 프로젝트에
+        </div>
+        <div
+          className={styles.title}
+          style={{
+            fontSize: "22px",
+          }}
+        >
+          투표해주세요
+        </div>
         <p className={styles.title_caption}>최대 3개</p>
       </div>
 
