@@ -10,16 +10,16 @@ const ContentBox = () => {
   const [filter, setFilter] = useState("All");
   const [yearAccordionOpen, setYearAccordionOpen] = useState(false);
   const [typeAccordionOpen, setTypeAccordionOpen] = useState(false);
+  const currentYear = 2024; // 현재 연도를 2024로 고정
   const [semesterFilter, setSemesterFilter] = useState({
-    year: new Date().getFullYear(),
+    year: currentYear,
     semester: 2,
-  }); // 기본값: 현재 연도와 2학기
+  }); // 기본값: 2024년과 2학기
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false); // 일정 시간 후 마운트될 상태
   const navigate = useNavigate();
-  const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/list`;
 
   useEffect(() => {
@@ -97,7 +97,6 @@ const ContentBox = () => {
         src={LoadingImage}
         style={{
           width: "150px",
-          //페이지 정중앙에 위치
           position: "absolute",
           top: "50%",
           left: "50%",
