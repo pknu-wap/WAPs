@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: server
+
+  profiles:
+    include:
+      - db
+      - oauth
+      - s3
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
