@@ -38,7 +38,7 @@ const ProjectPage = () => {
 
         try {
           const response = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}/update`,
+            `${process.env.REACT_APP_API_BASE_URL}/project/${projectId}/update`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -67,7 +67,7 @@ const ProjectPage = () => {
       return;
     }
 
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project${
+    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project${
       isEditMode ? `/${projectId}` : ""
     }`;
 

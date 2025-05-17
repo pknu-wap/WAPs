@@ -13,16 +13,14 @@ const ProjectDelete = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!token); // 로그인 여부 확인
 
   // API URL
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/${projectId}`;
 
   // 프로젝트 상세 정보 가져오기
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
         const response = await axios.get(apiUrl, {
-          headers: token
-            ? { Authorization: `Bearer ${token}` }
-            : undefined, // 비로그인 사용자는 인증 헤더 제외
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined, // 비로그인 사용자는 인증 헤더 제외
         });
         const data = response.data;
 

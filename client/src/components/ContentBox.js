@@ -20,7 +20,7 @@ const ContentBox = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false); // 일정 시간 후 마운트될 상태
   const navigate = useNavigate();
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/list`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list`;
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
