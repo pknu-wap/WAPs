@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### 설정 파일 ###
+src/main/resources/application-db.yml
+src/main/resources/application-oauth.yml
+src/main/resources/application-s3.yml
