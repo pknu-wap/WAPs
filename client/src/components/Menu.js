@@ -14,13 +14,13 @@ const Menu = ({
 
   const handleNavigationWithAuth = (path) => {
     const token = Cookies.get("authToken");
-    if (!token) {
-      alert("해당 페이지는 로그인을 해야 접속 가능합니다.");
-      navigate("/login");
-    } else {
-      navigate(path);
-      toggleMenu();
-    }
+    // if (!token) {
+    //   alert("해당 페이지는 로그인을 해야 접속 가능합니다.");
+    //   navigate("/login");
+    // } else {
+    //   navigate(path);
+    //   toggleMenu();
+    // }
   };
 
   useEffect(() => {

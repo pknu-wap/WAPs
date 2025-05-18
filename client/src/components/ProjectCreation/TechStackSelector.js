@@ -20,7 +20,7 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
   const [showTechStackList, setShowTechStackList] = useState(false);
   const scrollRef = useRef(null);
 
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/api/techStack/list`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/techStack/list`;
 
   useEffect(() => {
     const fetchTechStacks = async () => {

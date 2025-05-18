@@ -22,7 +22,7 @@ const VoteForm = () => {
     e.preventDefault();
 
     // 서버경로
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/vote`;
+    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote`;
 
     // 프로젝트 데이터 : JSON 형식으로 준비
     const projectData = {

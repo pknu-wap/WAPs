@@ -11,7 +11,7 @@ const CommentsList = ({ comments }) => {
       "댓글 작성 시 입력한 비밀번호를 입력해주세요."
     );
 
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/comment/${commentId}`;
+    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/comment/${commentId}`;
 
     try {
       const response = await axios.delete(apiUrl, {

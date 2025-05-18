@@ -16,7 +16,7 @@ const ProtectedPage = () => {
 
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/user/me`,
+          `${process.env.REACT_APP_API_BASE_URL}/user/me`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -20,7 +20,7 @@ const EditButton = ({ projectId }) => {
     try {
       // 서버에 수정 권한을 확인하는 요청 보내기
       const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}/update`,
+        `${process.env.REACT_APP_API_BASE_URL}/project/${projectId}/update`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

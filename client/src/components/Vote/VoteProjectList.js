@@ -9,7 +9,7 @@ const VoteProjectList = ({
 }) => {
   const [projects, setProjects] = useState([]);
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/list?semester=2&projectYear=${currentYear}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=2&projectYear=${currentYear}`;
 
   useEffect(() => {
     const fetchData = async () => {

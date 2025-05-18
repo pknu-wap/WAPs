@@ -19,7 +19,7 @@ const ProjectDetailForm = () => {
   const [projectData, setProjectData] = useState(null); // 프로젝트 데이터
   const [isDataLoaded, setIsDataLoaded] = useState(false); // 데이터 로딩 완료 여부
 
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project/${projectId}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/${projectId}`;
 
   useEffect(() => {
     const fetchProjectDetails = async () => {

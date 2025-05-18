@@ -119,7 +119,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       alert("비밀번호를 입력해 주세요.");
       return;
     }
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/project`;
+    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project`;
     const formData = new FormData();
 
     const projectData = {

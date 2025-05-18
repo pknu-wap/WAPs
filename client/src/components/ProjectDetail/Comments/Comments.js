@@ -51,7 +51,7 @@ const Comments = ({ projectId }) => {
       alert("비밀번호를 입력해 주세요.");
       return;
     }
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL_PROXY}/api/comment/${projectId}`;
+    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/comment/${projectId}`;
 
     const commentsData = {
       commentContent: comments,

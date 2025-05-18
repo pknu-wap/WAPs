@@ -6,7 +6,7 @@ const Callback = () => {
   const navigate = useNavigate();
 
   const fetchUserInfo = (token) => {
-    fetch(`${process.env.REACT_APP_API_BASE_URL_PROXY}/api/user/me`, {
+    fetch(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
