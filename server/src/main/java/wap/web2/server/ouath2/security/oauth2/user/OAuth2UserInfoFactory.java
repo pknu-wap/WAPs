@@ -1,7 +1,7 @@
 package wap.web2.server.ouath2.security.oauth2.user;
 
 import wap.web2.server.exception.OAuth2AuthenticationProcessingException;
-import wap.web2.server.domain.AuthProvider;
+import wap.web2.server.member.entity.AuthProvider;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 
 import java.util.HashMap;

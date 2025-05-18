@@ -1,8 +1,8 @@
 package wap.web2.server.ouath2.security;
 
 import wap.web2.server.exception.ResourceNotFoundException;
-import wap.web2.server.domain.User;
-import wap.web2.server.repository.UserRepository;
+import wap.web2.server.member.entity.User;
+import wap.web2.server.member.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

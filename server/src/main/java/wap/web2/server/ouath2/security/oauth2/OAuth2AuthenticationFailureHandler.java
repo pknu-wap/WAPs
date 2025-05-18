@@ -1,6 +1,6 @@
 package wap.web2.server.ouath2.security.oauth2;
 
-import wap.web2.server.ouath2.util.CookieUtils;
+import wap.web2.server.util.CookieUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

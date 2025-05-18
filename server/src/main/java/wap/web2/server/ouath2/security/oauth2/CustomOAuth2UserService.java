@@ -1,11 +1,11 @@
 package wap.web2.server.ouath2.security.oauth2;
 
 import wap.web2.server.exception.OAuth2AuthenticationProcessingException;
-import wap.web2.server.domain.AuthProvider;
-import wap.web2.server.domain.User;
+import wap.web2.server.member.entity.AuthProvider;
+import wap.web2.server.member.entity.User;
 import wap.web2.server.ouath2.security.oauth2.user.OAuth2UserInfo;
 import wap.web2.server.ouath2.security.oauth2.user.OAuth2UserInfoFactory;
-import wap.web2.server.repository.UserRepository;
+import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
