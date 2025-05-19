@@ -11,7 +11,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final long MAX_AGE_SECS = 3600;
 
     // @Value("${app.cors.allowedOrigins}")
-    private String[] allowedOrigins = {
+    private final String[] allowedOrigins = {
             "https://wap-projects.netlify.app",
             "http://localhost:3000",
             "http://localhost:8080"

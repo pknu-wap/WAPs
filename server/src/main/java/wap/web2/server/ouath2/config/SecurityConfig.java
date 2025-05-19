@@ -78,6 +78,8 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(new RestAuthenticationEntryPoint()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(staticResources()).permitAll()
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
+                                "/swagger-resources/**", "/swagger-resources", "/webjars/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/project/**", "/techStack/**").permitAll()
                         .requestMatchers("/auth/**", "/oauth2/**", "/comment/**").permitAll()
                         .anyRequest().authenticated()

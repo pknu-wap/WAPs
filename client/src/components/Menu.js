@@ -96,20 +96,6 @@ const Menu = ({
             </li>
             <hr className="startLine"></hr>
           </ul>
-
-          <div className="auth-section">
-            {userName ? (
-              <p
-                className="auth-text"
-                onClick={() => {
-                  handleLogout();
-                  toggleMenu();
-                }}
-              >
-                로그아웃
-              </p>
-            ) : null}
-          </div>
         </nav>
       )}
     </div>
