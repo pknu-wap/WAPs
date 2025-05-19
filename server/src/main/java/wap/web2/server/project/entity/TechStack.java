@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TechStack {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long techStackId;

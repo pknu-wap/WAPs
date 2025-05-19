@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 // 기술스택 리스트를 value 로 가지는 JSON
 public class TechStackResponse {
+
     private List<TechStackInfoResponse> techStackResponse;
 }
 

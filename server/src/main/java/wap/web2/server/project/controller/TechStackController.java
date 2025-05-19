@@ -31,6 +31,4 @@ public class TechStackController {
                 .build();
         return new ResponseEntity<>(techStackResponse, HttpStatus.OK);
     }
-
-
 }

@@ -14,7 +14,6 @@ import wap.web2.server.member.service.UserService;
 @RequiredArgsConstructor
 public class UserController {
 
-
     private final UserService userService;
 
     //자신의 회원 정보를 리턴

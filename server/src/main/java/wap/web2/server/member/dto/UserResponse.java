@@ -11,11 +11,10 @@ import wap.web2.server.member.entity.User;
 @AllArgsConstructor
 @Builder
 public class UserResponse {
+
     private Long userId;
     private String userName;
     private String userEmail;
-
-
 
     public static UserResponse of(User user) {
         return UserResponse.builder()

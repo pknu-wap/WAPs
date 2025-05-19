@@ -11,6 +11,7 @@ import wap.web2.server.project.entity.TechStackType;
 @AllArgsConstructor
 // 기술스택 리스트, 기술스택명에 따라 기술스택 타입이 매칭됨
 public class TechStackInfoResponse {
+
     private TechStackName techStackName;
     private TechStackType techStackType;
 

@@ -11,6 +11,7 @@ import wap.web2.server.comment.entity.Comment;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentDto {
+
     private Long commentId;
     private String commenter;
     private String commentContent;
