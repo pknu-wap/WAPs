@@ -117,7 +117,7 @@ const Comments = ({ projectId }) => {
             </svg> */}
             <img className={styles.user_image} alt="user" src={userImage} />
           </div>
-          <div className={styles.nickname}>
+          {/* <div className={styles.nickname}>
             <textarea
               className={styles.nickname_input}
               rows={1} // 최소 줄 수
@@ -126,8 +126,8 @@ const Comments = ({ projectId }) => {
               spellCheck={false} // 스펠링 체크 끄기
               onChange={handleUserNameChange}
             />
-          </div>
-          <div className={styles.password}>
+          </div> */}
+          {/* <div className={styles.password}>
             <textarea
               className={styles.password_input}
               rows={1} // 최소 줄 수
@@ -136,7 +136,7 @@ const Comments = ({ projectId }) => {
               spellCheck={false} // 스펠링 체크 끄기
               onChange={handlePasswordChange}
             />
-          </div>
+          </div> */}
         </div>
         <div className={styles.comments_form}>
           <div className={styles.comments_input_form}>
