@@ -1,5 +1,9 @@
 package wap.web2.server.project.service;
 
+import static wap.web2.server.aws.AwsUtils.IMAGES;
+import static wap.web2.server.aws.AwsUtils.PROJECT_DIR;
+import static wap.web2.server.aws.AwsUtils.THUMBNAIL;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -42,8 +46,8 @@ public class ProjectService {
         //요청토큰에 해당하는 user 를 꺼내옴
         User user = userRepository.findById(userPrincipal.getId()).get();
 
-        List<String> imageUrls = awsUtils.uploadImagesToS3(request.getImageS3());
-        String thumbnailUrl = awsUtils.uploadImageToS3(request.getThumbnailS3());
+        List<String> imageUrls = awsUtils.uploadImagesTo(PROJECT_DIR, request.getTitle(), IMAGES, request.getImageS3());
+        String thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getTitle(), THUMBNAIL, request.getThumbnailS3());
 
         // request.toEntity() 를 호출함으로서 매개변수로 넘어온 객체(request)를 사용
         Project project = request.toEntity(request, imageUrls, thumbnailUrl, user);
@@ -96,8 +100,8 @@ public class ProjectService {
 
         Project project = projectRepository.findByProjectIdAndUser(projectId, user.getId());
 
-        List<String> imageUrls = awsUtils.uploadImagesToS3(request.getImageS3());
-        String thumbnailUrl = awsUtils.uploadImageToS3(request.getThumbnailS3());
+        List<String> imageUrls = awsUtils.uploadImagesTo(PROJECT_DIR, request.getTitle(), IMAGES, request.getImageS3());
+        String thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getTitle(), THUMBNAIL, request.getThumbnailS3());
 
         project.update(request, imageUrls, thumbnailUrl);
 
