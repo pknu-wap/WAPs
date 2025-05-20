@@ -31,10 +31,6 @@ public class Comment {
     @Column(length = 9000) // 글 내용은 길이 9000 (한글 기준 3000자)
     private String commentContent;
 
-    private String commenter;
-
-    private String password;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
@@ -42,4 +38,8 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public boolean isOwner(User user) {
+        return this.user == user;
+    }
 }

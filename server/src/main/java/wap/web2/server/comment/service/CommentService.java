@@ -1,11 +1,9 @@
 package wap.web2.server.comment.service;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.comment.dto.request.CommentCreateRequest;
-import wap.web2.server.comment.dto.request.CommentDeleteRequest;
 import wap.web2.server.comment.entity.Comment;
 import wap.web2.server.comment.repository.CommentRepository;
 import wap.web2.server.member.entity.User;
@@ -33,15 +31,15 @@ public class CommentService {
     }
 
     @Transactional
-    public boolean deleteCommentByPassword(Long commentId, CommentDeleteRequest request, UserPrincipal userPrincipal) {
-        Optional<Comment> optionalBook = commentRepository.findById(commentId);
-        if (optionalBook.isPresent()) {
-            Comment comment = optionalBook.get();
-            if (comment.getPassword().equals(request.getPassword())) {
-                commentRepository.delete(comment);
-                return true;
-            }
+    public void delete(Long commentId, UserPrincipal userPrincipal) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] Comment not found"));
+        User user = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] User not found"));
+
+        if (!comment.isOwner(user)) {
+            throw new IllegalArgumentException("[ERROR] Is not your comment");
         }
-        return false;
+        commentRepository.delete(comment);
     }
 }

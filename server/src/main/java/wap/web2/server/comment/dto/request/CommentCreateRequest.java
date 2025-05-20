@@ -15,14 +15,10 @@ import wap.web2.server.project.entity.Project;
 public class CommentCreateRequest {
 
     private String commentContent;
-    private String commenter;
-    private String password;
 
     public Comment toEntity(Project project, User user) {
         return Comment.builder()
                 .commentContent(commentContent)
-                .commenter(commenter)
-                .password(password)
                 .project(project)
                 .user(user)
                 .build();
