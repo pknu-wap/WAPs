@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import userImage from "../../../assets/img/WAP_white_NoBG.png";
 import styles from "../../../assets/ProjectDetail/Comments/CommentsList.module.css";
 
@@ -7,20 +8,21 @@ import styles from "../../../assets/ProjectDetail/Comments/CommentsList.module.c
 const CommentsList = ({ comments }) => {
   // 댓글 삭제 버튼 핸들러
   const handleDelete = async (commentId) => {
-    const userPasswordInput = prompt(
-      "댓글 작성 시 입력한 비밀번호를 입력해주세요."
-    );
+    // const userPasswordInput = prompt(
+    //   "댓글 작성 시 입력한 비밀번호를 입력해주세요."
+    // );
 
     const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/comment/${commentId}`;
 
     try {
+      const token = Cookies.get("authToken");
       const response = await axios.delete(apiUrl, {
-        data: {
-          password: userPasswordInput,
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
       });
       alert("댓글이 성공적으로 삭제되었습니다.");
-      // console.log(response);
+      console.log(response);
       window.location.reload();
     } catch (error) {
       alert("댓글 삭제에 실패했습니다.");
