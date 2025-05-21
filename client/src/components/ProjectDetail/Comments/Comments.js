@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "../../../assets/ProjectDetail/Comments/Comments.module.css";
 import userImage from "../../../assets/img/WAP_white_NoBG.png";
 
@@ -10,6 +10,7 @@ const Comments = ({ projectId }) => {
   // 입력창 크기 조절을 위한 상태
   const [comments, setComments] = useState("");
   const textAreaRef = useRef(null); // textarea DOM 참조
+  const navigate = useNavigate();
 
   // 닉네임
   // const [userName, setUserName] = useState("");
@@ -76,6 +77,7 @@ const Comments = ({ projectId }) => {
     } catch (error) {
       //console.error("댓글 작성 실패:", error);
       alert("댓글은 로그인 후에 작성 가능합니다. ");
+      navigate("/login");
     }
   };
 
