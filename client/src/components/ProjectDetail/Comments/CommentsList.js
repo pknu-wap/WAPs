@@ -21,7 +21,7 @@ const CommentsList = ({ comments }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      alert("댓글이 성공적으로 삭제되었습니다.");
+      alert("댓글이 삭제되었습니다.");
       console.log(response);
       window.location.reload();
     } catch (error) {
