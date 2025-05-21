@@ -1,20 +1,15 @@
 package wap.web2.server.ouath2.config;
 
-import wap.web2.server.ouath2.security.CustomUserDetailsService;
-import wap.web2.server.ouath2.security.RestAuthenticationEntryPoint;
-import wap.web2.server.ouath2.security.TokenAuthenticationFilter;
-import wap.web2.server.ouath2.security.oauth2.CustomOAuth2UserService;
-import wap.web2.server.ouath2.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
-import wap.web2.server.ouath2.security.oauth2.OAuth2AuthenticationFailureHandler;
-import wap.web2.server.ouath2.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,10 +17,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import wap.web2.server.ouath2.security.CustomUserDetailsService;
+import wap.web2.server.ouath2.security.RestAuthenticationEntryPoint;
+import wap.web2.server.ouath2.security.TokenAuthenticationFilter;
+import wap.web2.server.ouath2.security.oauth2.CustomOAuth2UserService;
+import wap.web2.server.ouath2.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import wap.web2.server.ouath2.security.oauth2.OAuth2AuthenticationFailureHandler;
+import wap.web2.server.ouath2.security.oauth2.OAuth2AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -80,7 +78,7 @@ public class SecurityConfig {
                         .requestMatchers(staticResources()).permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
                                 "/swagger-resources/**", "/swagger-resources", "/webjars/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/project/**", "/techStack/**").permitAll()
+                        .requestMatchers("/project/**", "/techStack/**").permitAll()
                         .requestMatchers("/auth/**", "/oauth2/**", "/comment/**").permitAll()
                         .anyRequest().authenticated()
                 )

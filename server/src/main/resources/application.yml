@@ -59,7 +59,7 @@ app:
       - myandroidapp://oauth2/redirect
       - myiosapp://oauth2/redirect
 aws:
-  accessKeyId: ${AWS_KEY_ID}
+  accessKeyId: ${AWS_ACCESS_KEY}
   secretKey: ${AWS_SECRET_KEY}
   s3:
     bucketName: ${AWS_S3_BUCKET_NAME}
