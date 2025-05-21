@@ -10,10 +10,10 @@ const ContentBox = () => {
   const [filter, setFilter] = useState("All");
   const [yearAccordionOpen, setYearAccordionOpen] = useState(false);
   const [typeAccordionOpen, setTypeAccordionOpen] = useState(false);
-  const currentYear = 2024; // 현재 연도를 2024로 고정
+  const currentYear = 2025; // 현재 연도를 2024로 고정
   const [semesterFilter, setSemesterFilter] = useState({
     year: currentYear,
-    semester: 2,
+    semester: 1,
   }); // 기본값: 2024년과 2학기
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);

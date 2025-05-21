@@ -25,7 +25,7 @@ const CommentsList = ({ comments }) => {
       console.log(response);
       window.location.reload();
     } catch (error) {
-      alert("댓글 삭제에 실패했습니다.");
+      alert("내가 작성한 댓글이 아닙니다.");
       // console.error("댓글 삭제 오류:", error);
     }
   };

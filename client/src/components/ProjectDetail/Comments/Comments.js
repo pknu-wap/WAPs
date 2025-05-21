@@ -74,8 +74,8 @@ const Comments = ({ projectId }) => {
       resetForm();
       window.location.reload();
     } catch (error) {
-      // console.error("댓글 작성 실패:", error);
-      alert("댓글 작성에 실패했습니다. 다시 시도해주세요.");
+      //console.error("댓글 작성 실패:", error);
+      alert("댓글은 로그인 후에 작성 가능합니다. ");
     }
   };
 
