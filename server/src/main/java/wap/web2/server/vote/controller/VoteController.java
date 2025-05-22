@@ -20,11 +20,8 @@ public class VoteController {
     private final VoteService voteService;
 
     @PostMapping
-    public ResponseEntity<?> voteProjects(
-        @CurrentUser UserPrincipal userPrincipal,
-        @RequestBody VoteRequest voteRequest
-    ) {
-
+    public ResponseEntity<?> voteProjects(@CurrentUser UserPrincipal userPrincipal,
+                                          @RequestBody VoteRequest voteRequest) {
         try {
             voteService.processVote(userPrincipal, voteRequest);
             return new ResponseEntity<>(HttpStatus.OK);

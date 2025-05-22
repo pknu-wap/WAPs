@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.member.entity.User;
-import wap.web2.server.exception.ResourceNotFoundException;
-import wap.web2.server.ouath2.security.UserPrincipal;
-import wap.web2.server.vote.dto.VoteRequest;
-import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.member.repository.UserRepository;
+import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.project.repository.ProjectRepository;
+import wap.web2.server.vote.dto.VoteRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +20,10 @@ public class VoteService {
     @Transactional
     public void processVote(UserPrincipal userPrincipal, VoteRequest voteRequest) {
         User user = userRepository.findById(userPrincipal.getId())
-            .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
 
         if (!user.canVote()) {
-            throw new IllegalStateException("투표를 이미 완료했습니다.");
+            throw new IllegalStateException("[ERROR] 투표를 이미 완료했습니다.");
         }
 
         vote(voteRequest);
@@ -35,7 +34,7 @@ public class VoteService {
         for (Long projectId : voteRequest.getProjectIds()) {
             int updated = projectRepository.voteByProjectId(projectId);
             if (updated == 0) {
-                throw new IllegalArgumentException("존재하지 않는 프로젝트입니다. projectId : " + projectId);
+                throw new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다. projectId : " + projectId);
             }
         }
     }
