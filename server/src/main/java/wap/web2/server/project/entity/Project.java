@@ -23,6 +23,7 @@ import wap.web2.server.member.entity.User;
 import wap.web2.server.project.dto.TeamMemberDto;
 import wap.web2.server.project.dto.TechStackDto;
 import wap.web2.server.project.dto.request.ProjectCreateRequest;
+import wap.web2.server.vote.entity.Vote;
 
 @Builder
 @Entity
@@ -47,7 +48,7 @@ public class Project {
 
     private Integer semester;
 
-    private Long vote;
+    private Long voteCount; // 득표 수
 
     private Integer projectYear;
 
@@ -69,8 +70,11 @@ public class Project {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void update(ProjectCreateRequest request, List<String> imageUrls, String thumbnailUrl) {
+    @ManyToOne
+    @JoinColumn(name = "vote_id")
+    private Vote vote;
 
+    public void update(ProjectCreateRequest request, List<String> imageUrls, String thumbnailUrl) {
         // 기본 필드 업데이트
         this.title = request.getTitle();
         this.projectType = request.getProjectType();
@@ -84,11 +88,11 @@ public class Project {
         this.images.clear();
         if (imageUrls != null && !imageUrls.isEmpty()) {
             List<Image> newImages = imageUrls.stream()
-                .map(imageDto -> Image.builder()
-                    .imageFile(imageDto)
-                    .project(this) // 연관관계 설정
-                    .build()) // Builder 사용
-                .collect(Collectors.toList());
+                    .map(imageDto -> Image.builder()
+                            .imageFile(imageDto)
+                            .project(this) // 연관관계 설정
+                            .build()) // Builder 사용
+                    .collect(Collectors.toList());
             this.images.addAll(newImages);
         }
 
@@ -96,8 +100,8 @@ public class Project {
         this.teamMembers.clear();
         if (request.getTeamMember() != null && !request.getTeamMember().isEmpty()) {
             List<TeamMember> newTeamMembers = request.getTeamMember().stream()
-                .map(TeamMemberDto::toEntity) // DTO → 엔티티 변환
-                .collect(Collectors.toList());
+                    .map(TeamMemberDto::toEntity) // DTO → 엔티티 변환
+                    .collect(Collectors.toList());
             this.teamMembers.addAll(newTeamMembers);
         }
 
@@ -105,8 +109,8 @@ public class Project {
         this.techStacks.clear();
         if (request.getTechStack() != null && !request.getTechStack().isEmpty()) {
             List<TechStack> newTechStacks = request.getTechStack().stream()
-                .map(TechStackDto::toEntity) // DTO → 엔티티 변환
-                .collect(Collectors.toList());
+                    .map(TechStackDto::toEntity) // DTO → 엔티티 변환
+                    .collect(Collectors.toList());
             this.techStacks.addAll(newTechStacks);
         }
 

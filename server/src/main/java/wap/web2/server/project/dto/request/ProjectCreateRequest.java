@@ -7,14 +7,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
-import wap.web2.server.project.entity.Image;
-import wap.web2.server.project.entity.Project;
-import wap.web2.server.project.entity.TeamMember;
-import wap.web2.server.project.entity.TechStack;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.project.dto.ImageDto;
 import wap.web2.server.project.dto.TeamMemberDto;
 import wap.web2.server.project.dto.TechStackDto;
+import wap.web2.server.project.entity.Image;
+import wap.web2.server.project.entity.Project;
+import wap.web2.server.project.entity.TeamMember;
+import wap.web2.server.project.entity.TechStack;
+import wap.web2.server.vote.entity.Vote;
 
 @Builder
 @Getter
@@ -41,33 +42,34 @@ public class ProjectCreateRequest {
     private MultipartFile thumbnailS3; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
     public Project toEntity(ProjectCreateRequest request, List<String> imageUrls, String thumbnailUrl,
-        User user) {
+                            User user, Vote vote) {
 
         List<Image> imagesEntities = imageUrls.stream()
-            .map(ImageDto::toEntity)
-            .collect(Collectors.toList());
+                .map(ImageDto::toEntity)
+                .collect(Collectors.toList());
 
         List<TechStack> techStacksEntities = request.getTechStack().stream()
-            .map(TechStackDto::toEntity)
-            .collect(Collectors.toList());
+                .map(TechStackDto::toEntity)
+                .collect(Collectors.toList());
 
         List<TeamMember> teamMemberEntities = request.getTeamMember().stream()
-            .map(TeamMemberDto::toEntity)
-            .collect(Collectors.toList());
+                .map(TeamMemberDto::toEntity)
+                .collect(Collectors.toList());
 
         return Project.builder()
-            .user(user)
-            .title(request.getTitle())
-            .projectType(request.getProjectType())
-            .content(request.getContent())
-            .summary(request.getSummary())
-            .semester(request.getSemester())
-            .projectYear(request.getProjectYear())
-            .images(imagesEntities)
-            .techStacks(techStacksEntities)
-            .teamMembers(teamMemberEntities)
-            .thumbnail(thumbnailUrl)
-            .vote(0L)
-            .build();
+                .user(user)
+                .title(request.getTitle())
+                .projectType(request.getProjectType())
+                .content(request.getContent())
+                .summary(request.getSummary())
+                .semester(request.getSemester())
+                .projectYear(request.getProjectYear())
+                .images(imagesEntities)
+                .techStacks(techStacksEntities)
+                .teamMembers(teamMemberEntities)
+                .thumbnail(thumbnailUrl)
+                .voteCount(0L)
+                .vote(vote)
+                .build();
     }
 }

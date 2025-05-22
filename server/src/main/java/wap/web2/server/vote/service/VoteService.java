@@ -1,5 +1,6 @@
 package wap.web2.server.vote.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +10,7 @@ import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteRequest;
+import wap.web2.server.vote.dto.VoteResultResponse;
 import wap.web2.server.vote.entity.Vote;
 import wap.web2.server.vote.repository.VoteRepository;
 
@@ -42,6 +44,22 @@ public class VoteService {
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
 
         return new VoteInfoResponse(vote.getIsOpen(), user.getVoted());
+    }
+
+    @Transactional
+    public List<VoteResultResponse> getVoteResults(Integer year, Integer semester) {
+        Vote vote = voteRepository.findVoteByYearAndSemester(year, semester)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지않는 투표입니다."));
+
+        List<VoteResultResponse> results = vote.getProjectList().stream()
+                .map(VoteResultResponse::from)
+                .toList();
+
+        // 전체 수
+        long sum = results.stream().mapToLong(VoteResultResponse::getVoteCount).sum();
+        results.forEach(result -> result.calcVoteRate(sum));
+
+        return results;
     }
 
     private void vote(VoteRequest voteRequest) {

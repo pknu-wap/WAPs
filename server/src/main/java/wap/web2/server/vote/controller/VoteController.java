@@ -1,5 +1,6 @@
 package wap.web2.server.vote.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteRequest;
+import wap.web2.server.vote.dto.VoteResultResponse;
 import wap.web2.server.vote.service.VoteService;
 
 @RestController
@@ -37,11 +39,21 @@ public class VoteController {
         }
     }
 
+
     @GetMapping("/now")
     public ResponseEntity<?> getVoteInfo(@CurrentUser UserPrincipal userPrincipal,
                                          @RequestParam("projectYear") Integer year,
                                          @RequestParam("semester") Integer semester) {
         VoteInfoResponse voteInfo = voteService.getVoteInfo(userPrincipal, year, semester);
         return ResponseEntity.ok().body(voteInfo);
+    }
+
+    @GetMapping("/result")
+    public ResponseEntity<?> getVoteResults(@RequestParam("projectYear") Integer year,
+                                            @RequestParam("semester") Integer semester) {
+        // 정렬 했나요?
+        List<VoteResultResponse> voteResults = voteService.getVoteResults(year, semester);
+
+        return ResponseEntity.ok().body(voteResults);
     }
 }

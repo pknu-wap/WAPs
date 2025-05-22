@@ -5,7 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
+import wap.web2.server.project.entity.Project;
 
 @Getter
 @Entity
@@ -23,4 +27,7 @@ public class Vote {
 
     @Column
     private Integer semester;
+
+    @OneToMany(mappedBy = "vote")
+    private List<Project> projectList = new ArrayList<>();
 }
