@@ -85,7 +85,7 @@ const Menu = ({
             </li>
             <hr className="line"></hr>
             <li onClick={() => handleVotePageNavigate("/vote")}>Vote</li>
-            <hr className="line"></hr>
+            {/*<hr className="line"></hr>
             <li
               onClick={() => {
                 navigate("/map");
@@ -93,7 +93,7 @@ const Menu = ({
               }}
             >
               Map
-            </li>
+            </li>*/}
             <hr className="startLine"></hr>
           </ul>
         </nav>
