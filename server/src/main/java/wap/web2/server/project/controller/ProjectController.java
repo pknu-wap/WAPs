@@ -99,7 +99,7 @@ public class ProjectController {
                                                         @CurrentUser UserPrincipal userPrincipal) {
         try {
             // 프로젝트 상세 정보를 가져오는 서비스 호출
-            ProjectUpdateDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
+            ProjectDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (IllegalArgumentException ex) {
             // 유효하지 않은 유저 ID

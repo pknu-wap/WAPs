@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.vote.entity.Vote;
 import wap.web2.server.vote.repository.VoteRepository;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ProjectService {
@@ -77,13 +79,15 @@ public class ProjectService {
         return projectRepository.findById(projectId).map(ProjectDetailsResponse::from);
     }
 
-    public ProjectUpdateDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
+    public ProjectDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
         if (userPrincipal == null) {
             throw new IllegalArgumentException();
         }
 
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user Id"));
+
+        log.info("[수정 요청] - 유저ID: {}, 유저명: {}, 프로젝트ID: {}", user.getId(), user.getName(), projectId);
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("프로젝트가 없습니다."));
@@ -92,7 +96,7 @@ public class ProjectService {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
         }
 
-        return ProjectUpdateDetailsResponse.from(project);
+        return ProjectDetailsResponse.from(project);
     }
 
     @Transactional
