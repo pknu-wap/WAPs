@@ -52,6 +52,7 @@ public class Project {
 
     private Integer projectYear;
 
+    @Column(length = 1000)
     private String thumbnail;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
