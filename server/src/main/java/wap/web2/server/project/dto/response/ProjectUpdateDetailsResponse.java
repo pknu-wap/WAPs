@@ -1,13 +1,12 @@
 package wap.web2.server.project.dto.response;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import wap.web2.server.project.entity.Project;
 import wap.web2.server.comment.dto.CommentDto;
 import wap.web2.server.project.dto.TeamMemberDto;
-
-import java.util.List;
+import wap.web2.server.project.entity.Project;
 
 @Builder
 @AllArgsConstructor
@@ -38,7 +37,7 @@ public class ProjectUpdateDetailsResponse {
                 .content(project.getContent())
                 .summary(project.getSummary())
                 .semester(project.getSemester())
-                .vote(project.getVote())
+                .vote(project.getVoteCount())
                 .projectYear(project.getProjectYear())
                 .teamMember(teamMembers)
                 .comments(comments)

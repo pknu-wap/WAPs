@@ -17,6 +17,7 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long imageId;
 
+    @Column(length = 1000)
     private String imageFile;
 
     @ManyToOne(fetch = FetchType.LAZY)

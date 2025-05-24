@@ -32,28 +32,28 @@ public class ProjectDetailsResponse {
 
     public static ProjectDetailsResponse from(Project project) {
         List<TeamMemberDto> teamMembers = project.getTeamMembers().stream()
-            .map(TeamMemberDto::from).toList();
+                .map(TeamMemberDto::from).toList();
         List<ImageDto> images = project.getImages().stream()
-            .map(ImageDto::from).toList();
+                .map(ImageDto::from).toList();
         List<TechStackDto> techStacks = project.getTechStacks().stream()
-            .map(TechStackDto::from).toList();
+                .map(TechStackDto::from).toList();
         List<CommentDto> comments = project.getComments().stream()
                 .map(CommentDto::from).toList();
 
         return ProjectDetailsResponse.builder()
-            .projectId(project.getProjectId())
-            .title(project.getTitle())
-            .projectType(project.getProjectType())
-            .content(project.getContent())
-            .summary(project.getSummary())
-            .semester(project.getSemester())
-            .vote(project.getVote())
-            .projectYear(project.getProjectYear())
-            .thumbnail(project.getThumbnail())
-            .teamMember(teamMembers)
-            .techStack(techStacks)
-            .images(images)
+                .projectId(project.getProjectId())
+                .title(project.getTitle())
+                .projectType(project.getProjectType())
+                .content(project.getContent())
+                .summary(project.getSummary())
+                .semester(project.getSemester())
+                .vote(project.getVoteCount())
+                .projectYear(project.getProjectYear())
+                .thumbnail(project.getThumbnail())
+                .teamMember(teamMembers)
+                .techStack(techStacks)
+                .images(images)
                 .comments(comments)
-            .build();
+                .build();
     }
 }
