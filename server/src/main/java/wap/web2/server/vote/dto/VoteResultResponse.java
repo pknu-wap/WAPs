@@ -30,6 +30,11 @@ public class VoteResultResponse {
     }
 
     public void calcVoteRate(long totalVoted) {
-        voteRate = (double) voteCount / totalVoted;
+        if (totalVoted == 0) {
+            voteRate = 0.0;
+            return;
+        }
+        double rate = (double) voteCount / totalVoted * 100;
+        voteRate = Math.round(rate * 10) / 10.0;
     }
 }
