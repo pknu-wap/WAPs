@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -6,10 +7,16 @@ import VoteForm from "../components/Vote/VoteForm";
 import FloatingButton from "../components/FloatingButton";
 import Cookies from "js-cookie";
 
+import VoteResultPage from "./VoteResultPage";
+
+// 분기를 결정함.
+// 현재 투표 기간인지에 따라 분기 구별함.
 const VotePage = () => {
+  // 분기를 결정하는 api 임.
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now`;
   const token = Cookies.get("authToken");
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -32,14 +39,40 @@ const VotePage = () => {
       alert("로그인이 필요합니다.");
       navigate("/login"); // 로그인 페이지로 이
     }
-  }, [navigate]);
 
+    // 현재 투표 기간임을 판단하기 위함
+    const isInVotingPeriod = async () => {
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
+
+      try {
+        const response = await axios.get(apiUrl, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // 가져온 데이터 표시
+        // console.log("프로젝트 상세 정보:", response.data);
+        console.log(response.data.isOpen);
+      } catch (error) {
+        alert("투표기간인지 확인할 수 없습니다. ");
+      } finally {
+        // setIsLoading(false);
+      }
+    };
+
+    isInVotingPeriod();
+  }, [navigate, apiUrl, token]);
   return (
     <div className="container">
       <Header toggleMenu={toggleMenu} />
+
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
-        <VoteForm />
+        {isOpen ? <VoteForm /> : <VoteResultPage />}
+        {/* <VoteForm /> */}
       </main>
       <FloatingButton />
     </div>

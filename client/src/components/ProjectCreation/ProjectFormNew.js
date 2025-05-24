@@ -77,6 +77,8 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   // 기존 데이터 초기화
   useEffect(() => {
     if (isEdit && existingProject) {
+      // 👇 서버에서 받아온 프로젝트 객체 콘솔 출력
+      console.log("받아온 기존 프로젝트 데이터", existingProject);
       setThumbnail(existingProject.thumbnail || null);
       setProjectYear(existingProject.projectYear || new Date().getFullYear());
       setSemester(
@@ -94,7 +96,16 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       //     return newImages;
       //   });
       // });
-      setImages(existingProject.images || [null, null, null, null]);
+      // setImages(existingProject.images || [null, null, null, null]);
+
+      // 이미지 처리
+      if (existingProject.images && Array.isArray(existingProject.images)) {
+        const parsedImages = existingProject.images.map((img) => {
+          return img.imageFile;
+        });
+        setImages(parsedImages);
+      }
+
       // 멤버가 존재하면 추가
       if (existingProject.teamMember) {
         existingProject.teamMember.forEach((member, index) => {
