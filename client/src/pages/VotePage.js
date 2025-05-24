@@ -12,8 +12,9 @@ import VoteResultPage from "./VoteResultPage";
 // 분기를 결정함.
 // 현재 투표 기간인지에 따라 분기 구별함.
 const VotePage = () => {
+  const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
   // 분기를 결정하는 api 임.
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now?semester=2&projectYear=${currentYear}`;
   const token = Cookies.get("authToken");
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

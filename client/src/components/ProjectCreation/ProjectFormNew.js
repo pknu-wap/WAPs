@@ -159,18 +159,23 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     // JSON 데이터 추가
     formData.append("project", blob);
 
-    if (thumbnail) {
+    if (thumbnail instanceof File) {
       formData.append("thumbnail", thumbnail);
     }
 
     images.forEach((image) => {
-      if (image) {
+      if (image instanceof File) {
         formData.append("image", image);
       }
     });
 
     try {
       if (isEdit) {
+        console.log(
+          "PUT 요청 보낼 projectData:",
+          JSON.stringify(projectData, null, 2)
+        );
+
         await axios.put(`${apiUrl}/${projectId}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -197,8 +202,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       // 에러 출력
 
       alert("프로젝트 요청에 실패했습니다. 다시 시도해 주세요.");
-
-      // console.log(formData);
+      if (error.response) {
+        console.error("에러 응답 코드:", error.response.status);
+        console.error("에러 메시지:", error.response.data);
+      }
     }
   };
 
@@ -278,7 +285,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         ))}
       </div> */}
       <div className={styles.images}>
-        {images.map((image, index) => (
+        {/* {images.map((image, index) => (
           <ImageUploader
             key={index}
             imgText={`이미지 등록 ${index + 1}`}
@@ -288,10 +295,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
             handleRemoveImage={() => handleRemoveImage("image", index)}
             type="image"
           />
-        ))}
+        ))} */}
 
         {/* 남은 업로더 공간 표시 */}
-        {Array.from({ length: maxImageCount - images.length }).map(
+        {/* {Array.from({ length: maxImageCount - images.length }).map(
           (_, index) => (
             <ImageUploader
               key={index}
@@ -303,7 +310,20 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
               type="image"
             />
           )
-        )}
+        )} */}
+
+        {Array.from({ length: maxImageCount }).map((_, index) => (
+          <ImageUploader
+            key={index}
+            index={index} // 삭제용 index 전달
+            imgText={`이미지 등록 ${index + 1}`}
+            imgName={images[index] || null}
+            errorMessage={errorMessage[`image${index}`]}
+            handleImgUpload={(file) => handleImgUpload(file, "image", index)}
+            handleRemoveImage={(i) => handleRemoveImage("image", i)}
+            type="image"
+          />
+        ))}
       </div>
       <div className="form-group">
         {teamMembers.map((member, index) => (

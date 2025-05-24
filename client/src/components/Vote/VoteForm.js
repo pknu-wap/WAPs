@@ -21,9 +21,7 @@ const VoteForm = ({ isVotedUser }) => {
           const response = await axios.get(fetchVotedProjectsUrl, {
             headers: { Authorization: `Bearer ${token}` },
           });
-
-          // 가져온 데이터 표시
-          selectedProjects(response.data);
+          setVotedProjects(response.data);
         } catch (error) {
           alert("투표한 프로젝트 정보를 가져오는데 실패했습니다. ");
         } finally {

@@ -68,13 +68,15 @@ const useProjectForm = () => {
   };
 
   // 이미지 삭제 핸들러
-  const handleRemoveImage = (type, index = null) => {
+  const handleRemoveImage = (type, index) => {
     if (type === "thumbnail") {
       setThumbnail(null);
     } else if (type === "image") {
-      const newImages = [...images];
-      newImages[index] = null; // 해당 이미지만 삭제
-      setImages(newImages);
+      setImages((prevImages) => {
+        const newImages = [...prevImages];
+        newImages.splice(index, 1);
+        return newImages;
+      });
     }
   };
 
