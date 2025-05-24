@@ -17,6 +17,9 @@ const VotePage = () => {
   const token = Cookies.get("authToken");
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  // 투표했는지 여부의 초기값은 일단 false
+  const [isvotedUser, setIsVotedUser] = useState(false);
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -56,6 +59,10 @@ const VotePage = () => {
         // 가져온 데이터 표시
         // console.log("프로젝트 상세 정보:", response.data);
         console.log(response.data.isOpen);
+
+        // 받은 boolean 값을 set으로 설정해줌.
+        setIsOpen(response.data.isOpen);
+        setIsVotedUser(response.date.isvotedUser);
       } catch (error) {
         alert("투표기간인지 확인할 수 없습니다. ");
       } finally {
@@ -71,8 +78,10 @@ const VotePage = () => {
 
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
-        {isOpen ? <VoteForm /> : <VoteResultPage />}
-        {/* <VoteForm /> */}
+        {/* 이게 내가 사용해야할 코드임!! 지금 백엔드가 안되어있어서 임시방편으로
+        아래방법 선택함. */}
+        {/* {isOpen ? <VoteForm /> : <VoteResultPage />} */}
+        <VoteForm isVotedUser={isvotedUser} />
       </main>
       <FloatingButton />
     </div>

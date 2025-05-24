@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
@@ -6,8 +6,35 @@ import styles from "../../assets/Vote/ProjectVote.module.css";
 import sub_styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import VoteProjectList from "./VoteProjectList";
 import useProjectvoteForm from "../../hooks/Projectvote/useProjectVoteForm";
-const VoteForm = () => {
+
+// voteForm에 파라미터로 받음 .
+const VoteForm = ({ isVotedUser }) => {
+  const [votedProjects, setVotedProjects] = useState([]);
+  const fetchVotedProjectsUrl = `${process.env.REACT_APP_API_BASE_URL}/user/vote`;
   const token = Cookies.get("authToken");
+
+  useEffect(() => {
+    if (isVotedUser) {
+      // 투표한 페이지 정보 가져오기
+      const fetchVotedProjects = async () => {
+        try {
+          const response = await axios.get(fetchVotedProjectsUrl, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          // 가져온 데이터 표시
+          selectedProjects(response.data);
+        } catch (error) {
+          alert("투표한 프로젝트 정보를 가져오는데 실패했습니다. ");
+        } finally {
+          // setIsLoading(false);
+        }
+      };
+
+      fetchVotedProjects();
+    }
+  }, [fetchVotedProjectsUrl, token]);
+
   const { selectedProjects, handleProjectSelect, setSelectedProjects } =
     useProjectvoteForm();
   const resetForm = () => {
@@ -98,15 +125,22 @@ const VoteForm = () => {
         selectedProjects={selectedProjects}
         setSelectedProjects={setSelectedProjects}
       />
-
-      <button
-        type="submit"
-        className={sub_styles.submit_button}
-        style={{ marginTop: "20px", marginBottom: "100px", cursor: "pointer" }}
-        onClick={handleSubmit}
-      >
-        투표 완료
-      </button>
+      {isVotedUser ? (
+        <div> 이미 투표함 </div>
+      ) : (
+        <button
+          type="submit"
+          className={sub_styles.submit_button}
+          style={{
+            marginTop: "20px",
+            marginBottom: "100px",
+            cursor: "pointer",
+          }}
+          onClick={handleSubmit}
+        >
+          투표 완료
+        </button>
+      )}
     </div>
   );
 };
