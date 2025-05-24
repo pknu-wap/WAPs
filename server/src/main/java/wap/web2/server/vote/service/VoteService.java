@@ -22,7 +22,7 @@ public class VoteService {
     private final UserRepository userRepository;
     private final VoteRepository voteRepository;
 
-    //Transactional인 메서드에서 투표 실시, marking user vote 가 들어있어야 transactional 하게 처리할 수 있다.
+    // Transactional인 메서드에서 투표 실시, marking user vote 가 들어있어야 transactional 하게 처리할 수 있다.
     @Transactional
     public void processVote(UserPrincipal userPrincipal, VoteRequest voteRequest) {
         User user = userRepository.findById(userPrincipal.getId())
@@ -34,6 +34,7 @@ public class VoteService {
 
         vote(voteRequest);
         markVoted(user);
+        user.updateVotedProjectIds(voteRequest);
     }
 
     @Transactional
@@ -74,4 +75,5 @@ public class VoteService {
     private void markVoted(User user) {
         userRepository.updateVotedTrueByUserId(user.getId());
     }
+
 }
