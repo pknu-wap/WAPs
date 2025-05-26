@@ -4,7 +4,14 @@ import { useState } from "react";
 const useProjectvoteForm = () => {
   const [selectedProjects, setSelectedProjects] = useState([]);
 
-  const handleProjectSelect = (projectId) => {
+  const handleProjectSelect = ({ projectId, isVotedUser }) => {
+    console.log("클릭됨", projectId);
+    console.log("🔍 isVotedUser 확인:", isVotedUser);
+
+    if (isVotedUser) {
+      alert("투표는 변경하실 수 없습니다.");
+      return;
+    }
     if (selectedProjects.includes(projectId)) {
       // 이미 선택된 프로젝트는 해제
       setSelectedProjects(selectedProjects.filter((id) => id !== projectId));

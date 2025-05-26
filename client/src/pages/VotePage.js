@@ -14,9 +14,11 @@ import VoteResultPage from "./VoteResultPage";
 const VotePage = () => {
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
   // 분기를 결정하는 api 임.
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now?semester=2&projectYear=${currentYear}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now?semester=1&projectYear=${currentYear}`;
   const token = Cookies.get("authToken");
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // 현재 투표기간인지 판단하는 함수
   const [isOpen, setIsOpen] = useState(false);
 
   // 투표했는지 여부의 초기값은 일단 false
@@ -59,11 +61,12 @@ const VotePage = () => {
 
         // 가져온 데이터 표시
         // console.log("프로젝트 상세 정보:", response.data);
-        console.log(response.data.isOpen);
+        console.log(response.data);
 
         // 받은 boolean 값을 set으로 설정해줌.
-        setIsOpen(response.data.isOpen);
-        setIsVotedUser(response.date.isvotedUser);
+        setIsOpen(response.data.open);
+        setIsVotedUser(response.data.votedUser);
+        console.log(isOpen);
       } catch (error) {
         alert("투표기간인지 확인할 수 없습니다. ");
       } finally {
@@ -82,7 +85,7 @@ const VotePage = () => {
         {/* 이게 내가 사용해야할 코드임!! 지금 백엔드가 안되어있어서 임시방편으로
         아래방법 선택함. */}
         {/* {isOpen ? <VoteForm /> : <VoteResultPage />} */}
-        <VoteForm isVotedUser={isvotedUser} />
+        {isOpen ? <VoteForm isVotedUser={isvotedUser} /> : <VoteResultPage />}
       </main>
       <FloatingButton />
     </div>

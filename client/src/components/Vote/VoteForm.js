@@ -5,13 +5,40 @@ import { useNavigate } from "react-router-dom";
 import styles from "../../assets/Vote/ProjectVote.module.css";
 import sub_styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import VoteProjectList from "./VoteProjectList";
-import useProjectvoteForm from "../../hooks/Projectvote/useProjectVoteForm";
+// import useProjectvoteForm from "../../hooks/Projectvote/useProjectVoteForm";
 
 // voteForm에 파라미터로 받음 .
 const VoteForm = ({ isVotedUser }) => {
   const [votedProjects, setVotedProjects] = useState([]);
+  // 투표한 프로젝트 정보 가져오기
   const fetchVotedProjectsUrl = `${process.env.REACT_APP_API_BASE_URL}/user/vote`;
   const token = Cookies.get("authToken");
+
+  // const { selectedProjects, handleProjectSelect, setSelectedProjects } =
+  //   useProjectvoteForm();
+
+  const [selectedProjects, setSelectedProjects] = useState([]);
+
+  // const handleProjectSelect = ({ projectId, isVotedUser }) => {
+  //   console.log("클릭됨", projectId);
+  //   console.log("🔍 isVotedUser 확인:", isVotedUser);
+
+  //   if (isVotedUser) {
+  //     alert("투표는 변경하실 수 없습니다.");
+  //     return;
+  //   }
+  //   if (selectedProjects.includes(projectId)) {
+  //     // 이미 선택된 프로젝트는 해제
+  //     setSelectedProjects(selectedProjects.filter((id) => id !== projectId));
+  //   } else {
+  //     // 선택된 프로젝트가 3개 미만일 때만 추가
+  //     if (selectedProjects.length < 3) {
+  //       setSelectedProjects([...selectedProjects, projectId]);
+  //     } else {
+  //       alert("최대 3개의 프로젝트만 선택할 수 있습니다."); // 사용자에게 알림
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     if (isVotedUser) {
@@ -22,8 +49,14 @@ const VoteForm = ({ isVotedUser }) => {
             headers: { Authorization: `Bearer ${token}` },
           });
           setVotedProjects(response.data);
+          // console.log(response.data);
+          // 내가 선택한 정보 받아와서 보여주기
+          setSelectedProjects(response.data.projectIds);
+
+          console.log(votedProjects);
         } catch (error) {
           alert("투표한 프로젝트 정보를 가져오는데 실패했습니다. ");
+          console.log(error);
         } finally {
           // setIsLoading(false);
         }
@@ -33,15 +66,14 @@ const VoteForm = ({ isVotedUser }) => {
     }
   }, [fetchVotedProjectsUrl, token]);
 
-  const { selectedProjects, handleProjectSelect, setSelectedProjects } =
-    useProjectvoteForm();
   const resetForm = () => {
     setSelectedProjects([]);
   };
+  // setSelectedProjects(votedProjects);
 
   const navigate = useNavigate();
   // 선택된 프로젝트 출려
-  // console.log("선택된 프로젝트:", selectedProjects);
+  console.log("선택된 프로젝트:", selectedProjects);
   const handleSubmit = async (e) => {
     // 기본 이벤트 제거
     e.preventDefault();
@@ -119,9 +151,10 @@ const VoteForm = ({ isVotedUser }) => {
       </div>
 
       <VoteProjectList
-        handleProjectSelect={handleProjectSelect}
+        // handleProjectSelect={handleProjectSelect}
         selectedProjects={selectedProjects}
         setSelectedProjects={setSelectedProjects}
+        isVotedUser={isVotedUser}
       />
       {isVotedUser ? (
         <div> 이미 투표함 </div>

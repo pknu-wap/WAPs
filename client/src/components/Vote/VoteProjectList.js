@@ -3,13 +3,35 @@ import axios from "axios";
 import styles from "../../assets/Vote/ProjectVote.module.css";
 
 const VoteProjectList = ({
-  handleProjectSelect,
+  // handleProjectSelect,
   selectedProjects,
   setSelectedProjects,
+  isVotedUser,
 }) => {
   const [projects, setProjects] = useState([]);
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=1&projectYear=${currentYear}`;
+
+  const handleProjectSelect = (projectId, isVotedUser) => {
+    console.log("클릭됨", projectId);
+    console.log("🔍 isVotedUser 확인:", isVotedUser);
+
+    if (isVotedUser) {
+      alert("투표는 변경하실 수 없습니다.");
+      return;
+    }
+    if (selectedProjects.includes(projectId)) {
+      // 이미 선택된 프로젝트는 해제
+      setSelectedProjects(selectedProjects.filter((id) => id !== projectId));
+    } else {
+      // 선택된 프로젝트가 3개 미만일 때만 추가
+      if (selectedProjects.length < 3) {
+        setSelectedProjects([...selectedProjects, projectId]);
+      } else {
+        alert("최대 3개의 프로젝트만 선택할 수 있습니다."); // 사용자에게 알림
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,7 +68,9 @@ const VoteProjectList = ({
               className={`${styles.project_list_box} ${
                 isSelected ? styles.selected : ""
               }`}
-              onClick={() => handleProjectSelect(project.projectId)}
+              onClick={() =>
+                handleProjectSelect(project.projectId, isVotedUser)
+              }
             >
               <div className={styles.inform_box}>
                 <div style={{ marginTop: 10, fontSize: 18 }}>{index + 1}</div>
