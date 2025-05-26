@@ -71,8 +71,14 @@
 
 .selected {
     border: 2px solid #02FF2E; /* 선택된 프로젝트의 테두리 색상 */
+    color: #02FF2E;
 }
 
+.selected_result{
+    margin-top: 10px;
+    font-size: 18px;
+    color: #02FF2E;
+}
 
 
 
@@ -87,6 +93,7 @@
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+    justify-content: space-between;
 }
 
 .project_thumbnail {
@@ -113,19 +120,42 @@
 
 .project_title_form{
     margin: 0 auto;
-    width: 100%;
+    width: 70%;
     text-align: left;
     margin-top: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-height: 50px;
+    height: 50px;
 
+}
+
+.project_result_form{
+    width: 30%;
+        margin: 0 auto;
+        margin-top: 10px;
+        margin-right: 8px;
+     text-align: right;
+     flex-direction: column;
+      justify-content: space-between;
+     background-color: transparent;
+     
+     
+}
+
+.project_vote_count{
+    color: #02FF2E;
+    font-size: 14px;
+    flex-grow: 0; /* title은 추가 공간을 차지하지 않도록 설정 */
+}
+
+.project_vote_rate{
+    color: #666666;
 }
 
 .title{
     color: #FFFFFF;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
     margin: 0;
     flex-grow: 0; /* title은 추가 공간을 차지하지 않도록 설정 */
@@ -139,7 +169,7 @@ height: 50px;
 
 .summary{
     color: #FFFFFF;
-    font-size: 8px ;
+    font-size: 11px ;
     font-weight: 400;
     margin: 0;
     flex-grow: 0; /* summary도 추가 공간을 차지하지 않도록 설정 */

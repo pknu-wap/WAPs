@@ -21,7 +21,6 @@ const VoteForm = ({ isVotedUser }) => {
 
   // const handleProjectSelect = ({ projectId, isVotedUser }) => {
   //   console.log("클릭됨", projectId);
-  //   console.log("🔍 isVotedUser 확인:", isVotedUser);
 
   //   if (isVotedUser) {
   //     alert("투표는 변경하실 수 없습니다.");
@@ -51,12 +50,14 @@ const VoteForm = ({ isVotedUser }) => {
           setVotedProjects(response.data);
           // console.log(response.data);
           // 내가 선택한 정보 받아와서 보여주기
+
+          // Voted한 User 일 때만 selectedProjcets에 설정해줌..
           setSelectedProjects(response.data.projectIds);
 
-          console.log(votedProjects);
+          // console.log(votedProjects);
         } catch (error) {
           alert("투표한 프로젝트 정보를 가져오는데 실패했습니다. ");
-          console.log(error);
+          // console.log(error);
         } finally {
           // setIsLoading(false);
         }
@@ -73,7 +74,7 @@ const VoteForm = ({ isVotedUser }) => {
 
   const navigate = useNavigate();
   // 선택된 프로젝트 출려
-  console.log("선택된 프로젝트:", selectedProjects);
+  // console.log("선택된 프로젝트:", selectedProjects);
   const handleSubmit = async (e) => {
     // 기본 이벤트 제거
     e.preventDefault();
@@ -107,7 +108,7 @@ const VoteForm = ({ isVotedUser }) => {
         // 서버에서 응답을 받았을 경우
         if (error.response.status === 401) {
           // 인증 실패 시
-          alert("이미 투표를 하셨습니다. ");
+
           navigate("/HomePage");
         } else if (error.response.status === 404) {
           alert("프로젝트가 존재하지 않습니다.");
@@ -157,7 +158,7 @@ const VoteForm = ({ isVotedUser }) => {
         isVotedUser={isVotedUser}
       />
       {isVotedUser ? (
-        <div> 이미 투표함 </div>
+        <div> </div>
       ) : (
         <button
           type="submit"

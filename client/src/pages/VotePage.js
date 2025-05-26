@@ -61,14 +61,14 @@ const VotePage = () => {
 
         // 가져온 데이터 표시
         // console.log("프로젝트 상세 정보:", response.data);
-        console.log(response.data);
+        // console.log("가져온 데이터", response.data);
 
         // 받은 boolean 값을 set으로 설정해줌.
         setIsOpen(response.data.open);
         setIsVotedUser(response.data.votedUser);
-        console.log(isOpen);
+        // console.log(isOpen);
       } catch (error) {
-        alert("투표기간인지 확인할 수 없습니다. ");
+        alert("투표 기간인지 확인할 수 없습니다. ");
       } finally {
         // setIsLoading(false);
       }
