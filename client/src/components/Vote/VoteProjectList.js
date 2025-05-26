@@ -14,8 +14,7 @@ const VoteProjectList = ({
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=1&projectYear=${currentYear}`;
 
   const handleProjectSelect = (projectId, isVotedUser) => {
-    console.log("클릭됨", projectId);
-    console.log("🔍 isVotedUser 확인:", isVotedUser);
+    // console.log("클릭됨", projectId);
 
     if (isVotedUser) {
       alert("투표는 변경하실 수 없습니다.");

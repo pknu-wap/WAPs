@@ -82,10 +82,7 @@ const VoteResultPage = () => {
             const isTop3 = displayedRank <= 3;
 
             return (
-              <div
-                key={project.projectId}
-                className={`${styles.project_list_box}`}
-              >
+              <div className={`${styles.project_list_box}`} key={index}>
                 <div className={styles.inform_box}>
                   <div
                     className={isTop3 ? styles.selected_result : ""}
