@@ -13,9 +13,9 @@ const VoteResultPage = () => {
   const [projects, setProjects] = useState([]);
   const [selectedProjects, setSelectedProjects] = useState([]);
 
-  let currentRank = 1;
-  let prevVoteCount = null;
   let displayedRank = 1;
+  let actualRank = 1;
+  let prevVoteCount = null;
 
   useEffect(() => {
     const fetchVoteResult = async () => {
@@ -73,16 +73,21 @@ const VoteResultPage = () => {
         {Array.isArray(projects) && projects.length > 0 ? (
           projects.map((project, index) => {
             const isTie = project.voteCount === prevVoteCount;
+
             if (!isTie) {
-              displayedRank = currentRank;
+              displayedRank = actualRank;
             }
+
             prevVoteCount = project.voteCount;
-            currentRank++;
+            actualRank++;
 
             const isTop3 = displayedRank <= 3;
 
             return (
-              <div className={`${styles.project_list_box}`} key={index}>
+              <div
+                className={`${styles.project_list_box}`}
+                key={project.projectId}
+              >
                 <div className={styles.inform_box}>
                   <div
                     className={isTop3 ? styles.selected_result : ""}
