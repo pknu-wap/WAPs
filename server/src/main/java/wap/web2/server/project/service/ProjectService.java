@@ -110,16 +110,19 @@ public class ProjectService {
 
         Project project = projectRepository.findByProjectIdAndUser(projectId, user.getId());
 
-        List<String> imageUrls = awsUtils.uploadImagesTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
-                request.getTitle(), IMAGES, request.getImageS3());
-        String thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
-                request.getTitle(), THUMBNAIL, request.getThumbnailS3());
         // 썸네일 이미지가 없으면 유지 or 있으면 변경
         if (request.getThumbnailS3() != null) {
             log.info("[프로젝트 수정] ({})의 thumbnail 이미지 변경", project.getTitle());
             String thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
                     request.getTitle(), THUMBNAIL, request.getThumbnailS3());
             project.updateThumbnail(thumbnailUrl);
+        }
+
+        // 기존 프로젝트의 이미지 삭제 (행 없앰), null-safe
+        log.info("[프로젝트 수정] ({})의 삭제 요청된 이미지 삭제", project.getTitle());
+        for (String imageUrl : Optional.ofNullable(request.getRemoval()).orElse(Collections.emptyList())) {
+            imageRepository.deleteByImageFile(imageUrl);
+            awsUtils.deleteImage(imageUrl);
         }
 
         project.update(request, imageUrls, thumbnailUrl);
