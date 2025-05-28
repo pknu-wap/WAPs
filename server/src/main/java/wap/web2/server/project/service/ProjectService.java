@@ -114,6 +114,13 @@ public class ProjectService {
                 request.getTitle(), IMAGES, request.getImageS3());
         String thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
                 request.getTitle(), THUMBNAIL, request.getThumbnailS3());
+        // 썸네일 이미지가 없으면 유지 or 있으면 변경
+        if (request.getThumbnailS3() != null) {
+            log.info("[프로젝트 수정] ({})의 thumbnail 이미지 변경", project.getTitle());
+            String thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
+                    request.getTitle(), THUMBNAIL, request.getThumbnailS3());
+            project.updateThumbnail(thumbnailUrl);
+        }
 
         project.update(request, imageUrls, thumbnailUrl);
 
