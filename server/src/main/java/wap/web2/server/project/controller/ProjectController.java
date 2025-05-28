@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
-import wap.web2.server.project.dto.request.ProjectCreateRequest;
+import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
-import wap.web2.server.project.dto.response.ProjectUpdateDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectsResponse;
 import wap.web2.server.project.service.ProjectService;
 
@@ -51,9 +50,9 @@ public class ProjectController {
     public ResponseEntity<?> createProject(@CurrentUser UserPrincipal userPrincipal,
                                            @RequestPart("image") List<MultipartFile> imageFiles,
                                            @RequestPart("thumbnail") MultipartFile thumbnailFile,
-                                           @RequestPart("project") ProjectCreateRequest request) throws IOException {
+                                           @RequestPart("project") ProjectRequest request) throws IOException {
         // RequestPart 중 ContentType 형식이 다르게 온 file 2종류를 ProjectCreateRequest 에 할당하여 새로운 RequestDto 객체 생성
-        ProjectCreateRequest fullRequest = ProjectCreateRequest.builder()
+        ProjectRequest fullRequest = ProjectRequest.builder()
                 .title(request.getTitle())
                 .projectType(request.getProjectType())
                 .content(request.getContent())
@@ -111,32 +110,18 @@ public class ProjectController {
     @PutMapping("{projectId}")
     public ResponseEntity<?> updateProject(@PathVariable Long projectId,
                                            @CurrentUser UserPrincipal userPrincipal,
-                                           @RequestPart("image") List<MultipartFile> imageFiles,
-                                           @RequestPart("thumbnail") MultipartFile thumbnailFile,
-                                           @RequestPart("project") ProjectCreateRequest request) throws IOException {
-        // RequestPart 중 ContentType 형식이 다르게 온 file 2종류를 ProjectCreateRequest 에 할당하여 새로운 RequestDto 객체 생성
-        ProjectCreateRequest fullRequest = ProjectCreateRequest.builder()
-                .title(request.getTitle())
-                .projectType(request.getProjectType())
-                .content(request.getContent())
-                .summary(request.getSummary())
-                .semester(request.getSemester())
-                .projectYear(request.getProjectYear())
-                .password(request.getPassword())
-                .teamMember(request.getTeamMember())
-                .techStack(request.getTechStack())
-                .image(request.getImage())
-                .imageS3(imageFiles) // image file 초기화
-                .thumbnail(request.getThumbnail())
-                .thumbnailS3(thumbnailFile) // thumbnail file 초기화
-                .build();
+                                           @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
+                                           @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
+                                           @RequestPart("project") ProjectRequest request) throws IOException {
+        // RequestPart 중 ContentType 형식이 다르게 온 file 2종류를 ProjectRequest 에 할당
+        request.setMultipartFiles(thumbnailFile, imageFiles);
 
         // 비밀번호가 null 인지 체크
-        if (fullRequest.getPassword() == null) {
+        if (request.getPassword() == null) {
             return ResponseEntity.status(400).body("비밀번호를 입력하세요.");
         }
 
-        String result = projectService.update(projectId, fullRequest, userPrincipal);
+        String result = projectService.update(projectId, request, userPrincipal);
         if (result.equals("비밀번호가 틀렸습니다.")) {
             return ResponseEntity.status(401).body(result);
         } else {

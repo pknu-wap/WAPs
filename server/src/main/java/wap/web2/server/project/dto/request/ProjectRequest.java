@@ -17,11 +17,12 @@ import wap.web2.server.project.entity.TeamMember;
 import wap.web2.server.project.entity.TechStack;
 import wap.web2.server.vote.entity.Vote;
 
+// 프로젝트 생성 및 수정에 사용되는 dto
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectCreateRequest {
+public class ProjectRequest {
 
     private String title;
     private String projectType;
@@ -30,6 +31,7 @@ public class ProjectCreateRequest {
     private Integer semester;
     private Integer projectYear;
     private String password;
+    private List<String> removal; // 삭제할 이미지의 URL
 
     // teamMemberDto : List 데이터 처리를 위해 Dto 클래스를 따로 생성하여 이용
     private List<TeamMemberDto> teamMember;
@@ -41,7 +43,7 @@ public class ProjectCreateRequest {
     private String thumbnail; // toEntity
     private MultipartFile thumbnailS3; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
-    public Project toEntity(ProjectCreateRequest request, List<String> imageUrls, String thumbnailUrl,
+    public Project toEntity(ProjectRequest request, List<String> imageUrls, String thumbnailUrl,
                             User user, Vote vote) {
 
         List<Image> imagesEntities = imageUrls.stream()
@@ -71,5 +73,10 @@ public class ProjectCreateRequest {
                 .voteCount(0L)
                 .vote(vote)
                 .build();
+    }
+
+    public void setMultipartFiles(MultipartFile thumbnail, List<MultipartFile> images) {
+        this.thumbnailS3 = thumbnail;
+        this.imageS3 = images;
     }
 }
