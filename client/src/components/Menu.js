@@ -11,6 +11,7 @@ const Menu = ({
 }) => {
   const navigate = useNavigate();
   const [canNavigate, setCanNavigate] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 추가
 
   const handleNavigationWithAuth = (path) => {
     const token = Cookies.get("authToken");
@@ -24,6 +25,10 @@ const Menu = ({
   };
 
   useEffect(() => {
+    // 로그인 상태 확인
+    const token = Cookies.get("authToken");
+    setIsLoggedIn(!!token);
+
     // 특정 시간을 설정 (2024년 11월 29일 오후 6시)
     const allowedDate = new Date("2024-11-29T18:00:00");
     const now = new Date();
@@ -61,16 +66,24 @@ const Menu = ({
           </div>
 
           <ul>
-            <hr className="startLine"></hr>
+            <hr className="startLine" />
             <li
               onClick={() => {
-                navigate("/login");
-                toggleMenu();
+                if (isLoggedIn) {
+                  Cookies.remove("authToken");
+                  Cookies.remove("userName");
+                  alert("로그아웃 되었습니다.");
+                  toggleMenu();
+                  navigate("/login");
+                } else {
+                  navigate("/login");
+                  toggleMenu();
+                }
               }}
             >
-              Login
+              {isLoggedIn ? "Logout" : "Login"}
             </li>
-            <hr className="line"></hr>
+            <hr className="line" />
             <li
               onClick={() => {
                 navigate("/HomePage");
@@ -79,13 +92,13 @@ const Menu = ({
             >
               Projects
             </li>
-            <hr className="line"></hr>
+            <hr className="line" />
             <li onClick={() => handleNavigationWithAuth("/project/create")}>
               Create Project
             </li>
-            <hr className="line"></hr>
+            <hr className="line" />
             <li onClick={() => handleVotePageNavigate("/vote")}>Vote</li>
-            <hr className="line"></hr>
+            <hr className="line" />
             <li
               onClick={() => {
                 navigate("/map");
@@ -94,7 +107,7 @@ const Menu = ({
             >
               Map
             </li>
-            <hr className="startLine"></hr>
+            <hr className="startLine" />
           </ul>
         </nav>
       )}
