@@ -57,6 +57,9 @@ public class User {
 
     private String providerId;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean voted = false;
 
