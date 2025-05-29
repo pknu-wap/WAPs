@@ -126,6 +126,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     }
   }, [isEdit, existingProject]);
 
+  useEffect(() => {
+    console.log("삭제된 이미지 목록:", removalList);
+  }, [removalList]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -189,6 +193,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           "PUT 요청 보낼 projectData:",
           JSON.stringify(editedProjectData, null, 2)
         );
+        console.log(removalList);
 
         await axios.put(`${apiUrl}/${projectId}`, formData, {
           headers: {
