@@ -21,9 +21,13 @@ const Callback = () => {
       .then((data) => {
         Cookies.set("userName", data.userName, { expires: 7 });
         Cookies.set("authToken", token, { expires: 7 });
+
+        // ✅ 로그인 성공 후 이동한 위치 기억용 쿠키 저장
+        Cookies.set("lastPage", "/", { expires: 7 }); // 필요하면 "/" 대신 원하는 경로로 수정
+
         console.log("사용자 정보:", data);
         alert("로그인에 성공했습니다!");
-        navigate("/"); // 메인 페이지로 리다이렉트
+        navigate("/"); // 또는 "/mystudy", 등 원하는 경로
       })
       .catch((error) => {
         console.error("사용자 정보를 가져오는 동안 에러 발생:", error);
