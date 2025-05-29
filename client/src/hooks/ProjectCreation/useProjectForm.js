@@ -82,7 +82,6 @@ const useProjectForm = () => {
   // };
 
   const handleRemoveImage = (type, indexOrNull) => {
-    console.log("삭제됨", removalList);
     if (type === "thumbnail") {
       // 썸네일은 파일이거나 URL일 수 있음
       if (typeof thumbnail === "string") {
