@@ -30,7 +30,7 @@ const ProjectDetailForm = () => {
 
         const data = response.data;
         setProjectData(data); // 프로젝트 데이터 설정
-        // console.log("API 응답 데이터:", data);
+        console.log("API 응답 데이터:", data);
 
         if (token) {
           const decodedToken = jwtDecode(token); // JWT 디코딩

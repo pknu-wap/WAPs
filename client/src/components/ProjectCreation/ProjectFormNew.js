@@ -72,6 +72,9 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     resetForm,
     setPassword,
     validateForm,
+
+    removalList,
+    setRemovalList,
   } = useProjectForm();
 
   // 기존 데이터 초기화
@@ -152,10 +155,21 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       password,
     };
 
+    const editedProjectData = {
+      ...projectData,
+      removal: removalList, // 수정 시에만 포함
+    };
+
     // blob 객체에 JSON 데이터 추가
-    const blob = new Blob([JSON.stringify(projectData)], {
-      type: "application/json",
-    });
+    // const blob = new Blob([JSON.stringify(projectData)], {
+    //   type: "application/json",
+    // });
+
+    const blob = new Blob(
+      [JSON.stringify(isEdit ? editedProjectData : projectData)],
+      { type: "application/json" }
+    );
+
     // JSON 데이터 추가
     formData.append("project", blob);
 
@@ -173,7 +187,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       if (isEdit) {
         console.log(
           "PUT 요청 보낼 projectData:",
-          JSON.stringify(projectData, null, 2)
+          JSON.stringify(editedProjectData, null, 2)
         );
 
         await axios.put(`${apiUrl}/${projectId}`, formData, {
