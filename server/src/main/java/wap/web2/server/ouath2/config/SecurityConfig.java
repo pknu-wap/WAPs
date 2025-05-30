@@ -78,8 +78,8 @@ public class SecurityConfig {
                         .requestMatchers(staticResources()).permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
                                 "/swagger-resources/**", "/swagger-resources", "/webjars/**").permitAll()
-                        .requestMatchers("/user/**", "/project/**", "/techStack/**").permitAll()
-                        .requestMatchers("/auth/**", "/oauth2/**", "/comment/**").permitAll()
+                        .requestMatchers("/vote/result", "/project/**", "/techStack/**", "/comment/**").permitAll()
+                        .requestMatchers("/auth/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
