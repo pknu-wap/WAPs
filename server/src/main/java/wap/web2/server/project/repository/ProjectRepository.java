@@ -1,6 +1,7 @@
 package wap.web2.server.project.repository;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findProjectsByYearAndSemester(@Param("year") Long year, @Param("semester") Long semester);
 
     @Query("SELECT b FROM Project b WHERE b.projectId = :projectId AND b.user.id = :userId")
-    Project findByProjectIdAndUser(@Param("projectId") Long projectId, @Param("userId") Long userId);
+    Optional<Project> findByProjectIdAndUser(@Param("projectId") Long projectId, @Param("userId") Long userId);
 
     @Modifying
     @Query("UPDATE Project p SET p.voteCount = p.voteCount + 1 WHERE p.projectId = :projectId")

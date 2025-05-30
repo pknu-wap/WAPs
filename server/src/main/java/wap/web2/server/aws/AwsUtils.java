@@ -1,19 +1,17 @@
 package wap.web2.server.aws;
 
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import wap.web2.server.config.AwsS3Config;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import wap.web2.server.project.dto.request.ProjectCreateRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +20,8 @@ public class AwsUtils {
     public static String PROJECT_DIR = "projects";
     public static String IMAGES = "images";
     public static String THUMBNAIL = "thumbnail";
+    public static String S3_URL_DOMAIN = ".amazonaws.com/";
+    public static int S3_DOMAIN_LENGTH = S3_URL_DOMAIN.length();
 
     private final S3Client s3Client;
     private final AwsS3Config s3Config;
@@ -58,6 +58,29 @@ public class AwsUtils {
         return s3Client.utilities()
                 .getUrl(builder -> builder.bucket(s3Config.getBucketName()).key(fileName))
                 .toExternalForm();
+    }
+
+    /**
+     * S3의 오브젝트를 삭제합니다.
+     * @param imageUrl S3에 저장된 이미지 URL
+     */
+    public void deleteImage(String imageUrl) {
+        String bucket = s3Config.getBucketName();
+        String key = extractKeyFromUrl(imageUrl);
+
+        DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+
+        s3Client.deleteObject(deleteRequest);
+    }
+
+    // S3 URL에서 Key 추출하는 유틸 (URL 예시: https://bucket.s3.region.amazonaws.com/dir1/file.jpg)
+    private String extractKeyFromUrl(String url) {
+        int idx = url.indexOf(S3_URL_DOMAIN);
+        if (idx == -1) throw new IllegalArgumentException("올바르지 않은 S3 URL: " + url);
+        return url.substring(idx + S3_DOMAIN_LENGTH);
     }
 
     private String getOriginalFileName(MultipartFile multipartFile) {

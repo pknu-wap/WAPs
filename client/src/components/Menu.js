@@ -98,9 +98,9 @@ const Menu = ({
             <li onClick={() => handleNavigationWithAuth("/project/create")}>
               Create Project
             </li>
-            <hr className="line" />
+            <hr className="line"></hr>
             <li onClick={handleVotePageNavigate}>Vote</li>
-            <hr className="line" />
+            {/*<hr className="line"></hr>
             <li
               onClick={() => {
                 navigate("/map");
@@ -108,8 +108,9 @@ const Menu = ({
               }}
             >
               Map
-            </li>
-            <hr className="startLine" />
+            </li>*/}
+            <hr className="startLine"></hr>
+
           </ul>
         </nav>
       )}

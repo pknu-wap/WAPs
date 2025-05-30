@@ -3,13 +3,13 @@ import React, { useRef } from "react";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 
 const ImageUploader = ({
+  index,
   imgText,
   imgName,
   errorMessage,
   handleImgUpload,
   handleRemoveImage,
 }) => {
-  // useRef는 참조하는요소
   const fileInputRef = useRef(null);
 
   const handleClick = () => {
@@ -22,13 +22,12 @@ const ImageUploader = ({
     const file = event.target.files[0];
     if (file) {
       handleImgUpload(file);
-      event.target.value = ""; // 파일 입력 초기화
+      event.target.value = ""; // 초기화
     }
   };
 
   return (
     <div className={styles.image_uploader}>
-      {/* imgName이 없을 때만 label과 업로드 아이콘 표시 */}
       {!imgName && (
         <>
           <label style={{ marginBottom: "15px" }}>{imgText}</label>
@@ -60,12 +59,10 @@ const ImageUploader = ({
         </>
       )}
 
-      {/* imgName이 있으면 프리뷰 표시 */}
-      {/* 이미자 파일인경우, src인경우, 이미지 파일이 아닌경우   */}
-      {imgName && (imgName instanceof File || typeof imgName === "string") && (
+      {imgName && (
         <div
           className={styles.image_preview}
-          onClick={() => handleRemoveImage()} // 클릭 시 이미지 삭제
+          onClick={() => handleRemoveImage(index)}
           style={{ cursor: "pointer" }}
         >
           <div className={styles.preview_text}>
@@ -85,7 +82,6 @@ const ImageUploader = ({
         </div>
       )}
 
-      {/* 오류 메시지 */}
       {errorMessage && <p className="error-message">{errorMessage}</p>}
     </div>
   );

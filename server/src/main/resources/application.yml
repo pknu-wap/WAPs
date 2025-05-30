@@ -65,5 +65,8 @@ aws:
     bucketName: ${AWS_S3_BUCKET_NAME}
     region: ${AWS_REGION}
 
+swagger:
+  server-url: ${SWAGGER_SERVER_URL}
+
 project:
   password: 1248

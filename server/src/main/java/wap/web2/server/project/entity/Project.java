@@ -22,7 +22,7 @@ import wap.web2.server.comment.entity.Comment;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.project.dto.TeamMemberDto;
 import wap.web2.server.project.dto.TechStackDto;
-import wap.web2.server.project.dto.request.ProjectCreateRequest;
+import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.vote.entity.Vote;
 
 @Builder
@@ -52,6 +52,7 @@ public class Project {
 
     private Integer projectYear;
 
+    @Column(length = 1000)
     private String thumbnail;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -74,7 +75,7 @@ public class Project {
     @JoinColumn(name = "vote_id")
     private Vote vote;
 
-    public void update(ProjectCreateRequest request, List<String> imageUrls, String thumbnailUrl) {
+    public void update(ProjectRequest request) {
         // 기본 필드 업데이트
         this.title = request.getTitle();
         this.projectType = request.getProjectType();
@@ -82,19 +83,6 @@ public class Project {
         this.summary = request.getSummary();
         this.semester = request.getSemester();
         this.projectYear = request.getProjectYear();
-        this.thumbnail = thumbnailUrl;
-
-        // 기존 이미지 리스트 초기화 및 새로 추가
-        this.images.clear();
-        if (imageUrls != null && !imageUrls.isEmpty()) {
-            List<Image> newImages = imageUrls.stream()
-                    .map(imageDto -> Image.builder()
-                            .imageFile(imageDto)
-                            .project(this) // 연관관계 설정
-                            .build()) // Builder 사용
-                    .collect(Collectors.toList());
-            this.images.addAll(newImages);
-        }
 
         // 팀 멤버 리스트 초기화 및 새로 추가
         this.teamMembers.clear();
@@ -122,4 +110,14 @@ public class Project {
         this.techStacks.forEach(techStack -> techStack.updateTechStack(this));
     }
 
+    public void updateThumbnail(String thumbnailUrl) {
+        this.thumbnail = thumbnailUrl;
+    }
+
+    public void addAllImage(List<Image> images) {
+        for (Image image : images) {
+            this.images.add(image);
+            image.updateImage(this); // 연관관계 양쪽 매핑
+        }
+    }
 }

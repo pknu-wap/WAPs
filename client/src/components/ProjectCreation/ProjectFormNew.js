@@ -72,11 +72,16 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     resetForm,
     setPassword,
     validateForm,
+
+    removalList,
+    setRemovalList,
   } = useProjectForm();
 
   // 기존 데이터 초기화
   useEffect(() => {
     if (isEdit && existingProject) {
+      // 👇 서버에서 받아온 프로젝트 객체 콘솔 출력
+      console.log("받아온 기존 프로젝트 데이터", existingProject);
       setThumbnail(existingProject.thumbnail || null);
       setProjectYear(existingProject.projectYear || new Date().getFullYear());
       setSemester(
@@ -94,7 +99,16 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       //     return newImages;
       //   });
       // });
-      setImages(existingProject.images || [null, null, null, null]);
+      // setImages(existingProject.images || [null, null, null, null]);
+
+      // 이미지 처리
+      if (existingProject.images && Array.isArray(existingProject.images)) {
+        const parsedImages = existingProject.images.map((img) => {
+          return img.imageFile;
+        });
+        setImages(parsedImages);
+      }
+
       // 멤버가 존재하면 추가
       if (existingProject.teamMember) {
         existingProject.teamMember.forEach((member, index) => {
@@ -111,6 +125,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       setPassword("");
     }
   }, [isEdit, existingProject]);
+
+  useEffect(() => {
+    console.log("삭제된 이미지 목록:", removalList);
+  }, [removalList]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -141,25 +159,42 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       password,
     };
 
+    const editedProjectData = {
+      ...projectData,
+      removal: removalList, // 수정 시에만 포함
+    };
+
     // blob 객체에 JSON 데이터 추가
-    const blob = new Blob([JSON.stringify(projectData)], {
-      type: "application/json",
-    });
+    // const blob = new Blob([JSON.stringify(projectData)], {
+    //   type: "application/json",
+    // });
+
+    const blob = new Blob(
+      [JSON.stringify(isEdit ? editedProjectData : projectData)],
+      { type: "application/json" }
+    );
+
     // JSON 데이터 추가
     formData.append("project", blob);
 
-    if (thumbnail) {
+    if (thumbnail instanceof File) {
       formData.append("thumbnail", thumbnail);
     }
 
     images.forEach((image) => {
-      if (image) {
+      if (image instanceof File) {
         formData.append("image", image);
       }
     });
 
     try {
       if (isEdit) {
+        console.log(
+          "PUT 요청 보낼 projectData:",
+          JSON.stringify(editedProjectData, null, 2)
+        );
+        console.log(removalList);
+
         await axios.put(`${apiUrl}/${projectId}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -186,8 +221,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       // 에러 출력
 
       alert("프로젝트 요청에 실패했습니다. 다시 시도해 주세요.");
-
-      // console.log(formData);
+      if (error.response) {
+        console.error("에러 응답 코드:", error.response.status);
+        console.error("에러 메시지:", error.response.data);
+      }
     }
   };
 
@@ -267,7 +304,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         ))}
       </div> */}
       <div className={styles.images}>
-        {images.map((image, index) => (
+        {/* {images.map((image, index) => (
           <ImageUploader
             key={index}
             imgText={`이미지 등록 ${index + 1}`}
@@ -277,10 +314,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
             handleRemoveImage={() => handleRemoveImage("image", index)}
             type="image"
           />
-        ))}
+        ))} */}
 
         {/* 남은 업로더 공간 표시 */}
-        {Array.from({ length: maxImageCount - images.length }).map(
+        {/* {Array.from({ length: maxImageCount - images.length }).map(
           (_, index) => (
             <ImageUploader
               key={index}
@@ -292,7 +329,20 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
               type="image"
             />
           )
-        )}
+        )} */}
+
+        {Array.from({ length: maxImageCount }).map((_, index) => (
+          <ImageUploader
+            key={index}
+            index={index} // 삭제용 index 전달
+            imgText={`이미지 등록 ${index + 1}`}
+            imgName={images[index] || null}
+            errorMessage={errorMessage[`image${index}`]}
+            handleImgUpload={(file) => handleImgUpload(file, "image", index)}
+            handleRemoveImage={(i) => handleRemoveImage("image", i)}
+            type="image"
+          />
+        ))}
       </div>
       <div className="form-group">
         {teamMembers.map((member, index) => (

@@ -10,6 +10,7 @@ const useProjectForm = () => {
   const [summary, setSummary] = useState("");
   const [semester, setSemester] = useState(""); // 1,2
   const [password, setPassword] = useState("");
+  const [removalList, setRemovalList] = useState([]); // 삭제된 이미지 URL들 저장용
 
   // 프로젝트 년도 선택 상태관리
   // 원래 ""이었으나, null로 변경 -> "" 설정하고 props 전달하니까 "is not a function"
@@ -68,13 +69,34 @@ const useProjectForm = () => {
   };
 
   // 이미지 삭제 핸들러
-  const handleRemoveImage = (type, index = null) => {
+  // const handleRemoveImage = (type, index) => {
+  //   if (type === "thumbnail") {
+  //     setThumbnail(null);
+  //   } else if (type === "image") {
+  //     setImages((prevImages) => {
+  //       const newImages = [...prevImages];
+  //       newImages.splice(index, 1);
+  //       return newImages;
+  //     });
+  //   }
+  // };
+
+  const handleRemoveImage = (type, indexOrNull) => {
     if (type === "thumbnail") {
+      // 썸네일은 파일이거나 URL일 수 있음
+      if (typeof thumbnail === "string") {
+        setRemovalList((prev) => [...prev, thumbnail]);
+      }
       setThumbnail(null);
     } else if (type === "image") {
-      const newImages = [...images];
-      newImages[index] = null; // 해당 이미지만 삭제
-      setImages(newImages);
+      const removedImage = images[indexOrNull];
+      if (typeof removedImage === "string") {
+        setRemovalList((prev) => [...prev, removedImage]);
+      }
+
+      const updatedImages = [...images];
+      updatedImages[indexOrNull] = null;
+      setImages(updatedImages);
     }
   };
 
@@ -285,6 +307,9 @@ const useProjectForm = () => {
     setPassword,
     resetForm,
     validateForm,
+
+    removalList,
+    setRemovalList,
   };
 };
 
