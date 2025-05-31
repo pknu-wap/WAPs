@@ -2,11 +2,7 @@ import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
-const Menu = ({
-  menuOpen,
-  toggleMenu,
-  userName,
-}) => {
+const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const navigate = useNavigate();
 
   const [canNavigate, setCanNavigate] = useState(false);
@@ -46,7 +42,7 @@ const Menu = ({
     if (canNavigate) {
       handleNavigationWithAuth("/vote");
     } else {
-      alert("투표는 2024년 11월 29일 오후 6시부터 가능합니다.");
+      alert("투표는 로그인 이후에 가능합니다.");
     }
   };
 
@@ -110,7 +106,6 @@ const Menu = ({
               Map
             </li>*/}
             <hr className="startLine"></hr>
-
           </ul>
         </nav>
       )}
