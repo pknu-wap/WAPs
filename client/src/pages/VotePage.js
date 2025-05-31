@@ -31,14 +31,31 @@ const VotePage = () => {
 
   useEffect(() => {
     // 허용된 시간 설정 (2024년 11월 29일 오후 6시)
-    const allowedDate = new Date("2024-11-29T18:00:00");
-    const now = new Date();
+    // const allowedDate = new Date("2024-11-29T18:00:00");
+    // const now = new Date();
 
-    if (now < allowedDate) {
-      // 아직 허용되지 않은 시간인 경우
-      alert("투표는 2024년 11월 29일 오후 6시부터 가능합니다.");
-      navigate(-1); // 이전 페이지로 이동
-    }
+    // if (now < allowedDate) {
+    //   // 아직 허용되지 않은 시간인 경우
+    //   alert("투표는 2024년 11월 29일 오후 6시부터 가능합니다.");
+    //   navigate(-1); // 이전 페이지로 이동
+    // }
+
+    // 엑세스 토큰 만료여부 확인
+
+    const checkToken = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/user/me`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+      } catch (error) {
+        alert("로그인 유효기간이 만료되었습니다. 재로그인 해주세요.");
+      }
+    };
+
+    checkToken();
 
     if (!token) {
       // 토큰이 없는 경우
@@ -53,7 +70,6 @@ const VotePage = () => {
         navigate("/login");
         return;
       }
-
       try {
         const response = await axios.get(apiUrl, {
           headers: { Authorization: `Bearer ${token}` },
