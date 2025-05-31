@@ -15,6 +15,8 @@ const VotePage = () => {
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
   // 분기를 결정하는 api 임.
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now?semester=1&projectYear=${currentYear}`;
+
+  // 토큰 받아오기
   const token = Cookies.get("authToken");
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -30,68 +32,40 @@ const VotePage = () => {
   };
 
   useEffect(() => {
-    // 허용된 시간 설정 (2024년 11월 29일 오후 6시)
-    // const allowedDate = new Date("2024-11-29T18:00:00");
-    // const now = new Date();
-
-    // if (now < allowedDate) {
-    //   // 아직 허용되지 않은 시간인 경우
-    //   alert("투표는 2024년 11월 29일 오후 6시부터 가능합니다.");
-    //   navigate(-1); // 이전 페이지로 이동
-    // }
-
-    // 엑세스 토큰 만료여부 확인
-
-    const checkToken = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/user/me`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-      } catch (error) {
-        alert("로그인 유효기간이 만료되었습니다. 재로그인 해주세요.");
-      }
-    };
-
-    checkToken();
-
-    if (!token) {
-      // 토큰이 없는 경우
-      alert("로그인이 필요합니다.");
-      navigate("/login"); // 로그인 페이지로 이
-    }
-
-    // 현재 투표 기간임을 판단하기 위함
-    const isInVotingPeriod = async () => {
+    const validate = async () => {
+      // 토큰 여부 확인
       if (!token) {
         alert("로그인이 필요합니다.");
         navigate("/login");
         return;
       }
+      // 토큰 만료 여부 확인
+      try {
+        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (error) {
+        alert("로그인 유효기간이 만료되었습니다. 재로그인 해주세요.");
+        navigate("/login");
+        return;
+      }
+
+      // 토큰이 유효하면 그다음 투표 기간 확인
       try {
         const response = await axios.get(apiUrl, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // 가져온 데이터 표시
-        // console.log("프로젝트 상세 정보:", response.data);
-        // console.log("가져온 데이터", response.data);
-
-        // 받은 boolean 값을 set으로 설정해줌.
         setIsOpen(response.data.open);
         setIsVotedUser(response.data.votedUser);
-        // console.log(isOpen);
       } catch (error) {
-        alert("투표 기간인지 확인할 수 없습니다. ");
-      } finally {
-        // setIsLoading(false);
+        alert("투표 기간인지 확인할 수 없습니다.");
       }
     };
 
-    isInVotingPeriod();
+    validate();
   }, [navigate, apiUrl, token]);
+
   return (
     <div className="container">
       <Header toggleMenu={toggleMenu} />

@@ -18,12 +18,17 @@ const ProjectPage = () => {
   const isEditMode = Boolean(projectId); // projectId가 있으면 수정 모드
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const token = Cookies.get("authToken");
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
   useEffect(() => {
+    if (!token) {
+      alert("글 작성은 로그인 후에 가능합니다.");
+      navigate("/login");
+    }
     if (isEditMode) {
       // 수정 모드일 경우, 프로젝트 데이터를 가져옵니다.
       const fetchProjectDetails = async () => {
