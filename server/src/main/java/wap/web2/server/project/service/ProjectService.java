@@ -125,7 +125,8 @@ public class ProjectService {
 
         // 기존 프로젝트의 이미지 삭제 (행 없앰), null-safe
         log.info("[프로젝트 수정] ({})의 삭제 요청된 이미지 삭제", project.getTitle());
-        for (String imageUrl : Optional.ofNullable(request.getRemoval()).orElse(Collections.emptyList())) {
+        for (String imageUrl : request.getRemoval()) {
+            log.info("[프로젝트 수정] 삭제하려는 image url: {}", imageUrl);
             imageRepository.deleteByImageFile(imageUrl);
             awsUtils.deleteImage(imageUrl);
         }
