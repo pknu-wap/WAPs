@@ -12,6 +12,7 @@ import VotePage from "./pages/VotePage";
 import ProjectPage from "./pages/ProjectPage";
 import ScrollToTop from "./components/ScrollToTop";
 import VoteResultPage from "./pages/VoteResultPage";
+import RoleSelectPage from "./pages/RoleSelectPage";
 import "./App.css";
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route path="/map" element={<Map />} />
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
           <Route path="/project/edit/:projectId" element={<ProjectPage />} />
+          <Route path="/select/role" element={<RoleSelectPage />} />
           {/* 보호된 페이지 */}
           <Route path="/protected" element={<ProtectedPage />} />
         </Routes>

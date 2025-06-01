@@ -96,6 +96,11 @@
     border-radius: 100px;
     font-size: 16px;
     cursor: pointer;
+    text-align: center;
+  }
+
+  .submit_button:hover{
+    background-color: #ccc;
   }
   
   .submit-btn:disabled {
