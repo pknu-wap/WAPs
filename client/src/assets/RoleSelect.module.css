@@ -32,4 +32,17 @@
 .btn_group{
     display: flex;
     gap: 10px;
+    margin-bottom: 0;
+}
+
+.already_selected {
+    font-family: 'Pretendard-Regular';
+    margin-top: 20px;
+  text-decoration: underline;
+  color: #7E7E7E;
+  cursor: pointer;
+  font-size: 16px;
+}
+.already_selected:hover {
+  color: #ffffff;
 }

@@ -27,7 +27,8 @@ const Callback = () => {
 
         console.log("사용자 정보:", data);
         alert("로그인에 성공했습니다!"); // alert창 없애기
-        navigate("/"); // 또는 "/mystudy", 등 원하는 경로
+        // navigate("/"); // 또는 "/mystudy", 등 원하는 경로
+        navigate("/select/role");
       })
       .catch((error) => {
         console.error("사용자 정보를 가져오는 동안 에러 발생:", error);
