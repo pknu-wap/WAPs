@@ -5,11 +5,12 @@ import static wap.web2.server.aws.AwsUtils.PROJECT_DIR;
 import static wap.web2.server.aws.AwsUtils.THUMBNAIL;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import wap.web2.server.aws.AwsUtils;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
+import wap.web2.server.ouath2.security.TokenProvider;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
@@ -32,6 +34,8 @@ import wap.web2.server.vote.repository.VoteRepository;
 @RequiredArgsConstructor
 @Service
 public class ProjectService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
@@ -68,7 +72,10 @@ public class ProjectService {
         project.getTeamMembers().forEach(teamMember -> teamMember.updateTeamMember(project));
         project.getImages().forEach(image -> image.updateImage(project));
 
+        logger.info("[INFO ] 프로젝트 등록 시도 : {}", userPrincipal.getName());
+        logger.info("[INFO ] 프로젝트 등록 정보 : {}", request);
         projectRepository.save(project);
+        logger.info("[INFO ] 프로젝트 등록 완료 : {}", userPrincipal.getName());
 
         return "등록되었습니다.";
     }
