@@ -8,7 +8,7 @@ import wap.web2.server.member.repository.UserRepository;
 @Component
 public class TestInit {
 
-    public static final int USER_COUNT = 30;
+    public static final int USER_COUNT = 100;
 
     @Autowired
     private UserRepository userRepository;
@@ -17,7 +17,7 @@ public class TestInit {
     void setUp() {
 //        // 테스트 유저 세팅
 //        List<User> batch = new ArrayList<>();
-//        for (int i = 1; i <= USER_COUNT; i++) {
+//        for (int i = 0; i < USER_COUNT; i++) {
 //            User u = new User();
 //            u.setName("user-" + i);
 //            u.setEmail("user-" + i + "@naver.com");
