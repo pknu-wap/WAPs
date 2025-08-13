@@ -28,7 +28,7 @@ public class VoteController {
     public ResponseEntity<?> voteProjects(@CurrentUser UserPrincipal userPrincipal,
                                           @RequestBody VoteRequest voteRequest) {
         try {
-            voteService.processVote(userPrincipal, voteRequest);
+            voteService.processVote(userPrincipal.getId(), voteRequest);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalStateException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
