@@ -1,5 +1,6 @@
 package wap.web2.server.vote.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class VoteController {
 
     @PostMapping
     public ResponseEntity<?> voteProjects(@CurrentUser UserPrincipal userPrincipal,
-                                          @RequestBody VoteRequest voteRequest) {
+                                          @RequestBody @Valid VoteRequest voteRequest) {
         try {
             voteService.processVote(userPrincipal.getId(), voteRequest);
             return new ResponseEntity<>(HttpStatus.OK);

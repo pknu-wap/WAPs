@@ -15,4 +15,5 @@ public class VoteRequest {
 
     @Size(min = 3, max = 3, message = "투표 수는 1~3개입니다.")
     private List<Long> projectIds;
+
 }
