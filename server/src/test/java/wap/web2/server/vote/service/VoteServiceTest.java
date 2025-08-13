@@ -7,12 +7,14 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.vote.dto.VoteRequest;
 
 @SpringBootTest
+@Transactional  // 투표 테스트 후 롤백
 class VoteServiceTest {
 
     private final List<Long> projectIds = List.of(1L, 2L, 3L);
@@ -33,11 +35,7 @@ class VoteServiceTest {
 
         // when: 30명이 투표 요청
         for (long userId = 1; userId <= USER_COUNT; userId++) {
-            final long uid = userId;
-            tx.execute(status -> {
-                voteService.processVote(uid, request);
-                return null;
-            });
+            voteService.processVote(userId, request);
         }
 
         for (long projectId : projectIds) {
