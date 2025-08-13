@@ -24,8 +24,8 @@ public class VoteService {
 
     // Transactional인 메서드에서 투표 실시, marking user vote 가 들어있어야 transactional 하게 처리할 수 있다.
     @Transactional
-    public void processVote(UserPrincipal userPrincipal, VoteRequest voteRequest) {
-        User user = userRepository.findById(userPrincipal.getId())
+    public void processVote(Long userId, VoteRequest voteRequest) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
 
         if (!user.canVote()) {
@@ -57,7 +57,9 @@ public class VoteService {
                 .toList();
 
         // 전체 수
-        long sum = results.stream().mapToLong(VoteResultResponse::getVoteCount).sum();
+        long sum = results.stream()
+                .mapToLong(VoteResultResponse::getVoteCount)
+                .sum();
         results.forEach(result -> result.calcVoteRate(sum));
 
         return results;
