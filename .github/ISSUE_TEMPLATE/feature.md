@@ -1,3 +1,10 @@
+---
+name: "✨ 기능 추가 요청"
+about: "새로운 기능/개선 요청을 작성할 때 사용하세요"
+title: "[Feature] "
+labels: enhancement
+assignees: kangrae-jo
+---
 
 <!--
 이슈 이름 컨벤션
