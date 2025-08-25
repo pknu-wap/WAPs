@@ -1,7 +1,7 @@
 ---
 name: "✨ 기능 추가 요청"
 about: "새로운 기능/개선 요청을 작성할 때 사용하세요"
-title: "[Feature] "
+title: "feat: "
 labels: enhancement
 assignees: kangrae-jo
 ---
