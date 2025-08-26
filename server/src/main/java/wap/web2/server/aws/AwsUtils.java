@@ -1,5 +1,8 @@
 package wap.web2.server.aws;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,10 +11,6 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import wap.web2.server.config.AwsS3Config;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,20 +25,19 @@ public class AwsUtils {
     private final S3Client s3Client;
     private final AwsS3Config s3Config;
 
-    public List<String> uploadImagesTo(String dirName, Integer projectYear, Integer semester, String projectName,String imageType, List<MultipartFile> imageFiles)
-            throws IOException {
+    public List<String> uploadImagesTo(String dirName, Integer projectYear, Integer semester, String projectName,
+                                       String imageType, List<MultipartFile> imageFiles) throws IOException {
         List<String> imageUrls = new ArrayList<>();
-
         for (MultipartFile imageFile : imageFiles) {
             String imageUrl = uploadImageTo(dirName, projectYear, semester, projectName, imageType, imageFile);
             imageUrls.add(imageUrl);
         }
+
         return imageUrls;
     }
 
     public String uploadImageTo(String dirName, Integer projectYear, Integer semester, String projectName,
-                                String imageType, MultipartFile imageFile)
-            throws IOException {
+                                String imageType, MultipartFile imageFile) throws IOException {
         String originalFileName = getOriginalFileName(imageFile);
         String fileName = createTimestampFileName(dirName, projectYear, semester, projectName, imageType,
                 originalFileName);
@@ -62,6 +60,7 @@ public class AwsUtils {
 
     /**
      * S3의 오브젝트를 삭제합니다.
+     *
      * @param imageUrl S3에 저장된 이미지 URL
      */
     public void deleteImage(String imageUrl) {
@@ -79,7 +78,9 @@ public class AwsUtils {
     // S3 URL에서 Key 추출하는 유틸 (URL 예시: https://bucket.s3.region.amazonaws.com/dir1/file.jpg)
     private String extractKeyFromUrl(String url) {
         int idx = url.indexOf(S3_URL_DOMAIN);
-        if (idx == -1) throw new IllegalArgumentException("올바르지 않은 S3 URL: " + url);
+        if (idx == -1) {
+            throw new IllegalArgumentException("올바르지 않은 S3 URL: " + url);
+        }
         return url.substring(idx + S3_DOMAIN_LENGTH);
     }
 

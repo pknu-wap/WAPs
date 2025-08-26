@@ -25,9 +25,9 @@ import wap.web2.server.comment.entity.Comment;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.vote.dto.VoteRequest;
 
-@Entity
 @Getter
 @Setter // User 엔티티만 Setter 사용
+@Entity
 @Table(name = "user", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 public class User {
 
@@ -43,23 +43,29 @@ public class User {
     @Column(nullable = false)
     private String email;
 
+    @Column
     private String imageUrl;
 
     @Column(nullable = false)
     private Boolean emailVerified = false;
 
+    @Column
     @JsonIgnore
     private String password;
 
+    @Column
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
+    @Column
     private String providerId;
 
+    @Column
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    // TODO: Builder.default 가능?
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean voted = false;
 
@@ -69,6 +75,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Comment> comments = new ArrayList<>();
 
+    // TODO: 여기가 CollectionTable이 생성되는게 별로인 듯?
     @ElementCollection
     @CollectionTable(name = "user_voted_project_ids", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "project_id")

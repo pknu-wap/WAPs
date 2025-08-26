@@ -28,7 +28,7 @@ public class Comment {
     private Long commentId;
 
     @Lob
-    @Column(length = 9000) // 글 내용은 길이 9000 (한글 기준 3000자)
+    @Column(length = 9000)
     private String commentContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,4 +42,5 @@ public class Comment {
     public boolean isOwner(User user) {
         return this.user == user;
     }
+
 }

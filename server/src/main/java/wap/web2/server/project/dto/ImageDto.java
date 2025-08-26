@@ -6,11 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wap.web2.server.project.entity.Image;
 
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImageDto {
+
     private String imageFile;
 
     // 스트림의 각 요소가 imageDto 인스턴스가 아니므로(String)
@@ -24,7 +25,8 @@ public class ImageDto {
     // Image Entity를 ImageDto로 변환하는 정적 팩토리 메서드
     public static ImageDto from(Image image) {
         return ImageDto.builder()
-            .imageFile(image.getImageFile())
-            .build();
+                .imageFile(image.getImageFile())
+                .build();
     }
+
 }

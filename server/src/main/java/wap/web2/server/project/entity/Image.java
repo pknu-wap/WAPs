@@ -1,17 +1,24 @@
 package wap.web2.server.project.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Entity
 @Getter
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Image {
 
     @Id
@@ -28,11 +35,13 @@ public class Image {
     public static List<Image> listOf(List<String> imageUrls) {
         return imageUrls.stream()
                 .map(url -> Image.builder()
-                        .imageFile(url).build())
+                        .imageFile(url)
+                        .build())
                 .toList();
     }
 
     public void updateImage(Project project) {
         this.project = project;
     }
+
 }

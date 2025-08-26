@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum TechStackType {
+    
     FRONT("Front"),
     BACK("Back"),
     APP("App"),
@@ -16,4 +17,5 @@ public enum TechStackType {
     TechStackType(String type) {
         this.type = type;
     }
+
 }

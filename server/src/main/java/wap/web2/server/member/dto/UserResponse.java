@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 import wap.web2.server.member.entity.User;
 
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class UserResponse {
 
     private Long userId;

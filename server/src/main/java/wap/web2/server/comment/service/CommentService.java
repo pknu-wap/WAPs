@@ -12,8 +12,8 @@ import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -42,4 +42,5 @@ public class CommentService {
         }
         commentRepository.delete(comment);
     }
+
 }

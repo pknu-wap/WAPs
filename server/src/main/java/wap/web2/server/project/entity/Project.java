@@ -13,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,20 +35,26 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long projectId;
 
+    @Column
     private String title;
 
+    @Column
     private String projectType;
 
     @Lob
-    @Column(length = 9000) // 글 내용은 길이 9000 (한글 기준 3000자)
+    @Column(length = 9000)
     private String content;
 
+    @Column
     private String summary;
 
+    @Column
     private Integer semester;
 
+    @Column
     private Long voteCount; // 득표 수
 
+    @Column
     private Integer projectYear;
 
     @Column(length = 1000)
@@ -88,8 +93,8 @@ public class Project {
         this.teamMembers.clear();
         if (request.getTeamMember() != null && !request.getTeamMember().isEmpty()) {
             List<TeamMember> newTeamMembers = request.getTeamMember().stream()
-                    .map(TeamMemberDto::toEntity) // DTO → 엔티티 변환
-                    .collect(Collectors.toList());
+                    .map(TeamMemberDto::toEntity)
+                    .toList();
             this.teamMembers.addAll(newTeamMembers);
         }
 
@@ -97,8 +102,8 @@ public class Project {
         this.techStacks.clear();
         if (request.getTechStack() != null && !request.getTechStack().isEmpty()) {
             List<TechStack> newTechStacks = request.getTechStack().stream()
-                    .map(TechStackDto::toEntity) // DTO → 엔티티 변환
-                    .collect(Collectors.toList());
+                    .map(TechStackDto::toEntity)
+                    .toList();
             this.techStacks.addAll(newTechStacks);
         }
 
@@ -120,4 +125,5 @@ public class Project {
             image.updateImage(this); // 연관관계 양쪽 매핑
         }
     }
+
 }

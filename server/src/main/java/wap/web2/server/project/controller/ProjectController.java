@@ -24,9 +24,9 @@ import wap.web2.server.project.dto.response.ProjectInfoResponse;
 import wap.web2.server.project.dto.response.ProjectsResponse;
 import wap.web2.server.project.service.ProjectService;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/project")
+@RequiredArgsConstructor
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -89,8 +89,7 @@ public class ProjectController {
         if (projectDetails.isPresent()) {
             return ResponseEntity.ok(projectDetails.get());
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("Project not found for id: " + projectId);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Project not found for id: " + projectId);
     }
 
     @GetMapping("/{projectId}/update")
@@ -137,8 +136,8 @@ public class ProjectController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An unexpected error occurred.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
     }
+
 }
