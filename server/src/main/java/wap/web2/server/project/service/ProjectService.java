@@ -31,10 +31,11 @@ import wap.web2.server.vote.entity.Vote;
 import wap.web2.server.vote.repository.VoteRepository;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class ProjectService {
 
+    // TODO: Slf4j 때문에 이거 필요없지 않나?
     private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
     private final ProjectRepository projectRepository;
@@ -46,9 +47,9 @@ public class ProjectService {
     @Value("${project.password}")
     private String projectPassword;
 
+    // TODO: 비밀번호 체크 로직이 각 메서드 마다 있음
     @Transactional
     public String save(ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
-
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
             return "비밀번호가 틀렸습니다.";
         }
@@ -96,9 +97,7 @@ public class ProjectService {
 
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user Id"));
-
         log.info("[수정 요청] - 유저ID: {}, 유저명: {}, 프로젝트ID: {}", user.getId(), user.getName(), projectId);
-
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("프로젝트가 없습니다."));
 
@@ -111,14 +110,12 @@ public class ProjectService {
 
     @Transactional
     public String update(Long projectId, ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
-
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
             return "비밀번호가 틀렸습니다.";
         }
-        //요청토큰에 해당하는 user 를 꺼내옴
+
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-
         Project project = projectRepository.findByProjectIdAndUser(projectId, user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 프로젝트의 생성자가 아닙니다."));
 
@@ -152,14 +149,12 @@ public class ProjectService {
         project.update(request);
 
         return "수정되었습니다.";
-
     }
 
     @Transactional
     public void delete(Long projectId, UserPrincipal userPrincipal) {
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-
         Project project = projectRepository.findByProjectIdAndUser(projectId, user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 프로젝트의 생성자가 아닙니다."));
 
@@ -168,4 +163,5 @@ public class ProjectService {
         }
         projectRepository.delete(project);
     }
+
 }

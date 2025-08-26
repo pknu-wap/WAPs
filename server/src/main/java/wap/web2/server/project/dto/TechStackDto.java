@@ -6,11 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wap.web2.server.project.entity.TechStack;
 
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class TechStackDto {
+
     private String techStackName;
     private String techStackType;
 
@@ -28,8 +29,9 @@ public class TechStackDto {
     // 엔티티를 바로 Response 로 바꿀 시 TechStack 의 Project 필드로 인해 연쇄적으로 데이터가 쌓임
     public static TechStackDto from(TechStack techStack) {
         return TechStackDto.builder()
-            .techStackName(techStack.getTechStackName())
-            .techStackType(techStack.getTechStackType())
-            .build();
+                .techStackName(techStack.getTechStackName())
+                .techStackType(techStack.getTechStackType())
+                .build();
     }
+
 }

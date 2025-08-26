@@ -7,13 +7,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class VoteRequest {
 
-    @Size(min = 3, max = 3, message = "투표 수는 1~3개입니다.")
+    @Size(min = 3, max = 3, message = "3개의 프로젝트에 투표해야합니다.")
     private List<Long> projectIds;
 
 }

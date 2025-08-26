@@ -14,9 +14,9 @@ import wap.web2.server.comment.service.CommentService;
 import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/comment")
+@RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
@@ -39,4 +39,5 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
+
 }

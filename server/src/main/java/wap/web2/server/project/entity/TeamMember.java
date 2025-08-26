@@ -1,23 +1,33 @@
 package wap.web2.server.project.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Entity
+@Builder
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class TeamMember {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long teamMemberId;
 
+    @Column
     private String memberName;
 
+    @Column
     private String memberRole;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,4 +37,5 @@ public class TeamMember {
     public void updateTeamMember(Project project) {
         this.project = project;
     }
+
 }

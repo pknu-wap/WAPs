@@ -11,4 +11,5 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     @Modifying
     @Query("DELETE FROM Image i WHERE i.imageFile = :imageFile")
     void deleteByImageFile(@Param("imageFile") String imageFile);
+
 }

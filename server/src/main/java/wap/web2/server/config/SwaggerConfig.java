@@ -36,4 +36,5 @@ public class SwaggerConfig {
                                         .in(SecurityScheme.In.HEADER)))
                 .servers(List.of(server));
     }
+
 }

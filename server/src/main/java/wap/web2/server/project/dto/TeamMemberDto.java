@@ -6,11 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wap.web2.server.project.entity.TeamMember;
 
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class TeamMemberDto {
+
     private String memberName;
     private String memberRole;
 
@@ -25,8 +26,9 @@ public class TeamMemberDto {
     // 엔티티를 바로 Response로 바꿀 시 TeamMember의 Project 필드로 인해 연쇄적으로 데이터가 쌓임
     public static TeamMemberDto from(TeamMember teamMember) {
         return TeamMemberDto.builder()
-            .memberName(teamMember.getMemberName())
-            .memberRole(teamMember.getMemberRole())
-            .build();
+                .memberName(teamMember.getMemberName())
+                .memberRole(teamMember.getMemberRole())
+                .build();
     }
+
 }

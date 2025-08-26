@@ -8,8 +8,8 @@ import wap.web2.server.comment.entity.Comment;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.project.entity.Project;
 
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentCreateRequest {
@@ -23,4 +23,5 @@ public class CommentCreateRequest {
                 .user(user)
                 .build();
     }
+
 }

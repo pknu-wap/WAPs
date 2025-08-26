@@ -65,6 +65,7 @@ public class VoteService {
         return results;
     }
 
+    // TODO: 지역변수 updated의 필요성
     private void vote(VoteRequest voteRequest) {
         for (Long projectId : voteRequest.getProjectIds()) {
             int updated = projectRepository.voteByProjectId(projectId);

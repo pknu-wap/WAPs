@@ -3,6 +3,7 @@ package wap.web2.server.member.entity;
 import java.util.Arrays;
 
 public enum Role {
+
     MEMBER,    // 왑 회원
     GUEST;     // 비회원
 
@@ -12,4 +13,5 @@ public enum Role {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 유효하지 않은 역할입니다: " + value));
     }
+
 }

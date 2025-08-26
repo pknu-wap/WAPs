@@ -6,10 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wap.web2.server.comment.entity.Comment;
 
-@Builder
 @Getter
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class CommentDto {
 
     private Long commentId;
@@ -21,4 +21,5 @@ public class CommentDto {
                 .commentContent(comment.getCommentContent())
                 .build();
     }
+
 }
