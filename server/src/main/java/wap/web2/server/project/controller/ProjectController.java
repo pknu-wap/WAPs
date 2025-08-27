@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -18,10 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.project.dto.request.ProjectApplyRequest;
 import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
 import wap.web2.server.project.dto.response.ProjectsResponse;
+import wap.web2.server.project.service.ApplyService;
 import wap.web2.server.project.service.ProjectService;
 
 @RestController
@@ -30,6 +33,7 @@ import wap.web2.server.project.service.ProjectService;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ApplyService applyService;
 
     // TODO: ProjectsResponse에 담기 전에 검사하는건 별로인가요?
     //  또는 컨트롤러에서는 try catch를 두고 ProjectResponse안에서 throw 하는 것은?
@@ -106,7 +110,6 @@ public class ProjectController {
         }
     }
 
-
     @PutMapping("{projectId}")
     public ResponseEntity<?> updateProject(@PathVariable Long projectId,
                                            @CurrentUser UserPrincipal userPrincipal,
@@ -139,6 +142,14 @@ public class ProjectController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
+    }
+
+    // TODO: 패키지 분리에 대한 의논 필요
+    // 프로젝트 신청
+    @PostMapping("/apply")
+    public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal, @RequestBody ProjectApplyRequest request) {
+        applyService.apply(userPrincipal, request);
+        return ResponseEntity.ok().build();
     }
 
 }
