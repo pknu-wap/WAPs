@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class ProjectApplyRequest {
 
     @NotNull
-    @Size(min = 1, max = 5)
+    @Size(min = 1, max = 5, message = "지원은 1개 이상 5개 이하만 가능합니다.")
     private List<@Valid Apply> applies;
 
     @Getter
@@ -33,4 +33,5 @@ public class ProjectApplyRequest {
         @Size(max = 255)
         private String comment;
     }
+
 }

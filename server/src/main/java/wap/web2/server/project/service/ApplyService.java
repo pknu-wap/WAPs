@@ -40,14 +40,13 @@ public class ApplyService {
 
             applyRepository.save(
                     ProjectApply.builder()
-                            .priority(priority)
+                            .priority(priority++)
                             .position(apply.getPosition())
                             .comment(apply.getComment())
                             .user(user)
                             .project(project)
                             .build()
             );
-            priority++;
         }
     }
 
