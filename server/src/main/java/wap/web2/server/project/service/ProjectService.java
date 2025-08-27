@@ -48,6 +48,9 @@ public class ProjectService {
     private String projectPassword;
 
     // TODO: 비밀번호 체크 로직이 각 메서드 마다 있음
+    // TODO: "비밀번호가 틀렸습니다." 를 반환하면 컨트롤러에서 401 에러를 내보내는데, 유연하지 못하다고 생각됩니다.
+    // TODO: 프로젝트가 먼저 생성되고 Vote랑 연결되는 것이 자연스럽지 않은가?
+    //  현재는 Vote가 먼저 생성되어있어야 project 생성이 가능함
     @Transactional
     public String save(ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {

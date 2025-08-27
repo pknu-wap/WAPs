@@ -25,6 +25,7 @@ public class AwsUtils {
     private final S3Client s3Client;
     private final AwsS3Config s3Config;
 
+    // TODO: 여기서 계속 IOException을 던지지말고 해결해야할 것 같아요.
     public List<String> uploadImagesTo(String dirName, Integer projectYear, Integer semester, String projectName,
                                        String imageType, List<MultipartFile> imageFiles) throws IOException {
         List<String> imageUrls = new ArrayList<>();

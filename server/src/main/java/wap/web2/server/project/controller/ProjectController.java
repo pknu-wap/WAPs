@@ -31,10 +31,11 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
+    // TODO: ProjectsResponse에 담기 전에 검사하는건 별로인가요?
+    //  또는 컨트롤러에서는 try catch를 두고 ProjectResponse안에서 throw 하는 것은?
     @GetMapping("/list")
     public ResponseEntity<?> getProjects(@RequestParam("projectYear") Long year,
                                          @RequestParam("semester") Long semester) {
-
         List<ProjectInfoResponse> projects = projectService.getProjects(year, semester);
         ProjectsResponse projectsResponse = ProjectsResponse.builder()
                 .projectsResponse(projects)

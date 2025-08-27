@@ -25,9 +25,9 @@ import wap.web2.server.comment.entity.Comment;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.vote.dto.VoteRequest;
 
+@Entity
 @Getter
 @Setter // User 엔티티만 Setter 사용
-@Entity
 @Table(name = "user", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 public class User {
 

@@ -24,11 +24,11 @@ import wap.web2.server.project.dto.TechStackDto;
 import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.vote.entity.Vote;
 
-@Builder
 @Entity
 @Getter
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Project {
 
     @Id
@@ -74,7 +74,7 @@ public class Project {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user; // Owner
 
     @ManyToOne
     @JoinColumn(name = "vote_id")
