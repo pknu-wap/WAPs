@@ -1,5 +1,6 @@
 package wap.web2.server.project.controller;
 
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -147,7 +148,8 @@ public class ProjectController {
     // TODO: 패키지 분리에 대한 의논 필요
     // 프로젝트 신청
     @PostMapping("/apply")
-    public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal, @RequestBody ProjectApplyRequest request) {
+    public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal,
+                                   @Valid @RequestBody ProjectApplyRequest request) {
         applyService.apply(userPrincipal, request);
         return ResponseEntity.ok().build();
     }
