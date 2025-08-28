@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
-import wap.web2.server.project.dto.request.ProjectApplyRequest;
+import wap.web2.server.project.dto.request.ProjectAppliesRequest;
 import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
@@ -146,11 +146,19 @@ public class ProjectController {
     }
 
     // TODO: 패키지 분리에 대한 의논 필요
-    // 프로젝트 신청
+    // 프로젝트 신청 (for 팀원)
     @PostMapping("/apply")
     public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal,
-                                   @Valid @RequestBody ProjectApplyRequest request) {
+                                   @Valid @RequestBody ProjectAppliesRequest request) {
         applyService.apply(userPrincipal, request);
+        return ResponseEntity.ok().build();
+    }
+
+    // 프로젝트에 신청한 사람 보기 (for 팀장)
+    @GetMapping("{projectId}/applies")
+    public ResponseEntity<?> getApplies(@CurrentUser UserPrincipal userPrincipal,
+                                        @PathVariable("projectId") Long projectId) {
+        applyService.getApplies(userPrincipal, projectId);
         return ResponseEntity.ok().build();
     }
 
