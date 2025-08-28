@@ -17,14 +17,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.ouath2.security.UserPrincipal;
-import wap.web2.server.project.dto.request.ProjectApplyRequest;
+import wap.web2.server.project.dto.request.ProjectAppliesRequest;
+import wap.web2.server.project.dto.request.ProjectAppliesRequest.ApplyRequest;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.entity.ProjectApply;
 import wap.web2.server.project.repository.ProjectApplyRepository;
 import wap.web2.server.project.repository.ProjectRepository;
 
 @ExtendWith(MockitoExtension.class)
-class ApplyServiceTest {
+class ApplyRequestServiceTest {
 
     @Mock
     UserRepository userRepository;
@@ -53,11 +54,11 @@ class ApplyServiceTest {
         when(projectRepository.findById(20L)).thenReturn(Optional.of(p2));
         when(projectRepository.findById(30L)).thenReturn(Optional.of(p3));
 
-        ProjectApplyRequest request = new ProjectApplyRequest(
+        ProjectAppliesRequest request = new ProjectAppliesRequest(
                 List.of(
-                        new ProjectApplyRequest.Apply(10L, "BE", "열심히할게요."),
-                        new ProjectApplyRequest.Apply(20L, "FE", "열심히할게요."),
-                        new ProjectApplyRequest.Apply(30L, "AI", "열심히할게요.")
+                        new ApplyRequest(10L, "BE", "열심히할게요."),
+                        new ApplyRequest(20L, "FE", "열심히할게요."),
+                        new ApplyRequest(30L, "AI", "열심히할게요.")
                 )
         );
 
