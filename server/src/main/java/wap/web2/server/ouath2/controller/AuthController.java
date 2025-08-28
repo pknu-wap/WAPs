@@ -1,16 +1,8 @@
 package wap.web2.server.ouath2.controller;
 
-import wap.web2.server.exception.BadRequestException;
-import wap.web2.server.member.entity.AuthProvider;
-import wap.web2.server.member.entity.User;
-import wap.web2.server.ouath2.payload.ApiResponse;
-import wap.web2.server.ouath2.payload.AuthResponse;
-import wap.web2.server.ouath2.payload.LoginRequest;
-import wap.web2.server.ouath2.payload.SignUpRequest;
-import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.ouath2.security.TokenProvider;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.net.URI;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,28 +14,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
+import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.member.entity.AuthProvider;
+import wap.web2.server.member.entity.User;
+import wap.web2.server.member.repository.UserRepository;
+import wap.web2.server.ouath2.payload.ApiResponse;
+import wap.web2.server.ouath2.payload.AuthResponse;
+import wap.web2.server.ouath2.payload.LoginRequest;
+import wap.web2.server.ouath2.payload.SignUpRequest;
+import wap.web2.server.ouath2.security.TokenProvider;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private TokenProvider tokenProvider;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final TokenProvider tokenProvider;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
@@ -59,7 +51,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        if(userRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("Email address already in use.");
         }
 

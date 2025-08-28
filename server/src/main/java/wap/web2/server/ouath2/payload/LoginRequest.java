@@ -11,10 +11,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LoginRequest {
-    @NotBlank
+
     @Email
+    @NotBlank
     private String email;
 
     @NotBlank
     private String password;
+
 }
