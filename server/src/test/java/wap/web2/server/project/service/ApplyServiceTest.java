@@ -1,6 +1,7 @@
 package wap.web2.server.project.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,7 +26,7 @@ import wap.web2.server.project.repository.ProjectApplyRepository;
 import wap.web2.server.project.repository.ProjectRepository;
 
 @ExtendWith(MockitoExtension.class)
-class ApplyRequestServiceTest {
+class ApplyServiceTest {
 
     @Mock
     UserRepository userRepository;
@@ -72,6 +73,32 @@ class ApplyRequestServiceTest {
         List<ProjectApply> saved = captor.getAllValues();
         assertThat(saved).extracting(ProjectApply::getPriority)
                 .containsExactly(1, 2, 3); // 순서대로 증가했는지 체크
+    }
+
+    @Test
+    void 해당_프로젝트_팀장이_아닌_인원은_지원을_열람할_수_없다() {
+        // given
+        UserPrincipal principal = mock(UserPrincipal.class);
+        when(principal.getId()).thenReturn(2L);
+        // when(principal.getName()).thenReturn("!Owner"); 사용하지 않는 스텁을 남기면 오류가 납니다.. 학습용으로 놔둘게요.
+
+        User owner = new User();
+        owner.setId(1L);
+        User other = new User();
+        other.setId(2L);
+        // when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(other));
+
+        Project project = Project.builder()
+                .projectId(1L)
+                .title("테스트프로젝트")
+                .user(owner)
+                .build();
+        when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+
+        // when & then
+        assertThatThrownBy(() -> applyService.getApplies(principal, 1L))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }
