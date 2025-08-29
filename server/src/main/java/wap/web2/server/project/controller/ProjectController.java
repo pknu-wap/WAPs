@@ -22,6 +22,7 @@ import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.dto.request.ProjectAppliesRequest;
 import wap.web2.server.project.dto.request.ProjectRequest;
+import wap.web2.server.project.dto.response.ProjectAppliesResponse;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
 import wap.web2.server.project.dto.response.ProjectsResponse;
@@ -150,16 +151,24 @@ public class ProjectController {
     @PostMapping("/apply")
     public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal,
                                    @Valid @RequestBody ProjectAppliesRequest request) {
-        applyService.apply(userPrincipal, request);
-        return ResponseEntity.ok().build();
+        try {
+            applyService.apply(userPrincipal, request);
+            return ResponseEntity.ok().body("[INFO ] 성공적으로 지원하였습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 지원 실패");
+        }
     }
 
     // 프로젝트에 신청한 사람 보기 (for 팀장)
     @GetMapping("{projectId}/applies")
     public ResponseEntity<?> getApplies(@CurrentUser UserPrincipal userPrincipal,
                                         @PathVariable("projectId") Long projectId) {
-        applyService.getApplies(userPrincipal, projectId);
-        return ResponseEntity.ok().build();
+        try {
+            ProjectAppliesResponse response = applyService.getApplies(userPrincipal, projectId);
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }
