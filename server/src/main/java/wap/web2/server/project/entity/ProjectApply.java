@@ -34,6 +34,9 @@ public class ProjectApply {
     @Column(nullable = false, length = 255)
     private String comment;     // 자율 서술 부분
 
+    @Column(nullable = false)
+    private String dueDate;    // "year-semester"
+
     // TODO: N+1 문제 생기는지 파악 필요
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
