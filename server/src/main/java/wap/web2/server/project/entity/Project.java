@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -124,6 +125,10 @@ public class Project {
             this.images.add(image);
             image.updateImage(this); // 연관관계 양쪽 매핑
         }
+    }
+
+    public boolean isOwner(User user) {
+        return Objects.equals(this.user.getId(), user.getId());
     }
 
 }

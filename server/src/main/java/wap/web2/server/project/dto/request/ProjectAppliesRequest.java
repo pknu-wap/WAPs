@@ -12,16 +12,16 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectApplyRequest {
+public class ProjectAppliesRequest {
 
     @NotNull
     @Size(min = 1, max = 5, message = "지원은 1개 이상 5개 이하만 가능합니다.")
-    private List<@Valid Apply> applies;
+    private List<@Valid ApplyRequest> applies;
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Apply {
+    public static class ApplyRequest {
         @NotNull
         private Long projectId;
 

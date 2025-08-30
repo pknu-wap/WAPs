@@ -1,0 +1,39 @@
+package wap.web2.server.project.dto.response;
+
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import wap.web2.server.project.entity.ProjectApply;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProjectAppliesResponse {
+
+    private List<ApplyResponse> applies;
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ApplyResponse {
+        private Long projectId;
+        private String position;
+        private String comment;
+        private String applicantName;
+    }
+
+    public static ProjectAppliesResponse fromEntities(List<ProjectApply> entities) {
+        List<ApplyResponse> responses = entities.stream()
+                .map(apply -> new ApplyResponse(
+                        apply.getProject().getProjectId(),
+                        apply.getPosition(),
+                        apply.getComment(),
+                        apply.getUser().getName()
+                ))
+                .toList();
+
+        return new ProjectAppliesResponse(responses);
+    }
+
+}
