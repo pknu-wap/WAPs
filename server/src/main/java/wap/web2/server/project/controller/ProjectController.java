@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.project.dto.RecruitmentDto;
 import wap.web2.server.project.dto.request.ProjectAppliesRequest;
 import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.project.dto.response.ProjectAppliesResponse;
@@ -168,6 +169,17 @@ public class ProjectController {
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/preference")
+    public ResponseEntity<?> setPreference(@CurrentUser UserPrincipal userPrincipal,
+                                           @Valid @RequestBody RecruitmentDto request) {
+        try {
+            applyService.setPreference(userPrincipal, request);
+            return ResponseEntity.ok().body("[INFO ] 성공적으로 등록하였습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 등록 실패" + e.getMessage());
         }
     }
 
