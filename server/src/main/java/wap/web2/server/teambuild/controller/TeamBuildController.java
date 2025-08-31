@@ -15,12 +15,14 @@ import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.service.ApplyService;
+import wap.web2.server.teambuild.service.TeamBuildService;
 
 @RestController
 @RequestMapping("/team-build")
 @RequiredArgsConstructor
 public class TeamBuildController {
 
+    private final TeamBuildService teamBuildService;
     private final ApplyService applyService;
 
     // 프로젝트 신청 (for 팀원)
@@ -55,6 +57,17 @@ public class TeamBuildController {
             return ResponseEntity.ok().body("[INFO ] 성공적으로 등록하였습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("[ERROR] 등록 실패" + e.getMessage());
+        }
+    }
+
+    // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
+    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘을 돌리는 api
+    public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
+        try {
+            teamBuildService.makeTeam(userPrincipal);
+            return ResponseEntity.ok().body("");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("");
         }
     }
 
