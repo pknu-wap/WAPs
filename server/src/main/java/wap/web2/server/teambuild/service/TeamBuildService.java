@@ -12,6 +12,8 @@ import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.teambuild.dto.ApplyInfo;
 import wap.web2.server.teambuild.dto.RecruitInfo;
 import wap.web2.server.teambuild.entity.ProjectApply;
+import wap.web2.server.teambuild.entity.ProjectRecruit;
+import wap.web2.server.teambuild.entity.ProjectRecruitWish;
 import wap.web2.server.teambuild.repository.ProjectApplyRepository;
 import wap.web2.server.teambuild.repository.ProjectRecruitRepository;
 import wap.web2.server.teambuild.repository.ProjectRecruitWishRepository;
@@ -57,7 +59,27 @@ public class TeamBuildService {
     }
 
     private Map<Long, RecruitInfo> getRecruitMap() {
+        Map<Long, RecruitInfo> recruitMap = new HashMap<>();
 
+        List<ProjectRecruit> recruitEntities = recruitRepository.findAll();
+        for (ProjectRecruit recruitEntity : recruitEntities) {
+            long projectId = recruitEntity.getProjectId();
+            List<Long> userIds = new ArrayList<>();
+            for (ProjectRecruitWish wishEntity : recruitEntity.getWishList()) {
+                userIds.add(wishEntity.getApplicantId());
+            }
+
+            recruitMap.put(projectId, RecruitInfo.builder()
+                    .leaderId(recruitEntity.getLeaderId())
+                    .projectId(projectId)
+                    .position(recruitEntity.getPosition())
+                    .capacity(recruitEntity.getCapacity())
+                    .userIds(userIds)
+                    .build()
+            );
+        }
+
+        return recruitMap;
     }
 
 }
