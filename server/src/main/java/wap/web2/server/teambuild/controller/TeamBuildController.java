@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
-import wap.web2.server.teambuild.dto.ProjectAppliesRequest;
-import wap.web2.server.teambuild.dto.ProjectAppliesResponse;
 import wap.web2.server.teambuild.dto.RecruitmentDto;
+import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
+import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.service.ApplyService;
 
 @RestController

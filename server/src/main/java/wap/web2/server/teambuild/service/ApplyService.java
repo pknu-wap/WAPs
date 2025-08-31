@@ -11,11 +11,12 @@ import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
-import wap.web2.server.teambuild.dto.ProjectAppliesRequest;
-import wap.web2.server.teambuild.dto.ProjectAppliesRequest.ApplyRequest;
-import wap.web2.server.teambuild.dto.ProjectAppliesResponse;
 import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.RecruitmentDto.RecruitmentInfo;
+import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
+import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest.ApplyRequest;
+import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
+import wap.web2.server.teambuild.entity.Position;
 import wap.web2.server.teambuild.entity.ProjectApply;
 import wap.web2.server.teambuild.entity.ProjectRecruit;
 import wap.web2.server.teambuild.entity.ProjectRecruitWish;
@@ -51,7 +52,7 @@ public class ApplyService {
             applyRepository.save(
                     ProjectApply.builder()
                             .priority(priority++)
-                            .position(applyRequest.getPosition())
+                            .position(Position.valueOf(applyRequest.getPosition()))
                             .comment(applyRequest.getComment())
                             .user(user)
                             .project(project)
@@ -94,7 +95,7 @@ public class ApplyService {
                     ProjectRecruit.builder()
                             .leaderId(user.getId())
                             .projectId(project.getProjectId())
-                            .position(info.getPosition())
+                            .position(Position.valueOf(info.getPosition()))
                             .capacity(info.getCapacity())
                             .build()
             );
