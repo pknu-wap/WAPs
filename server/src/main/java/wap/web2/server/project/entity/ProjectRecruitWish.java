@@ -12,38 +12,33 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import wap.web2.server.member.entity.User;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectApply {
+public class ProjectRecruitWish {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 팀에서 희망하는 지원자 ID
     @Column(nullable = false)
-    private Integer priority;   // 지원은 1부터 5까지 우선순위를 가진다.
+    private Long applicantId;
 
+    // 희망 우선순위
     @Column(nullable = false)
-    private String position;    // 지원 분야 ex) BE, FE, AI, etc..
+    private Integer priority;
 
-    @Column(nullable = false, length = 255)
-    private String comment;     // 자율 서술 부분
-
+    // 알고리즘에서 실제 선택 여부
     @Column(nullable = false)
-    private String dueDate;    // "year-semester"
-
-    // TODO: N+1 문제 생기는지 파악 필요
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Builder.Default
+    private Boolean isSelected = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project project;
+    @JoinColumn(name = "project_recruit_id", nullable = false)
+    private ProjectRecruit recruit;
 
 }

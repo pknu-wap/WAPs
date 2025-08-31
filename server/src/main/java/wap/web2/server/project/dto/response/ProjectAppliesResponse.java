@@ -21,6 +21,7 @@ public class ProjectAppliesResponse {
         private String position;
         private String comment;
         private String applicantName;
+        private Long applicantId;
     }
 
     public static ProjectAppliesResponse fromEntities(List<ProjectApply> entities) {
@@ -29,7 +30,8 @@ public class ProjectAppliesResponse {
                         apply.getProject().getProjectId(),
                         apply.getPosition(),
                         apply.getComment(),
-                        apply.getUser().getName()
+                        apply.getUser().getName(),
+                        apply.getUser().getId()
                 ))
                 .toList();
 

@@ -1,5 +1,6 @@
 package wap.web2.server.project.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,12 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.project.dto.RecruitmentDto;
+import wap.web2.server.project.dto.RecruitmentDto.RecruitmentInfo;
 import wap.web2.server.project.dto.request.ProjectAppliesRequest;
 import wap.web2.server.project.dto.request.ProjectAppliesRequest.ApplyRequest;
 import wap.web2.server.project.dto.response.ProjectAppliesResponse;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.entity.ProjectApply;
+import wap.web2.server.project.entity.ProjectRecruit;
+import wap.web2.server.project.entity.ProjectRecruitWish;
 import wap.web2.server.project.repository.ProjectApplyRepository;
+import wap.web2.server.project.repository.ProjectRecruitRepository;
+import wap.web2.server.project.repository.ProjectRecruitWishRepository;
 import wap.web2.server.project.repository.ProjectRepository;
 
 @Slf4j
@@ -21,6 +28,8 @@ import wap.web2.server.project.repository.ProjectRepository;
 @RequiredArgsConstructor
 public class ApplyService {
 
+    private final ProjectRecruitWishRepository recruitWishRepository;
+    private final ProjectRecruitRepository recruitRepository;
     private final ProjectApplyRepository applyRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
@@ -66,6 +75,47 @@ public class ApplyService {
         log.info("getApplies-user:{}", user.getName());
 
         return ProjectAppliesResponse.fromEntities(applies);
+    }
+
+    // 팀장이 선호하는 지원자를 나열한 wishList 저장
+    @Transactional
+    public void setPreference(UserPrincipal userPrincipal, RecruitmentDto request) {
+        User user = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
+        Project project = projectRepository.findById(request.getProjectId())
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
+
+        log.info("setPreference-user:{},project:{}", user.getId(), project.getProjectId());
+
+        List<RecruitmentInfo> wishList = request.getRoasters();
+        for (RecruitmentInfo info : wishList) {
+            // 1. 먼저 ProjectRecruit 저장 (부모 엔티티)
+            ProjectRecruit recruit = recruitRepository.save(
+                    ProjectRecruit.builder()
+                            .leaderId(user.getId())
+                            .projectId(project.getProjectId())
+                            .position(info.getPosition())
+                            .capacity(info.getCapacity())
+                            .build()
+            );
+
+            // 2. 각 분야별로 우선순위 1부터 시작
+            int priority = 1;
+            List<ProjectRecruitWish> wishes = new ArrayList<>();
+            for (long applicantId : info.getApplicantIds()) {
+                ProjectRecruitWish wish = recruitWishRepository.save(
+                        ProjectRecruitWish.builder()
+                                .recruit(recruit)
+                                .applicantId(applicantId)
+                                .priority(priority++)
+                                .build()
+                );
+                wishes.add(wish);
+            }
+
+            // 3. 부모 엔티티에 자식 리스트 설정
+            recruit.setWishList(wishes);
+        }
     }
 
 }
