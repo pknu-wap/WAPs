@@ -86,7 +86,7 @@ public class ApplyService {
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
 
-        log.info("setPreference-user:{},project:{}", user.getId(), project.getProjectId());
+        log.info("setPreference요청-user:{},project:{}", user.getId(), project.getProjectId());
 
         List<RecruitmentInfo> roasters = request.getRoasters();
         for (RecruitmentInfo roaster : roasters) {

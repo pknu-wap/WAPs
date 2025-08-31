@@ -5,38 +5,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.ouath2.security.UserPrincipal;
-import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.teambuild.dto.ApplyInfo;
 import wap.web2.server.teambuild.dto.RecruitInfo;
+import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.entity.ProjectApply;
 import wap.web2.server.teambuild.entity.ProjectRecruit;
 import wap.web2.server.teambuild.entity.ProjectRecruitWish;
 import wap.web2.server.teambuild.repository.ProjectApplyRepository;
 import wap.web2.server.teambuild.repository.ProjectRecruitRepository;
-import wap.web2.server.teambuild.repository.ProjectRecruitWishRepository;
 import wap.web2.server.teambuild.service.impl.TeamBuilderImpl;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TeamBuildService {
 
-    private final ProjectRecruitWishRepository recruitWishRepository;
     private final ProjectRecruitRepository recruitRepository;
     private final ProjectApplyRepository applyRepository;
-    private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
 
     // TODO: 리턴값 고민
-    public void makeTeam(UserPrincipal userPrincipal) {
+    public TeamBuildingResults makeTeam(UserPrincipal userPrincipal) {
         Map<Long, List<ApplyInfo>> applyMap = getApplyMap();
-        Map<Long, RecruitInfo> RecruitMap = getRecruitMap();
+        Map<Long, RecruitInfo> recruitMap = getRecruitMap();
 
         TeamBuilder teamBuilder = new TeamBuilderImpl();
+        Map<Long, List<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
 
-        return;
+        // allocated를 로깅한다. (테스트 용도)
+        for (Map.Entry<Long, List<Long>> entry : allocated.entrySet()) {
+            log.info("[TEAMBUILD] projectId:{}", entry.getKey());
+            log.info("[TEAMBUILD] memberIds:{}", entry.getValue());
+        }
+
+        return TeamBuildingResults.from(allocated);
     }
 
     private Map<Long, List<ApplyInfo>> getApplyMap() {

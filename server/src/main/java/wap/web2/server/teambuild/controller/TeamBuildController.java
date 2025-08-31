@@ -14,6 +14,7 @@ import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
+import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.service.ApplyService;
 import wap.web2.server.teambuild.service.TeamBuildService;
 
@@ -62,10 +63,11 @@ public class TeamBuildController {
 
     // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
     // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘을 돌리는 api
+    @PostMapping("")
     public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
         try {
-            teamBuildService.makeTeam(userPrincipal);
-            return ResponseEntity.ok().body("");
+            TeamBuildingResults results = teamBuildService.makeTeam(userPrincipal);
+            return ResponseEntity.ok().body(results);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("");
         }
