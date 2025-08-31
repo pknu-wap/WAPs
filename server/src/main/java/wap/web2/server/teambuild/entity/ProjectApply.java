@@ -2,6 +2,8 @@ package wap.web2.server.teambuild.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,13 +32,14 @@ public class ProjectApply {
     private Integer priority;   // 지원은 1부터 5까지 우선순위를 가진다.
 
     @Column(nullable = false)
-    private String position;    // 지원 분야 ex) BE, FE, AI, etc..
+    @Enumerated(EnumType.STRING)
+    private Position position;  // 지원 분야 ex) BE, FE, AI, etc..
 
     @Column(nullable = false, length = 255)
     private String comment;     // 자율 서술 부분
 
     @Column(nullable = false)
-    private String dueDate;    // "year-semester"
+    private String dueDate;     // "year-semester"
 
     // TODO: N+1 문제 생기는지 파악 필요
     @ManyToOne(fetch = FetchType.LAZY)

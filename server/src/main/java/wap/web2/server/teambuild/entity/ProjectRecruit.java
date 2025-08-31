@@ -3,6 +3,8 @@ package wap.web2.server.teambuild.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,7 +36,8 @@ public class ProjectRecruit {
 
     // 모집 분야
     @Column(nullable = false)
-    private String position;
+    @Enumerated(EnumType.STRING)
+    private Position position;
 
     // 팀원 제한 수
     @Column(nullable = false)
