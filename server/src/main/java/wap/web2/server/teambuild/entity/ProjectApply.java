@@ -1,4 +1,4 @@
-package wap.web2.server.project.entity;
+package wap.web2.server.teambuild.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wap.web2.server.member.entity.User;
+import wap.web2.server.project.entity.Project;
 
 @Entity
 @Getter

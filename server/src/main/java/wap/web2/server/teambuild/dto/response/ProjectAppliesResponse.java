@@ -1,10 +1,10 @@
-package wap.web2.server.project.dto.response;
+package wap.web2.server.teambuild.dto.response;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import wap.web2.server.project.entity.ProjectApply;
+import wap.web2.server.teambuild.entity.ProjectApply;
 
 @Getter
 @NoArgsConstructor
@@ -28,7 +28,7 @@ public class ProjectAppliesResponse {
         List<ApplyResponse> responses = entities.stream()
                 .map(apply -> new ApplyResponse(
                         apply.getProject().getProjectId(),
-                        apply.getPosition(),
+                        apply.getPosition().toString(),
                         apply.getComment(),
                         apply.getUser().getName(),
                         apply.getUser().getId()

@@ -18,12 +18,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.ouath2.security.UserPrincipal;
-import wap.web2.server.project.dto.request.ProjectAppliesRequest;
-import wap.web2.server.project.dto.request.ProjectAppliesRequest.ApplyRequest;
 import wap.web2.server.project.entity.Project;
-import wap.web2.server.project.entity.ProjectApply;
-import wap.web2.server.project.repository.ProjectApplyRepository;
 import wap.web2.server.project.repository.ProjectRepository;
+import wap.web2.server.teambuild.dto.ProjectAppliesRequest;
+import wap.web2.server.teambuild.dto.ProjectAppliesRequest.ApplyRequest;
+import wap.web2.server.teambuild.entity.ProjectApply;
+import wap.web2.server.teambuild.repository.ProjectApplyRepository;
+import wap.web2.server.teambuild.service.ApplyService;
 
 @ExtendWith(MockitoExtension.class)
 class ApplyServiceTest {

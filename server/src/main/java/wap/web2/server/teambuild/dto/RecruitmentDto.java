@@ -1,4 +1,4 @@
-package wap.web2.server.project.dto;
+package wap.web2.server.teambuild.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;

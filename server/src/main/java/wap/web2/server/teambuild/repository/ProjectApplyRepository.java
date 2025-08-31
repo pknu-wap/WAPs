@@ -1,10 +1,10 @@
-package wap.web2.server.project.repository;
+package wap.web2.server.teambuild.repository;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import wap.web2.server.project.entity.Project;
-import wap.web2.server.project.entity.ProjectApply;
+import wap.web2.server.teambuild.entity.ProjectApply;
 
 @Repository
 public interface ProjectApplyRepository extends JpaRepository<ProjectApply, Long> {
