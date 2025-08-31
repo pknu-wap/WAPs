@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:server/src/main/java/wap/web2/server/teambuild/dto/request/ProjectAppliesRequest.java
 package wap.web2.server.teambuild.dto.request;
-========
-package wap.web2.server.teambuild.dto;
->>>>>>>> 0907095333336c8db2a7b56bd6f26af93205b957:server/src/main/java/wap/web2/server/teambuild/dto/ProjectAppliesRequest.java
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
