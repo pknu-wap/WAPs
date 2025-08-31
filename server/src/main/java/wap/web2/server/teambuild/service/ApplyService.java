@@ -1,4 +1,4 @@
-package wap.web2.server.project.service;
+package wap.web2.server.teambuild.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,19 +9,19 @@ import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.ouath2.security.UserPrincipal;
-import wap.web2.server.project.dto.RecruitmentDto;
-import wap.web2.server.project.dto.RecruitmentDto.RecruitmentInfo;
-import wap.web2.server.project.dto.request.ProjectAppliesRequest;
-import wap.web2.server.project.dto.request.ProjectAppliesRequest.ApplyRequest;
-import wap.web2.server.project.dto.response.ProjectAppliesResponse;
 import wap.web2.server.project.entity.Project;
-import wap.web2.server.project.entity.ProjectApply;
-import wap.web2.server.project.entity.ProjectRecruit;
-import wap.web2.server.project.entity.ProjectRecruitWish;
-import wap.web2.server.project.repository.ProjectApplyRepository;
-import wap.web2.server.project.repository.ProjectRecruitRepository;
-import wap.web2.server.project.repository.ProjectRecruitWishRepository;
 import wap.web2.server.project.repository.ProjectRepository;
+import wap.web2.server.teambuild.dto.ProjectAppliesRequest;
+import wap.web2.server.teambuild.dto.ProjectAppliesRequest.ApplyRequest;
+import wap.web2.server.teambuild.dto.ProjectAppliesResponse;
+import wap.web2.server.teambuild.dto.RecruitmentDto;
+import wap.web2.server.teambuild.dto.RecruitmentDto.RecruitmentInfo;
+import wap.web2.server.teambuild.entity.ProjectApply;
+import wap.web2.server.teambuild.entity.ProjectRecruit;
+import wap.web2.server.teambuild.entity.ProjectRecruitWish;
+import wap.web2.server.teambuild.repository.ProjectApplyRepository;
+import wap.web2.server.teambuild.repository.ProjectRecruitRepository;
+import wap.web2.server.teambuild.repository.ProjectRecruitWishRepository;
 
 @Slf4j
 @Service

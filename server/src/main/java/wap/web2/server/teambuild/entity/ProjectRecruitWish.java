@@ -1,4 +1,4 @@
-package wap.web2.server.project.entity;
+package wap.web2.server.teambuild.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

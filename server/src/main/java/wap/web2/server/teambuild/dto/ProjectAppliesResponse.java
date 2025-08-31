@@ -1,10 +1,10 @@
-package wap.web2.server.project.dto.response;
+package wap.web2.server.teambuild.dto;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import wap.web2.server.project.entity.ProjectApply;
+import wap.web2.server.teambuild.entity.ProjectApply;
 
 @Getter
 @NoArgsConstructor

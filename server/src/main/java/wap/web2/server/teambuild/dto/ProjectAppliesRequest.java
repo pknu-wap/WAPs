@@ -1,4 +1,4 @@
-package wap.web2.server.project.dto.request;
+package wap.web2.server.teambuild.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
