@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import wap.web2.server.teambuild.dto.ApplyInfo;
@@ -24,7 +25,7 @@ class SequentialTeamBuilderTest {
         Map<Long, RecruitInfo> leaderWishes = makeRecruits();
 
         //when
-        Map<Long, List<Long>> teams = teamBuilder.allocate(applicantWishes, leaderWishes);
+        Map<Long, Set<Long>> teams = teamBuilder.allocate(applicantWishes, leaderWishes);
 
         //then
         assertThat(teams.get(1L)).containsExactlyInAnyOrder(1L, 3L, 5L);
@@ -77,10 +78,10 @@ class SequentialTeamBuilderTest {
         );
 
         //when
-        Map<Long, List<Long>> results = teamBuilder.allocate(applicantWishes, duplicateLeaderWishes);
+        Map<Long, Set<Long>> results = teamBuilder.allocate(applicantWishes, duplicateLeaderWishes);
 
         //then
-        assertTrue(results.values().stream().anyMatch(List::isEmpty)); // 둘 중 한 팀은 비어 있음
+        assertTrue(results.values().stream().anyMatch(Set::isEmpty)); // 둘 중 한 팀은 비어 있음
         // 우선순위가 높은 팀에게 할당됨
         assertTrue(results.get(wishProject).contains(applicant));
     }
@@ -108,7 +109,7 @@ class SequentialTeamBuilderTest {
                 team2, new RecruitInfo(1002L, team2, Position.BACKEND, 1, List.of(jo, gyun))
         );
         //when
-        Map<Long, List<Long>> results = teamBuilder.allocate(applicantWishes, leaderWishes);
+        Map<Long, Set<Long>> results = teamBuilder.allocate(applicantWishes, leaderWishes);
 
         //then
         assertThat(results.get(team1)).containsOnly(gyun);
@@ -135,7 +136,7 @@ class SequentialTeamBuilderTest {
         );
 
         //when
-        Map<Long, List<Long>> results = teamBuilder.allocate(applicantWishes, leaderWishes);
+        Map<Long, Set<Long>> results = teamBuilder.allocate(applicantWishes, leaderWishes);
 
         //then
         assertTrue(results.get(team1).isEmpty());

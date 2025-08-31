@@ -2,6 +2,8 @@ package wap.web2.server.teambuild.service;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +15,9 @@ import wap.web2.server.teambuild.dto.RecruitInfo;
 public class SequentialTeamBuilder implements TeamBuilder {
 
     @Override
-    public Map<Long, List<Long>> allocate(Map<Long, List<ApplyInfo>> applicantWishes,
+    public Map<Long, Set<Long>> allocate(Map<Long, List<ApplyInfo>> applicantWishes,
                                           Map<Long, RecruitInfo> leaderWishes) {
-        Map<Long, List<Long>> teams = initTeam(leaderWishes);
+        Map<Long, Set<Long>> teams = initTeam(leaderWishes);
 
         // 구성된 팀에서 중복된 인원을 제거하며 팀월을 재배치
         while (true) {
@@ -41,14 +43,14 @@ public class SequentialTeamBuilder implements TeamBuilder {
      * @param leaderWishes: 팀장이 희망하는 순서대로 정렬된 지원자 정보
      * @return 팀장이 희망하는대로 구성된 팀을 반환
      */
-    private Map<Long, List<Long>> initTeam(Map<Long, RecruitInfo> leaderWishes) {
-        Map<Long, List<Long>> teams = new HashMap<>();
+    private Map<Long, Set<Long>> initTeam(Map<Long, RecruitInfo> leaderWishes) {
+        Map<Long, Set<Long>> teams = new HashMap<>();
 
         for (Entry<Long, RecruitInfo> team : leaderWishes.entrySet()) {
             Long teamId = team.getKey(); // projectId
             Integer capacity = team.getValue().getCapacity();
-            List<Long> temporaryTeam = new LinkedList<>();
-            teams.put(teamId, new LinkedList<>());
+            Set<Long> temporaryTeam = new LinkedHashSet<>();
+            teams.put(teamId, new LinkedHashSet<>());
 
             addAcceptableMember(team, capacity, temporaryTeam);
             teams.get(teamId).addAll(temporaryTeam);
@@ -57,23 +59,24 @@ public class SequentialTeamBuilder implements TeamBuilder {
         return teams;
     }
 
-    private void addAcceptableMember(Entry<Long, RecruitInfo> team, Integer capacity, List<Long> temporaryTeam) {
+    private void addAcceptableMember(Entry<Long, RecruitInfo> team, Integer capacity, Set<Long> temporaryTeam) {
         for (int i = 0; i < capacity; i++) {
-            List<Long> userIds = team.getValue().getUserIds();
+            Set<Long> userIds = team.getValue().getUserIds();
             if (userIds.isEmpty()) {
                 break;
             }
-            Long applicant = userIds.remove(0);
+            Long applicant = userIds.stream().findFirst().get();
+            userIds.remove(applicant);
             temporaryTeam.add(applicant);
         }
     }
 
-    private Set<Long> getDuplicateMemberOf(Map<Long, List<Long>> teams) {
-        int size = teams.values().stream().mapToInt(List::size).sum();
+    private Set<Long> getDuplicateMemberOf(Map<Long, Set<Long>> teams) {
+        int size = teams.values().stream().mapToInt(Set::size).sum();
         Set<Long> memberIds = new HashSet<>(size); // resize 비용을 줄이기 위해
         Set<Long> duplicateMemberIds = new HashSet<>(size / 3); // 중복되는 인원은 지원자수보다 훨씬 적을것으로 추정되므로
 
-        for (List<Long> currentMembers : teams.values()) {
+        for (Set<Long> currentMembers : teams.values()) {
             for (Long id : currentMembers) {
                 boolean isNew = memberIds.add(id);
                 if (!isNew) {
@@ -94,7 +97,7 @@ public class SequentialTeamBuilder implements TeamBuilder {
      * @param leaderWishes:    팀장이 희망하는 팀원 명단
      */
     private void traceToMaxPriority(Long memberId,
-                                    Map<Long, List<Long>> teams,
+                                    Map<Long, Set<Long>> teams,
                                     Map<Long, List<ApplyInfo>> applicantWishes,
                                     Map<Long, RecruitInfo> leaderWishes) {
         List<ApplyInfo> applyInfos = applicantWishes.get(memberId);
@@ -102,7 +105,7 @@ public class SequentialTeamBuilder implements TeamBuilder {
 
         for (ApplyInfo apply : applyInfos) {
             Long teamId = apply.getProjectId();
-            List<Long> members = teams.get(teamId);
+            Set<Long> members = teams.get(teamId);
 
             if (!members.contains(memberId)) {
                 continue;
@@ -121,14 +124,15 @@ public class SequentialTeamBuilder implements TeamBuilder {
     /**
      * 현재 남아있는 지원자 명단 중 팀장이 가장 원하는 인원을 추가합니다.
      */
-    private void addNewMember(Long team, List<Long> members, Map<Long, RecruitInfo> leaderWishes) {
-        List<Long> applicants = leaderWishes.get(team).getUserIds();
+    private void addNewMember(Long team, Set<Long> members, Map<Long, RecruitInfo> leaderWishes) {
+        Set<Long> applicants = leaderWishes.get(team).getUserIds();
         if (applicants.isEmpty()) {
             return;
         }
 
         // 리스트의 맨 앞에는 팀장이 가장 원하는 팀원이 있음
-        Long newMember = applicants.remove(0);
+        Long newMember = applicants.stream().findFirst().get();
+        applicants.remove(newMember);
         members.add(newMember);
     }
 }
