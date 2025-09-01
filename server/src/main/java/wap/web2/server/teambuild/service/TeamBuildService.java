@@ -3,6 +3,7 @@ package wap.web2.server.teambuild.service;
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.teambuild.dto.ApplyInfo;
 import wap.web2.server.teambuild.dto.RecruitInfo;
-import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
+import wap.web2.server.teambuild.entity.Position;
 import wap.web2.server.teambuild.entity.ProjectApply;
 import wap.web2.server.teambuild.entity.ProjectRecruit;
 import wap.web2.server.teambuild.entity.ProjectRecruitWish;
@@ -32,26 +33,40 @@ public class TeamBuildService {
     private final ProjectApplyRepository applyRepository;
 
     // TODO: 리턴값 고민
-    public TeamBuildingResults makeTeam(UserPrincipal userPrincipal) {
-        Map<Long, List<ApplyInfo>> applyMap = getApplyMap();
-        Map<Long, RecruitInfo> recruitMap = getRecruitMap();
-
+    public void makeTeam(UserPrincipal userPrincipal) {
+        // TODO: ADMIN만 관리가능하도록?
         TeamBuilder teamBuilder = new TeamBuilderImpl();
-        Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
 
-        // allocated를 로깅한다. (테스트 용도)
-        for (Entry<Long, Set<Long>> entry : allocated.entrySet()) {
-            log.info("[TEAMBUILD] projectId:{}", entry.getKey());
-            log.info("[TEAMBUILD] memberIds:{}", entry.getValue()); // 이렇게하면 set 참조값이 가져와지는지 확인 필요
+        // Map<projectId, Map<position, Set<userId>>>
+        Map<Long, Map<Position, Set<Long>>> results = new HashMap<>();
+        for (Position position : Position.values()) {
+            Map<Long, List<ApplyInfo>> applyMap = getApplyMap(position);
+            Map<Long, RecruitInfo> recruitMap = getRecruitMap(position);
+            Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
+
+            // Map<projectId, Set<userId>> -> Map<projectId, Map<position, Set<userId>>>
+            for (Entry<Long, Set<Long>> entry : allocated.entrySet()) {
+                long projectId = entry.getKey();
+                Set<Long> userIds = entry.getValue();
+
+                // 프로젝트별 Position Map (EnumMap 메모리/성능 유리)
+                Map<Position, Set<Long>> byPosition
+                        = results.computeIfAbsent(projectId, k -> new EnumMap<>(Position.class));
+
+                // 해당 포지션의 사용자 집합 확보 후 추가
+                Set<Long> members = byPosition.computeIfAbsent(position, k -> new HashSet<>());
+                members.addAll(userIds);
+            }
         }
 
-        return TeamBuildingResults.from(allocated);
+        saveTeamBuildingResults(results);
     }
 
-    private Map<Long, List<ApplyInfo>> getApplyMap() {
+    // TODO: 내부 객체에 position 빼기
+    private Map<Long, List<ApplyInfo>> getApplyMap(Position pos) {
         Map<Long, List<ApplyInfo>> applyMap = new HashMap<>();
 
-        List<ProjectApply> applyEntities = applyRepository.findAllBySemesterAndPos(generateSemester());
+        List<ProjectApply> applyEntities = applyRepository.findAllBySemesterAndPosition(generateSemester(), pos);
         for (ProjectApply applyEntity : applyEntities) {
             long projectId = applyEntity.getProject().getProjectId();
             List<ApplyInfo> applyInfos = applyMap.computeIfAbsent(projectId, key -> new ArrayList<>());
@@ -67,10 +82,10 @@ public class TeamBuildService {
         return applyMap;
     }
 
-    private Map<Long, RecruitInfo> getRecruitMap() {
+    private Map<Long, RecruitInfo> getRecruitMap(Position pos) {
         Map<Long, RecruitInfo> recruitMap = new HashMap<>();
 
-        List<ProjectRecruit> recruitEntities = recruitRepository.findAllBySemester(generateSemester());
+        List<ProjectRecruit> recruitEntities = recruitRepository.findAllBySemesterAndPosition(generateSemester(), pos);
         for (ProjectRecruit recruitEntity : recruitEntities) {
             long projectId = recruitEntity.getProjectId();
             Set<Long> userIds = new HashSet<>();
@@ -89,6 +104,11 @@ public class TeamBuildService {
         }
 
         return recruitMap;
+    }
+
+    private void saveTeamBuildingResults(Map<Long, Map<Position, Set<Long>>> results) {
+
+        // repository.save();
     }
 
 }

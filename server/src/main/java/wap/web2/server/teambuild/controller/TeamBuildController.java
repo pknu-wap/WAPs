@@ -14,7 +14,6 @@ import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
-import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.service.ApplyService;
 import wap.web2.server.teambuild.service.TeamBuildService;
 
@@ -66,10 +65,10 @@ public class TeamBuildController {
     @PostMapping("")
     public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
         try {
-            TeamBuildingResults results = teamBuildService.makeTeam(userPrincipal);
-            return ResponseEntity.ok().body(results);
+            teamBuildService.makeTeam(userPrincipal);
+            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("");
+            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
         }
     }
 
