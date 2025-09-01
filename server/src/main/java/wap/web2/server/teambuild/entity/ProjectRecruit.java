@@ -46,16 +46,6 @@ public class ProjectRecruit {
     @Column(nullable = false)
     private Integer capacity;
 
-    // 현재 선택된 인원 수
-    @Column(nullable = false)
-    @Builder.Default
-    private Integer currentCount = 0;
-
-    // 완료 여부
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean isCompleted = false;
-
     @Column(nullable = false, length = 7)
     private String semester;     // "year-semester"
 

@@ -33,7 +33,6 @@ public class TeamBuildService {
 
     // TODO: 리턴값 고민
     public TeamBuildingResults makeTeam(UserPrincipal userPrincipal) {
-
         Map<Long, List<ApplyInfo>> applyMap = getApplyMap();
         Map<Long, RecruitInfo> recruitMap = getRecruitMap();
 
@@ -43,7 +42,7 @@ public class TeamBuildService {
         // allocated를 로깅한다. (테스트 용도)
         for (Entry<Long, Set<Long>> entry : allocated.entrySet()) {
             log.info("[TEAMBUILD] projectId:{}", entry.getKey());
-            log.info("[TEAMBUILD] memberIds:{}", entry.getValue());
+            log.info("[TEAMBUILD] memberIds:{}", entry.getValue()); // 이렇게하면 set 참조값이 가져와지는지 확인 필요
         }
 
         return TeamBuildingResults.from(allocated);
@@ -52,7 +51,7 @@ public class TeamBuildService {
     private Map<Long, List<ApplyInfo>> getApplyMap() {
         Map<Long, List<ApplyInfo>> applyMap = new HashMap<>();
 
-        List<ProjectApply> applyEntities = applyRepository.findAllBySemester(generateSemester());
+        List<ProjectApply> applyEntities = applyRepository.findAllBySemesterAndPos(generateSemester());
         for (ProjectApply applyEntity : applyEntities) {
             long projectId = applyEntity.getProject().getProjectId();
             List<ApplyInfo> applyInfos = applyMap.computeIfAbsent(projectId, key -> new ArrayList<>());

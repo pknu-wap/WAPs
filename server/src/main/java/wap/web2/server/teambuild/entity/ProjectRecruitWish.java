@@ -32,11 +32,6 @@ public class ProjectRecruitWish {
     @Column(nullable = false)
     private Integer priority;
 
-    // 알고리즘에서 실제 선택 여부
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean isSelected = false;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_recruit_id", nullable = false)
     private ProjectRecruit recruit;
