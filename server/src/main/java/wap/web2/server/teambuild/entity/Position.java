@@ -10,5 +10,5 @@ public enum Position {
     IOS,
     PM,
     GAME;
-    
+
 }

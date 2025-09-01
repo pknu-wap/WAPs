@@ -1,11 +1,10 @@
 package wap.web2.server.teambuild.dto;
 
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wap.web2.server.teambuild.entity.Position;
@@ -29,5 +28,5 @@ public class RecruitInfo {
         this.capacity = capacity;
         this.userIds = new LinkedHashSet<>(userIds);
     }
-  
+
 }
