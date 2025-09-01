@@ -22,6 +22,7 @@ import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest.ApplyRequest;
+import wap.web2.server.teambuild.entity.Position;
 import wap.web2.server.teambuild.entity.ProjectApply;
 import wap.web2.server.teambuild.repository.ProjectApplyRepository;
 import wap.web2.server.teambuild.service.ApplyService;
@@ -58,9 +59,9 @@ class ApplyServiceTest {
 
         ProjectAppliesRequest request = new ProjectAppliesRequest(
                 List.of(
-                        new ApplyRequest(10L, "BE", "열심히할게요."),
-                        new ApplyRequest(20L, "FE", "열심히할게요."),
-                        new ApplyRequest(30L, "AI", "열심히할게요.")
+                        new ApplyRequest(10L, Position.BACKEND.name(), "열심히할게요."),
+                        new ApplyRequest(20L, Position.FRONTEND.name(), "열심히할게요."),
+                        new ApplyRequest(30L, Position.AI.name(), "열심히할게요.")
                 )
         );
 
