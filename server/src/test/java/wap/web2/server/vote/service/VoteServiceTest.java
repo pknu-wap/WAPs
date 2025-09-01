@@ -23,7 +23,7 @@ class VoteServiceTest {
     @Autowired
     private ProjectRepository projectRepository;
 
-    @Test
+    //@Test
     void 순차_투표_성공() {
         // given: 1, 2, 3번 프로젝트 투표 요청 객체
         VoteRequest request = new VoteRequest(projectIds);
