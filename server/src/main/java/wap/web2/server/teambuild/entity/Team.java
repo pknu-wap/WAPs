@@ -30,11 +30,11 @@ public class Team {
     private Long leaderId;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Position position;
+    private Long memberId;
 
     @Column(nullable = false)
-    private Long memberId;
+    @Enumerated(EnumType.STRING)
+    private Position position;
 
     @Column(nullable = false, length = 7)
     private String semester;
