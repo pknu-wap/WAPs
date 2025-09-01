@@ -8,20 +8,22 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.teambuild.dto.ApplyInfo;
 import wap.web2.server.teambuild.dto.RecruitInfo;
 import wap.web2.server.teambuild.entity.Position;
 import wap.web2.server.teambuild.entity.ProjectApply;
 import wap.web2.server.teambuild.entity.ProjectRecruit;
 import wap.web2.server.teambuild.entity.ProjectRecruitWish;
+import wap.web2.server.teambuild.entity.Team;
 import wap.web2.server.teambuild.repository.ProjectApplyRepository;
 import wap.web2.server.teambuild.repository.ProjectRecruitRepository;
+import wap.web2.server.teambuild.repository.TeamRepository;
 import wap.web2.server.teambuild.service.impl.TeamBuilderImpl;
 
 @Slf4j
@@ -31,8 +33,11 @@ public class TeamBuildService {
 
     private final ProjectRecruitRepository recruitRepository;
     private final ProjectApplyRepository applyRepository;
+    private final ProjectRepository projectRepository;
+    private final TeamRepository teamRepository;
 
-    // TODO: 리턴값 고민
+
+    // TODO: TeamBuilder 의존성을 주입받도록 수정할 수 있을듯
     public void makeTeam(UserPrincipal userPrincipal) {
         // TODO: ADMIN만 관리가능하도록?
         TeamBuilder teamBuilder = new TeamBuilderImpl();
@@ -45,7 +50,7 @@ public class TeamBuildService {
             Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
 
             // Map<projectId, Set<userId>> -> Map<projectId, Map<position, Set<userId>>>
-            for (Entry<Long, Set<Long>> entry : allocated.entrySet()) {
+            for (Map.Entry<Long, Set<Long>> entry : allocated.entrySet()) {
                 long projectId = entry.getKey();
                 Set<Long> userIds = entry.getValue();
 
@@ -53,7 +58,7 @@ public class TeamBuildService {
                 Map<Position, Set<Long>> byPosition
                         = results.computeIfAbsent(projectId, k -> new EnumMap<>(Position.class));
 
-                // 해당 포지션의 사용자 집합 확보 후 추가
+                // 해당 포지션의 Member Set
                 Set<Long> members = byPosition.computeIfAbsent(position, k -> new HashSet<>());
                 members.addAll(userIds);
             }
@@ -107,8 +112,29 @@ public class TeamBuildService {
     }
 
     private void saveTeamBuildingResults(Map<Long, Map<Position, Set<Long>>> results) {
+        List<Team> teams = new ArrayList<>();
+        for (Map.Entry<Long, Map<Position, Set<Long>>> projectEntry : results.entrySet()) {
+            Long projectId = projectEntry.getKey();
+            Long leaderId = projectRepository.findById(projectId)
+                    .map(project -> project.getUser().getId()) // leader id 찾기
+                    .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
 
-        // repository.save();
+            Map<Position, Set<Long>> byPosition = projectEntry.getValue();
+            for (Map.Entry<Position, Set<Long>> posEntry : byPosition.entrySet()) {
+                Position position = posEntry.getKey();
+                Set<Long> memberIds = posEntry.getValue();
+                for (Long memberId : memberIds) {
+                    teams.add(Team.builder()
+                            .projectId(projectId)
+                            .leaderId(leaderId)
+                            .position(position)
+                            .memberId(memberId)
+                            .semester(generateSemester())
+                            .build());
+                }
+            }
+        }
+
+        teamRepository.saveAll(teams);
     }
-
 }
