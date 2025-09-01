@@ -11,4 +11,6 @@ public interface ProjectApplyRepository extends JpaRepository<ProjectApply, Long
 
     List<ProjectApply> findAllByProject(Project project);
 
+    List<ProjectApply> findAllBySemester(String semester);
+
 }

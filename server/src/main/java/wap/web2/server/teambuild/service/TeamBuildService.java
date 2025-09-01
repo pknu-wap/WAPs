@@ -1,5 +1,7 @@
 package wap.web2.server.teambuild.service;
 
+import static wap.web2.server.util.SemesterGenerator.generateSemester;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +33,7 @@ public class TeamBuildService {
 
     // TODO: 리턴값 고민
     public TeamBuildingResults makeTeam(UserPrincipal userPrincipal) {
+
         Map<Long, List<ApplyInfo>> applyMap = getApplyMap();
         Map<Long, RecruitInfo> recruitMap = getRecruitMap();
 
@@ -49,7 +52,7 @@ public class TeamBuildService {
     private Map<Long, List<ApplyInfo>> getApplyMap() {
         Map<Long, List<ApplyInfo>> applyMap = new HashMap<>();
 
-        List<ProjectApply> applyEntities = applyRepository.findAll();
+        List<ProjectApply> applyEntities = applyRepository.findAllBySemester(generateSemester());
         for (ProjectApply applyEntity : applyEntities) {
             long projectId = applyEntity.getProject().getProjectId();
             List<ApplyInfo> applyInfos = applyMap.computeIfAbsent(projectId, key -> new ArrayList<>());
@@ -68,7 +71,7 @@ public class TeamBuildService {
     private Map<Long, RecruitInfo> getRecruitMap() {
         Map<Long, RecruitInfo> recruitMap = new HashMap<>();
 
-        List<ProjectRecruit> recruitEntities = recruitRepository.findAll();
+        List<ProjectRecruit> recruitEntities = recruitRepository.findAllBySemester(generateSemester());
         for (ProjectRecruit recruitEntity : recruitEntities) {
             long projectId = recruitEntity.getProjectId();
             Set<Long> userIds = new HashSet<>();
