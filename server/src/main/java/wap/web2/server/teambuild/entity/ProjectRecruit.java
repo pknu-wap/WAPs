@@ -1,5 +1,7 @@
 package wap.web2.server.teambuild.entity;
 
+import static wap.web2.server.util.SemesterGenerator.generateSemester;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
-import java.time.YearMonth;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,10 +26,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectRecruit {
-
-    public static final int SECOND_SEMESTER_MONTH = 6;
-    public static final String FIRST_SEMESTER = "-01";
-    public static final String SECOND_SEMESTER = "-02";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,10 +67,7 @@ public class ProjectRecruit {
     @PrePersist
     private void onCreate() {
         if (this.semester == null) {
-            YearMonth now = YearMonth.now();
-            this.semester = now.getMonthValue() <= SECOND_SEMESTER_MONTH
-                    ? now.getYear() + FIRST_SEMESTER
-                    : now.getYear() + SECOND_SEMESTER;
+            this.semester = generateSemester();
         }
     }
 
