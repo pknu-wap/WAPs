@@ -2,8 +2,11 @@ package wap.web2.server.teambuild.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,10 +35,10 @@ public class TeamBuildService {
         Map<Long, RecruitInfo> recruitMap = getRecruitMap();
 
         TeamBuilder teamBuilder = new TeamBuilderImpl();
-        Map<Long, List<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
+        Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
 
         // allocated를 로깅한다. (테스트 용도)
-        for (Map.Entry<Long, List<Long>> entry : allocated.entrySet()) {
+        for (Entry<Long, Set<Long>> entry : allocated.entrySet()) {
             log.info("[TEAMBUILD] projectId:{}", entry.getKey());
             log.info("[TEAMBUILD] memberIds:{}", entry.getValue());
         }
@@ -68,7 +71,7 @@ public class TeamBuildService {
         List<ProjectRecruit> recruitEntities = recruitRepository.findAll();
         for (ProjectRecruit recruitEntity : recruitEntities) {
             long projectId = recruitEntity.getProjectId();
-            List<Long> userIds = new ArrayList<>();
+            Set<Long> userIds = new HashSet<>();
             for (ProjectRecruitWish wishEntity : recruitEntity.getWishList()) {
                 userIds.add(wishEntity.getApplicantId());
             }
