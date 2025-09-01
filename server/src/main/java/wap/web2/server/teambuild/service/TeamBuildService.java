@@ -52,14 +52,14 @@ public class TeamBuildService {
         List<ProjectApply> applyEntities = applyRepository.findAll();
         for (ProjectApply applyEntity : applyEntities) {
             long projectId = applyEntity.getProject().getProjectId();
-            applyMap.computeIfAbsent(projectId, key -> new ArrayList<>())
-                    .add(ApplyInfo.builder()
-                            .userId(applyEntity.getUser().getId())
-                            .projectId(projectId)
-                            .priority(applyEntity.getPriority())
-                            .position(applyEntity.getPosition())
-                            .build()
-                    );
+            List<ApplyInfo> applyInfos = applyMap.computeIfAbsent(projectId, key -> new ArrayList<>());
+            applyInfos.add(ApplyInfo.builder()
+                    .userId(applyEntity.getUser().getId())
+                    .projectId(projectId)
+                    .priority(applyEntity.getPriority())
+                    .position(applyEntity.getPosition())
+                    .build()
+            );
         }
 
         return applyMap;
