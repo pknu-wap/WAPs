@@ -234,12 +234,6 @@
             font-weight: 500;
         }
 
-        .deadline {
-            color: #e74c3c;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
         .apply-btn {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
@@ -552,10 +546,10 @@
 
     <div class="projects-grid">
         <!-- 프로젝트 카드들 (Thymeleaf를 사용한 반복) -->
-        <div th:each="project : ${projects}" class="project-card" th:id="'project-' + ${project.id}">
+        <div th:each="project : ${projects}" class="project-card" th:id="'project-' + ${project.projectId}">
             <div class="selected-indicator" style="display: none;">✓</div>
             <h3 th:text="${project.title}">프로젝트 제목</h3>
-            <p class="project-description" th:text="${project.description}">프로젝트 설명</p>
+            <p class="project-description" th:text="${project.summary}">프로젝트 설명</p>
 
             <div class="project-meta">
                 <div class="tech-stack">
@@ -563,11 +557,10 @@
                           class="tech-tag"
                           th:text="${tech}">기술스택</span>
                 </div>
-                <span class="deadline" th:text="'마감: ' + ${project.deadline}">마감일</span>
             </div>
 
             <button type="button" class="apply-btn"
-                    th:attr="data-id=${project.id},
+                    th:attr="data-id=${project.projectId},
                  data-title=${#strings.escapeJavaScript(project.title)}"
                     onclick="openIndividualModal(this.dataset.id, this.dataset.title)">
                 지원하기
@@ -648,31 +641,6 @@
     let applicationCart = new Map(); // projectId -> applicationData
     let currentEditingProject = null;
 
-    // 샘플 프로젝트 데이터 (실제로는 서버에서 전달됨)
-    const sampleProjects = [
-        {
-            id: 1,
-            title: "E-커머스 플랫폼 개발",
-            description: "React와 Spring Boot를 활용한 현대적인 온라인 쇼핑몰을 구축합니다. 사용자 친화적인 UI/UX와 안정적인 결제 시스템을 포함합니다.",
-            techStack: ["React", "Spring Boot", "MySQL", "AWS"],
-            deadline: "2024-03-15"
-        },
-        {
-            id: 2,
-            title: "AI 챗봇 서비스",
-            description: "자연어 처리 기술을 활용한 고객 서비스 챗봇을 개발합니다. 머신러닝 모델 훈련과 API 개발이 포함됩니다.",
-            techStack: ["Python", "TensorFlow", "FastAPI", "Docker"],
-            deadline: "2024-03-20"
-        },
-        {
-            id: 3,
-            title: "모바일 헬스케어 앱",
-            description: "건강 관리를 위한 크로스플랫폼 모바일 애플리케이션을 개발합니다. 웨어러블 디바이스 연동과 데이터 시각화 기능을 제공합니다.",
-            techStack: ["Flutter", "Node.js", "MongoDB", "Firebase"],
-            deadline: "2024-04-01"
-        }
-    ];
-
     // 개별 프로젝트 모달 열기
     function openIndividualModal(projectId, projectTitle) {
         currentEditingProject = {
@@ -745,7 +713,7 @@
 
         // DTO 구조에 맞게 데이터 객체를 수정합니다.
         const applicationData = {
-            projectId: currentEditingProject.id,
+            projectId: currentEditingProject.projectId,
             position: position,
             comment: message, // 'messages' -> 'comment'로 변경, 값도 단일 문자열로 변경
             // 'projectTitle'은 서버 전송 시 필요 없으므로 제거합니다.
@@ -755,10 +723,10 @@
 
         // 장바구니에 저장 (UI 표시용 제목은 따로 저장)
         const cartData = { ...applicationData, projectTitle: currentEditingProject.title };
-        applicationCart.set(currentEditingProject.id, cartData);
+        applicationCart.set(currentEditingProject.projectId, cartData);
 
         updateCartDisplay();
-        updateProjectCard(currentEditingProject.id, true);
+        updateProjectCard(currentEditingProject.projectId, true);
 
         alert(`"${currentEditingProject.title}" 프로젝트 지원서가 장바구니에 추가되었습니다!`);
         closeIndividualModal();
