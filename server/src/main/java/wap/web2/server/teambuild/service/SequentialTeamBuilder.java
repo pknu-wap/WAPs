@@ -15,7 +15,11 @@ public class SequentialTeamBuilder implements TeamBuilder {
     @Override
     public Map<Long, Set<Long>> allocate(Map<Long, List<ApplyInfo>> applicantWishes,
                                          Map<Long, RecruitInfo> leaderWishes) {
+        // teamId -> {members}
         Map<Long, Set<Long>> teams = initTeam(leaderWishes);
+        for (Map.Entry<Long, Set<Long>> team : teams.entrySet()) {
+            System.out.println("teamId:" + team.getKey() + " members:" + team.getValue().toString());
+        }
 
         // 구성된 팀에서 중복된 인원을 제거하며 팀원을 재배치
         while (true) {
@@ -27,8 +31,8 @@ public class SequentialTeamBuilder implements TeamBuilder {
                 return teams;
             }
 
+            // 중복되는 인원은 자신이 가장 원하는 팀에 합류
             for (Long memberId : members) {
-                // 중복되는 인원은 자신이 가장 원하는 팀에 합류
                 traceToMaxPriority(memberId, teams, applicantWishes, leaderWishes);
             }
         }
@@ -102,19 +106,19 @@ public class SequentialTeamBuilder implements TeamBuilder {
 
         boolean isJoin = false;
         for (ApplyInfo apply : applyInfos) {
-            Long teamId = apply.getProjectId();
-            Set<Long> members = teams.get(teamId);
+            Long teamId = apply.getProjectId();     // 어떤 프로젝트에 지원했는지
+            Set<Long> members = teams.get(teamId);  // 그 프로젝트의 현재 멤버는 누구인지
 
-            if (!members.contains(memberId)) {
+            if (!members.contains(memberId)) {      // 멤버가 초기에 new 설정되었고 remove 하기에 null 검사 필요없음
                 continue;
             }
-            // 가장 높은 우선순위를 가진 팀에게 할당
+
+            // 가장 높은 우선순위를 가진 팀에게 할당 == 그대로 놔두기 (List<ApplyInfo>에는 우선순위 순서대로 저장되어있음)
             if (!isJoin) {
-                // 우선순위가 가장 높은 팀에게 합류시킴
                 isJoin = true;
             } else {
-                members.remove(memberId); // 중복되는 인원를 팀에서 제거
-                addNewMember(teamId, members, leaderWishes); // 새로운 지원자를 팀으로 합류
+                members.remove(memberId);                       // 중복되는 인원를 팀에서 제거
+                addNewMember(teamId, members, leaderWishes);    // 새로운 지원자를 팀으로 합류
             }
         }
     }
@@ -122,8 +126,8 @@ public class SequentialTeamBuilder implements TeamBuilder {
     /**
      * 현재 남아있는 지원자 명단 중 팀장이 가장 원하는 인원을 추가합니다.
      */
-    private void addNewMember(Long team, Set<Long> members, Map<Long, RecruitInfo> leaderWishes) {
-        Set<Long> applicants = leaderWishes.get(team).getUserIds();
+    private void addNewMember(Long teamId, Set<Long> members, Map<Long, RecruitInfo> leaderWishes) {
+        Set<Long> applicants = leaderWishes.get(teamId).getUserIds();
         if (applicants.isEmpty()) {
             return;
         }

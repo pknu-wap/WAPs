@@ -54,9 +54,8 @@ public class TeamBuildService {
             if (recruitMap.isEmpty()) {
                 continue;
             }
-
             log.info("position:{} \ttry", position);
-            Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap, position);
+            Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
             log.info("position:{} \tsuccess", position);
 
             // Map<projectId, Set<userId>> -> Map<projectId, Map<position, Set<userId>>>
