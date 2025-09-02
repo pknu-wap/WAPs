@@ -46,7 +46,7 @@ public class TeamBuildController {
     public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal,
                                    @Valid @RequestBody ProjectAppliesRequest request) {
         try {
-            log.info("/[team-build/apply] {}", request.toString());
+            log.info("[/team-build/apply] {}", request.toString());
             applyService.apply(userPrincipal, request);
             return ResponseEntity.ok().body("[INFO ] 성공적으로 지원하였습니다.");
         } catch (Exception e) {
