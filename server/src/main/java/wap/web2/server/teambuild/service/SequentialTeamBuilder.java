@@ -17,7 +17,7 @@ public class SequentialTeamBuilder implements TeamBuilder {
                                          Map<Long, RecruitInfo> leaderWishes) {
         Map<Long, Set<Long>> teams = initTeam(leaderWishes);
 
-        // 구성된 팀에서 중복된 인원을 제거하며 팀월을 재배치
+        // 구성된 팀에서 중복된 인원을 제거하며 팀원을 재배치
         while (true) {
             // 여러 팀에 합류하고 있는 인원을 고름
             Set<Long> members = getDuplicateMemberOf(teams);
@@ -47,11 +47,11 @@ public class SequentialTeamBuilder implements TeamBuilder {
         for (Entry<Long, RecruitInfo> team : leaderWishes.entrySet()) {
             Long teamId = team.getKey(); // projectId
             Integer capacity = team.getValue().getCapacity();
-            Set<Long> temporaryTeam = new LinkedHashSet<>();
-            teams.put(teamId, new LinkedHashSet<>());
 
+            Set<Long> temporaryTeam = new LinkedHashSet<>();
             addAcceptableMember(team, capacity, temporaryTeam);
-            teams.get(teamId).addAll(temporaryTeam);
+
+            teams.put(teamId, temporaryTeam);
         }
 
         return teams;
@@ -99,12 +99,6 @@ public class SequentialTeamBuilder implements TeamBuilder {
                                     Map<Long, List<ApplyInfo>> applicantWishes,
                                     Map<Long, RecruitInfo> leaderWishes) {
         List<ApplyInfo> applyInfos = applicantWishes.get(memberId);
-        // null 체크 추가
-        if (applyInfos == null || applyInfos.isEmpty()) {
-            // 해당 멤버의 지원 정보가 없는 경우 모든 팀에서 제거
-            teams.values().forEach(members -> members.remove(memberId));
-            return;
-        }
 
         boolean isJoin = false;
         for (ApplyInfo apply : applyInfos) {

@@ -3,6 +3,7 @@ package wap.web2.server.teambuild.service;
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,9 +44,20 @@ public class TeamBuildService {
         // Map<projectId, Map<position, Set<userId>>>
         Map<Long, Map<Position, Set<Long>>> results = new HashMap<>();
         for (Position position : Position.values()) {
+            // Map<userId, List<ApplyInfo>>
             Map<Long, List<ApplyInfo>> applyMap = getApplies(position);
+            if (applyMap.isEmpty()) {
+                continue;
+            }
+            // Map<projectId, RecruitInfo>
             Map<Long, RecruitInfo> recruitMap = getRecruits(position);
+            if (recruitMap.isEmpty()) {
+                continue;
+            }
+
+            log.info("position:{} \ttry", position);
             Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
+            log.info("position:{} \tsuccess", position);
 
             // Map<projectId, Set<userId>> -> Map<projectId, Map<position, Set<userId>>>
             for (Map.Entry<Long, Set<Long>> entry : allocated.entrySet()) {
@@ -70,11 +82,16 @@ public class TeamBuildService {
         Map<Long, List<ApplyInfo>> applyMap = new HashMap<>();
 
         List<ProjectApply> applyEntities = applyRepository.findAllBySemesterAndPosition(generateSemester(), pos);
+        if (applyEntities.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
         for (ProjectApply applyEntity : applyEntities) {
+            long memberId = applyEntity.getUser().getId();
             long projectId = applyEntity.getProject().getProjectId();
-            List<ApplyInfo> applyInfos = applyMap.computeIfAbsent(projectId, key -> new ArrayList<>());
+            List<ApplyInfo> applyInfos = applyMap.computeIfAbsent(memberId, key -> new ArrayList<>());
             applyInfos.add(ApplyInfo.builder()
-                    .userId(applyEntity.getUser().getId())
+                    .userId(memberId)
                     .projectId(projectId)
                     .priority(applyEntity.getPriority())
                     .position(applyEntity.getPosition())
@@ -89,6 +106,10 @@ public class TeamBuildService {
         Map<Long, RecruitInfo> recruitMap = new HashMap<>();
 
         List<ProjectRecruit> recruitEntities = recruitRepository.findAllBySemesterAndPosition(generateSemester(), pos);
+        if (recruitEntities.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
         for (ProjectRecruit recruitEntity : recruitEntities) {
             long projectId = recruitEntity.getProjectId();
             Set<Long> userIds = new HashSet<>();
