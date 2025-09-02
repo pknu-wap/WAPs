@@ -313,19 +313,123 @@
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 20px;
+            list-style: none;
+            counter-reset: project-counter;
         }
 
         .selected-project-item {
             background: white;
             border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
             border-left: 4px solid #667eea;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            cursor: move;
+            transition: all 0.3s ease;
+            position: relative;
+            counter-increment: project-counter;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .selected-project-item:last-child {
             margin-bottom: 0;
+        }
+
+        .selected-project-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-left-color: #5a67d8;
+        }
+
+        .selected-project-item.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg);
+            z-index: 1000;
+        }
+
+        .selected-project-item.drag-over {
+            border-top: 3px solid #667eea;
+            margin-top: 15px;
+        }
+
+        .priority-number {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .project-info {
+            flex: 1;
+        }
+
+        .project-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .project-position {
+            font-size: 0.9rem;
+            color: #667eea;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .project-message-preview {
+            font-size: 0.8rem;
+            color: #999;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 300px;
+        }
+
+        .drag-handle {
+            color: #bbb;
+            font-size: 1.2rem;
+            cursor: move;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .drag-handle:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .priority-guide {
+            background: linear-gradient(145deg, #e3f2fd, #f8f9ff);
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .priority-guide strong {
+            color: #1976d2;
+        }
+
+        .sortable-ghost {
+            opacity: 0.4;
+        }
+
+        .sortable-drag {
+            background: white !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
         }
 
         .form-group {
@@ -561,7 +665,7 @@
 
             <button type="button" class="apply-btn"
                     th:attr="data-id=${project.projectId},
-                 data-title=${#strings.escapeJavaScript(project.title)}"
+                 data-title=${project.title}"
                     onclick="openIndividualModal(this.dataset.id, this.dataset.title)">
                 지원하기
             </button>
@@ -623,8 +727,14 @@
         <span class="close" onclick="closeCartModal()">&times;</span>
         <h2>장바구니 지원서 제출</h2>
 
-        <div class="selected-projects-list" id="selectedProjectsList">
-            <!-- 선택된 프로젝트들이 여기에 표시됩니다 -->
+        <div id="prioritySection">
+            <div class="priority-guide">
+                <strong>🎯 지원 우선순위 설정</strong><br>
+                프로젝트를 드래그하여 원하는 순서로 변경해주세요. 1순위부터 제출됩니다.<br>
+                <small style="color: #666;">💡 항목을 클릭하고 드래그하거나 오른쪽 핸들(⋮⋮)을 이용해보세요!</small>
+            </div>
+            <ol class="selected-projects-list" id="selectedProjectsList">
+            </ol>
         </div>
 
         <div style="text-align: center; padding: 20px;">
@@ -677,12 +787,12 @@
 
         // 단일 메시지 불러오기
         const textarea = document.querySelector('#individualMessagesContainer textarea[name="messages"]');
-        if (textarea && savedApp.messages.length > 0) {
-            textarea.value = savedApp.messages[0];
+        if (textarea && savedApp.comment) {
+            textarea.value = savedApp.comment;
         }
     }
 
-    // 메시지 관리 함수들 제거 (단일 메시지만 사용)
+    // 메시지 초기화
     function resetIndividualMessages() {
         const textarea = document.querySelector('#individualMessagesContainer textarea[name="messages"]');
         if (textarea) {
@@ -698,7 +808,6 @@
         const formData = new FormData(form);
 
         const position = formData.get('position');
-        // 'getAll'이 아닌 'get'을 사용해 단일 메시지를 가져옵니다.
         const message = formData.get('messages');
 
         if (!position) {
@@ -711,22 +820,23 @@
             return;
         }
 
-        // DTO 구조에 맞게 데이터 객체를 수정합니다.
+        // 중요: currentEditingProject.id가 아닌 정확한 프로젝트 ID를 사용
+        const projectId = parseInt(document.getElementById('individualProjectId').value);
+
         const applicationData = {
-            projectId: currentEditingProject.projectId,
+            projectId: projectId, // 여기가 핵심 수정 부분
             position: position,
-            comment: message, // 'messages' -> 'comment'로 변경, 값도 단일 문자열로 변경
-            // 'projectTitle'은 서버 전송 시 필요 없으므로 제거합니다.
-            // UI 표시용 데이터는 별도로 관리합니다.
-            projectTitleForUI: currentEditingProject.title
+            comment: message.trim(),
+            projectTitle: currentEditingProject.title // UI 표시용
         };
 
-        // 장바구니에 저장 (UI 표시용 제목은 따로 저장)
-        const cartData = { ...applicationData, projectTitle: currentEditingProject.title };
-        applicationCart.set(currentEditingProject.projectId, cartData);
+        console.log('장바구니에 추가하는 데이터:', applicationData); // 디버깅용
+
+        // 장바구니에 저장
+        applicationCart.set(projectId, applicationData);
 
         updateCartDisplay();
-        updateProjectCard(currentEditingProject.projectId, true);
+        updateProjectCard(projectId, true);
 
         alert(`"${currentEditingProject.title}" 프로젝트 지원서가 장바구니에 추가되었습니다!`);
         closeIndividualModal();
@@ -735,6 +845,7 @@
     // 장바구니에서 프로젝트 제거
     function removeFromCart(projectId) {
         projectId = parseInt(projectId);
+        console.log('장바구니에서 제거:', projectId); // 디버깅용
         applicationCart.delete(projectId);
         updateCartDisplay();
         updateProjectCard(projectId, false);
@@ -757,7 +868,10 @@
     // 프로젝트 카드 UI 업데이트
     function updateProjectCard(projectId, isSelected) {
         const card = document.getElementById(`project-${projectId}`);
-        if (!card) return;
+        if (!card) {
+            console.log('카드를 찾을 수 없음:', projectId); // 디버깅용
+            return;
+        }
 
         const indicator = card.querySelector('.selected-indicator');
 
@@ -781,6 +895,8 @@
         const floatingCartCount = document.getElementById('floatingCartCount');
 
         const count = applicationCart.size;
+
+        console.log('장바구니 업데이트:', count, Array.from(applicationCart.entries())); // 디버깅용
 
         // 장바구니 배지 업데이트
         cartBadge.textContent = count;
@@ -826,24 +942,119 @@
             return;
         }
 
-        // 선택된 프로젝트 목록 표시
-        const selectedProjectsList = document.getElementById('selectedProjectsList');
-        selectedProjectsList.innerHTML = `
-            <h3>제출할 지원서 목록 (${applicationCart.size}개)</h3>
-            ${Array.from(applicationCart.values()).map(app => `
-                <div class="selected-project-item">
-                    <strong>${app.projectTitle}</strong>
-                    <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">
-                        지원 직무: <span style="color: #667eea; font-weight: 600;">${getPositionName(app.position)}</span>
-                    </p>
-                    <p style="font-size: 0.8rem; color: #999; margin-top: 3px;">
-                        메시지 작성됨
-                    </p>
-                </div>
-            `).join('')}
-        `;
-
+        updatePriorityList();
         document.getElementById('cartApplicationModal').style.display = 'block';
+    }
+
+    // 우선순위 리스트 업데이트
+    function updatePriorityList() {
+        const selectedProjectsList = document.getElementById('selectedProjectsList');
+        const applications = Array.from(applicationCart.values());
+
+        selectedProjectsList.innerHTML = applications.map((app, index) => `
+            <li class="selected-project-item" data-project-id="${app.projectId}" draggable="true">
+                <div class="priority-number">${index + 1}</div>
+                <div class="project-info">
+                    <div class="project-title">${app.projectTitle}</div>
+                    <div class="project-position">지원 직무: ${getPositionName(app.position)}</div>
+                    <div class="project-message-preview">${app.comment.substring(0, 50)}${app.comment.length > 50 ? '...' : ''}</div>
+                </div>
+                <div class="drag-handle" title="드래그하여 순서 변경">⋮⋮</div>
+            </li>
+        `).join('');
+
+        // 드래그 앤 드롭 이벤트 리스너 추가
+        initializeDragAndDrop();
+    }
+
+    // 드래그 앤 드롭 기능 초기화
+    function initializeDragAndDrop() {
+        const items = document.querySelectorAll('.selected-project-item');
+
+        items.forEach(item => {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragend', handleDragEnd);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('drop', handleDrop);
+            item.addEventListener('dragenter', handleDragEnter);
+            item.addEventListener('dragleave', handleDragLeave);
+        });
+    }
+
+    let draggedElement = null;
+
+    function handleDragStart(e) {
+        draggedElement = this;
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.outerHTML);
+    }
+
+    function handleDragEnd(e) {
+        this.classList.remove('dragging');
+
+        // 모든 드래그 오버 스타일 제거
+        const allItems = document.querySelectorAll('.selected-project-item');
+        allItems.forEach(item => item.classList.remove('drag-over'));
+
+        draggedElement = null;
+    }
+
+    function handleDragOver(e) {
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+        e.dataTransfer.dropEffect = 'move';
+        return false;
+    }
+
+    function handleDragEnter(e) {
+        if (this !== draggedElement) {
+            this.classList.add('drag-over');
+        }
+    }
+
+    function handleDragLeave(e) {
+        this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+
+        if (draggedElement !== this) {
+            const draggedProjectId = parseInt(draggedElement.dataset.projectId);
+            const targetProjectId = parseInt(this.dataset.projectId);
+
+            // 장바구니에서 순서 재정렬
+            reorderApplications(draggedProjectId, targetProjectId);
+
+            // UI 업데이트
+            updatePriorityList();
+        }
+
+        this.classList.remove('drag-over');
+        return false;
+    }
+
+    // 지원서 순서 재정렬
+    function reorderApplications(draggedId, targetId) {
+        const applications = Array.from(applicationCart.entries());
+        const draggedIndex = applications.findIndex(([id]) => id === draggedId);
+        const targetIndex = applications.findIndex(([id]) => id === targetId);
+
+        if (draggedIndex !== -1 && targetIndex !== -1) {
+            // 배열에서 항목을 이동
+            const [draggedItem] = applications.splice(draggedIndex, 1);
+            applications.splice(targetIndex, 0, draggedItem);
+
+            // Map 재구성
+            applicationCart.clear();
+            applications.forEach(([id, data]) => {
+                applicationCart.set(id, data);
+            });
+        }
     }
 
     function closeCartModal() {
@@ -865,33 +1076,43 @@
         return positions[position] || position;
     }
 
-    // 개별 지원서 관련 이벤트 리스너 제거 (바로 지원 기능 삭제)
+    // 초기화
     document.addEventListener('DOMContentLoaded', function() {
-        // 초기화만 수행
         updateCartDisplay();
+        console.log('페이지 로드 완료, 장바구니 초기화됨');
     });
 
-    // 장바구니의 모든 지원서 제출
-    /*<![CDATA[*/
+    // 장바구니의 모든 지원서 제출 (우선순위 순서대로)
     function submitAllApplications() {
         if (applicationCart.size === 0) {
             alert('제출할 지원서가 없습니다.');
             return;
         }
 
-        const allApplications = Array.from(applicationCart.values()).map(app => {
+        // 현재 우선순위 순서대로 지원서 배열 생성
+        const allApplications = Array.from(applicationCart.values()).map((app, index) => {
             return {
                 projectId: app.projectId,
                 position: app.position,
-                comment: app.comment
+                comment: app.comment,
+                priority: index + 1 // 우선순위 추가
             };
         });
+
         const authToken = /*[[${authToken}]]*/ '';
 
-        if (authToken === '') { // null 이나 빈 값이 아닌지 확인
-            console.log("토큰 확인!", authToken);
+        console.log('우선순위가 적용된 장바구니 지원 데이터:', allApplications);
+
+        // 사용자에게 최종 확인
+        const confirmMessage = `다음 순서로 ${allApplications.length}개 프로젝트에 지원하시겠습니까?\n\n` +
+            allApplications.map(app => {
+                const appData = applicationCart.get(app.projectId);
+                return `${app.priority}순위: ${appData.projectTitle} (${getPositionName(app.position)})`;
+            }).join('\n');
+
+        if (!confirm(confirmMessage)) {
+            return;
         }
-        console.log('장바구니 지원 데이터:', allApplications);
 
         // 실제 서버 전송 로직
         fetch('/team-build/apply', {
@@ -906,7 +1127,7 @@
         })
             .then(response => response.json())
             .then(data => {
-                alert(`${allApplications.length}개 프로젝트에 지원이 완료되었습니다!`);
+                alert(`${allApplications.length}개 프로젝트에 우선순위대로 지원이 완료되었습니다!`);
                 closeCartModal();
 
                 // 지원 완료 후 장바구니 비우기
@@ -917,7 +1138,6 @@
                 alert('지원 중 오류가 발생했습니다. 다시 시도해주세요.');
             });
     }
-    /*]]>*/
 
     // 지원 완료 후 장바구니 정리
     function clearCartAfterSubmit() {
