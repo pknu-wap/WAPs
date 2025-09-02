@@ -56,7 +56,7 @@ public class TeamBuildService {
             }
 
             log.info("position:{} \ttry", position);
-            Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
+            Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap, position);
             log.info("position:{} \tsuccess", position);
 
             // Map<projectId, Set<userId>> -> Map<projectId, Map<position, Set<userId>>>
@@ -79,13 +79,12 @@ public class TeamBuildService {
 
     // TODO: 내부 객체에 position 빼기
     private Map<Long, List<ApplyInfo>> getApplies(Position pos) {
-        Map<Long, List<ApplyInfo>> applyMap = new HashMap<>();
-
         List<ProjectApply> applyEntities = applyRepository.findAllBySemesterAndPosition(generateSemester(), pos);
         if (applyEntities.isEmpty()) {
             return Collections.emptyMap();
         }
 
+        Map<Long, List<ApplyInfo>> applyMap = new HashMap<>();
         for (ProjectApply applyEntity : applyEntities) {
             long memberId = applyEntity.getUser().getId();
             long projectId = applyEntity.getProject().getProjectId();
@@ -103,13 +102,12 @@ public class TeamBuildService {
     }
 
     private Map<Long, RecruitInfo> getRecruits(Position pos) {
-        Map<Long, RecruitInfo> recruitMap = new HashMap<>();
-
         List<ProjectRecruit> recruitEntities = recruitRepository.findAllBySemesterAndPosition(generateSemester(), pos);
         if (recruitEntities.isEmpty()) {
             return Collections.emptyMap();
         }
 
+        Map<Long, RecruitInfo> recruitMap = new HashMap<>();
         for (ProjectRecruit recruitEntity : recruitEntities) {
             long projectId = recruitEntity.getProjectId();
             Set<Long> userIds = new HashSet<>();
