@@ -1,10 +1,13 @@
 package wap.web2.server.project.controller;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,8 +39,8 @@ public class ProjectController {
     // TODO: ProjectsResponse에 담기 전에 검사하는건 별로인가요?
     //  또는 컨트롤러에서는 try catch를 두고 ProjectResponse안에서 throw 하는 것은?
     @GetMapping("/list")
-    public ResponseEntity<?> getProjects(@RequestParam("projectYear") Long year,
-                                         @RequestParam("semester") Long semester) {
+    public ResponseEntity<?> getProjects(@RequestParam("projectYear") Integer year,
+                                         @RequestParam("semester") Integer semester) {
         List<ProjectInfoResponse> projects = projectService.getProjects(year, semester);
         ProjectsResponse projectsResponse = ProjectsResponse.builder()
                 .projectsResponse(projects)
@@ -49,10 +52,15 @@ public class ProjectController {
         return new ResponseEntity<>(projectsResponse, HttpStatus.OK);
     }
 
-    @PostMapping
+    // TODO: 투표가 먼저 생성되고 있음
+    // TODO: 입력 폼 변경해야함
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+            encoding = @Encoding(name = "project", contentType = MediaType.APPLICATION_JSON_VALUE)
+    ))
     public ResponseEntity<?> createProject(@CurrentUser UserPrincipal userPrincipal,
-                                           @RequestPart("image") List<MultipartFile> imageFiles,
-                                           @RequestPart("thumbnail") MultipartFile thumbnailFile,
+                                           @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
+                                           @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
                                            @RequestPart("project") ProjectRequest request) throws IOException {
         // RequestPart 중 ContentType 형식이 다르게 온 file 2종류를 ProjectCreateRequest 에 할당하여 새로운 RequestDto 객체 생성
         ProjectRequest fullRequest = ProjectRequest.builder()

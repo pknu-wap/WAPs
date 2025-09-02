@@ -16,4 +16,16 @@ public class SemesterGenerator {
 
     }
 
+    public static Integer generateYearValue() {
+        YearMonth now = YearMonth.now();
+        return now.getYear();
+    }
+
+    public static Integer generateSemesterValue() {
+        YearMonth now = YearMonth.now();
+        return now.getMonthValue() <= SECOND_SEMESTER_MONTH
+                ? 1
+                : 2;
+    }
+
 }
