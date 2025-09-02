@@ -1,5 +1,6 @@
 package wap.web2.server.project.dto.request;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -56,9 +57,14 @@ public class ProjectRequest {
                 .map(TechStackDto::toEntity)
                 .collect(Collectors.toList());
 
-        List<TeamMember> teamMemberEntities = request.getTeamMember().stream()
-                .map(TeamMemberDto::toEntity)
-                .collect(Collectors.toList());
+        List<TeamMember> teamMemberEntities;
+        if (request.getTeamMember() == null) {
+            teamMemberEntities = Collections.emptyList();
+        } else {
+            teamMemberEntities = request.getTeamMember().stream()
+                    .map(TeamMemberDto::toEntity)
+                    .collect(Collectors.toList());
+        }
 
         return Project.builder()
                 .user(user)
