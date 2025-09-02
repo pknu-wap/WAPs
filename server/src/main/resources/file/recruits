@@ -1,0 +1,118 @@
+-- 편의를 위해서 이렇게 저장되었지만, 실제로는 프로젝트별로 하나씩 떼어내서 입력해야함
+
+[
+  {
+    "projectId": 1,
+    "roasters": [
+      { "capacity": 2, "position": "BACKEND",  "applicantIds": [1057,1089,1041,1073] },
+      { "capacity": 2, "position": "FRONTEND", "applicantIds": [1000,1072,1088,1056] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1059,1011,1043,1075,1027] }
+    ]
+  },
+  {
+    "projectId": 2,
+    "roasters": [
+      { "capacity": 2, "position": "BACKEND",  "applicantIds": [1089,1001,1073,1057] },
+      { "capacity": 2, "position": "FRONTEND", "applicantIds": [1016,1000,1072,1088] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1059,1091,1043,1075,1027] }
+    ]
+  },
+  {
+    "projectId": 3,
+    "roasters": [
+      { "capacity": 2, "position": "BACKEND",  "applicantIds": [1089,1001,1017,1073] },
+      { "capacity": 2, "position": "FRONTEND", "applicantIds": [1000,1088,1016,1032] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1059,1091,1043,1075] }
+    ]
+  },
+  {
+    "projectId": 4,
+    "roasters": [
+      { "capacity": 1, "position": "BACKEND",  "applicantIds": [1089,1001,1017,1033] },
+      { "capacity": 1, "position": "FRONTEND", "applicantIds": [1000,1048,1016,1032] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1059,1091,1075,1003] }
+    ]
+  },
+  {
+    "projectId": 5,
+    "roasters": [
+      { "capacity": 2, "position": "FRONTEND", "applicantIds": [1032,1048,1000,1016,1064] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1003,1091,1075,1019] }
+    ]
+  },
+  {
+    "projectId": 6,
+    "roasters": [
+      { "capacity": 1, "position": "FRONTEND", "applicantIds": [1048,1016,1080,1064,1032] },
+      { "capacity": 1, "position": "BACKEND",  "applicantIds": [1033,1049,1017,1065,1001] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1035,1003,1091,1019] },
+      { "capacity": 1, "position": "AI",       "applicantIds": [1034,1050,1002,1018] }
+    ]
+  },
+  {
+    "projectId": 7,
+    "roasters": [
+      { "capacity": 2, "position": "ANDROID",  "applicantIds": [1036,1092,1020,1004] },
+      { "capacity": 2, "position": "BACKEND",  "applicantIds": [1049,1081,1017,1065,1033] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1019,1003,1035,1051] }
+    ]
+  },
+  {
+    "projectId": 8,
+    "roasters": [
+      { "capacity": 2, "position": "ANDROID",  "applicantIds": [1004,1036,1052,1020] },
+      { "capacity": 1, "position": "BACKEND",  "applicantIds": [1049,1081,1097,1065,1033] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1019,1003,1035,1067,1051] }
+    ]
+  },
+  {
+    "projectId": 9,
+    "roasters": [
+      { "capacity": 2, "position": "IOS",      "applicantIds": [1005,1037,1053,1021] },
+      { "capacity": 2, "position": "BACKEND",  "applicantIds": [1065,1049,1097,1081] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1035,1083,1067,1051,1019] }
+    ]
+  },
+  {
+    "projectId": 10,
+    "roasters": [
+      { "capacity": 3, "position": "GAME",     "applicantIds": [1095,1023,1007,1039] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1035,1051,1083,1067,1099] }
+    ]
+  },
+  {
+    "projectId": 11,
+    "roasters": [
+      { "capacity": 3, "position": "GAME",     "applicantIds": [1055,1007,1023,1039] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1099,1083,1051,1067] }
+    ]
+  },
+  {
+    "projectId": 12,
+    "roasters": [
+      { "capacity": 3, "position": "GAME",     "applicantIds": [1007,1023,1071,1039,1055] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1011,1099,1083,1067] }
+    ]
+  },
+  {
+    "projectId": 13,
+    "roasters": [
+      { "capacity": 3, "position": "GAME",     "applicantIds": [1087,1023,1071,1039,1055] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1027,1011,1083,1099] }
+    ]
+  },
+  {
+    "projectId": 14,
+    "roasters": [
+      { "capacity": 3, "position": "GAME",     "applicantIds": [1087,1055,1071,1039] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1099,1011,1043,1027] }
+    ]
+  },
+  {
+    "projectId": 15,
+    "roasters": [
+      { "capacity": 3, "position": "GAME",     "applicantIds": [1087,1055,1071] },
+      { "capacity": 1, "position": "DESIGN",   "applicantIds": [1059,1011,1043,1027] }
+    ]
+  }
+]
