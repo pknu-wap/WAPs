@@ -24,7 +24,6 @@ import wap.web2.server.teambuild.entity.Team;
 import wap.web2.server.teambuild.repository.ProjectApplyRepository;
 import wap.web2.server.teambuild.repository.ProjectRecruitRepository;
 import wap.web2.server.teambuild.repository.TeamRepository;
-import wap.web2.server.teambuild.service.impl.TeamBuilderImpl;
 
 @Slf4j
 @Service
@@ -36,11 +35,10 @@ public class TeamBuildService {
     private final ProjectRepository projectRepository;
     private final TeamRepository teamRepository;
 
-
     // TODO: TeamBuilder 의존성을 주입받도록 수정할 수 있을듯
     public void makeTeam(UserPrincipal userPrincipal) {
         // TODO: ADMIN만 관리가능하도록?
-        TeamBuilder teamBuilder = new TeamBuilderImpl();
+        TeamBuilder teamBuilder = new SequentialTeamBuilder();
 
         // Map<projectId, Map<position, Set<userId>>>
         Map<Long, Map<Position, Set<Long>>> results = new HashMap<>();

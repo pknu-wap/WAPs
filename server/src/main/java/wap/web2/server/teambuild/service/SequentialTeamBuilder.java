@@ -2,9 +2,7 @@ package wap.web2.server.teambuild.service;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,7 +14,7 @@ public class SequentialTeamBuilder implements TeamBuilder {
 
     @Override
     public Map<Long, Set<Long>> allocate(Map<Long, List<ApplyInfo>> applicantWishes,
-                                          Map<Long, RecruitInfo> leaderWishes) {
+                                         Map<Long, RecruitInfo> leaderWishes) {
         Map<Long, Set<Long>> teams = initTeam(leaderWishes);
 
         // 구성된 팀에서 중복된 인원을 제거하며 팀월을 재배치
@@ -101,6 +99,13 @@ public class SequentialTeamBuilder implements TeamBuilder {
                                     Map<Long, List<ApplyInfo>> applicantWishes,
                                     Map<Long, RecruitInfo> leaderWishes) {
         List<ApplyInfo> applyInfos = applicantWishes.get(memberId);
+        // null 체크 추가
+        if (applyInfos == null || applyInfos.isEmpty()) {
+            // 해당 멤버의 지원 정보가 없는 경우 모든 팀에서 제거
+            teams.values().forEach(members -> members.remove(memberId));
+            return;
+        }
+
         boolean isJoin = false;
 
         for (ApplyInfo apply : applyInfos) {
@@ -135,4 +140,5 @@ public class SequentialTeamBuilder implements TeamBuilder {
         applicants.remove(newMember);
         members.add(newMember);
     }
+
 }
