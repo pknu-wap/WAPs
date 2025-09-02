@@ -1,5 +1,7 @@
 package wap.web2.server.teambuild.entity;
 
+import static wap.web2.server.util.SemesterGenerator.generateSemester;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,19 +46,19 @@ public class ProjectRecruit {
     @Column(nullable = false)
     private Integer capacity;
 
-    // 현재 선택된 인원 수
-    @Column(nullable = false)
-    @Builder.Default
-    private Integer currentCount = 0;
-
-    // 완료 여부
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean isCompleted = false;
+    @Column(nullable = false, length = 7)
+    private String semester;     // "year-semester"
 
     // 희망 지원자 목록
     @Setter
     @OneToMany(mappedBy = "recruit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProjectRecruitWish> wishList;
+
+    @PrePersist
+    private void onCreate() {
+        if (this.semester == null) {
+            this.semester = generateSemester();
+        }
+    }
 
 }

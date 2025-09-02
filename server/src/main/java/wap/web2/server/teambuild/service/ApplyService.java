@@ -86,29 +86,29 @@ public class ApplyService {
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
 
-        log.info("setPreference-user:{},project:{}", user.getId(), project.getProjectId());
+        log.info("setPreference요청-user:{},project:{}", user.getId(), project.getProjectId());
 
-        List<RecruitmentInfo> wishList = request.getRoasters();
-        for (RecruitmentInfo info : wishList) {
+        List<RecruitmentInfo> roasters = request.getRoasters();
+        for (RecruitmentInfo roaster : roasters) {
             // 1. 먼저 ProjectRecruit 저장 (부모 엔티티)
             ProjectRecruit recruit = recruitRepository.save(
                     ProjectRecruit.builder()
                             .leaderId(user.getId())
                             .projectId(project.getProjectId())
-                            .position(Position.valueOf(info.getPosition()))
-                            .capacity(info.getCapacity())
+                            .position(Position.valueOf(roaster.getPosition()))
+                            .capacity(roaster.getCapacity())
                             .build()
             );
 
             // 2. 각 분야별로 우선순위 1부터 시작
             int priority = 1;
             List<ProjectRecruitWish> wishes = new ArrayList<>();
-            for (long applicantId : info.getApplicantIds()) {
+            for (long applicantId : roaster.getApplicantIds()) {
                 ProjectRecruitWish wish = recruitWishRepository.save(
                         ProjectRecruitWish.builder()
-                                .recruit(recruit)
-                                .applicantId(applicantId)
                                 .priority(priority++)
+                                .applicantId(applicantId)
+                                .recruit(recruit)
                                 .build()
                 );
                 wishes.add(wish);

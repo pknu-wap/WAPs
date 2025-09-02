@@ -2,12 +2,11 @@ package wap.web2.server.teambuild.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,22 +17,26 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectRecruitWish {
+public class Team {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 팀에서 희망하는 지원자 ID
     @Column(nullable = false)
-    private Long applicantId;
+    private Long projectId;
 
-    // 희망 우선순위
     @Column(nullable = false)
-    private Integer priority;
+    private Long leaderId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_recruit_id", nullable = false)
-    private ProjectRecruit recruit;
+    @Column(nullable = false)
+    private Long memberId;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Position position;
+
+    @Column(nullable = false, length = 7)
+    private String semester;
 
 }
