@@ -107,7 +107,6 @@ public class SequentialTeamBuilder implements TeamBuilder {
         }
 
         boolean isJoin = false;
-
         for (ApplyInfo apply : applyInfos) {
             Long teamId = apply.getProjectId();
             Set<Long> members = teams.get(teamId);
