@@ -1,17 +1,14 @@
 package wap.web2.server.teambuild.controller;
 
-import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
-import static wap.web2.server.util.SemesterGenerator.generateYearValue;
-
 import jakarta.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
-import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,28 +51,69 @@ public class TeamBuildController {
         }
     }
 
+    // 리더용 모집하기 페이지
+    @GetMapping("/recruit")
+    public String recruitPage(Model model,
+                              @CookieValue(name = "authToken", required = false) String authToken,
+                              @CurrentUser UserPrincipal userPrincipal) throws Exception {
+
+        // 리더(=로그인 유저)가 소유/담당한 프로젝트 목록 (원하는 기준으로 교체 OK)
+        List<ProjectTemplate> myProjects = projectService.getCurrentProjectRecruits();
+
+        System.out.println("authToken = " + authToken);
+
+        model.addAttribute("projects", myProjects);
+        model.addAttribute("authToken", authToken);
+        model.addAttribute("leaderId", userPrincipal != null ? userPrincipal.getId() : null);
+
+        return "projects-application-for-leader";
+    }
+
     // 프로젝트에 신청한 사람 보기 (for 팀장)
     @ResponseBody
-    @GetMapping("{projectId}/applies")
+    @GetMapping("/{projectId}/applies")
     public ResponseEntity<?> getApplies(@CurrentUser UserPrincipal userPrincipal,
                                         @PathVariable("projectId") Long projectId) {
         try {
             ProjectAppliesResponse response = applyService.getApplies(userPrincipal, projectId);
-            return ResponseEntity.ok().body(response);
+
+            Map<String, Object> jsonResponse = new HashMap<>();
+            jsonResponse.put("success", true);
+            jsonResponse.put("projectId", projectId);
+            jsonResponse.put("applies", response.getApplies());
+            jsonResponse.put("totalCount", response.getApplies().size());
+
+            return ResponseEntity.ok(jsonResponse);
+
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "지원자 정보를 불러오는데 실패했습니다.");
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
+    // 팀 구성 완료 (RecruitmentDto 사용)
     @ResponseBody
     @PostMapping("/preference")
     public ResponseEntity<?> setPreference(@CurrentUser UserPrincipal userPrincipal,
                                            @Valid @RequestBody RecruitmentDto request) {
         try {
             applyService.setPreference(userPrincipal, request);
-            return ResponseEntity.ok().body("[INFO ] 성공적으로 등록하였습니다.");
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "팀 구성이 완료되었습니다.");
+            response.put("projectId", request.getProjectId());
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 등록 실패" + e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "팀 구성 중 오류가 발생했습니다.");
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
@@ -93,7 +131,8 @@ public class TeamBuildController {
     }
 
     @GetMapping("/projects")
-    public String projects(Model model, @CookieValue(name = "authToken", required = false) String authToken) throws Exception {
+    public String projects(Model model, @CookieValue(name = "authToken", required = false) String authToken)
+            throws Exception {
         List<ProjectTemplate> projects = projectService.getCurrentProjectRecruits();
 
         System.out.println("authToken = " + authToken);
@@ -102,4 +141,5 @@ public class TeamBuildController {
 
         return "projects-application";
     }
+
 }
