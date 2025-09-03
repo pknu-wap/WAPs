@@ -7,8 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import wap.web2.server.teambuild.entity.Position;
 
+@ToString
 @Getter
 @Builder
 @NoArgsConstructor
@@ -22,6 +24,7 @@ public class RecruitInfo {
     private Set<Long> userIds;
 
     public RecruitInfo(Long leaderId, Long projectId, Position position, Integer capacity, List<Long> userIds) {
+        System.out.println("recruitInfo 생성자:" + userIds.toString());
         this.leaderId = leaderId;
         this.projectId = projectId;
         this.position = position;

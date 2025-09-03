@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -51,6 +52,7 @@ public class ProjectRecruit {
 
     // 희망 지원자 목록
     @Setter
+    @OrderBy("priority ASC")
     @OneToMany(mappedBy = "recruit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProjectRecruitWish> wishList;
 

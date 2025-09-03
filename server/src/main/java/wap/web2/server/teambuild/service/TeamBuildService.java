@@ -54,9 +54,22 @@ public class TeamBuildService {
             if (recruitMap.isEmpty()) {
                 continue;
             }
-            log.info("position:{} \ttry", position);
+
+            log.info("[BUILD] position:{} \ttry", position);
+
+            for (Map.Entry<Long, List<ApplyInfo>> entry : applyMap.entrySet()) {
+                System.out.println("memberId:" + entry.getKey());
+                for (ApplyInfo info : entry.getValue()) {
+                    System.out.println("applies:" + info.toString());
+                }
+            }
+            for (Map.Entry<Long, RecruitInfo> entry : recruitMap.entrySet()) {
+                System.out.println("projectId:" + entry.getKey());
+                System.out.println("recruits: " + entry.getValue().toString());
+            }
+
             Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
-            log.info("position:{} \tsuccess", position);
+            log.info("[BUILD] position:{} \tsuccess", position);
 
             // Map<projectId, Set<userId>> -> Map<projectId, Map<position, Set<userId>>>
             for (Map.Entry<Long, Set<Long>> entry : allocated.entrySet()) {

@@ -1,7 +1,6 @@
 package wap.web2.server.teambuild.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -25,14 +24,14 @@ public class RecruitmentDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static final class RecruitmentInfo {
-        @Min(1)
         private Integer capacity;
 
         @NotBlank
         private String position;
 
-        @NotEmpty
-        private List<Long> applicantIds;
+        private List<Long> applicantIds; // 일단 임시로 지워놨음
+        // 열어놓지 않은 포지션에 신청하는 사람이 있을수도 or 그렇게 처리하는게 편할수도
+
     }
 
 }
