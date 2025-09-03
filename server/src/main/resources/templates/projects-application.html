@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -707,7 +707,8 @@
                 <label>자기소개 및 PR 메시지</label>
                 <div id="individualMessagesContainer">
                     <div class="message-item">
-                        <textarea name="messages" placeholder="자신의 경험, 기술 스택, 프로젝트에 기여할 수 있는 부분 등을 작성해주세요." required></textarea>
+                        <textarea name="messages" placeholder="자신의 경험, 기술 스택, 프로젝트에 기여할 수 있는 부분 등을 작성해주세요."
+                                  required></textarea>
                     </div>
                 </div>
             </div>
@@ -1077,7 +1078,7 @@
     }
 
     // 초기화
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         updateCartDisplay();
         console.log('페이지 로드 완료, 장바구니 초기화됨');
     });
@@ -1125,7 +1126,7 @@
                 applies: allApplications
             })
         })
-            .then(response => response.json())
+            //.then(response => response.json())
             .then(data => {
                 alert(`${allApplications.length}개 프로젝트에 우선순위대로 지원이 완료되었습니다!`);
                 closeCartModal();
@@ -1152,7 +1153,7 @@
     }
 
     // 모달 외부 클릭 시 닫기
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         const individualModal = document.getElementById('individualApplicationModal');
         const cartModal = document.getElementById('cartApplicationModal');
 
