@@ -30,8 +30,10 @@ import wap.web2.server.project.service.ProjectService;
 import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
+import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 import wap.web2.server.teambuild.service.ApplyService;
+import wap.web2.server.teambuild.service.TeamBuildResultService;
 import wap.web2.server.teambuild.service.TeamBuildService;
 
 @Slf4j
@@ -40,6 +42,7 @@ import wap.web2.server.teambuild.service.TeamBuildService;
 @RequiredArgsConstructor
 public class TeamBuildController {
 
+    private final TeamBuildResultService teamBuildResultService;
     private final TeamBuildService teamBuildService;
     private final ApplyService applyService;
     private final ProjectService projectService;
@@ -137,6 +140,16 @@ public class TeamBuildController {
         }
     }
 
+    @GetMapping("/result")
+    public ResponseEntity<?> getTeamBuildResults() {
+        try {
+            TeamBuildingResults results = teamBuildResultService.getResults();
+            return ResponseEntity.ok().body(results);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 조회 실패" + e.getMessage());
+        }
+    }
+  
     @GetMapping("/projects")
     public String projects(Model model, @CookieValue(name = "authToken", required = false) String authToken)
             throws Exception {

@@ -8,6 +8,7 @@ import wap.web2.server.teambuild.dto.RecruitInfo;
 
 public interface TeamBuilder {
 
-    Map<Long, Set<Long>> allocate(Map<Long, List<ApplyInfo>> applicantWishes, Map<Long, RecruitInfo> leaderWishes);
+    Map<Long, Set<Long>> allocate(Map<Long, List<ApplyInfo>> applicantWishes,
+                                  Map<Long, RecruitInfo> leaderWishes);
 
 }

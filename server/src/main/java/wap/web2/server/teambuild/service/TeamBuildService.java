@@ -3,9 +3,11 @@ package wap.web2.server.teambuild.service;
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +26,6 @@ import wap.web2.server.teambuild.entity.Team;
 import wap.web2.server.teambuild.repository.ProjectApplyRepository;
 import wap.web2.server.teambuild.repository.ProjectRecruitRepository;
 import wap.web2.server.teambuild.repository.TeamRepository;
-import wap.web2.server.teambuild.service.impl.TeamBuilderImpl;
 
 @Slf4j
 @Service
@@ -36,18 +37,28 @@ public class TeamBuildService {
     private final ProjectRepository projectRepository;
     private final TeamRepository teamRepository;
 
-
     // TODO: TeamBuilder 의존성을 주입받도록 수정할 수 있을듯
     public void makeTeam(UserPrincipal userPrincipal) {
         // TODO: ADMIN만 관리가능하도록?
-        TeamBuilder teamBuilder = new TeamBuilderImpl();
+        TeamBuilder teamBuilder = new SequentialTeamBuilder();
 
         // Map<projectId, Map<position, Set<userId>>>
         Map<Long, Map<Position, Set<Long>>> results = new HashMap<>();
         for (Position position : Position.values()) {
+            // Map<userId, List<ApplyInfo>>
             Map<Long, List<ApplyInfo>> applyMap = getApplies(position);
+            if (applyMap.isEmpty()) {
+                continue;
+            }
+            // Map<projectId, RecruitInfo>
             Map<Long, RecruitInfo> recruitMap = getRecruits(position);
+            if (recruitMap.isEmpty()) {
+                continue;
+            }
+
+            log.info("team-build-position:{} \ttry", position);
             Map<Long, Set<Long>> allocated = teamBuilder.allocate(applyMap, recruitMap);
+            log.info("team-build-position:{} \tsuccess", position);
 
             // Map<projectId, Set<userId>> -> Map<projectId, Map<position, Set<userId>>>
             for (Map.Entry<Long, Set<Long>> entry : allocated.entrySet()) {
@@ -69,14 +80,18 @@ public class TeamBuildService {
 
     // TODO: 내부 객체에 position 빼기
     private Map<Long, List<ApplyInfo>> getApplies(Position pos) {
-        Map<Long, List<ApplyInfo>> applyMap = new HashMap<>();
-
         List<ProjectApply> applyEntities = applyRepository.findAllBySemesterAndPosition(generateSemester(), pos);
+        if (applyEntities.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<Long, List<ApplyInfo>> applyMap = new HashMap<>();
         for (ProjectApply applyEntity : applyEntities) {
+            long memberId = applyEntity.getUser().getId();
             long projectId = applyEntity.getProject().getProjectId();
-            List<ApplyInfo> applyInfos = applyMap.computeIfAbsent(projectId, key -> new ArrayList<>());
+            List<ApplyInfo> applyInfos = applyMap.computeIfAbsent(memberId, key -> new ArrayList<>());
             applyInfos.add(ApplyInfo.builder()
-                    .userId(applyEntity.getUser().getId())
+                    .userId(memberId)
                     .projectId(projectId)
                     .priority(applyEntity.getPriority())
                     .position(applyEntity.getPosition())
@@ -88,12 +103,15 @@ public class TeamBuildService {
     }
 
     private Map<Long, RecruitInfo> getRecruits(Position pos) {
-        Map<Long, RecruitInfo> recruitMap = new HashMap<>();
-
         List<ProjectRecruit> recruitEntities = recruitRepository.findAllBySemesterAndPosition(generateSemester(), pos);
+        if (recruitEntities.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<Long, RecruitInfo> recruitMap = new HashMap<>();
         for (ProjectRecruit recruitEntity : recruitEntities) {
             long projectId = recruitEntity.getProjectId();
-            Set<Long> userIds = new HashSet<>();
+            Set<Long> userIds = new LinkedHashSet<>();
             for (ProjectRecruitWish wishEntity : recruitEntity.getWishList()) {
                 userIds.add(wishEntity.getApplicantId());
             }

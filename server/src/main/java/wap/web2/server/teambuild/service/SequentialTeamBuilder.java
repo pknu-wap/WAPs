@@ -2,9 +2,7 @@ package wap.web2.server.teambuild.service;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,10 +14,11 @@ public class SequentialTeamBuilder implements TeamBuilder {
 
     @Override
     public Map<Long, Set<Long>> allocate(Map<Long, List<ApplyInfo>> applicantWishes,
-                                          Map<Long, RecruitInfo> leaderWishes) {
+                                         Map<Long, RecruitInfo> leaderWishes) {
+        // teamId -> {members}
         Map<Long, Set<Long>> teams = initTeam(leaderWishes);
 
-        // 구성된 팀에서 중복된 인원을 제거하며 팀월을 재배치
+        // 구성된 팀에서 중복된 인원을 제거하며 팀원을 재배치
         while (true) {
             // 여러 팀에 합류하고 있는 인원을 고름
             Set<Long> members = getDuplicateMemberOf(teams);
@@ -29,8 +28,8 @@ public class SequentialTeamBuilder implements TeamBuilder {
                 return teams;
             }
 
+            // 중복되는 인원은 자신이 가장 원하는 팀에 합류
             for (Long memberId : members) {
-                // 중복되는 인원은 자신이 가장 원하는 팀에 합류
                 traceToMaxPriority(memberId, teams, applicantWishes, leaderWishes);
             }
         }
@@ -49,11 +48,11 @@ public class SequentialTeamBuilder implements TeamBuilder {
         for (Entry<Long, RecruitInfo> team : leaderWishes.entrySet()) {
             Long teamId = team.getKey(); // projectId
             Integer capacity = team.getValue().getCapacity();
-            Set<Long> temporaryTeam = new LinkedHashSet<>();
-            teams.put(teamId, new LinkedHashSet<>());
 
+            Set<Long> temporaryTeam = new LinkedHashSet<>();
             addAcceptableMember(team, capacity, temporaryTeam);
-            teams.get(teamId).addAll(temporaryTeam);
+
+            teams.put(teamId, temporaryTeam);
         }
 
         return teams;
@@ -70,7 +69,7 @@ public class SequentialTeamBuilder implements TeamBuilder {
             temporaryTeam.add(applicant);
         }
     }
-
+    
     private Set<Long> getDuplicateMemberOf(Map<Long, Set<Long>> teams) {
         int size = teams.values().stream().mapToInt(Set::size).sum();
         Set<Long> memberIds = new HashSet<>(size); // resize 비용을 줄이기 위해
@@ -100,23 +99,23 @@ public class SequentialTeamBuilder implements TeamBuilder {
                                     Map<Long, Set<Long>> teams,
                                     Map<Long, List<ApplyInfo>> applicantWishes,
                                     Map<Long, RecruitInfo> leaderWishes) {
-        List<ApplyInfo> applyInfos = applicantWishes.get(memberId);
+        List<ApplyInfo> applyInfos = applicantWishes.get(memberId); // 한 명의 중복되는 멤버가 가지는 모든 지원서
+
         boolean isJoin = false;
-
         for (ApplyInfo apply : applyInfos) {
-            Long teamId = apply.getProjectId();
-            Set<Long> members = teams.get(teamId);
+            Long teamId = apply.getProjectId();     // 어떤 프로젝트에 지원했는지
+            Set<Long> members = teams.get(teamId);  // 그 프로젝트의 현재 멤버
 
-            if (!members.contains(memberId)) {
+            if (!members.contains(memberId)) {      // 멤버가 초기에 new 설정되었고 remove 하기에 null 검사 필요없음
                 continue;
             }
-            // 가장 높은 우선순위를 가진 팀에게 할당
+
+            // 가장 높은 우선순위를 가진 팀에게 할당 == 그대로 놔두기 (List<ApplyInfo>에는 우선순위 순서대로 저장되어있음)
             if (!isJoin) {
-                // 우선순위가 가장 높은 팀에게 합류시킴
                 isJoin = true;
             } else {
-                members.remove(memberId); // 중복되는 인원를 팀에서 제거
-                addNewMember(teamId, members, leaderWishes); // 새로운 지원자를 팀으로 합류
+                members.remove(memberId);                       // 중복되는 인원를 팀에서 제거
+                addNewMember(teamId, members, leaderWishes);    // 새로운 지원자를 팀으로 합류
             }
         }
     }
@@ -124,8 +123,8 @@ public class SequentialTeamBuilder implements TeamBuilder {
     /**
      * 현재 남아있는 지원자 명단 중 팀장이 가장 원하는 인원을 추가합니다.
      */
-    private void addNewMember(Long team, Set<Long> members, Map<Long, RecruitInfo> leaderWishes) {
-        Set<Long> applicants = leaderWishes.get(team).getUserIds();
+    private void addNewMember(Long teamId, Set<Long> members, Map<Long, RecruitInfo> leaderWishes) {
+        Set<Long> applicants = leaderWishes.get(teamId).getUserIds();
         if (applicants.isEmpty()) {
             return;
         }
@@ -135,4 +134,5 @@ public class SequentialTeamBuilder implements TeamBuilder {
         applicants.remove(newMember);
         members.add(newMember);
     }
+
 }
