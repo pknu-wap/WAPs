@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.entity.Team;
 import wap.web2.server.teambuild.repository.TeamRepository;
@@ -18,6 +19,7 @@ public class TeamBuildResultService {
 
     private final TeamRepository teamRepository;
 
+    @Transactional(readOnly = true)
     public TeamBuildingResults getResults() {
         List<Team> teams = teamRepository.findAllBySemester(generateSemester());
 
