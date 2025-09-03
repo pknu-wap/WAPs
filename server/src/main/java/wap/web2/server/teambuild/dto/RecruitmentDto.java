@@ -29,9 +29,7 @@ public class RecruitmentDto {
         @NotBlank
         private String position;
 
-        private List<Long> applicantIds; // 일단 임시로 지워놨음
-        // 열어놓지 않은 포지션에 신청하는 사람이 있을수도 or 그렇게 처리하는게 편할수도
-
+        private List<Long> applicantIds;
     }
 
 }

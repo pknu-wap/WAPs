@@ -17,15 +17,11 @@ public class SequentialTeamBuilder implements TeamBuilder {
                                          Map<Long, RecruitInfo> leaderWishes) {
         // teamId -> {members}
         Map<Long, Set<Long>> teams = initTeam(leaderWishes);
-        for (Map.Entry<Long, Set<Long>> team : teams.entrySet()) {
-            System.out.println("teamId:" + team.getKey() + " members:" + team.getValue().toString());
-        }
 
         // 구성된 팀에서 중복된 인원을 제거하며 팀원을 재배치
         while (true) {
             // 여러 팀에 합류하고 있는 인원을 고름
             Set<Long> members = getDuplicateMemberOf(teams);
-            System.out.println("중복 발생" + members.toString());
 
             // 구성된 모든 팀에 중복되는 인원이 없다면 종료
             if (members.isEmpty()) {
@@ -57,8 +53,6 @@ public class SequentialTeamBuilder implements TeamBuilder {
             addAcceptableMember(team, capacity, temporaryTeam);
 
             teams.put(teamId, temporaryTeam);
-            //System.out.println("init teamid: " + teamId);
-            //System.out.println("init teams : " + temporaryTeam.toString());
         }
 
         return teams;
@@ -73,11 +67,9 @@ public class SequentialTeamBuilder implements TeamBuilder {
             Long applicant = userIds.stream().findFirst().get();
             userIds.remove(applicant);
             temporaryTeam.add(applicant);
-            System.out.println("remains:" + userIds.toString());
-            System.out.println("tempmem:" + temporaryTeam.toString());
         }
     }
-
+    
     private Set<Long> getDuplicateMemberOf(Map<Long, Set<Long>> teams) {
         int size = teams.values().stream().mapToInt(Set::size).sum();
         Set<Long> memberIds = new HashSet<>(size); // resize 비용을 줄이기 위해
@@ -108,13 +100,11 @@ public class SequentialTeamBuilder implements TeamBuilder {
                                     Map<Long, List<ApplyInfo>> applicantWishes,
                                     Map<Long, RecruitInfo> leaderWishes) {
         List<ApplyInfo> applyInfos = applicantWishes.get(memberId); // 한 명의 중복되는 멤버가 가지는 모든 지원서
-        System.out.println("팀원 재 할당 시작!" + memberId);
 
         boolean isJoin = false;
         for (ApplyInfo apply : applyInfos) {
             Long teamId = apply.getProjectId();     // 어떤 프로젝트에 지원했는지
             Set<Long> members = teams.get(teamId);  // 그 프로젝트의 현재 멤버
-            System.out.println(members.toString());
 
             if (!members.contains(memberId)) {      // 멤버가 초기에 new 설정되었고 remove 하기에 null 검사 필요없음
                 continue;
@@ -122,15 +112,12 @@ public class SequentialTeamBuilder implements TeamBuilder {
 
             // 가장 높은 우선순위를 가진 팀에게 할당 == 그대로 놔두기 (List<ApplyInfo>에는 우선순위 순서대로 저장되어있음)
             if (!isJoin) {
-                System.out.println("save  :" + memberId);
                 isJoin = true;
             } else {
-                System.out.println("remove:" + memberId);
                 members.remove(memberId);                       // 중복되는 인원를 팀에서 제거
                 addNewMember(teamId, members, leaderWishes);    // 새로운 지원자를 팀으로 합류
             }
         }
-        System.out.println("팀원 재 할당 끝!" + memberId);
     }
 
     /**

@@ -24,7 +24,6 @@ public class RecruitInfo {
     private Set<Long> userIds;
 
     public RecruitInfo(Long leaderId, Long projectId, Position position, Integer capacity, List<Long> userIds) {
-        System.out.println("recruitInfo 생성자:" + userIds.toString());
         this.leaderId = leaderId;
         this.projectId = projectId;
         this.position = position;
