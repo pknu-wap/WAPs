@@ -3,8 +3,12 @@ package wap.web2.server.project.service;
 import static wap.web2.server.aws.AwsUtils.IMAGES;
 import static wap.web2.server.aws.AwsUtils.PROJECT_DIR;
 import static wap.web2.server.aws.AwsUtils.THUMBNAIL;
+import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
+import static wap.web2.server.util.SemesterGenerator.generateYearValue;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,8 @@ import wap.web2.server.project.entity.Image;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ImageRepository;
 import wap.web2.server.project.repository.ProjectRepository;
+import wap.web2.server.teambuild.dto.response.ProjectTemplate;
+import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.entity.Vote;
 import wap.web2.server.vote.repository.VoteRepository;
 
@@ -62,10 +68,17 @@ public class ProjectService {
         Vote vote = voteRepository.findVoteByYearAndSemester(request.getProjectYear(), request.getSemester())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] Year-Semester not found"));
 
-        List<String> imageUrls = awsUtils.uploadImagesTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
+        List<String> imageUrls = Collections.emptyList();
+        if (request.getImageS3() != null) {
+        imageUrls = awsUtils.uploadImagesTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
                 request.getTitle(), IMAGES, request.getImageS3());
-        String thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
+        }
+
+        String thumbnailUrl = "";
+        if (request.getThumbnailS3() != null) {
+        thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
                 request.getTitle(), THUMBNAIL, request.getThumbnailS3());
+        }
 
         // request.toEntity() 를 호출함으로서 매개변수로 넘어온 객체(request)를 사용
         // 기괴한 구조 ㄷㄷ
@@ -84,9 +97,14 @@ public class ProjectService {
         return "등록되었습니다.";
     }
 
-    public List<ProjectInfoResponse> getProjects(Long year, Long semester) {
+    public List<ProjectInfoResponse> getProjects(Integer year, Integer semester) {
         return projectRepository.findProjectsByYearAndSemesterOrderByProjectIdDesc(year, semester)
                 .stream().map(ProjectInfoResponse::from).toList();
+    }
+
+    public List<ProjectTemplate> getCurrentProjectRecruits() {
+        return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue())
+                .stream().map(ProjectTemplate::from).toList();
     }
 
     public Optional<ProjectDetailsResponse> getProjectDetails(Long projectId) {
