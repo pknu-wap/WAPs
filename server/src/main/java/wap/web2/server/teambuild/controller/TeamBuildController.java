@@ -1,5 +1,8 @@
 package wap.web2.server.teambuild.controller;
 
+import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
+import static wap.web2.server.util.SemesterGenerator.generateYearValue;
+
 import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -7,8 +10,12 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
+
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -133,6 +140,7 @@ public class TeamBuildController {
     @GetMapping("/projects")
     public String projects(Model model, @CookieValue(name = "authToken", required = false) String authToken)
             throws Exception {
+
         List<ProjectTemplate> projects = projectService.getCurrentProjectRecruits();
 
         System.out.println("authToken = " + authToken);
