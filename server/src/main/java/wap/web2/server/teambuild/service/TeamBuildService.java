@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -122,7 +123,7 @@ public class TeamBuildService {
         Map<Long, RecruitInfo> recruitMap = new HashMap<>();
         for (ProjectRecruit recruitEntity : recruitEntities) {
             long projectId = recruitEntity.getProjectId();
-            Set<Long> userIds = new HashSet<>();
+            Set<Long> userIds = new LinkedHashSet<>();
             for (ProjectRecruitWish wishEntity : recruitEntity.getWishList()) {
                 userIds.add(wishEntity.getApplicantId());
             }
