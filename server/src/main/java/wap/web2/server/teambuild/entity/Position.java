@@ -8,7 +8,8 @@ public enum Position {
     DESIGN,
     ANDROID,
     IOS,
-    PM,
+    PM, // 삭제 요망
     GAME;
-
+    // 임베디드
+    // 안드 아오에스  -> 통일
 }
