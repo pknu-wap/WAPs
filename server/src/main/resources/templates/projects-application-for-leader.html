@@ -283,6 +283,18 @@
             background: #dc143c;
         }
 
+        /* 하이라이트 효과 */
+        .table-row-highlight {
+            background-color: #fff3cd !important;
+            border: 2px solid #ffc107 !important;
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.5) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .table-row-highlight td {
+            background-color: #fff3cd !important;
+        }
+
         @media (max-width: 820px) {
             /* 작은 화면: 두 줄로 접기 */
             .pos-row {
@@ -373,6 +385,7 @@
         * 본인의 프로젝트에서 모집하지 않는 분야는 capacity가 0인채로 보내주세요.<br/>
         * 지원자를 드래그해서 선택 영역에 놓으면 선발됩니다. 다시 드래그해서 빼낼 수도 있습니다.<br/>
         * <b>선택된 지원자들은 서로 드래그해서 우선순위를 변경할 수 있습니다.</b> 숫자가 낮을수록 우선순위가 높습니다.<br/>
+        * 사용가능한 지원자에 마우스를 올리면 신청자 목록에서 해당 지원자가 하이라이트됩니다.<br/>
     </div>
 
     <div class="positions" id="positionList"></div>
@@ -436,11 +449,44 @@
     let draggedFromSelected = false;
     let draggedIndex = -1;
 
+    // 하이라이트 관련 함수
+    function highlightTableRow(applicantId) {
+        // 기존 하이라이트 제거
+        document.querySelectorAll('.table-row-highlight').forEach(row => {
+            row.classList.remove('table-row-highlight');
+        });
+
+        // 해당 applicantId를 가진 테이블 행 찾기 및 하이라이트
+        const tableRows = document.querySelectorAll('#appliesTable tbody tr');
+        tableRows.forEach(row => {
+            if (row.dataset.applicantId === applicantId.toString()) {
+                row.classList.add('table-row-highlight');
+            }
+        });
+    }
+
+    function removeTableRowHighlight() {
+        document.querySelectorAll('.table-row-highlight').forEach(row => {
+            row.classList.remove('table-row-highlight');
+        });
+    }
+
     function makeDraggable(element, candidate, isSelected = false, index = -1) {
         element.draggable = true;
         element.dataset.candidateId = candidate.applicantId;
         element.dataset.candidateName = candidate.applicantName;
         element.dataset.position = candidate.position;
+
+        // 하이라이트 효과 추가 (사용가능한 지원자에만)
+        if (!isSelected) {
+            element.addEventListener('mouseenter', () => {
+                highlightTableRow(candidate.applicantId);
+            });
+
+            element.addEventListener('mouseleave', () => {
+                removeTableRowHighlight();
+            });
+        }
 
         element.addEventListener('dragstart', (e) => {
             draggedCandidate = candidate;
@@ -448,6 +494,7 @@
             draggedIndex = index;
             element.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
+            removeTableRowHighlight(); // 드래그 시작하면 하이라이트 제거
         });
 
         element.addEventListener('dragend', (e) => {
@@ -598,6 +645,7 @@
 
         for (const it of filteredApplies) {
             const tr = document.createElement('tr');
+            tr.dataset.applicantId = it.applicantId; // 하이라이트용 데이터 속성 추가
             tr.innerHTML = `
         <td>${it.applicantName ?? ''}</td>
         <td>
