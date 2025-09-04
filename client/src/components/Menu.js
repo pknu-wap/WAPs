@@ -105,6 +105,14 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
             >
               Map
             </li>*/}
+            <hr className="line" />
+            <li onClick={() => handleNavigationWithAuth("/team-build")}>
+              TeamBuilding
+            </li>
+            <hr className="line" />
+            <li onClick={() => navigate("/team-build/result")}>
+              TeamBuilding Result
+            </li>
             <hr className="startLine"></hr>
           </ul>
         </nav>
