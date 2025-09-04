@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>팀빌딩 결과</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <style>
+        :root {
+            --bg: #f7f8fa;
+            --card: #fff;
+            --text: #222;
+            --muted: #6b7280;
+            --accent: #2563eb;
+            --chip: #eef2ff;
+            --chip-text: #3730a3;
+            --border: #e5e7eb;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .sub {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .toolbar {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .search {
+            display: flex;
+            gap: 8px;
+        }
+
+        .search input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .search-help {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .sorts {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        @media (min-width: 760px) {
+            .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .team-name {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            background: var(--chip);
+            color: var(--chip-text);
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 999px;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .leader {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #f3f4f6;
+            font-size: 13px;
+        }
+
+        .members {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .chip {
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .copy {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 48px 16px;
+            color: var(--muted);
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="page-title">팀빌딩 결과</div>
+    <div class="sub">
+        총 <b th:text="${#lists.size(teams.getResults())}">0</b>개 팀
+    </div>
+
+    <div class="toolbar">
+        <div>
+            <div class="search">
+                <input id="q" type="text" placeholder="팀명/팀장/팀원 검색…" oninput="filterCards()"/>
+                <button class="btn" onclick="clearSearch()">지우기</button>
+            </div>
+            <div class="search-help">예) “알파”, “김개발”, “FRONTEND” 같이 검색할 수 있어요.</div>
+        </div>
+        <div class="sorts">
+            <button class="btn" onclick="sortByName()">팀명순</button>
+            <button class="btn" onclick="sortBySize()">팀원수순</button>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(teams.getResults())}" class="empty">
+        아직 팀 결과가 없어요. 팀빌딩을 완료하면 여기에서 확인할 수 있어요.
+    </div>
+
+    <div id="grid" class="grid" th:if="${!#lists.isEmpty(teams.getResults())}">
+        <!-- 팀 카드 -->
+        <div class="card"
+             th:each="team : ${teams.getResults()}"
+             th:attr="data-key=|${team.teamName} ${team.leader.name} ${#strings.listJoin(team.members.![#this.name], ' ')} ${team.leader.position} ${#strings.listJoin(team.members.![#this.position], ' ')}|">
+
+            <div class="card-header">
+                <div class="team-name">
+                    <span th:text="${team.teamName}">알파</span>
+                    <span class="badge" th:text="'멤버 ' + ${#lists.size(team.members)} + '명'">멤버 0명</span>
+                </div>
+                <div class="muted" th:text="'ID #' + ${team.projectId}">ID #0</div>
+            </div>
+
+            <div class="leader">
+                <div class="pill">
+                    <strong>팀장</strong>
+                    <span th:text="${team.leader.name}">김개발</span>
+                    <span class="muted" th:if="${team.leader.position != null}"
+                          th:text="'· ' + ${team.leader.position}">· BACKEND</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="muted" style="margin-bottom:6px;">팀원</div>
+                <div class="members">
+          <span class="chip" th:each="m : ${team.members}">
+            <span th:text="${m.name}">이프론</span>
+            <span class="muted" th:if="${m.position != null}" th:text="'· ' + ${m.position}">· FRONTEND</span>
+          </span>
+                </div>
+            </div>
+
+            <div th:if="${team.summary != null}" class="muted" th:text="${team.summary}">설명/비고</div>
+
+            <!-- 복사용 숨김 텍스트: DOM에서 읽어 복사 -->
+            <div class="rosterText" style="display:none;">
+                <span th:text="'팀명: ' + ${team.teamName}"></span>
+                <span> / </span>
+                <span th:text="'팀장: ' + ${team.leader.name} + (${team.leader.position} != null ? '·' + ${team.leader.position} : '')"></span>
+                <span> / 팀원: </span>
+                <span th:each="m, stat : ${team.members}">
+          <span th:text="${m.name} + (${m.position} != null ? '·' + ${m.position} : '')"></span><span
+                        th:if="${!stat.last}">, </span>
+        </span>
+            </div>
+
+            <div class="footer">
+                <div class="muted">
+                    총 인원: <b th:text="${1 + #lists.size(team.members)}">0</b>명 (팀장 포함)
+                </div>
+                <div class="actions">
+                    <button class="btn copy" onclick="copyRoster(this)">명단 복사</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 검색: data-key(팀명/팀장/팀원/포지션)에서 포함 여부로 필터링
+    function filterCards() {
+        const q = document.getElementById('q').value.trim().toLowerCase();
+        const cards = document.querySelectorAll('#grid .card');
+        cards.forEach(card => {
+            const key = (card.getAttribute('data-key') || '').toLowerCase();
+            card.style.display = key.includes(q) ? '' : 'none';
+        });
+    }
+
+    function clearSearch() {
+        const input = document.getElementById('q');
+        input.value = '';
+        filterCards();
+        input.focus();
+    }
+
+    // 정렬: 팀명
+    function sortByName() {
+        sortCards((a, b) => {
+            const an = a.querySelector('.team-name span').innerText.trim();
+            const bn = b.querySelector('.team-name span').innerText.trim();
+            return an.localeCompare(bn, 'ko');
+        });
+    }
+
+    // 정렬: 팀원수(내림차순)
+    function sortBySize() {
+        sortCards((a, b) => {
+            const asz = getMemberSize(a);
+            const bsz = getMemberSize(b);
+            return bsz - asz;
+        });
+    }
+
+    function getMemberSize(card) {
+        // 배지의 숫자 파싱
+        const badge = card.querySelector('.badge');
+        if (!badge) return 0;
+        const m = badge.innerText.match(/멤버\s+(\d+)/);
+        return m ? parseInt(m[1], 10) : 0;
+    }
+
+    function sortCards(comparator) {
+        const grid = document.getElementById('grid');
+        const cards = Array.from(grid.children);
+        cards.sort(comparator).forEach(c => grid.appendChild(c));
+    }
+
+    // 명단 복사
+    function copyRoster(btn) {
+        const card = btn.closest('.card');
+        const text = card.querySelector('.rosterText').innerText.trim();
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => flash(btn));
+        } else {
+            // fallback
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                flash(btn);
+            } finally {
+                document.body.removeChild(ta);
+            }
+        }
+    }
+
+    function flash(btn) {
+        const orig = btn.innerText;
+        btn.innerText = '복사됨!';
+        setTimeout(() => btn.innerText = orig, 900);
+    }
+</script>
+</body>
+</html>

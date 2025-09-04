@@ -2,6 +2,7 @@ package wap.web2.server.teambuild.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -11,13 +12,17 @@ import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.service.ProjectService;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
+import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
+import wap.web2.server.teambuild.service.TeamBuildResultService;
 
+@Slf4j
 @Controller
 @RequestMapping("/team-build")
 @RequiredArgsConstructor
 public class TeamBuildControllerV1 {
 
     private final ProjectService projectService;
+    private final TeamBuildResultService teamBuildResultService;
 
     @GetMapping("/projects")
     public String projects(Model model, @CookieValue(name = "authToken", required = false) String authToken)
@@ -50,4 +55,12 @@ public class TeamBuildControllerV1 {
         return "projects-application-for-leader";
     }
 
+    @GetMapping("/results")
+    public String getTeamBuildResults(Model model) {
+        TeamBuildingResults results = teamBuildResultService.getResults();
+
+        log.info("[TeamBuildingResults]: {}", results.toString());
+        model.addAttribute("teams", results);
+        return "teams";
+    }
 }
