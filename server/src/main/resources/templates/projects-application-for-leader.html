@@ -78,6 +78,7 @@
             cursor: grab;
             user-select: none;
             transition: all 0.2s ease;
+            position: relative;
         }
 
         .pill:hover {
@@ -88,6 +89,11 @@
         .pill.dragging {
             opacity: 0.5;
             cursor: grabbing;
+        }
+
+        .pill.drag-over {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .ok {
@@ -208,6 +214,13 @@
             color: #0066cc;
         }
 
+        .selected-pill::after {
+            content: " #" attr(data-priority);
+            font-size: 10px;
+            opacity: 0.7;
+            font-weight: bold;
+        }
+
         @media (max-width: 820px) {
             /* 작은 화면: 두 줄로 접기 */
             .pos-row {
@@ -274,11 +287,12 @@
 
 <!-- 선발 입력 -->
 <div class="section">
-    <h3>선발 입력 (드래그 앤 드롭으로 지원자를 선택하세요)</h3>
+    <h3>선발 입력 (드래그 앤 드롭으로 지원자를 선택하고 우선순위를 변경하세요)</h3>
     <div class="help">
         * 모집을 희망하는 분야에 원하는 인원수만큼 capacity를 입력하세요.<br/>
         * 본인의 프로젝트에서 모집하지 않는 분야는 capacity가 0인채로 보내주세요.<br/>
         * 지원자를 드래그해서 선택 영역에 놓으면 선발됩니다. 다시 드래그해서 빼낼 수도 있습니다.<br/>
+        * <b>선택된 지원자들은 서로 드래그해서 우선순위를 변경할 수 있습니다.</b> 숫자가 낮을수록 우선순위가 높습니다.<br/>
         * 자동 채움 버튼을 누르면 해당 분야 지원자를 <b>ID 순서</b>로 채워줍니다.
     </div>
 
@@ -325,7 +339,7 @@
       </div>
 
       <div class="selection-area">
-        <div>선택된 지원자:</div>
+        <div>선택된 지원자 (우선순위):</div>
         <div id="selected_${pos}" class="selected-candidates" data-position="${pos}"></div>
         <div style="margin-top: 8px;">사용 가능한 지원자:</div>
         <div id="available_${pos}" class="available-candidates"></div>
@@ -339,8 +353,10 @@
 
     // 드래그 앤 드롭 이벤트 핸들러
     let draggedCandidate = null;
+    let draggedFromSelected = false;
+    let draggedIndex = -1;
 
-    function makeDraggable(element, candidate) {
+    function makeDraggable(element, candidate, isSelected = false, index = -1) {
         element.draggable = true;
         element.dataset.candidateId = candidate.applicantId;
         element.dataset.candidateName = candidate.applicantName;
@@ -348,6 +364,8 @@
 
         element.addEventListener('dragstart', (e) => {
             draggedCandidate = candidate;
+            draggedFromSelected = isSelected;
+            draggedIndex = index;
             element.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
         });
@@ -355,7 +373,41 @@
         element.addEventListener('dragend', (e) => {
             element.classList.remove('dragging');
             draggedCandidate = null;
+            draggedFromSelected = false;
+            draggedIndex = -1;
         });
+
+        // 선택된 지원자 간의 드래그오버 이벤트 (우선순위 변경용)
+        if (isSelected) {
+            element.addEventListener('dragover', (e) => {
+                if (draggedFromSelected && draggedCandidate && draggedCandidate.position === candidate.position) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    element.classList.add('drag-over');
+                }
+            });
+
+            element.addEventListener('dragleave', (e) => {
+                element.classList.remove('drag-over');
+            });
+
+            element.addEventListener('drop', (e) => {
+                if (draggedFromSelected && draggedCandidate && draggedCandidate.position === candidate.position) {
+                    e.preventDefault();
+                    element.classList.remove('drag-over');
+
+                    const position = candidate.position;
+                    const targetIndex = selectedCandidates[position].findIndex(c => c.applicantId === candidate.applicantId);
+
+                    if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
+                        // 배열에서 드래그된 아이템을 제거하고 새 위치에 삽입
+                        const [movedItem] = selectedCandidates[position].splice(draggedIndex, 1);
+                        selectedCandidates[position].splice(targetIndex, 0, movedItem);
+                        updatePositionDisplay(position);
+                    }
+                }
+            });
+        }
     }
 
     function setupDropZone(container, position) {
@@ -366,7 +418,10 @@
         });
 
         container.addEventListener('dragleave', (e) => {
-            container.classList.remove('drag-over');
+            // 자식 요소로 이동할 때는 dragleave가 발생하지 않도록 체크
+            if (!container.contains(e.relatedTarget)) {
+                container.classList.remove('drag-over');
+            }
         });
 
         container.addEventListener('drop', (e) => {
@@ -380,7 +435,7 @@
             const isSelected = selectedCandidates[position].some(c => c.applicantId === draggedCandidate.applicantId);
 
             if (container.classList.contains('selected-candidates')) {
-                // 선택 영역에 드롭 - 선택하기
+                // 선택 영역에 드롭 - 선택하기 (또는 우선순위 변경)
                 if (!isSelected) {
                     selectedCandidates[position].push(draggedCandidate);
                     updatePositionDisplay(position);
@@ -401,12 +456,13 @@
 
         // 선택된 지원자 표시
         selectedContainer.innerHTML = '';
-        selectedCandidates[position].forEach(candidate => {
+        selectedCandidates[position].forEach((candidate, index) => {
             const pill = document.createElement('span');
             pill.className = 'pill selected-pill';
             pill.textContent = candidate.applicantName;
-            pill.title = `ID: ${candidate.applicantId}`;
-            makeDraggable(pill, candidate);
+            pill.title = `ID: ${candidate.applicantId} (우선순위: ${index + 1})`;
+            pill.dataset.priority = index + 1;
+            makeDraggable(pill, candidate, true, index);
             selectedContainer.appendChild(pill);
         });
 
@@ -422,10 +478,9 @@
             pill.className = 'pill';
             pill.textContent = candidate.applicantName;
             pill.title = `ID: ${candidate.applicantId}`;
-            makeDraggable(pill, candidate);
+            makeDraggable(pill, candidate, false);
             availableContainer.appendChild(pill);
         });
-
     }
 
     function renderAppliesTable(applies) {
