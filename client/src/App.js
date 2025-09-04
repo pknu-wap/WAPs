@@ -13,6 +13,9 @@ import ProjectPage from "./pages/ProjectPage";
 import ScrollToTop from "./components/ScrollToTop";
 import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
+import TeamBuildPage from "./pages/menu/TeamBuildPage";
+import TeamBuildPage from "./pages/menu/TeamBuildResultPage";
+
 import "./App.css";
 
 function App() {
@@ -37,6 +40,8 @@ function App() {
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
           <Route path="/project/edit/:projectId" element={<ProjectPage />} />
           <Route path="/select/role" element={<RoleSelectPage />} />
+          <Route path="/team-build" element={<TeamBuildPage />} />
+          <Route path="/team-build/result" element={<TeamBuildResultPage />} />
           {/* 보호된 페이지 */}
           <Route path="/protected" element={<ProtectedPage />} />
         </Routes>
