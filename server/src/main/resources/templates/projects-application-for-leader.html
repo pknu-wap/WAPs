@@ -30,7 +30,7 @@
             margin-bottom: 12px;
         }
 
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], select {
             padding: 6px 8px;
             width: 100%;
         }
@@ -221,6 +221,68 @@
             font-weight: bold;
         }
 
+        /* 필터링 관련 스타일 */
+        .filter-section {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .filter-select {
+            max-width: 150px;
+            flex-shrink: 0;
+        }
+
+        .position-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: white;
+            background: #666;
+        }
+
+        .position-badge.FRONTEND {
+            background: #ff6b35;
+        }
+
+        .position-badge.BACKEND {
+            background: #4a90e2;
+        }
+
+        .position-badge.AI {
+            background: #7b68ee;
+        }
+
+        .position-badge.DESIGN {
+            background: #ff69b4;
+        }
+
+        .position-badge.ANDROID {
+            background: #32cd32;
+        }
+
+        .position-badge.IOS {
+            background: #1e90ff;
+        }
+
+        .position-badge.PM {
+            background: #ffa500;
+        }
+
+        .position-badge.GAME {
+            background: #dc143c;
+        }
+
         @media (max-width: 820px) {
             /* 작은 화면: 두 줄로 접기 */
             .pos-row {
@@ -262,7 +324,25 @@
 <!-- 지원자 표 -->
 <div class="section">
     <h3>신청자 목록</h3>
-    <div class="help"> 본인의 팀에 지원한 신청자들의 목록입니다.</div>
+    <div class="help">본인의 팀에 지원한 신청자들의 목록입니다.</div>
+
+    <!-- 필터링 섹션 -->
+    <div class="filter-section">
+        <span class="filter-label">분야별 필터:</span>
+        <select id="positionFilter" class="filter-select">
+            <option value="">전체 보기</option>
+            <option value="FRONTEND">FRONTEND</option>
+            <option value="BACKEND">BACKEND</option>
+            <option value="AI">AI</option>
+            <option value="DESIGN">DESIGN</option>
+            <option value="ANDROID">ANDROID</option>
+            <option value="IOS">IOS</option>
+            <option value="PM">PM</option>
+            <option value="GAME">GAME</option>
+        </select>
+        <span id="filterInfo" class="muted"></span>
+    </div>
+
     <table id="appliesTable">
         <colgroup>
             <col style="width:25%">
@@ -350,6 +430,7 @@
 
     let currentProjectId = null;
     let lastApplies = [];
+    let currentFilter = '';
 
     // 드래그 앤 드롭 이벤트 핸들러
     let draggedCandidate = null;
@@ -483,29 +564,63 @@
         });
     }
 
+    function getFilteredApplies() {
+        if (!currentFilter) return lastApplies;
+        return lastApplies.filter(apply => apply.position === currentFilter);
+    }
+
+    function updateFilterInfo() {
+        const filtered = getFilteredApplies();
+        const filterInfo = document.getElementById('filterInfo');
+
+        if (!currentFilter) {
+            filterInfo.textContent = '';
+        } else {
+            const count = filtered.length;
+            filterInfo.textContent = `${currentFilter} 분야: ${count}명`;
+        }
+    }
+
     function renderAppliesTable(applies) {
         const tbody = document.querySelector('#appliesTable tbody');
         tbody.innerHTML = '';
-        if (!applies || applies.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" class="muted">신청자가 없습니다.</td></tr>';
+
+        const filteredApplies = getFilteredApplies();
+
+        if (!filteredApplies || filteredApplies.length === 0) {
+            const message = currentFilter ?
+                `${currentFilter} 분야에 신청자가 없습니다.` :
+                '신청자가 없습니다.';
+            tbody.innerHTML = `<tr><td colspan="3" class="muted">${message}</td></tr>`;
             document.getElementById('applySummary').textContent = '';
+            updateFilterInfo();
             return;
         }
-        for (const it of applies) {
+
+        for (const it of filteredApplies) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
         <td>${it.applicantName ?? ''}</td>
-        <td>${it.position ?? ''}</td>
+        <td>
+          <span class="position-badge ${it.position ?? ''}">${it.position ?? ''}</span>
+        </td>
         <td style="text-align:left">${(it.comment ?? '').replaceAll('<', '&lt;')}</td>
       `;
             tbody.appendChild(tr);
         }
+
         // 분야별 요약
-        const counts = POSITIONS.map(p => {
-            const n = applies.filter(a => a.position === p).length;
-            return n ? `${p} ${n}` : null;
-        }).filter(Boolean).join(', ');
-        document.getElementById('applySummary').textContent = `총 ${applies.length}명` + (counts ? ` · 분야별: ${counts}` : '');
+        if (!currentFilter) {
+            const counts = POSITIONS.map(p => {
+                const n = applies.filter(a => a.position === p).length;
+                return n ? `${p} ${n}` : null;
+            }).filter(Boolean).join(', ');
+            document.getElementById('applySummary').textContent = `총 ${applies.length}명` + (counts ? ` · 분야별: ${counts}` : '');
+        } else {
+            document.getElementById('applySummary').textContent = '';
+        }
+
+        updateFilterInfo();
 
         // 각 포지션 표시 업데이트
         POSITIONS.forEach(pos => {
@@ -514,6 +629,12 @@
             setupDropZone(document.getElementById(`available_${pos}`), pos);
         });
     }
+
+    // 필터 변경 이벤트
+    document.getElementById('positionFilter').addEventListener('change', (e) => {
+        currentFilter = e.target.value;
+        renderAppliesTable(lastApplies);
+    });
 
     // 불러오기
     document.getElementById('loadBtn').addEventListener('click', async () => {
@@ -532,11 +653,16 @@
             // 선택 상태 초기화
             POSITIONS.forEach(pos => selectedCandidates[pos] = []);
 
+            // 필터 초기화
+            document.getElementById('positionFilter').value = '';
+            currentFilter = '';
+
             document.getElementById('projectTitle').textContent = json.projectTitle ? `· ${json.projectTitle}` : '';
             renderAppliesTable(lastApplies);
         } catch (err) {
             currentProjectId = null;
             lastApplies = [];
+            currentFilter = '';
             renderAppliesTable([]);
             alert('[에러] ' + (err?.message || err));
         }
