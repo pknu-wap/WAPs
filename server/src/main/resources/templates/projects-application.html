@@ -49,6 +49,49 @@
             font-size: 1.1rem;
         }
 
+        /* 공통 지원서 섹션 */
+        .common-application-section {
+            background: linear-gradient(145deg, #f8f9fa, #ffffff);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .common-application-section.completed {
+            border-color: #27ae60;
+            background: linear-gradient(145deg, #f0fff4, #ffffff);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            background: #bdc3c7;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-indicator.completed {
+            background: #27ae60;
+        }
+
         /* 장바구니 섹션 */
         .cart-section {
             background: linear-gradient(145deg, #f8f9fa, #ffffff);
@@ -234,22 +277,29 @@
             font-weight: 500;
         }
 
-        .apply-btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+        .add-to-cart-btn {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 20px;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             transition: all 0.3s ease;
             width: 100%;
         }
 
-        .apply-btn:hover {
+        .add-to-cart-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
+        }
+
+        .add-to-cart-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .selected-indicator {
@@ -386,15 +436,6 @@
             margin-bottom: 3px;
         }
 
-        .project-message-preview {
-            font-size: 0.8rem;
-            color: #999;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 300px;
-        }
-
         .drag-handle {
             color: #bbb;
             font-size: 1.2rem;
@@ -481,85 +522,72 @@
             box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
         }
 
-        .add-to-cart-btn {
-            background: linear-gradient(45deg, #f39c12, #e67e22);
+        .create-application-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 15px 30px;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1.1rem;
             font-weight: 600;
             transition: all 0.3s ease;
             width: 100%;
         }
 
-        .add-to-cart-btn:hover {
+        .create-application-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
         }
 
-        .modal-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .modal-actions button {
-            flex: 1;
-        }
-
-        .message-item {
+        .application-preview {
             background: #f8f9fa;
             border: 1px solid #e9ecef;
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-top: 15px;
         }
 
-        .add-message-btn {
-            background: linear-gradient(45deg, #3498db, #2980b9);
+        .application-preview h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .preview-item {
+            margin-bottom: 12px;
+        }
+
+        .preview-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .preview-value {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .edit-application-btn {
+            background: #f39c12;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 20px;
             cursor: pointer;
             font-size: 0.9rem;
-            margin-bottom: 15px;
+            margin-top: 10px;
         }
 
-        .remove-message-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            float: right;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(39, 174, 96, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(39, 174, 96, 0);
-            }
+        .warning-message {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+            text-align: center;
         }
 
         .cart-counter {
@@ -591,6 +619,29 @@
             display: none;
         }
 
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(39, 174, 96, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(39, 174, 96, 0);
+            }
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -604,10 +655,6 @@
             .modal-content {
                 width: 95%;
                 padding: 20px;
-            }
-
-            .modal-actions {
-                flex-direction: column;
             }
 
             .cart-counter {
@@ -624,14 +671,48 @@
 <div class="container">
     <div class="header">
         <h1>프로젝트 지원 시스템</h1>
-        <p>프로젝트별로 개별 지원서를 작성하고 장바구니에 모아보세요!</p>
+        <p>공통 지원서를 작성하고 원하는 프로젝트들에 한 번에 지원하세요!</p>
+    </div>
+
+    <!-- 공통 지원서 작성 섹션 -->
+    <div class="common-application-section" id="commonApplicationSection">
+        <div class="section-title">
+            📝 공통 지원서 작성
+            <span class="status-indicator" id="applicationStatusIndicator">1</span>
+        </div>
+
+        <div id="applicationFormContainer">
+            <div class="warning-message">
+                먼저 공통 지원서를 작성해주세요. 작성된 지원서로 여러 프로젝트에 지원할 수 있습니다.
+            </div>
+            <button class="create-application-btn" onclick="openApplicationModal()">
+                지원서 작성하기
+            </button>
+        </div>
+
+        <div id="applicationPreviewContainer" style="display: none;">
+            <div class="application-preview">
+                <h4>📋 작성된 지원서</h4>
+                <div class="preview-item">
+                    <div class="preview-label">지원 직무:</div>
+                    <div class="preview-value" id="previewPosition"></div>
+                </div>
+                <div class="preview-item">
+                    <div class="preview-label">자기소개 및 PR 메시지:</div>
+                    <div class="preview-value" id="previewMessage"></div>
+                </div>
+                <button class="edit-application-btn" onclick="openApplicationModal()">
+                    지원서 수정
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- 장바구니 섹션 -->
     <div class="cart-section" id="cartSection">
         <div class="cart-header">
             <div class="cart-title">
-                🛒 작성된 지원서
+                🛒 지원할 프로젝트
                 <span class="cart-badge" id="cartBadge">0</span>
             </div>
             <button class="clear-cart-btn" id="clearCartBtn" onclick="clearCart()" style="display: none;">
@@ -640,11 +721,11 @@
         </div>
 
         <div class="cart-items" id="cartItems">
-            <div class="cart-empty">아직 작성된 지원서가 없습니다. 프로젝트를 선택하고 지원서를 작성해주세요.</div>
+            <div class="cart-empty">아직 선택된 프로젝트가 없습니다. 프로젝트를 선택해주세요.</div>
         </div>
 
         <button class="apply-all-btn" id="applyAllBtn" onclick="openCartApplicationModal()" disabled>
-            모든 지원서 제출하기
+            선택한 프로젝트에 지원하기
         </button>
     </div>
 
@@ -663,11 +744,12 @@
                 </div>
             </div>
 
-            <button type="button" class="apply-btn"
+            <button type="button" class="add-to-cart-btn"
                     th:attr="data-id=${project.projectId},
                  data-title=${project.title}"
-                    onclick="openIndividualModal(this.dataset.id, this.dataset.title)">
-                지원하기
+                    onclick="addToCart(this.dataset.id, this.dataset.title)"
+                    disabled>
+                프로젝트 선택
             </button>
         </div>
     </div>
@@ -678,19 +760,17 @@
     <span id="floatingCartCount">0</span>
 </div>
 
-<!-- 개별 프로젝트 지원 모달 -->
-<div id="individualApplicationModal" class="modal">
+<!-- 공통 지원서 작성 모달 -->
+<div id="applicationModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeIndividualModal()">&times;</span>
-        <h2>프로젝트 지원서 작성</h2>
-        <p>프로젝트: <span id="selectedIndividualProject"></span></p>
+        <span class="close" onclick="closeApplicationModal()">&times;</span>
+        <h2>공통 지원서 작성</h2>
+        <p>이 지원서로 선택한 모든 프로젝트에 지원됩니다.</p>
 
-        <form id="individualApplicationForm">
-            <input type="hidden" id="individualProjectId" name="projectId">
-
+        <form id="commonApplicationForm">
             <div class="form-group">
-                <label for="individualPosition">지원 직무</label>
-                <select id="individualPosition" name="position" required>
+                <label for="commonPosition">지원 직무</label>
+                <select id="commonPosition" name="position" required>
                     <option value="">직무를 선택해주세요</option>
                     <option value="FRONTEND">프론트엔드 개발자</option>
                     <option value="BACKEND">백엔드 개발자</option>
@@ -704,20 +784,15 @@
             </div>
 
             <div class="form-group">
-                <label>자기소개 및 PR 메시지</label>
-                <div id="individualMessagesContainer">
-                    <div class="message-item">
-                        <textarea name="messages" placeholder="자신의 경험, 기술 스택, 프로젝트에 기여할 수 있는 부분 등을 작성해주세요."
-                                  required></textarea>
-                    </div>
-                </div>
+                <label for="commonMessage">자기소개 및 PR 메시지</label>
+                <textarea id="commonMessage" name="message"
+                          placeholder="자신의 경험, 기술 스택, 프로젝트에 기여할 수 있는 부분 등을 작성해주세요. 이 메시지는 선택한 모든 프로젝트에 동일하게 전송됩니다."
+                          required></textarea>
             </div>
 
-            <div class="modal-actions">
-                <button type="button" class="add-to-cart-btn" onclick="addToCartFromModal()">
-                    🛒 장바구니에 추가
-                </button>
-            </div>
+            <button type="button" class="submit-btn" onclick="saveCommonApplication()">
+                지원서 저장
+            </button>
         </form>
     </div>
 </div>
@@ -726,7 +801,7 @@
 <div id="cartApplicationModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeCartModal()">&times;</span>
-        <h2>장바구니 지원서 제출</h2>
+        <h2>프로젝트 지원</h2>
 
         <div id="prioritySection">
             <div class="priority-guide">
@@ -740,7 +815,7 @@
 
         <div style="text-align: center; padding: 20px;">
             <button type="button" class="submit-btn" onclick="submitAllApplications()">
-                모든 지원서 제출하기
+                선택한 프로젝트에 지원하기
             </button>
         </div>
     </div>
@@ -748,68 +823,32 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    // 장바구니 데이터 관리 (각 프로젝트별 개별 지원서 저장)
-    let applicationCart = new Map(); // projectId -> applicationData
-    let currentEditingProject = null;
+    // 공통 지원서 데이터
+    let commonApplication = null;
+    // 선택된 프로젝트 목록
+    let selectedProjects = new Set();
 
-    // 개별 프로젝트 모달 열기
-    function openIndividualModal(projectId, projectTitle) {
-        currentEditingProject = {
-            id: parseInt(projectId),
-            title: projectTitle
-        };
-
-        document.getElementById('selectedIndividualProject').textContent = projectTitle;
-        document.getElementById('individualProjectId').value = projectId;
-
-        // 기존에 저장된 지원서가 있으면 불러오기
-        if (applicationCart.has(parseInt(projectId))) {
-            loadSavedApplication(parseInt(projectId));
-        } else {
-            // 폼 초기화
-            document.getElementById('individualApplicationForm').reset();
-            resetIndividualMessages();
+    // 공통 지원서 작성 모달 열기
+    function openApplicationModal() {
+        // 기존 지원서가 있으면 불러오기
+        if (commonApplication) {
+            document.getElementById('commonPosition').value = commonApplication.position;
+            document.getElementById('commonMessage').value = commonApplication.message;
         }
-
-        document.getElementById('individualApplicationModal').style.display = 'block';
+        document.getElementById('applicationModal').style.display = 'block';
     }
 
-    function closeIndividualModal() {
-        document.getElementById('individualApplicationModal').style.display = 'none';
-        currentEditingProject = null;
+    function closeApplicationModal() {
+        document.getElementById('applicationModal').style.display = 'none';
     }
 
-    // 저장된 지원서 불러오기
-    function loadSavedApplication(projectId) {
-        const savedApp = applicationCart.get(projectId);
-        if (!savedApp) return;
-
-        document.getElementById('individualPosition').value = savedApp.position;
-
-        // 단일 메시지 불러오기
-        const textarea = document.querySelector('#individualMessagesContainer textarea[name="messages"]');
-        if (textarea && savedApp.comment) {
-            textarea.value = savedApp.comment;
-        }
-    }
-
-    // 메시지 초기화
-    function resetIndividualMessages() {
-        const textarea = document.querySelector('#individualMessagesContainer textarea[name="messages"]');
-        if (textarea) {
-            textarea.value = '';
-        }
-    }
-
-    // 모달에서 장바구니에 추가
-    function addToCartFromModal() {
-        if (!currentEditingProject) return;
-
-        const form = document.getElementById('individualApplicationForm');
+    // 공통 지원서 저장
+    function saveCommonApplication() {
+        const form = document.getElementById('commonApplicationForm');
         const formData = new FormData(form);
 
         const position = formData.get('position');
-        const message = formData.get('messages');
+        const message = formData.get('message');
 
         if (!position) {
             alert('지원 직무를 선택해주세요.');
@@ -821,42 +860,91 @@
             return;
         }
 
-        // 중요: currentEditingProject.id가 아닌 정확한 프로젝트 ID를 사용
-        const projectId = parseInt(document.getElementById('individualProjectId').value);
-
-        const applicationData = {
-            projectId: projectId, // 여기가 핵심 수정 부분
+        commonApplication = {
             position: position,
-            comment: message.trim(),
-            projectTitle: currentEditingProject.title // UI 표시용
+            message: message.trim()
         };
 
-        console.log('장바구니에 추가하는 데이터:', applicationData); // 디버깅용
+        updateApplicationDisplay();
+        enableProjectSelection();
+        closeApplicationModal();
 
-        // 장바구니에 저장
-        applicationCart.set(projectId, applicationData);
+        alert('공통 지원서가 저장되었습니다! 이제 프로젝트를 선택할 수 있습니다.');
+    }
 
-        updateCartDisplay();
+    // 지원서 표시 업데이트
+    function updateApplicationDisplay() {
+        const formContainer = document.getElementById('applicationFormContainer');
+        const previewContainer = document.getElementById('applicationPreviewContainer');
+        const statusIndicator = document.getElementById('applicationStatusIndicator');
+        const section = document.getElementById('commonApplicationSection');
+
+        if (commonApplication) {
+            formContainer.style.display = 'none';
+            previewContainer.style.display = 'block';
+
+            document.getElementById('previewPosition').textContent = getPositionName(commonApplication.position);
+            document.getElementById('previewMessage').textContent = commonApplication.message;
+
+            statusIndicator.textContent = '✓';
+            statusIndicator.classList.add('completed');
+            section.classList.add('completed');
+        } else {
+            formContainer.style.display = 'block';
+            previewContainer.style.display = 'none';
+
+            statusIndicator.textContent = '1';
+            statusIndicator.classList.remove('completed');
+            section.classList.remove('completed');
+        }
+    }
+
+    // 프로젝트 선택 활성화
+    function enableProjectSelection() {
+        const buttons = document.querySelectorAll('.add-to-cart-btn');
+        buttons.forEach(btn => {
+            if (commonApplication) {
+                btn.disabled = false;
+                btn.textContent = '프로젝트 선택';
+            } else {
+                btn.disabled = true;
+                btn.textContent = '지원서 작성 필요';
+            }
+        });
+    }
+
+    // 프로젝트를 장바구니에 추가
+    function addToCart(projectId, projectTitle) {
+        if (!commonApplication) {
+            alert('먼저 공통 지원서를 작성해주세요.');
+            return;
+        }
+
+        projectId = parseInt(projectId);
+
+        if (selectedProjects.has(projectId)) {
+            alert('이미 선택된 프로젝트입니다.');
+            return;
+        }
+
+        selectedProjects.add(projectId);
         updateProjectCard(projectId, true);
-
-        alert(`"${currentEditingProject.title}" 프로젝트 지원서가 장바구니에 추가되었습니다!`);
-        closeIndividualModal();
+        updateCartDisplay();
     }
 
     // 장바구니에서 프로젝트 제거
     function removeFromCart(projectId) {
         projectId = parseInt(projectId);
-        console.log('장바구니에서 제거:', projectId); // 디버깅용
-        applicationCart.delete(projectId);
-        updateCartDisplay();
+        selectedProjects.delete(projectId);
         updateProjectCard(projectId, false);
+        updateCartDisplay();
     }
 
     // 장바구니 전체 삭제
     function clearCart() {
-        if (confirm('장바구니의 모든 지원서를 삭제하시겠습니까?')) {
-            const projectIds = Array.from(applicationCart.keys());
-            applicationCart.clear();
+        if (confirm('선택된 모든 프로젝트를 삭제하시겠습니까?')) {
+            const projectIds = Array.from(selectedProjects);
+            selectedProjects.clear();
 
             projectIds.forEach(id => {
                 updateProjectCard(id, false);
@@ -869,19 +957,28 @@
     // 프로젝트 카드 UI 업데이트
     function updateProjectCard(projectId, isSelected) {
         const card = document.getElementById(`project-${projectId}`);
-        if (!card) {
-            console.log('카드를 찾을 수 없음:', projectId); // 디버깅용
-            return;
-        }
+        if (!card) return;
 
         const indicator = card.querySelector('.selected-indicator');
+        const button = card.querySelector('.add-to-cart-btn');
 
         if (isSelected) {
             card.classList.add('selected');
             if (indicator) indicator.style.display = 'flex';
+            if (button) {
+                button.textContent = '선택됨';
+                button.style.background = '#27ae60';
+                button.onclick = () => removeFromCart(projectId);
+            }
         } else {
             card.classList.remove('selected');
             if (indicator) indicator.style.display = 'none';
+            if (button && commonApplication) {
+                button.textContent = '프로젝트 선택';
+                button.style.background = '';
+                const title = button.dataset.title;
+                button.onclick = () => addToCart(projectId, title);
+            }
         }
     }
 
@@ -895,9 +992,7 @@
         const cartCounter = document.getElementById('cartCounter');
         const floatingCartCount = document.getElementById('floatingCartCount');
 
-        const count = applicationCart.size;
-
-        console.log('장바구니 업데이트:', count, Array.from(applicationCart.entries())); // 디버깅용
+        const count = selectedProjects.size;
 
         // 장바구니 배지 업데이트
         cartBadge.textContent = count;
@@ -918,12 +1013,18 @@
 
         // 장바구니 항목 표시
         if (count === 0) {
-            cartItems.innerHTML = '<div class="cart-empty">아직 작성된 지원서가 없습니다. 프로젝트를 선택하고 지원서를 작성해주세요.</div>';
+            cartItems.innerHTML = '<div class="cart-empty">아직 선택된 프로젝트가 없습니다. 프로젝트를 선택해주세요.</div>';
         } else {
-            cartItems.innerHTML = Array.from(applicationCart.values()).map(app => `
+            const projectTitles = Array.from(selectedProjects).map(projectId => {
+                const card = document.getElementById(`project-${projectId}`);
+                const title = card ? card.querySelector('h3').textContent : `프로젝트 ${projectId}`;
+                return {id: projectId, title: title};
+            });
+
+            cartItems.innerHTML = projectTitles.map(project => `
                 <div class="cart-item">
-                    <span>${app.projectTitle} (${getPositionName(app.position)})</span>
-                    <span class="cart-item-remove" onclick="removeFromCart(${app.projectId})">×</span>
+                    <span>${project.title}</span>
+                    <span class="cart-item-remove" onclick="removeFromCart(${project.id})">×</span>
                 </div>
             `).join('');
         }
@@ -938,8 +1039,13 @@
 
     // 장바구니 지원 모달 열기
     function openCartApplicationModal() {
-        if (applicationCart.size === 0) {
-            alert('먼저 프로젝트 지원서를 작성해주세요.');
+        if (selectedProjects.size === 0) {
+            alert('먼저 프로젝트를 선택해주세요.');
+            return;
+        }
+
+        if (!commonApplication) {
+            alert('먼저 공통 지원서를 작성해주세요.');
             return;
         }
 
@@ -950,15 +1056,18 @@
     // 우선순위 리스트 업데이트
     function updatePriorityList() {
         const selectedProjectsList = document.getElementById('selectedProjectsList');
-        const applications = Array.from(applicationCart.values());
+        const projectData = Array.from(selectedProjects).map(projectId => {
+            const card = document.getElementById(`project-${projectId}`);
+            const title = card ? card.querySelector('h3').textContent : `프로젝트 ${projectId}`;
+            return {id: projectId, title: title};
+        });
 
-        selectedProjectsList.innerHTML = applications.map((app, index) => `
-            <li class="selected-project-item" data-project-id="${app.projectId}" draggable="true">
+        selectedProjectsList.innerHTML = projectData.map((project, index) => `
+            <li class="selected-project-item" data-project-id="${project.id}" draggable="true">
                 <div class="priority-number">${index + 1}</div>
                 <div class="project-info">
-                    <div class="project-title">${app.projectTitle}</div>
-                    <div class="project-position">지원 직무: ${getPositionName(app.position)}</div>
-                    <div class="project-message-preview">${app.comment.substring(0, 50)}${app.comment.length > 50 ? '...' : ''}</div>
+                    <div class="project-title">${project.title}</div>
+                    <div class="project-position">지원 직무: ${getPositionName(commonApplication.position)}</div>
                 </div>
                 <div class="drag-handle" title="드래그하여 순서 변경">⋮⋮</div>
             </li>
@@ -1028,8 +1137,8 @@
             const draggedProjectId = parseInt(draggedElement.dataset.projectId);
             const targetProjectId = parseInt(this.dataset.projectId);
 
-            // 장바구니에서 순서 재정렬
-            reorderApplications(draggedProjectId, targetProjectId);
+            // 선택된 프로젝트에서 순서 재정렬
+            reorderProjects(draggedProjectId, targetProjectId);
 
             // UI 업데이트
             updatePriorityList();
@@ -1039,21 +1148,21 @@
         return false;
     }
 
-    // 지원서 순서 재정렬
-    function reorderApplications(draggedId, targetId) {
-        const applications = Array.from(applicationCart.entries());
-        const draggedIndex = applications.findIndex(([id]) => id === draggedId);
-        const targetIndex = applications.findIndex(([id]) => id === targetId);
+    // 프로젝트 순서 재정렬
+    function reorderProjects(draggedId, targetId) {
+        const projectArray = Array.from(selectedProjects);
+        const draggedIndex = projectArray.findIndex(id => id === draggedId);
+        const targetIndex = projectArray.findIndex(id => id === targetId);
 
         if (draggedIndex !== -1 && targetIndex !== -1) {
             // 배열에서 항목을 이동
-            const [draggedItem] = applications.splice(draggedIndex, 1);
-            applications.splice(targetIndex, 0, draggedItem);
+            const [draggedItem] = projectArray.splice(draggedIndex, 1);
+            projectArray.splice(targetIndex, 0, draggedItem);
 
-            // Map 재구성
-            applicationCart.clear();
-            applications.forEach(([id, data]) => {
-                applicationCart.set(id, data);
+            // Set 재구성
+            selectedProjects.clear();
+            projectArray.forEach(id => {
+                selectedProjects.add(id);
             });
         }
     }
@@ -1077,39 +1186,41 @@
         return positions[position] || position;
     }
 
-    // 초기화
-    document.addEventListener('DOMContentLoaded', function () {
-        updateCartDisplay();
-        console.log('페이지 로드 완료, 장바구니 초기화됨');
-    });
-
-    // 장바구니의 모든 지원서 제출 (우선순위 순서대로)
+    // 선택한 모든 프로젝트에 지원서 제출 (우선순위 순서대로)
     function submitAllApplications() {
-        if (applicationCart.size === 0) {
-            alert('제출할 지원서가 없습니다.');
+        if (selectedProjects.size === 0) {
+            alert('제출할 프로젝트가 없습니다.');
+            return;
+        }
+
+        if (!commonApplication) {
+            alert('공통 지원서가 작성되지 않았습니다.');
             return;
         }
 
         // 현재 우선순위 순서대로 지원서 배열 생성
-        const allApplications = Array.from(applicationCart.values()).map((app, index) => {
+        const allApplications = Array.from(selectedProjects).map((projectId, index) => {
             return {
-                projectId: app.projectId,
-                position: app.position,
-                comment: app.comment,
+                projectId: projectId,
+                position: commonApplication.position,
+                comment: commonApplication.message,
                 priority: index + 1 // 우선순위 추가
             };
         });
 
         const authToken = /*[[${authToken}]]*/ '';
 
-        console.log('우선순위가 적용된 장바구니 지원 데이터:', allApplications);
+        console.log('우선순위가 적용된 지원 데이터:', allApplications);
 
         // 사용자에게 최종 확인
+        const projectTitles = Array.from(selectedProjects).map(projectId => {
+            const card = document.getElementById(`project-${projectId}`);
+            return card ? card.querySelector('h3').textContent : `프로젝트 ${projectId}`;
+        });
+
         const confirmMessage = `다음 순서로 ${allApplications.length}개 프로젝트에 지원하시겠습니까?\n\n` +
-            allApplications.map(app => {
-                const appData = applicationCart.get(app.projectId);
-                return `${app.priority}순위: ${appData.projectTitle} (${getPositionName(app.position)})`;
-            }).join('\n');
+            `지원 직무: ${getPositionName(commonApplication.position)}\n\n` +
+            projectTitles.map((title, index) => `${index + 1}순위: ${title}`).join('\n');
 
         if (!confirm(confirmMessage)) {
             return;
@@ -1142,8 +1253,8 @@
 
     // 지원 완료 후 장바구니 정리
     function clearCartAfterSubmit() {
-        const projectIds = Array.from(applicationCart.keys());
-        applicationCart.clear();
+        const projectIds = Array.from(selectedProjects);
+        selectedProjects.clear();
 
         projectIds.forEach(id => {
             updateProjectCard(id, false);
@@ -1152,13 +1263,21 @@
         updateCartDisplay();
     }
 
+    // 초기화
+    document.addEventListener('DOMContentLoaded', function () {
+        updateApplicationDisplay();
+        enableProjectSelection();
+        updateCartDisplay();
+        console.log('페이지 로드 완료, 시스템 초기화됨');
+    });
+
     // 모달 외부 클릭 시 닫기
     window.onclick = function (event) {
-        const individualModal = document.getElementById('individualApplicationModal');
+        const applicationModal = document.getElementById('applicationModal');
         const cartModal = document.getElementById('cartApplicationModal');
 
-        if (event.target === individualModal) {
-            closeIndividualModal();
+        if (event.target === applicationModal) {
+            closeApplicationModal();
         }
         if (event.target === cartModal) {
             closeCartModal();
