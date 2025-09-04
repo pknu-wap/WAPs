@@ -14,7 +14,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/menu/TeamBuildPage";
-import TeamBuildPage from "./pages/menu/TeamBuildResultPage";
+import TeamBuildResultPage from "./pages/menu/TeamBuildResultPage";
 
 import "./App.css";
 
