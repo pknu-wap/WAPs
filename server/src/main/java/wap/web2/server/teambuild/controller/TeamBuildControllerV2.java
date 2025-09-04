@@ -19,7 +19,6 @@ import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
-import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.service.ApplyService;
 import wap.web2.server.teambuild.service.TeamBuildResultService;
 import wap.web2.server.teambuild.service.TeamBuildService;
@@ -106,15 +105,4 @@ public class TeamBuildControllerV2 {
             return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
         }
     }
-
-    @GetMapping("/result")
-    public ResponseEntity<?> getTeamBuildResults() {
-        try {
-            TeamBuildingResults results = teamBuildResultService.getResults();
-            return ResponseEntity.ok().body(results);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 조회 실패" + e.getMessage());
-        }
-    }
-
 }
