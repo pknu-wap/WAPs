@@ -6,9 +6,8 @@
       { "position": "BACKEND",  "capacity": 2, "applicantIds": [1009,1033,1057,1081] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1003,1027,1051,1075,1099] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] },
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
       { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   }
@@ -20,9 +19,8 @@
       { "position": "BACKEND",  "capacity": 2, "applicantIds": [1009,1033,1057,1081] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1003,1027,1051,1075,1099] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] },
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
       { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   }
@@ -34,9 +32,8 @@
       { "position": "BACKEND",  "capacity": 2, "applicantIds": [1009,1033,1057,1081] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1003,1027,1051,1075,1099] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] },
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
       { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   }
@@ -48,9 +45,8 @@
       { "position": "BACKEND",  "capacity": 1, "applicantIds": [1009,1033,1057,1081] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1003,1027,1051,1075,1099] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] },
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
       { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   }
@@ -62,9 +58,8 @@
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1003,1027,1051,1075,1099] },
       { "position": "BACKEND",  "capacity": 0, "applicantIds": [] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] },
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
       { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   }
@@ -76,48 +71,44 @@
       { "position": "BACKEND",  "capacity": 1, "applicantIds": [1001,1025,1049,1073,1097] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1019,1043,1067,1091] },
       { "position": "AI",       "capacity": 1, "applicantIds": [1010,1034,1058,1082] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] },
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
       { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   },
   {
     "projectId": 7,
     "roasters": [
-      { "position": "ANDROID",  "capacity": 2, "applicantIds": [1004,1028,1052,1076] },
+      { "position": "APP",  "capacity": 2, "applicantIds": [1004,1028,1052,1076] },
       { "position": "BACKEND",  "capacity": 2, "applicantIds": [1001,1025,1049,1073,1097] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1019,1043,1067,1091] },
       { "position": "FRONTEND", "capacity": 0, "applicantIds": [] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
       { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   },
   {
     "projectId": 8,
     "roasters": [
-      { "position": "ANDROID",  "capacity": 2, "applicantIds": [1004,1028,1052,1076] },
+      { "position": "APP",  "capacity": 2, "applicantIds": [1004,1028,1052,1076] },
       { "position": "BACKEND",  "capacity": 1, "applicantIds": [1001,1025,1049,1073,1097] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1019,1043,1067,1091] },
       { "position": "FRONTEND", "capacity": 0, "applicantIds": [] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
       { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   },
   {
     "projectId": 9,
     "roasters": [
-      { "position": "IOS",      "capacity": 2, "applicantIds": [1013,1037,1061,1085] },
+      { "position": "APP",      "capacity": 2, "applicantIds": [1013,1037,1061,1085] },
       { "position": "BACKEND",  "capacity": 2, "applicantIds": [1001,1025,1049,1073,1097] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1019,1043,1067,1091] },
       { "position": "FRONTEND", "capacity": 0, "applicantIds": [] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
       { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   },
@@ -129,9 +120,8 @@
       { "position": "FRONTEND", "capacity": 0, "applicantIds": [] },
       { "position": "BACKEND",  "capacity": 0, "applicantIds": [] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] }
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] }
     ]
   },
   {
@@ -142,9 +132,8 @@
       { "position": "FRONTEND", "capacity": 0, "applicantIds": [] },
       { "position": "BACKEND",  "capacity": 0, "applicantIds": [] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] }
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] }
     ]
   },
   {
@@ -155,9 +144,8 @@
       { "position": "FRONTEND", "capacity": 0, "applicantIds": [] },
       { "position": "BACKEND",  "capacity": 0, "applicantIds": [] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] }
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] }
     ]
   },
   {
@@ -168,9 +156,8 @@
       { "position": "FRONTEND", "capacity": 0, "applicantIds": [] },
       { "position": "BACKEND",  "capacity": 0, "applicantIds": [] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] }
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] }
     ]
   },
   {
@@ -181,9 +168,8 @@
       { "position": "FRONTEND", "capacity": 0, "applicantIds": [] },
       { "position": "BACKEND",  "capacity": 0, "applicantIds": [] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] }
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] }
     ]
   },
   {
@@ -194,9 +180,8 @@
       { "position": "FRONTEND", "capacity": 0, "applicantIds": [] },
       { "position": "BACKEND",  "capacity": 0, "applicantIds": [] },
       { "position": "AI",       "capacity": 0, "applicantIds": [] },
-      { "position": "ANDROID",  "capacity": 0, "applicantIds": [] },
-      { "position": "IOS",      "capacity": 0, "applicantIds": [] },
-      { "position": "PM",       "capacity": 0, "applicantIds": [] }
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] }
     ]
   }
 ]
