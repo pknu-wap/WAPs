@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import wap.web2.server.ouath2.security.CurrentUser;
+import wap.web2.server.ouath2.security.TokenProvider;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.service.ProjectService;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
@@ -21,14 +22,14 @@ import wap.web2.server.teambuild.service.TeamBuildResultService;
 @RequiredArgsConstructor
 public class TeamBuildControllerV1 {
 
+    private final TokenProvider tokenProvider;
     private final ProjectService projectService;
     private final TeamBuildResultService teamBuildResultService;
 
     @GetMapping
-    public String entry(Model model,
-                        @CurrentUser UserPrincipal userPrincipal,
-                        @CookieValue(name = "authToken", required = false) String authToken) {
-        if (projectService.isLeader(userPrincipal.getId())) {
+    public String entry(Model model, @CookieValue(name = "authToken", required = false) String authToken) {
+        Long userId = tokenProvider.getUserIdFromToken(authToken);
+        if (projectService.isLeader(userId)) {
             return "redirect:/team-build/recruit";
         } else {
             return "redirect:/team-build/projects";
