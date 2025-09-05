@@ -9,9 +9,8 @@ SELECT
         WHEN 1 THEN 'BACKEND'
         WHEN 2 THEN 'AI'
         WHEN 3 THEN 'DESIGN'
-        WHEN 4 THEN 'ANDROID'
-        WHEN 5 THEN 'IOS'
-        WHEN 6 THEN 'PM'
+        WHEN 4 THEN 'APP'
+        WHEN 5 THEN 'EMBEDDED'
         ELSE      'GAME'
         END                                                    AS position,
   CONCAT('auto apply user ', 1000 + u.n, ' priority ', p.pv) AS comment,
