@@ -20,7 +20,6 @@ import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.service.ApplyService;
-import wap.web2.server.teambuild.service.TeamBuildResultService;
 import wap.web2.server.teambuild.service.TeamBuildService;
 
 @Slf4j
@@ -29,7 +28,6 @@ import wap.web2.server.teambuild.service.TeamBuildService;
 @RequiredArgsConstructor
 public class TeamBuildControllerV2 {
 
-    private final TeamBuildResultService teamBuildResultService;
     private final TeamBuildService teamBuildService;
     private final ApplyService applyService;
 
@@ -105,4 +103,5 @@ public class TeamBuildControllerV2 {
             return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
         }
     }
+
 }
