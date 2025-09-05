@@ -30,6 +30,17 @@
             padding: 0 16px;
         }
 
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
         .page-title {
             font-size: 28px;
             font-weight: 800;
@@ -39,7 +50,35 @@
         .sub {
             color: var(--muted);
             font-size: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 0;
+        }
+
+        .back-btn {
+            padding: 10px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        .back-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: #fafafa;
+        }
+
+        .back-btn:active {
+            transform: translateY(1px);
         }
 
         .toolbar {
@@ -191,13 +230,32 @@
             border-radius: 14px;
             background: #fff;
         }
+
+        /* 모바일에서 헤더 레이아웃 조정 */
+        @media (max-width: 640px) {
+            .header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .back-btn {
+                align-self: flex-end;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="page-title">팀빌딩 결과</div>
-    <div class="sub">
-        총 <b th:text="${#lists.size(teams.getResults())}">0</b>개 팀
+    <div class="header">
+        <div class="title-section">
+            <div class="page-title">팀빌딩 결과</div>
+            <div class="sub">
+                총 <b th:text="${#lists.size(teams.getResults())}">0</b>개 팀
+            </div>
+        </div>
+        <button class="back-btn" onclick="goBack()">
+            ← 돌아가기
+        </button>
     </div>
 
     <div class="toolbar">
@@ -206,7 +264,7 @@
                 <input id="q" type="text" placeholder="팀명/팀장/팀원 검색…" oninput="filterCards()"/>
                 <button class="btn" onclick="clearSearch()">지우기</button>
             </div>
-            <div class="search-help">예) “알파”, “김개발”, “FRONTEND” 같이 검색할 수 있어요.</div>
+            <div class="search-help">예) "알파", "김개발", "FRONTEND" 같이 검색할 수 있어요.</div>
         </div>
         <div class="sorts">
             <button class="btn" onclick="sortByName()">팀명순</button>
@@ -278,6 +336,11 @@
 </div>
 
 <script>
+    // 돌아가기 기능
+    function goBack() {
+        window.history.go(-2);
+    }
+
     // 검색: data-key(팀명/팀장/팀원/포지션)에서 포함 여부로 필터링
     function filterCards() {
         const q = document.getElementById('q').value.trim().toLowerCase();
