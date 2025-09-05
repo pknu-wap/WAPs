@@ -7,7 +7,6 @@ import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
 import static wap.web2.server.util.SemesterGenerator.generateYearValue;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +31,6 @@ import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ImageRepository;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
-import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.entity.Vote;
 import wap.web2.server.vote.repository.VoteRepository;
 
@@ -70,14 +68,14 @@ public class ProjectService {
 
         List<String> imageUrls = Collections.emptyList();
         if (request.getImageS3() != null) {
-        imageUrls = awsUtils.uploadImagesTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
-                request.getTitle(), IMAGES, request.getImageS3());
+            imageUrls = awsUtils.uploadImagesTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
+                    request.getTitle(), IMAGES, request.getImageS3());
         }
 
         String thumbnailUrl = "";
         if (request.getThumbnailS3() != null) {
-        thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
-                request.getTitle(), THUMBNAIL, request.getThumbnailS3());
+            thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
+                    request.getTitle(), THUMBNAIL, request.getThumbnailS3());
         }
 
         // request.toEntity() 를 호출함으로서 매개변수로 넘어온 객체(request)를 사용
@@ -183,6 +181,15 @@ public class ProjectService {
             throw new IllegalArgumentException("[ERROR] 해당 사용자에게 삭제 권한이 없습니다.");
         }
         projectRepository.delete(project);
+    }
+
+    public boolean isLeader(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
+
+        // 이번 학기 모든 프로젝트를 찾아서 내가 주인인 프로젝트가 하나라도 있으면 true
+        return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue())
+                .stream().anyMatch(project -> project.isOwner(user));
     }
 
 }

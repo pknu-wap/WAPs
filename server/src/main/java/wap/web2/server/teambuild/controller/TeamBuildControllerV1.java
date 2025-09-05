@@ -24,6 +24,17 @@ public class TeamBuildControllerV1 {
     private final ProjectService projectService;
     private final TeamBuildResultService teamBuildResultService;
 
+    @GetMapping
+    public String entry(Model model,
+                        @CurrentUser UserPrincipal userPrincipal,
+                        @CookieValue(name = "authToken", required = false) String authToken) {
+        if (projectService.isLeader(userPrincipal.getId())) {
+            return "redirect:/team-build/recruit";
+        } else {
+            return "redirect:/team-build/projects";
+        }
+    }
+
     @GetMapping("/projects")
     public String projects(Model model, @CookieValue(name = "authToken", required = false) String authToken)
             throws Exception {
