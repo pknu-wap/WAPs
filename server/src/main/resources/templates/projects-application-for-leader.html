@@ -744,6 +744,8 @@
             if (!res.ok || !json.success) throw new Error(json.message || '등록 실패');
             document.getElementById('submitMsg').innerHTML =
                 `<span class="ok">[성공] 팀 구성이 완료되었습니다. projectId=${json.projectId}</span>`;
+
+            window.history.go(-2);
         } catch (err) {
             document.getElementById('submitMsg').innerHTML =
                 `<span class="err">[실패] ${err?.message || err}</span>`;
