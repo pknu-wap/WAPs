@@ -4,330 +4,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프로젝트 지원 시스템</title>
+    <title>WAP 팀빌딩</title>
     <style>
+        /* === Minimal clean theme (replace entire <style>) === */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --bg: #f6f7f9;
+            --panel: #fff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --accent: #3b82f6;
+            --accent-weak: #eef2ff;
+            --danger: #ef4444;
+            --success: #16a34a;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            padding: 24px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 24px;
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            color: #333;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 6px;
         }
 
         .header p {
-            color: #666;
-            font-size: 1.1rem;
+            color: var(--muted);
+            font-size: 0.95rem;
         }
 
         /* 공통 지원서 섹션 */
         .common-application-section {
-            background: linear-gradient(145deg, #f8f9fa, #ffffff);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
         .common-application-section.completed {
-            border-color: #27ae60;
-            background: linear-gradient(145deg, #f0fff4, #ffffff);
+            border-color: #c7e7d4;
+            background: #f7fcf9;
         }
 
         .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            margin-bottom: 12px;
         }
 
         .status-indicator {
-            background: #bdc3c7;
-            color: white;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            background: #d1d5db;
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
+            font-size: .75rem;
+            font-weight: 700;
         }
 
         .status-indicator.completed {
-            background: #27ae60;
+            background: var(--success);
         }
 
         /* 장바구니 섹션 */
         .cart-section {
-            background: linear-gradient(145deg, #f8f9fa, #ffffff);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px;
         }
 
         .cart-section.has-items {
-            border-color: #667eea;
-            background: linear-gradient(145deg, #f0f4ff, #ffffff);
+            border-color: #c7d2fe;
+            background: #fafbff;
         }
 
         .cart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .cart-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #333;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .cart-badge {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            background: var(--accent);
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
+            font-size: .75rem;
+            font-weight: 700;
         }
 
         .clear-cart-btn {
-            background: #e74c3c;
-            color: white;
+            background: var(--danger);
+            color: #fff;
             border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: .9rem;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
         }
 
         .clear-cart-btn:hover {
-            background: #c0392b;
-            transform: translateY(-1px);
+            filter: brightness(0.95);
         }
 
         .cart-items {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .cart-item {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 500;
+            background: #f3f4f6;
+            color: #111;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: .9rem;
             display: flex;
+            gap: 6px;
             align-items: center;
-            gap: 8px;
-            animation: slideIn 0.3s ease;
+            border: 1px solid var(--border);
         }
 
         .cart-item-remove {
             cursor: pointer;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: all 0.2s ease;
+            font-weight: 700;
         }
 
         .cart-item-remove:hover {
-            transform: scale(1.2);
+            opacity: .7;
         }
 
         .cart-empty {
             text-align: center;
-            color: #999;
+            color: var(--muted);
             font-style: italic;
-            padding: 20px;
+            padding: 14px;
         }
 
         .apply-all-btn {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
             width: 100%;
+            background: var(--success);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
         }
 
         .apply-all-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+            filter: brightness(0.98);
         }
 
         .apply-all-btn:disabled {
-            background: #bdc3c7;
+            background: #d1d5db;
             cursor: not-allowed;
         }
 
+        /* 프로젝트 카드 */
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+            grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .project-card {
-            background: linear-gradient(145deg, #ffffff, #f0f0f0);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.3);
             position: relative;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            transition: border-color .15s ease, background .15s ease;
         }
 
         .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: #d4d7dd;
         }
 
         .project-card.selected {
-            border: 2px solid #667eea;
-            background: linear-gradient(145deg, #f0f4ff, #ffffff);
+            border-color: var(--accent);
+            background: #f8fbff;
         }
 
         .project-card h3 {
-            color: #333;
-            font-size: 1.4rem;
-            margin-bottom: 10px;
+            color: var(--text);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
         }
 
         .project-description {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 15px;
+            color: #4b5563;
+            font-size: .95rem;
+            margin-bottom: 10px;
         }
 
         .project-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .tech-stack {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
 
         .tech-tag {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: .8rem;
             font-weight: 500;
         }
 
         .add-to-cart-btn {
-            background: linear-gradient(45deg, #f39c12, #e67e22);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
             width: 100%;
+            background: #111827;
+            color: #fff;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: .9rem;
+            cursor: pointer;
         }
 
         .add-to-cart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
+            filter: brightness(0.98);
         }
 
         .add-to-cart-btn:disabled {
-            background: #bdc3c7;
+            background: #d1d5db;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
 
         .selected-indicator {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #27ae60;
-            color: white;
+            top: 10px;
+            right: 10px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
+            background: var(--success);
+            color: #fff;
+            font-weight: 800;
+            display: none;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            animation: pulse 2s infinite;
         }
 
+        /* 모달 */
         .modal {
             display: none;
             position: fixed;
+            inset: 0;
             z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, .35);
         }
 
         .modal-content {
@@ -335,86 +330,74 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(145deg, #ffffff, #f9f9f9);
-            border-radius: 20px;
-            padding: 40px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             width: 90%;
-            max-width: 700px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 720px;
             max-height: 80vh;
-            overflow-y: auto;
+            overflow: auto;
+            padding: 24px;
         }
 
         .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+            color: #9ca3af;
+            font-size: 24px;
             cursor: pointer;
+            float: right;
             line-height: 1;
         }
 
         .close:hover {
-            color: #333;
+            color: #4b5563;
         }
 
+        /* 우선순위 리스트 */
         .selected-projects-list {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
             list-style: none;
-            counter-reset: project-counter;
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
         }
 
         .selected-project-item {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-left: 4px solid #667eea;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            cursor: move;
-            transition: all 0.3s ease;
-            position: relative;
-            counter-increment: project-counter;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: move;
         }
 
         .selected-project-item:last-child {
             margin-bottom: 0;
         }
 
-        .selected-project-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-            border-left-color: #5a67d8;
-        }
-
         .selected-project-item.dragging {
-            opacity: 0.5;
-            transform: rotate(3deg);
-            z-index: 1000;
+            opacity: .6;
         }
 
         .selected-project-item.drag-over {
-            border-top: 3px solid #667eea;
-            margin-top: 15px;
+            outline: 2px dashed var(--accent);
         }
 
         .priority-number {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            width: 35px;
-            height: 35px;
+            background: #111827;
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 1.1rem;
+            font-weight: 800;
+            font-size: .95rem;
             flex-shrink: 0;
         }
 
@@ -423,80 +406,68 @@
         }
 
         .project-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #333;
-            margin-bottom: 5px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2px;
         }
 
         .project-position {
-            font-size: 0.9rem;
-            color: #667eea;
-            font-weight: 500;
-            margin-bottom: 3px;
+            font-size: .85rem;
+            color: var(--muted);
         }
 
         .drag-handle {
-            color: #bbb;
-            font-size: 1.2rem;
+            color: #9ca3af;
+            font-size: 1.1rem;
+            padding: 4px;
             cursor: move;
-            padding: 5px;
-            border-radius: 4px;
-            transition: all 0.2s ease;
         }
 
         .drag-handle:hover {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
+            color: #6b7280;
+            background: #f3f4f6;
+            border-radius: 4px;
         }
 
+        /* 안내/폼 */
         .priority-guide {
-            background: linear-gradient(145deg, #e3f2fd, #f8f9ff);
-            border: 1px solid #bbdefb;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: .95rem;
+            color: #374151;
         }
 
         .priority-guide strong {
-            color: #1976d2;
-        }
-
-        .sortable-ghost {
-            opacity: 0.4;
-        }
-
-        .sortable-drag {
-            background: white !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+            color: #1f2937;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 16px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
+            margin-bottom: 6px;
+            font-weight: 700;
+            color: #374151;
         }
 
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            background: #fff;
         }
 
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
         }
 
         .form-group textarea {
@@ -504,165 +475,117 @@
             min-height: 120px;
         }
 
-        .submit-btn {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
-            color: white;
+        .submit-btn, .create-application-btn, .edit-application-btn {
+            background: var(--accent);
+            color: #fff;
             border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
-        }
-
-        .create-application-btn {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .create-application-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
-        }
-
-        .application-preview {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
+            padding: 12px 16px;
             border-radius: 10px;
-            padding: 20px;
-            margin-top: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
         }
 
-        .application-preview h4 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .preview-item {
-            margin-bottom: 12px;
-        }
-
-        .preview-label {
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 5px;
-        }
-
-        .preview-value {
-            color: #666;
-            line-height: 1.5;
+        .submit-btn:hover, .create-application-btn:hover, .edit-application-btn:hover {
+            filter: brightness(0.98);
         }
 
         .edit-application-btn {
-            background: #f39c12;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
+            width: auto;
+            background: #f59e0b;
+        }
+
+        .application-preview {
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
             margin-top: 10px;
         }
 
+        .application-preview h4 {
+            color: #111827;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .preview-item {
+            margin-bottom: 10px;
+        }
+
+        .preview-label {
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+        .preview-value {
+            color: #4b5563;
+        }
+
         .warning-message {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            color: #856404;
+            background: #fff7ed;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
             text-align: center;
         }
 
+        /* 플로팅 카운터 */
         .cart-counter {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            bottom: 24px;
+            right: 24px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            background: #111827;
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            font-weight: 800;
+            font-size: 1rem;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .15);
             cursor: pointer;
-            transition: all 0.3s ease;
             z-index: 100;
         }
 
         .cart-counter:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            filter: brightness(0.98);
         }
 
         .cart-counter.hide {
             display: none;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(39, 174, 96, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(39, 174, 96, 0);
-            }
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
             .container {
-                margin: 10px;
-                padding: 20px;
+                padding: 16px;
             }
 
             .projects-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns:1fr;
             }
 
             .modal-content {
                 width: 95%;
-                padding: 20px;
+                padding: 16px;
             }
 
             .cart-counter {
-                bottom: 20px;
-                right: 20px;
-                width: 50px;
-                height: 50px;
-                font-size: 1rem;
+                bottom: 18px;
+                right: 18px;
+                width: 48px;
+                height: 48px;
+                font-size: .95rem;
             }
         }
     </style>
@@ -670,14 +593,14 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>프로젝트 지원 시스템</h1>
+        <h1>WAP 팀빌딩</h1>
         <p>지원서를 작성하고 원하는 프로젝트들에 한 번에 지원하세요!</p>
     </div>
 
     <!-- 공통 지원서 작성 섹션 -->
     <div class="common-application-section" id="commonApplicationSection">
         <div class="section-title">
-            📝 지원서 작성
+            지원서 작성
             <span class="status-indicator" id="applicationStatusIndicator">1</span>
         </div>
 
@@ -692,7 +615,7 @@
 
         <div id="applicationPreviewContainer" style="display: none;">
             <div class="application-preview">
-                <h4>📋 작성된 지원서</h4>
+                <h4>작성된 지원서</h4>
                 <div class="preview-item">
                     <div class="preview-label">지원 직무:</div>
                     <div class="preview-value" id="previewPosition"></div>
@@ -712,7 +635,7 @@
     <div class="cart-section" id="cartSection">
         <div class="cart-header">
             <div class="cart-title">
-                🛒 지원할 프로젝트
+                지원할 프로젝트
                 <span class="cart-badge" id="cartBadge">0</span>
             </div>
             <button class="clear-cart-btn" id="clearCartBtn" onclick="clearCart()" style="display: none;">
