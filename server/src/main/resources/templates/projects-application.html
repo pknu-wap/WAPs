@@ -1166,6 +1166,8 @@
 
                 // 지원 완료 후 장바구니 비우기
                 clearCartAfterSubmit();
+
+                window.history.go(-2);
             })
             .catch(error => {
                 console.error('Error:', error);

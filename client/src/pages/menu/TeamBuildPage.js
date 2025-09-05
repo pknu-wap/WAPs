@@ -3,8 +3,8 @@ import React, { useEffect } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
-function TeamBuildPage() {
-  const navigate = useNavigate();
+function TeamBuildPage() {  
+const navigate = useNavigate();
   
   useEffect(() => {
     const token =
@@ -29,5 +29,6 @@ function TeamBuildPage() {
     </div>
   );
 }
+
 
 export default TeamBuildPage;
