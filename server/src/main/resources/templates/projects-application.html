@@ -697,12 +697,11 @@
                     <option value="">직무를 선택해주세요</option>
                     <option value="FRONTEND">프론트엔드 개발자</option>
                     <option value="BACKEND">백엔드 개발자</option>
-                    <option value="FULLSTACK">풀스택 개발자</option>
+                    <option value="AI">AI 개발자</option>
                     <option value="DESIGNER">UI/UX 디자이너</option>
-                    <option value="PM">프로젝트 매니저</option>
-                    <option value="QA">QA 엔지니어</option>
-                    <option value="DEVOPS">데브옵스 엔지니어</option>
-                    <option value="DATA">데이터 분석가</option>
+                    <option value="APP">앱 개발자</option>
+                    <option value="GAME">게임 개발자</option>
+                    <option value="EMBEDDED">임베디드 개발자</option>
                 </select>
             </div>
 
@@ -1099,11 +1098,11 @@
         const positions = {
             'FRONTEND': '프론트엔드 개발자',
             'BACKEND': '백엔드 개발자',
-            'FULLSTACK': '풀스택 개발자',
+            'AI': 'AI 개발자',
             'DESIGNER': 'UI/UX 디자이너',
-            'PM': '프로젝트 매니저',
-            'QA': 'QA 엔지니어',
-            'DEVOPS': '데브옵스 엔지니어',
+            'APP': '앱 개발자',
+            'GAME': '게임 개발자',
+            'EMBEDDED': '임베디드 개발자',
             'DATA': '데이터 분석가'
         };
         return positions[position] || position;
@@ -1178,6 +1177,7 @@
     function clearCartAfterSubmit() {
         const projectIds = Array.from(selectedProjects);
         selectedProjects.clear();
+
 
         projectIds.forEach(id => {
             updateProjectCard(id, false);
