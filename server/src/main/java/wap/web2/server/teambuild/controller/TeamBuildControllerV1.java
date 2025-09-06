@@ -69,7 +69,6 @@ public class TeamBuildControllerV1 {
 
         List<ProjectTemplate> projects = projectService.getCurrentProjectRecruits();
 
-        System.out.println("authToken = " + authToken);
         model.addAttribute("projects", projects);
         model.addAttribute("authToken", authToken);
 

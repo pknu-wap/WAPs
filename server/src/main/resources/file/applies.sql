@@ -4,7 +4,7 @@ INSERT INTO project_apply
 (priority, position, comment, semester, user_id, project_id)
 SELECT
     p.pv                                                   AS priority,
-    CASE (u.n % 8)
+    CASE (u.n % 7)
         WHEN 0 THEN 'FRONTEND'
         WHEN 1 THEN 'BACKEND'
         WHEN 2 THEN 'AI'
