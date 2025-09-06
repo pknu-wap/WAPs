@@ -5,10 +5,10 @@
       { "position": "FRONTEND", "capacity": 2, "applicantIds": [1000,1021,1042,1063,1084] },
       { "position": "BACKEND",  "capacity": 2, "applicantIds": [1099, 1057, 1015, 1036, 1078] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1003,1024, 1087, 1066, 1045] },
-      { "position": "AI",       "capacity": 0, "applicantIds": [1030, 1051, 1072, 1009, 1093] },
-      { "position": "APP",  "capacity": 0, "applicantIds": [1039, 1018, 1081, 1060] },
-      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [1012, 1033, 1054, 1075, 1096] },
-      { "position": "GAME",     "capacity": 0, "applicantIds": [1048, 1006, 1090, 1069, 1027] }
+      { "position": "AI",       "capacity": 0, "applicantIds": [] },
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
+      { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   }
   ,
@@ -18,10 +18,10 @@
       { "position": "FRONTEND", "capacity": 2, "applicantIds": [1000,1021, 1084, 1063, 1042] },
       { "position": "BACKEND",  "capacity": 2, "applicantIds": [1015, 1099, 1078, 1057, 1036] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1003, 1024, 1045, 1066, 1087] },
-      { "position": "AI",       "capacity": 0, "applicantIds": [1009, 1093, 1072, 1051, 1030] },
-      { "position": "APP",  "capacity": 0, "applicantIds": [1018, 1039, 1081, 1060] },
-      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [1012, 1054, 1075, 1096, 1033] },
-      { "position": "GAME",     "capacity": 0, "applicantIds": [1090, 1027, 1048, 1006, 1069] }
+      { "position": "AI",       "capacity": 0, "applicantIds": [] },
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
+      { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   }
   ,
@@ -32,9 +32,9 @@
       { "position": "BACKEND",  "capacity": 1, "applicantIds": [1099, 1078, 1057, 1015, 1036] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [1003, 1066, 1087, 1024, 1045] },
       { "position": "AI",       "capacity": 1, "applicantIds": [1051, 1030, 1009, 1093, 1072] },
-      { "position": "APP",  "capacity": 0, "applicantIds": [1081, 1018, 1039, 1060] },
-      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [1054, 1075, 1012, 1096, 1033] },
-      { "position": "GAME",     "capacity": 0, "applicantIds": [1006, 1090, 1027, 1048,1069] }
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
+      { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   }
   ,
@@ -44,10 +44,10 @@
       { "position": "FRONTEND", "capacity": 3, "applicantIds": [1021, 1000, 1084, 1063, 1042] },
       { "position": "BACKEND",  "capacity": 1, "applicantIds": [ 1078, 1057, 1015,1099, 1036] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [ 1087, 1003, 1066,1024, 1045] },
-      { "position": "AI",       "capacity": 0, "applicantIds": [1030, 1009, 1093, 1051, 1072] },
-      { "position": "APP",  "capacity": 0, "applicantIds": [1039, 1060, 1081, 1018] },
-      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [1075, 1012, 1096, 1033, 1054] },
-      { "position": "GAME",     "capacity": 0, "applicantIds": [1090, 1027, 1048,1069,1006] }
+      { "position": "AI",       "capacity": 0, "applicantIds": [] },
+      { "position": "APP",  "capacity": 0, "applicantIds": [] },
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
+      { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   }
   ,
@@ -57,10 +57,10 @@
       { "position": "FRONTEND", "capacity": 2, "applicantIds": [1084, 1000, 1021, 1063, 1042] },
       { "position": "BACKEND",  "capacity": 2, "applicantIds": [ 1099, 1057, 1015,1078, 1036] },
       { "position": "DESIGN",   "capacity": 1, "applicantIds": [ 1024, 1045, 1066,1087, 1003] },
-      { "position": "AI",       "capacity": 0, "applicantIds": [1030, 1009, 1093, 1051, 1072] },
+      { "position": "AI",       "capacity": 0, "applicantIds": [] },
       { "position": "APP",  "capacity": 1, "applicantIds": [1081, 1060, 1039, 1018] },
-      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [1075, 1012, 1096, 1033, 1054] },
-      { "position": "GAME",     "capacity": 0, "applicantIds": [1090, 1027, 1048,1069,1006] }
+      { "position": "EMBEDDED",       "capacity": 0, "applicantIds": [] },
+      { "position": "GAME",     "capacity": 0, "applicantIds": [] }
     ]
   }
   ,
