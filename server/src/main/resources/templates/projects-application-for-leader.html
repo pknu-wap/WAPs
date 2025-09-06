@@ -267,15 +267,11 @@
             background: #ff69b4;
         }
 
-        .position-badge.ANDROID {
+        .position-badge.APP {
             background: #32cd32;
         }
 
-        .position-badge.IOS {
-            background: #1e90ff;
-        }
-
-        .position-badge.PM {
+        .position-badge.EMBEDDED {
             background: #ffa500;
         }
 
@@ -347,10 +343,9 @@
             <option value="BACKEND">BACKEND</option>
             <option value="AI">AI</option>
             <option value="DESIGN">DESIGN</option>
-            <option value="ANDROID">ANDROID</option>
-            <option value="IOS">IOS</option>
-            <option value="PM">PM</option>
+            <option value="APP">APP</option>
             <option value="GAME">GAME</option>
+            <option value="EMBEDDED">EMBEDDED</option>
         </select>
         <span id="filterInfo" class="muted"></span>
     </div>
@@ -411,7 +406,7 @@
     // ========================
     // UI & 로직
     // ========================
-    const POSITIONS = ["FRONTEND", "BACKEND", "AI", "DESIGN", "ANDROID", "IOS", "PM", "GAME"];
+    const POSITIONS = ["FRONTEND", "BACKEND", "AI", "DESIGN", "APP", "EMBEDDED", "GAME"];
     const list = document.getElementById('positionList');
 
     // 각 포지션의 선택된 지원자들을 저장
