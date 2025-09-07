@@ -51,9 +51,6 @@ public class TeamBuildControllerV1 {
                     .maxAge(java.time.Duration.ofDays(7))
                     .build();
             response.addHeader("Set-Cookie", set.toString());
-
-            // 쿠키 저장 후 재진입(이제부터 브라우저가 자동으로 쿠키 보냄)
-            return "redirect:/team-build";
         }
 
         // 4) 여기부터는 쿠키 기반으로 분기
