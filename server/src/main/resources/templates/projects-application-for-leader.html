@@ -312,9 +312,45 @@
                 justify-self: end;
             }
         }
+
+        /* Back button */
+        .topbar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ffffff;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            filter: brightness(0.98);
+            border-color: #d4d7dd;
+        }
+
+        .back-btn .arrow {
+            font-size: 1rem;
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
+
+<div class="topbar">
+    <button type="button" class="back-btn" onclick="goBack()">
+        <span class="arrow">←</span> 뒤로가기
+    </button>
+</div>
 
 <h2>모집하기 페이지</h2>
 
@@ -746,6 +782,11 @@
                 `<span class="err">[실패] ${err?.message || err}</span>`;
         }
     });
+
+    // 돌아가기 기능
+    function goBack() {
+        window.history.go(-2);
+    }
 </script>
 </body>
 </html>
