@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko"
+
 >
 <head>
     <meta charset="UTF-8">
@@ -1174,6 +1175,7 @@
         const authToken = /*[[${authToken}]]*/ '';
 
         console.log('우선순위가 적용된 지원 데이터:', allApplications);
+        console.log('authToken=', authToken);
 
         // 사용자에게 최종 확인
         const projectTitles = Array.from(selectedProjects).map(projectId => {
