@@ -34,7 +34,7 @@ public class TeamBuildControllerV1 {
                         @CurrentUser UserPrincipal userPrincipal,
                         @CookieValue(name = "authToken", required = false) String cookieToken,
                         @RequestHeader(value = "Authorization", required = false) String authHeader,
-                        HttpServletResponse response) {
+                        HttpServletResponse response) throws Exception {
 
         // 1) 쿠키에 토큰이 이미 있으면 그걸 사용
         String token = (cookieToken != null && !cookieToken.isBlank()) ? cookieToken : null;
@@ -60,7 +60,9 @@ public class TeamBuildControllerV1 {
         Long userId = tokenProvider.getUserIdFromToken(token);
         boolean isLeader = projectService.isLeader(userId);
 
-        return isLeader ? "redirect:/team-build/recruit" : "redirect:/team-build/projects";
+        return isLeader
+                ? recruitPage(model, cookieToken, userPrincipal)
+                : projects(model, cookieToken);
     }
 
     @GetMapping("/projects")
