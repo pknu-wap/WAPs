@@ -588,6 +588,36 @@
                 font-size: .95rem;
             }
         }
+
+        /* Back button */
+        .topbar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ffffff;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            filter: brightness(0.98);
+            border-color: #d4d7dd;
+        }
+
+        .back-btn .arrow {
+            font-size: 1rem;
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
@@ -595,6 +625,12 @@
     <div class="header">
         <h1>WAP 팀빌딩</h1>
         <p>지원서를 작성하고 원하는 프로젝트들에 한 번에 지원하세요!</p>
+    </div>
+    <!-- 뒤로 가기 버튼 -->
+    <div class="topbar">
+        <button type="button" class="back-btn" onclick="goBack()">
+            <span class="arrow">←</span> 뒤로가기
+        </button>
     </div>
 
     <!-- 공통 지원서 작성 섹션 -->
@@ -749,6 +785,11 @@
     let commonApplication = null;
     // 선택된 프로젝트 목록
     let selectedProjects = new Set();
+
+    // 돌아가기 기능
+    function goBack() {
+        window.history.go(-2);
+    }
 
     // 공통 지원서 작성 모달 열기
     function openApplicationModal() {
