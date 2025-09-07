@@ -35,7 +35,8 @@ public class TeamBuildControllerV1 {
                         @CookieValue(name = "authToken", required = false) String cookieToken,
                         @RequestHeader(value = "Authorization", required = false) String authHeader,
                         HttpServletResponse response) throws Exception {
-
+        log.info("[/team-build] entry parameter is null: userPrincipal={}, cookieToken={}, authHeader{}",
+                userPrincipal == null, cookieToken == null, authHeader == null);
         // 1) 쿠키에 토큰이 이미 있으면 그걸 사용
         String token = (cookieToken != null && !cookieToken.isBlank()) ? cookieToken : null;
 
@@ -46,7 +47,7 @@ public class TeamBuildControllerV1 {
             ResponseCookie set = ResponseCookie.from("authToken", token)
                     .httpOnly(false)          // 타임리프 JS에서 읽어야 하면 false (가능하면 다른 안전한 주입 방식 권장)
                     .secure(true)             // https 환경에서만
-                    .sameSite("None")         // 프론트/백 분리(크로스 도메인)면 None
+                    .sameSite("Lax")         // 프론트/백 분리(크로스 도메인)면 None
                     .path("/")
                     .maxAge(java.time.Duration.ofDays(7))
                     .build();
@@ -58,8 +59,8 @@ public class TeamBuildControllerV1 {
         boolean isLeader = projectService.isLeader(userId);
 
         return isLeader
-                ? recruitPage(model, cookieToken, userPrincipal)
-                : projects(model, cookieToken);
+                ? recruitPage(model, token, userPrincipal)
+                : projects(model, token);
     }
 
     @GetMapping("/projects")
