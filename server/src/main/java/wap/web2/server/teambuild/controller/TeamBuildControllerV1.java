@@ -83,8 +83,6 @@ public class TeamBuildControllerV1 {
         // 리더(=로그인 유저)가 소유/담당한 프로젝트 목록 (원하는 기준으로 교체 OK)
         List<ProjectTemplate> myProjects = projectService.getCurrentProjectRecruits();
 
-        System.out.println("authToken = " + authToken);
-
         model.addAttribute("projects", myProjects);
         model.addAttribute("authToken", authToken);
         model.addAttribute("leaderId", userPrincipal != null ? userPrincipal.getId() : null);
