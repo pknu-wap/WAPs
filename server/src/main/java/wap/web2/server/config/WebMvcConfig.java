@@ -12,6 +12,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     // @Value("${app.cors.allowedOrigins}")
     private final String[] allowedOrigins = {
             "https://wap-projects.netlify.app",
+            "https://wapst.netlify.app",
             "http://localhost:3000",
             "http://localhost:8080"
     };

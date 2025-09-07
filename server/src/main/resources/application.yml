@@ -55,6 +55,7 @@ app:
   oauth2:
     authorizedRedirectUris:
       - https://wap-projects.netlify.app/oauth2/redirect
+      - https://wapst.netlify.app/oauth2/redirect
       - http://localhost:3000/oauth2/redirect
       - myandroidapp://oauth2/redirect
       - myiosapp://oauth2/redirect
