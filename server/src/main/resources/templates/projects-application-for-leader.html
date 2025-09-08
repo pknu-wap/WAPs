@@ -712,7 +712,7 @@
             return;
         }
 
-        // 🔎 신규: 줄세우기 검증
+        // 줄세우기 검증
         const gaps = validateRankingBeforeSubmit();
         if (gaps.length > 0) {
             const msgLines = gaps.map(g =>
@@ -733,10 +733,6 @@
             const cap = Number(document.getElementById(`cap_${pos}`).value || 0);
             const applicantIds = selectedCandidates[pos].map(c => c.applicantId);
             if (cap > 0 || applicantIds.length > 0) roasters.push({position: pos, capacity: cap, applicantIds});
-        }
-        if (roasters.length === 0) {
-            alert('최소 한 개 포지션은 입력해야 합니다.');
-            return;
         }
 
         try {
