@@ -46,12 +46,13 @@ public class TeamBuildControllerV1 {
 
             ResponseCookie set = ResponseCookie.from("authToken", token)
                     .httpOnly(false)          // 타임리프 JS에서 읽어야 하면 false (가능하면 다른 안전한 주입 방식 권장)
-                    .secure(false)             // https 환경에서만
-                    .sameSite("Lax")         // 프론트/백 분리(크로스 도메인)면 None
+                    .secure(true)             // https 환경에서만
+                    .sameSite("None")         // 프론트/백 분리(크로스 도메인)면 None
                     .path("/")
                     .maxAge(java.time.Duration.ofDays(7))
                     .build();
             response.addHeader("Set-Cookie", set.toString());
+            return "redirect:/team-build";
         }
 
         // 4) 여기부터는 쿠키 기반으로 분기
