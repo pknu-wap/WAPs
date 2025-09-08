@@ -5,66 +5,66 @@
     <title>팀 빌드 – 리더용</title>
     <style>
         :root {
-            --col-pos: 140px; /* 포지션 라벨 폭 */
-            --col-cap: 110px; /* capacity 입력 폭 */
-            --col-btn: 84px; /* 버튼 폭 */
+            --col-pos: 140px;
+            --col-cap: 110px;
+            --col-btn: 84px;
         }
 
         * {
-            box-sizing: border-box;
+            box-sizing: border-box
         }
 
         body {
             font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-            margin: 24px;
+            margin: 24px
         }
 
         h2 {
-            margin: 12px 0;
+            margin: 12px 0
         }
 
         .row {
             display: flex;
             gap: 12px;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 12px
         }
 
         input[type="text"], input[type="number"], select {
             padding: 6px 8px;
-            width: 100%;
+            width: 100%
         }
 
         button {
             padding: 6px 10px;
             cursor: pointer;
-            width: 100%;
+            width: 100%
         }
 
         table {
             border-collapse: collapse;
             width: 100%;
             margin-top: 8px;
-            table-layout: fixed;
+            table-layout: fixed
         }
 
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
-            text-align: center;
+            text-align: center
         }
 
         th {
-            background: #f5f5f5;
+            background: #f5f5f5
         }
 
         .muted {
             color: #666;
-            font-size: 13px;
+            font-size: 13px
         }
 
         .section {
-            margin-top: 24px;
+            margin-top: 24px
         }
 
         .pill {
@@ -74,84 +74,83 @@
             border-radius: 8px;
             margin: 2px;
             font-size: 12px;
-            background: white;
+            background: #fff;
             cursor: grab;
             user-select: none;
-            transition: all 0.2s ease;
-            position: relative;
+            transition: .2s;
+            position: relative
         }
 
         .pill:hover {
             background: #f0f8ff;
-            border-color: #0066cc;
+            border-color: #06c
         }
 
         .pill.dragging {
-            opacity: 0.5;
-            cursor: grabbing;
+            opacity: .5;
+            cursor: grabbing
         }
 
         .pill.drag-over {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .1)
         }
 
         .ok {
-            color: #0b7;
+            color: #0b7
         }
 
         .err {
             color: #c00;
-            white-space: pre-wrap;
+            white-space: pre-wrap
         }
 
         .help {
             font-size: 12px;
-            color: #555;
+            color: #555
         }
 
         .sticky {
             position: sticky;
             top: 0;
-            background: white;
-            padding-top: 8px;
+            background: #fff;
+            padding-top: 8px
         }
 
-        /* ===== 포지션 입력 영역: 4열 고정 (겹침 방지) ===== */
         .positions {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 12px
         }
 
         .pos-row {
             display: grid;
-            grid-template-columns: var(--col-pos) var(--col-cap) 1fr var(--col-btn);
+            grid-template-columns:var(--col-pos) var(--col-cap) 1fr var(--col-btn);
             gap: 10px;
-            align-items: center;
+            align-items: center
         }
 
         .pos-label {
             font-weight: 700;
-            white-space: nowrap;
+            white-space: nowrap
         }
 
         .cap-wrap {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 4px
         }
 
         .cap-note {
             font-size: 11px;
             color: #777;
-            text-align: left;
+            text-align: left
         }
 
         .selection-area {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 8px
         }
 
         .selected-candidates {
@@ -165,19 +164,19 @@
             gap: 4px;
             align-items: flex-start;
             align-content: flex-start;
-            transition: all 0.2s ease;
+            transition: .2s
         }
 
         .selected-candidates.drag-over {
-            border-color: #0066cc;
-            background: #f0f8ff;
+            border-color: #06c;
+            background: #f0f8ff
         }
 
         .selected-candidates:empty::before {
             content: "여기에 지원자를 드래그해서 놓으세요";
             color: #999;
             font-style: italic;
-            font-size: 12px;
+            font-size: 12px
         }
 
         .available-candidates {
@@ -188,56 +187,55 @@
             padding: 8px;
             background: #fff;
             border: 1px solid #eee;
-            border-radius: 4px;
+            border-radius: 4px
         }
 
         .available-candidates:empty::before {
             content: "신청자 없음";
             color: #999;
             font-style: italic;
-            font-size: 12px;
+            font-size: 12px
         }
 
         .auto-btn {
-            white-space: nowrap;
+            white-space: nowrap
         }
 
         .capacity-info {
             font-size: 11px;
             color: #666;
-            margin-top: 4px;
+            margin-top: 4px
         }
 
         .selected-pill {
             background: #e6f3ff;
-            border-color: #0066cc;
-            color: #0066cc;
+            border-color: #06c;
+            color: #06c
         }
 
         .selected-pill::after {
             content: " #" attr(data-priority);
             font-size: 10px;
-            opacity: 0.7;
-            font-weight: bold;
+            opacity: .7;
+            font-weight: bold
         }
 
-        /* 필터링 관련 스타일 */
         .filter-section {
             margin-bottom: 16px;
             display: flex;
             gap: 12px;
             align-items: center;
-            flex-wrap: wrap;
+            flex-wrap: wrap
         }
 
         .filter-label {
             font-weight: 600;
-            white-space: nowrap;
+            white-space: nowrap
         }
 
         .filter-select {
             max-width: 150px;
-            flex-shrink: 0;
+            flex-shrink: 0
         }
 
         .position-badge {
@@ -247,114 +245,136 @@
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
-            color: white;
-            background: #666;
+            color: #fff;
+            background: #666
         }
 
         .position-badge.FRONTEND {
-            background: #ff6b35;
+            background: #ff6b35
         }
 
         .position-badge.BACKEND {
-            background: #4a90e2;
+            background: #4a90e2
         }
 
         .position-badge.AI {
-            background: #7b68ee;
+            background: #7b68ee
         }
 
         .position-badge.DESIGN {
-            background: #ff69b4;
+            background: #ff69b4
         }
 
         .position-badge.APP {
-            background: #32cd32;
+            background: #32cd32
         }
 
         .position-badge.EMBEDDED {
-            background: #ffa500;
+            background: #ffa500
         }
 
         .position-badge.GAME {
-            background: #dc143c;
+            background: #dc143c
         }
 
-        /* 하이라이트 효과 */
         .table-row-highlight {
-            background-color: #fff3cd !important;
+            background: #fff3cd !important;
             border: 2px solid #ffc107 !important;
-            box-shadow: 0 0 10px rgba(255, 193, 7, 0.5) !important;
-            transition: all 0.3s ease !important;
+            box-shadow: 0 0 10px rgba(255, 193, 7, .5) !important;
+            transition: .3s
         }
 
         .table-row-highlight td {
-            background-color: #fff3cd !important;
+            background: #fff3cd !important
         }
 
         @media (max-width: 820px) {
-            /* 작은 화면: 두 줄로 접기 */
             .pos-row {
-                grid-template-columns: var(--col-pos) 1fr;
+                grid-template-columns:var(--col-pos) 1fr
             }
 
             .cap-wrap {
-                grid-column: 2 / 3;
-                max-width: 200px;
+                grid-column: 2/3;
+                max-width: 200px
             }
 
             .selection-area {
-                grid-column: 1 / 3;
+                grid-column: 1/3
             }
 
             .auto-btn {
-                grid-column: 2 / 3;
+                grid-column: 2/3;
                 width: 120px;
-                justify-self: end;
+                justify-self: end
             }
         }
 
-        /* Back button */
         .topbar {
             display: flex;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 12px
         }
 
         .back-btn {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: #ffffff;
+            background: #fff;
             color: var(--text);
             border: 1px solid var(--border);
             padding: 8px 12px;
             border-radius: 10px;
             font-weight: 700;
-            cursor: pointer;
+            cursor: pointer
         }
 
         .back-btn:hover {
-            filter: brightness(0.98);
-            border-color: #d4d7dd;
+            filter: brightness(.98);
+            border-color: #d4d7dd
         }
 
         .back-btn .arrow {
             font-size: 1rem;
-            line-height: 1;
+            line-height: 1
         }
+
+        /* capacity=0 잠금 표시 */
+        .selected-candidates.locked, .available-candidates.locked {
+            position: relative;
+            pointer-events: none;
+            opacity: .6
+        }
+
+        .selected-candidates.locked::after, .available-candidates.locked::after {
+            content: "capacity를 먼저 조절해주세요.";
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, .6);
+            color: #c00;
+            font-weight: 700;
+            border: 2px dashed #c00;
+            border-radius: 6px;
+            pointer-events: none;
+        }
+
+        .need-rank {
+            border-color: #e11d48 !important; /* rose-600 */
+            background: #fff1f2 !important; /* rose-50 */
+            box-shadow: 0 0 0 2px rgba(225, 29, 72, .15);
+        }
+
     </style>
 </head>
 <body>
-
 <div class="topbar">
-    <button type="button" class="back-btn" onclick="goBack()">
-        <span class="arrow">←</span> 뒤로가기
-    </button>
+    <button type="button" class="back-btn" onclick="goBack()"><span class="arrow">←</span> 뒤로가기</button>
 </div>
 
 <h2>모집하기 페이지</h2>
 
-<!-- 프로젝트 선택 -->
 <div class="section sticky">
     <div class="row">
         <label for="projectId"><b>프로젝트 ID</b></label>
@@ -365,12 +385,10 @@
     <div class="help">* 본인이 등록한 프로젝트의 ID를 입력하세요.</div>
 </div>
 
-<!-- 지원자 표 -->
 <div class="section">
     <h3>신청자 목록</h3>
     <div class="help">본인의 팀에 지원한 신청자들의 목록입니다.</div>
 
-    <!-- 필터링 섹션 -->
     <div class="filter-section">
         <span class="filter-label">분야별 필터:</span>
         <select id="positionFilter" class="filter-select">
@@ -408,15 +426,12 @@
     <div id="applySummary" class="muted"></div>
 </div>
 
-<!-- 선발 입력 -->
 <div class="section">
     <h3>선발 입력 (드래그 앤 드롭으로 지원자를 선택하고 우선순위를 변경하세요)</h3>
     <div class="help">
         * 모집을 희망하는 분야에 원하는 인원수만큼 capacity를 입력하세요.<br/>
-        * 본인의 프로젝트에서 모집하지 않는 분야는 capacity가 0인채로 보내주세요.<br/>
-        * 지원자를 드래그해서 선택 영역에 놓으면 선발됩니다. 다시 드래그해서 빼낼 수도 있습니다.<br/>
-        * <b>선택된 지원자들은 서로 드래그해서 우선순위를 변경할 수 있습니다.</b> 숫자가 낮을수록 우선순위가 높습니다.<br/>
-        * 사용가능한 지원자에 마우스를 올리면 신청자 목록에서 해당 지원자가 하이라이트됩니다.<br/>
+        * 해당 분야 capacity가 0이면 선택할 수 없습니다(드래그 불가).<br/>
+        * 선택된 지원자들은 서로 드래그하여 우선순위를 바꿀 수 있습니다.
     </div>
 
     <div class="positions" id="positionList"></div>
@@ -428,46 +443,34 @@
 </div>
 
 <script th:inline="javascript">
-    // ========================
-    // 🔑 서버에서 받은 authToken
-    // ========================
+    /* 서버에서 주입된 토큰 */
     const authToken = /*[[${authToken}]]*/ '';
     const authHeaders = authToken && authToken !== 'null' && authToken.trim() !== ''
-        ? {'Authorization': 'Bearer ' + authToken}
+        ? {Authorization: 'Bearer ' + authToken}
         : {};
 
-    console.log('AuthToken from server:', authToken);
-    console.log('Auth headers:', authHeaders);
-
-    // ========================
-    // UI & 로직
-    // ========================
     const POSITIONS = ["FRONTEND", "BACKEND", "AI", "DESIGN", "APP", "EMBEDDED", "GAME"];
     const list = document.getElementById('positionList');
 
-    // 각 포지션의 선택된 지원자들을 저장
     const selectedCandidates = {};
-    POSITIONS.forEach(pos => selectedCandidates[pos] = []);
+    POSITIONS.forEach(p => selectedCandidates[p] = []);
 
-    // 포지션 줄 생성
+    // 포지션 섹션 만들기
     POSITIONS.forEach(pos => {
         const row = document.createElement('div');
         row.className = 'pos-row';
         row.innerHTML = `
       <div class="pos-label">${pos}</div>
-
       <div class="cap-wrap">
         <input id="cap_${pos}" type="number" min="0" value="0"/>
         <div class="cap-note">capacity</div>
       </div>
-
       <div class="selection-area">
         <div>선택된 지원자 (우선순위):</div>
         <div id="selected_${pos}" class="selected-candidates" data-position="${pos}"></div>
-        <div style="margin-top: 8px;">사용 가능한 지원자:</div>
+        <div style="margin-top:8px;">사용 가능한 지원자:</div>
         <div id="available_${pos}" class="available-candidates"></div>
-      </div>
-    `;
+      </div>`;
         list.appendChild(row);
     });
 
@@ -475,94 +478,68 @@
     let lastApplies = [];
     let currentFilter = '';
 
-    // 드래그 앤 드롭 이벤트 핸들러
+    // DnD 상태
     let draggedCandidate = null;
     let draggedFromSelected = false;
     let draggedIndex = -1;
 
-    // 하이라이트 관련 함수
+    // 테이블 하이라이트
     function highlightTableRow(applicantId) {
-        // 기존 하이라이트 제거
-        document.querySelectorAll('.table-row-highlight').forEach(row => {
-            row.classList.remove('table-row-highlight');
-        });
-
-        // 해당 applicantId를 가진 테이블 행 찾기 및 하이라이트
-        const tableRows = document.querySelectorAll('#appliesTable tbody tr');
-        tableRows.forEach(row => {
-            if (row.dataset.applicantId === applicantId.toString()) {
-                row.classList.add('table-row-highlight');
-            }
+        document.querySelectorAll('.table-row-highlight').forEach(r => r.classList.remove('table-row-highlight'));
+        document.querySelectorAll('#appliesTable tbody tr').forEach(tr => {
+            if (tr.dataset.applicantId === String(applicantId)) tr.classList.add('table-row-highlight');
         });
     }
 
     function removeTableRowHighlight() {
-        document.querySelectorAll('.table-row-highlight').forEach(row => {
-            row.classList.remove('table-row-highlight');
-        });
+        document.querySelectorAll('.table-row-highlight').forEach(r => r.classList.remove('table-row-highlight'));
     }
 
-    function makeDraggable(element, candidate, isSelected = false, index = -1) {
-        element.draggable = true;
-        element.dataset.candidateId = candidate.applicantId;
-        element.dataset.candidateName = candidate.applicantName;
-        element.dataset.position = candidate.position;
+    function makeDraggable(el, candidate, isSelected = false, index = -1) {
+        el.draggable = true;
+        el.dataset.candidateId = candidate.applicantId;
+        el.dataset.candidateName = candidate.applicantName;
+        el.dataset.position = candidate.position;
 
-        // 하이라이트 효과 추가 (사용가능한 지원자에만)
         if (!isSelected) {
-            element.addEventListener('mouseenter', () => {
-                highlightTableRow(candidate.applicantId);
-            });
-
-            element.addEventListener('mouseleave', () => {
-                removeTableRowHighlight();
-            });
+            el.addEventListener('mouseenter', () => highlightTableRow(candidate.applicantId));
+            el.addEventListener('mouseleave', removeTableRowHighlight);
         }
 
-        element.addEventListener('dragstart', (e) => {
+        el.addEventListener('dragstart', (e) => {
             draggedCandidate = candidate;
             draggedFromSelected = isSelected;
             draggedIndex = index;
-            element.classList.add('dragging');
+            el.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
-            removeTableRowHighlight(); // 드래그 시작하면 하이라이트 제거
+            removeTableRowHighlight();
         });
-
-        element.addEventListener('dragend', (e) => {
-            element.classList.remove('dragging');
+        el.addEventListener('dragend', () => {
+            el.classList.remove('dragging');
             draggedCandidate = null;
             draggedFromSelected = false;
             draggedIndex = -1;
         });
 
-        // 선택된 지원자 간의 드래그오버 이벤트 (우선순위 변경용)
         if (isSelected) {
-            element.addEventListener('dragover', (e) => {
+            el.addEventListener('dragover', (e) => {
                 if (draggedFromSelected && draggedCandidate && draggedCandidate.position === candidate.position) {
                     e.preventDefault();
                     e.dataTransfer.dropEffect = 'move';
-                    element.classList.add('drag-over');
+                    el.classList.add('drag-over');
                 }
             });
-
-            element.addEventListener('dragleave', (e) => {
-                element.classList.remove('drag-over');
-            });
-
-            element.addEventListener('drop', (e) => {
-                if (draggedFromSelected && draggedCandidate && draggedCandidate.position === candidate.position) {
-                    e.preventDefault();
-                    element.classList.remove('drag-over');
-
-                    const position = candidate.position;
-                    const targetIndex = selectedCandidates[position].findIndex(c => c.applicantId === candidate.applicantId);
-
-                    if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
-                        // 배열에서 드래그된 아이템을 제거하고 새 위치에 삽입
-                        const [movedItem] = selectedCandidates[position].splice(draggedIndex, 1);
-                        selectedCandidates[position].splice(targetIndex, 0, movedItem);
-                        updatePositionDisplay(position);
-                    }
+            el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+            el.addEventListener('drop', (e) => {
+                if (!(draggedFromSelected && draggedCandidate && draggedCandidate.position === candidate.position)) return;
+                e.preventDefault();
+                el.classList.remove('drag-over');
+                const position = candidate.position;
+                const targetIndex = selectedCandidates[position].findIndex(c => c.applicantId === candidate.applicantId);
+                if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
+                    const [moved] = selectedCandidates[position].splice(draggedIndex, 1);
+                    selectedCandidates[position].splice(targetIndex, 0, moved);
+                    updatePositionDisplay(position);
                 }
             });
         }
@@ -574,34 +551,36 @@
             e.dataTransfer.dropEffect = 'move';
             container.classList.add('drag-over');
         });
-
         container.addEventListener('dragleave', (e) => {
-            // 자식 요소로 이동할 때는 dragleave가 발생하지 않도록 체크
-            if (!container.contains(e.relatedTarget)) {
-                container.classList.remove('drag-over');
-            }
+            if (!container.contains(e.relatedTarget)) container.classList.remove('drag-over');
         });
-
         container.addEventListener('drop', (e) => {
             e.preventDefault();
             container.classList.remove('drag-over');
 
-            if (!draggedCandidate || draggedCandidate.position !== position) {
-                return;
+            // capacity=0이면 '선택 영역'으로의 드롭 금지
+            if (container.classList.contains('selected-candidates')) {
+                const cap = Number(document.getElementById(`cap_${position}`).value || 0);
+                if (cap === 0) {
+                    alert('capacity=0 상태에서는 해당 포지션에 지원자를 담을 수 없습니다.');
+                    return;
+                }
             }
 
-            const isSelected = selectedCandidates[position].some(c => c.applicantId === draggedCandidate.applicantId);
+            if (!draggedCandidate || draggedCandidate.position !== position) return;
+
+            const isSelected = selectedCandidates[position]
+                .some(c => c.applicantId === draggedCandidate.applicantId);
 
             if (container.classList.contains('selected-candidates')) {
-                // 선택 영역에 드롭 - 선택하기 (또는 우선순위 변경)
                 if (!isSelected) {
                     selectedCandidates[position].push(draggedCandidate);
                     updatePositionDisplay(position);
                 }
             } else if (container.classList.contains('available-candidates')) {
-                // 사용가능 영역에 드롭 - 선택 해제하기
                 if (isSelected) {
-                    selectedCandidates[position] = selectedCandidates[position].filter(c => c.applicantId !== draggedCandidate.applicantId);
+                    selectedCandidates[position] =
+                        selectedCandidates[position].filter(c => c.applicantId !== draggedCandidate.applicantId);
                     updatePositionDisplay(position);
                 }
             }
@@ -612,82 +591,68 @@
         const selectedContainer = document.getElementById(`selected_${position}`);
         const availableContainer = document.getElementById(`available_${position}`);
 
-        // 선택된 지원자 표시
+        // 선택된
         selectedContainer.innerHTML = '';
-        selectedCandidates[position].forEach((candidate, index) => {
+        selectedCandidates[position].forEach((c, idx) => {
             const pill = document.createElement('span');
             pill.className = 'pill selected-pill';
-            pill.textContent = candidate.applicantName;
-            pill.title = `ID: ${candidate.applicantId} (우선순위: ${index + 1})`;
-            pill.dataset.priority = index + 1;
-            makeDraggable(pill, candidate, true, index);
+            pill.textContent = c.applicantName;
+            pill.title = `ID: ${c.applicantId} (우선순위: ${idx + 1})`;
+            pill.dataset.priority = idx + 1;
+            makeDraggable(pill, c, true, idx);
             selectedContainer.appendChild(pill);
         });
 
-        // 사용가능한 지원자 표시 (선택되지 않은 것만)
-        const positionApplicants = lastApplies.filter(a => a.position === position);
-        const unselectedApplicants = positionApplicants.filter(a =>
-            !selectedCandidates[position].some(s => s.applicantId === a.applicantId)
-        );
-
+        // 미선택 후보
+        const posApps = lastApplies.filter(a => a.position === position);
+        const unselected = posApps.filter(a => !selectedCandidates[position].some(s => s.applicantId === a.applicantId));
         availableContainer.innerHTML = '';
-        unselectedApplicants.forEach(candidate => {
+        unselected.forEach(c => {
             const pill = document.createElement('span');
             pill.className = 'pill';
-            pill.textContent = candidate.applicantName;
-            pill.title = `ID: ${candidate.applicantId}`;
-            makeDraggable(pill, candidate, false);
+            pill.textContent = c.applicantName;
+            pill.title = `ID: ${c.applicantId}`;
+            makeDraggable(pill, c, false);
             availableContainer.appendChild(pill);
         });
     }
 
     function getFilteredApplies() {
-        if (!currentFilter) return lastApplies;
-        return lastApplies.filter(apply => apply.position === currentFilter);
+        return currentFilter ? lastApplies.filter(a => a.position === currentFilter) : lastApplies;
     }
 
     function updateFilterInfo() {
         const filtered = getFilteredApplies();
-        const filterInfo = document.getElementById('filterInfo');
-
+        const info = document.getElementById('filterInfo');
         if (!currentFilter) {
-            filterInfo.textContent = '';
-        } else {
-            const count = filtered.length;
-            filterInfo.textContent = `${currentFilter} 분야: ${count}명`;
+            info.textContent = '';
+            return;
         }
+        info.textContent = `${currentFilter} 분야: ${filtered.length}명`;
     }
 
     function renderAppliesTable(applies) {
         const tbody = document.querySelector('#appliesTable tbody');
         tbody.innerHTML = '';
+        const filtered = getFilteredApplies();
 
-        const filteredApplies = getFilteredApplies();
-
-        if (!filteredApplies || filteredApplies.length === 0) {
-            const message = currentFilter ?
-                `${currentFilter} 분야에 신청자가 없습니다.` :
-                '신청자가 없습니다.';
-            tbody.innerHTML = `<tr><td colspan="3" class="muted">${message}</td></tr>`;
+        if (!filtered || filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" class="muted">${currentFilter ? `${currentFilter} 분야에 신청자가 없습니다.` : '신청자가 없습니다.'}</td></tr>`;
             document.getElementById('applySummary').textContent = '';
             updateFilterInfo();
             return;
         }
 
-        for (const it of filteredApplies) {
+        for (const it of filtered) {
             const tr = document.createElement('tr');
-            tr.dataset.applicantId = it.applicantId; // 하이라이트용 데이터 속성 추가
+            tr.dataset.applicantId = it.applicantId;
             tr.innerHTML = `
         <td>${it.applicantName ?? ''}</td>
-        <td>
-          <span class="position-badge ${it.position ?? ''}">${it.position ?? ''}</span>
-        </td>
-        <td style="text-align:left">${(it.comment ?? '').replaceAll('<', '&lt;')}</td>
-      `;
+        <td><span class="position-badge ${it.position ?? ''}">${it.position ?? ''}</span></td>
+        <td style="text-align:left">${(it.comment ?? '').replaceAll('<', '&lt;')}</td>`;
             tbody.appendChild(tr);
         }
 
-        // 분야별 요약
         if (!currentFilter) {
             const counts = POSITIONS.map(p => {
                 const n = applies.filter(a => a.position === p).length;
@@ -700,7 +665,6 @@
 
         updateFilterInfo();
 
-        // 각 포지션 표시 업데이트
         POSITIONS.forEach(pos => {
             updatePositionDisplay(pos);
             setupDropZone(document.getElementById(`selected_${pos}`), pos);
@@ -708,8 +672,7 @@
         });
     }
 
-    // 필터 변경 이벤트
-    document.getElementById('positionFilter').addEventListener('change', (e) => {
+    document.getElementById('positionFilter').addEventListener('change', e => {
         currentFilter = e.target.value;
         renderAppliesTable(lastApplies);
     });
@@ -722,19 +685,15 @@
             return;
         }
         try {
-            const res = await fetch(`/team-build/${pid}/applies`, {headers: {'Accept': 'application/json', ...authHeaders}});
+            const res = await fetch(`/team-build/${pid}/applies`, {headers: {Accept: 'application/json', ...authHeaders}});
             const json = await res.json();
             if (!res.ok || !json.success) throw new Error(json.message || '불러오기 실패');
+
             currentProjectId = pid;
             lastApplies = json.applies || [];
-
-            // 선택 상태 초기화
-            POSITIONS.forEach(pos => selectedCandidates[pos] = []);
-
-            // 필터 초기화
+            POSITIONS.forEach(p => selectedCandidates[p] = []);
             document.getElementById('positionFilter').value = '';
             currentFilter = '';
-
             document.getElementById('projectTitle').textContent = json.projectTitle ? `· ${json.projectTitle}` : '';
             renderAppliesTable(lastApplies);
         } catch (err) {
@@ -752,41 +711,125 @@
             alert('먼저 프로젝트를 불러오세요.');
             return;
         }
+
+        // 🔎 신규: 줄세우기 검증
+        const gaps = validateRankingBeforeSubmit();
+        if (gaps.length > 0) {
+            const msgLines = gaps.map(g =>
+                `• ${g.pos}: 전체 ${g.total}명 중 ${g.ranked}명만 정렬됨`
+            );
+            alert(
+                '모집(cap > 0) 포지션의 모든 지원자를 순서대로 드래그하여 줄세워야 제출할 수 있어요.\n\n' +
+                msgLines.join('\n')
+            );
+            // 첫 미완 포지션으로 스크롤 살짝 유도 (선택사항)
+            const first = document.getElementById(`selected_${gaps[0].pos}`);
+            if (first) first.scrollIntoView({behavior: 'smooth', block: 'center'});
+            return;
+        }
+
         const roasters = [];
         for (const pos of POSITIONS) {
             const cap = Number(document.getElementById(`cap_${pos}`).value || 0);
             const applicantIds = selectedCandidates[pos].map(c => c.applicantId);
-            if (cap > 0 || applicantIds.length > 0) {
-                roasters.push({position: pos, capacity: cap, applicantIds: applicantIds});
-            }
+            if (cap > 0 || applicantIds.length > 0) roasters.push({position: pos, capacity: cap, applicantIds});
         }
         if (roasters.length === 0) {
             alert('최소 한 개 포지션은 입력해야 합니다.');
             return;
         }
-        const payload = {projectId: currentProjectId, roasters};
+
         try {
             const res = await fetch('/team-build/preference', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json', 'Accept': 'application/json', ...authHeaders},
-                body: JSON.stringify(payload)
+                headers: {'Content-Type': 'application/json', Accept: 'application/json', ...authHeaders},
+                body: JSON.stringify({projectId: currentProjectId, roasters})
             });
             const json = await res.json();
             if (!res.ok || !json.success) throw new Error(json.message || '등록 실패');
-            document.getElementById('submitMsg').innerHTML =
-                `<span class="ok">[성공] 팀 구성이 완료되었습니다. projectId=${json.projectId}</span>`;
-
+            document.getElementById('submitMsg').innerHTML = `<span class="ok">[성공] 팀 구성이 완료되었습니다. projectId=${json.projectId}</span>`;
             window.history.go(-2);
         } catch (err) {
-            document.getElementById('submitMsg').innerHTML =
-                `<span class="err">[실패] ${err?.message || err}</span>`;
+            document.getElementById('submitMsg').innerHTML = `<span class="err">[실패] ${err?.message || err}</span>`;
         }
     });
 
-    // 돌아가기 기능
     function goBack() {
         window.history.go(-2);
     }
+
+    // capacity 규칙: 음수 금지 + 0이면 드래그 잠금/선택 비우기
+    function enforceCapacityRules(pos) {
+        const capInput = document.getElementById(`cap_${pos}`);
+        let cap = Number(capInput.value || 0);
+        if (cap < 0) {
+            cap = 0;
+            capInput.value = 0;
+        }
+
+        const sel = document.getElementById(`selected_${pos}`);
+        const avail = document.getElementById(`available_${pos}`);
+
+        if (cap === 0) {
+            sel.classList.add('locked');
+            avail.classList.add('locked');
+            if (selectedCandidates[pos].length) {
+                selectedCandidates[pos] = [];
+                updatePositionDisplay(pos);
+            }
+        } else {
+            sel.classList.remove('locked');
+            avail.classList.remove('locked');
+        }
+    }
+
+    POSITIONS.forEach(pos => {
+        const capInput = document.getElementById(`cap_${pos}`);
+        capInput.addEventListener('input', () => enforceCapacityRules(pos));
+        enforceCapacityRules(pos); // 초기 상태 반영
+    });
+
+    /** 특정 포지션의 전체 지원자 수 */
+    function totalApplicantsOf(pos) {
+        return (lastApplies || []).filter(a => a.position === pos).length;
+    }
+
+    /** 미완 포지션 시각 표시 */
+    function markNeedRank(pos, on) {
+        const box = document.getElementById(`selected_${pos}`);
+        if (!box) return;
+        if (on) box.classList.add('need-rank');
+        else box.classList.remove('need-rank');
+    }
+
+    /**
+     * 제출 전 검증:
+     * cap > 0 인 포지션은 "들어온 모든 지원자"를 selected 에 순서대로 줄세워야 함.
+     * 반환값: 미완 목록 [{pos, total, ranked}]
+     */
+    function validateRankingBeforeSubmit() {
+        const missing = [];
+        for (const pos of POSITIONS) {
+            const cap = Number(document.getElementById(`cap_${pos}`).value || 0);
+            // 모집하지 않는 포지션(cap=0)은 제외
+            if (cap <= 0) {
+                markNeedRank(pos, false);
+                continue;
+            }
+            const total = totalApplicantsOf(pos);
+            const ranked = (selectedCandidates[pos] || []).length;
+
+            if (total > 0 && ranked !== total) {
+                // 미완성 → 표시 및 수집
+                markNeedRank(pos, true);
+                missing.push({pos, total, ranked});
+            } else {
+                markNeedRank(pos, false);
+            }
+        }
+        return missing;
+    }
+
 </script>
 </body>
 </html>
