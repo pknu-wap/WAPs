@@ -9,5 +9,5 @@ public enum Position {
     APP,
     GAME,
     EMBEDDED;
-    // 안드 아오에스  -> 통일
+
 }
