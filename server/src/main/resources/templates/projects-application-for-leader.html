@@ -359,6 +359,13 @@
             border-radius: 6px;
             pointer-events: none;
         }
+
+        .need-rank {
+            border-color: #e11d48 !important; /* rose-600 */
+            background: #fff1f2 !important; /* rose-50 */
+            box-shadow: 0 0 0 2px rgba(225, 29, 72, .15);
+        }
+
     </style>
 </head>
 <body>
@@ -704,6 +711,23 @@
             alert('먼저 프로젝트를 불러오세요.');
             return;
         }
+
+        // 🔎 신규: 줄세우기 검증
+        const gaps = validateRankingBeforeSubmit();
+        if (gaps.length > 0) {
+            const msgLines = gaps.map(g =>
+                `• ${g.pos}: 전체 ${g.total}명 중 ${g.ranked}명만 정렬됨`
+            );
+            alert(
+                '모집(cap > 0) 포지션의 모든 지원자를 순서대로 드래그하여 줄세워야 제출할 수 있어요.\n\n' +
+                msgLines.join('\n')
+            );
+            // 첫 미완 포지션으로 스크롤 살짝 유도 (선택사항)
+            const first = document.getElementById(`selected_${gaps[0].pos}`);
+            if (first) first.scrollIntoView({behavior: 'smooth', block: 'center'});
+            return;
+        }
+
         const roasters = [];
         for (const pos of POSITIONS) {
             const cap = Number(document.getElementById(`cap_${pos}`).value || 0);
@@ -764,6 +788,48 @@
         capInput.addEventListener('input', () => enforceCapacityRules(pos));
         enforceCapacityRules(pos); // 초기 상태 반영
     });
+
+    /** 특정 포지션의 전체 지원자 수 */
+    function totalApplicantsOf(pos) {
+        return (lastApplies || []).filter(a => a.position === pos).length;
+    }
+
+    /** 미완 포지션 시각 표시 */
+    function markNeedRank(pos, on) {
+        const box = document.getElementById(`selected_${pos}`);
+        if (!box) return;
+        if (on) box.classList.add('need-rank');
+        else box.classList.remove('need-rank');
+    }
+
+    /**
+     * 제출 전 검증:
+     * cap > 0 인 포지션은 "들어온 모든 지원자"를 selected 에 순서대로 줄세워야 함.
+     * 반환값: 미완 목록 [{pos, total, ranked}]
+     */
+    function validateRankingBeforeSubmit() {
+        const missing = [];
+        for (const pos of POSITIONS) {
+            const cap = Number(document.getElementById(`cap_${pos}`).value || 0);
+            // 모집하지 않는 포지션(cap=0)은 제외
+            if (cap <= 0) {
+                markNeedRank(pos, false);
+                continue;
+            }
+            const total = totalApplicantsOf(pos);
+            const ranked = (selectedCandidates[pos] || []).length;
+
+            if (total > 0 && ranked !== total) {
+                // 미완성 → 표시 및 수집
+                markNeedRank(pos, true);
+                missing.push({pos, total, ranked});
+            } else {
+                markNeedRank(pos, false);
+            }
+        }
+        return missing;
+    }
+
 </script>
 </body>
 </html>
