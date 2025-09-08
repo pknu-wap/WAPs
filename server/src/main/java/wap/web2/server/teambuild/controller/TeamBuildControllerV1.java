@@ -9,8 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.TokenProvider;
 import wap.web2.server.ouath2.security.UserPrincipal;
@@ -32,36 +32,41 @@ public class TeamBuildControllerV1 {
     @GetMapping
     public String entry(Model model,
                         @CurrentUser UserPrincipal userPrincipal,
+                        @RequestParam(value = "token", required = false) String tokenParam,
                         @CookieValue(name = "authToken", required = false) String cookieToken,
-                        @RequestHeader(value = "Authorization", required = false) String authHeader,
                         HttpServletResponse response) throws Exception {
-        log.info("[/team-build] entry parameter is null: userPrincipal={}, cookieToken={}, authHeader{}",
-                userPrincipal == null, cookieToken == null, authHeader == null);
-        // 1) 쿠키에 토큰이 이미 있으면 그걸 사용
-        String token = (cookieToken != null && !cookieToken.isBlank()) ? cookieToken : null;
+        log.info("[/team-build] cookieToken?={} / tokenParam?={}",
+                cookieToken != null, tokenParam != null);
 
-        // 2) 쿠키가 없고 Authorization 헤더가 있으면 Bearer 토큰 추출해서 쿠키로 심기 (한 번만)
-        if (token == null && authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
+        String token = null;
 
+        // 1) 쿼리 파라미터 우선 확인
+        if (tokenParam != null && !tokenParam.isBlank()) {
+            token = tokenParam;
+            // 쿠키로 심기
             ResponseCookie set = ResponseCookie.from("authToken", token)
-                    .httpOnly(false)          // 타임리프 JS에서 읽어야 하면 false (가능하면 다른 안전한 주입 방식 권장)
-                    .secure(true)             // https 환경에서만
-                    .sameSite("None")         // 프론트/백 분리(크로스 도메인)면 None
+                    .httpOnly(false)          // JS 접근 필요하다면 false
+                    .secure(true)             // HTTPS 환경만
+                    .sameSite("None")         // 프론트/백 분리 도메인일 경우 None
                     .path("/")
                     .maxAge(java.time.Duration.ofDays(7))
                     .build();
             response.addHeader("Set-Cookie", set.toString());
+
+            // URL 깨끗하게 만들기 (token 파라미터 제거)
             return "redirect:/team-build";
         }
 
-        // 4) 여기부터는 쿠키 기반으로 분기
+        // 2) 쿠키 확인
+        if (cookieToken != null && !cookieToken.isBlank()) {
+            token = cookieToken;
+        }
+
+        // 4) 토큰 파싱 후 분기
         Long userId = tokenProvider.getUserIdFromToken(token);
         boolean isLeader = projectService.isLeader(userId);
 
-        return isLeader
-                ? recruitPage(model, token, userPrincipal)
-                : projects(model, token);
+        return isLeader ? "redirect:/team-build/recruit" : "redirect:/team-build/projects";
     }
 
     @GetMapping("/projects")
