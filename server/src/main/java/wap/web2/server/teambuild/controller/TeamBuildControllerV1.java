@@ -17,6 +17,7 @@ import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.service.ProjectService;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
+import wap.web2.server.teambuild.service.ApplyService;
 import wap.web2.server.teambuild.service.TeamBuildResultService;
 
 @Slf4j
@@ -25,6 +26,7 @@ import wap.web2.server.teambuild.service.TeamBuildResultService;
 @RequiredArgsConstructor
 public class TeamBuildControllerV1 {
 
+    private final ApplyService applyService;
     private final TokenProvider tokenProvider;
     private final ProjectService projectService;
     private final TeamBuildResultService teamBuildResultService;
@@ -65,8 +67,17 @@ public class TeamBuildControllerV1 {
 
         // 4) 토큰 파싱 후 분기
         Long userId = tokenProvider.getUserIdFromToken(token);
+
+        // 4-1) 이번 학기 이미 지원을 한 사용자인가?
+        if (applyService.hasAppliedThisSemester(userId)) {
+            log.info("[/team-build] user {} already voted this semester", userId);
+            return "already-applied";
+        }
+
+        // 4-2) 이번 학기 리더인가?
         boolean isLeader = projectService.isLeader(userId);
 
+        // 4-3) 리더이면 모집화면으로, 아니라면 지원화면으로 redirect 한다.
         return isLeader ? "redirect:/team-build/recruit" : "redirect:/team-build/projects";
     }
 

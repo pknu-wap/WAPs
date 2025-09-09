@@ -1,5 +1,7 @@
 package wap.web2.server.teambuild.service;
 
+import static wap.web2.server.util.SemesterGenerator.generateSemester;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -117,6 +119,10 @@ public class ApplyService {
             // 3. 부모 엔티티에 자식 리스트 설정
             recruit.setWishList(wishes);
         }
+    }
+
+    public boolean hasAppliedThisSemester(Long userId) {
+        return applyRepository.existsByUserIdAndSemester(userId, generateSemester());
     }
 
 }
