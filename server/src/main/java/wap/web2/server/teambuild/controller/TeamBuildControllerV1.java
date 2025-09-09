@@ -31,7 +31,6 @@ public class TeamBuildControllerV1 {
 
     @GetMapping
     public String entry(Model model,
-                        @CurrentUser UserPrincipal userPrincipal,
                         @RequestParam(value = "token", required = false) String tokenParam,
                         @CookieValue(name = "authToken", required = false) String cookieToken,
                         HttpServletResponse response) throws Exception {

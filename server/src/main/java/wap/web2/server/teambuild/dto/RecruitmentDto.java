@@ -16,6 +16,7 @@ public class RecruitmentDto {
     @NotNull
     private Long projectId;
 
+    // 지원자가 한 명도 없는 경우를 고려해 empty list를 받을 수 있도록 한다.
     private List<@Valid RecruitmentInfo> roasters;
 
     @Getter
