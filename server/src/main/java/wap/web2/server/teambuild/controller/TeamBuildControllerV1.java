@@ -35,12 +35,12 @@ public class TeamBuildControllerV1 {
                         @RequestParam(value = "token", required = false) String tokenParam,
                         @CookieValue(name = "authToken", required = false) String cookieToken,
                         HttpServletResponse response) throws Exception {
-        log.info("[/team-build] cookieToken?={} / tokenParam?={}",
-                cookieToken != null, tokenParam != null);
+        log.info("[/team-build] cookieToken?={} / tokenParam?={}", cookieToken != null, tokenParam != null);
 
+        // 0) 쿠키로부터 or 쿼리 파라미터로부터 주입될 토큰
         String token = null;
 
-        // 1) 쿼리 파라미터 우선 확인
+        // 1) 쿼리 파라미터 확인
         if (tokenParam != null && !tokenParam.isBlank()) {
             token = tokenParam;
             // 쿠키로 심기
@@ -62,6 +62,8 @@ public class TeamBuildControllerV1 {
             token = cookieToken;
         }
 
+        // 3) 토큰이 여전히 null이면 로그인이 안된 것! (지금은 프론트 검증을 믿고 무시한다.)
+
         // 4) 토큰 파싱 후 분기
         Long userId = tokenProvider.getUserIdFromToken(token);
         boolean isLeader = projectService.isLeader(userId);
@@ -70,8 +72,8 @@ public class TeamBuildControllerV1 {
     }
 
     @GetMapping("/projects")
-    public String projects(Model model, @CookieValue(name = "authToken", required = false) String authToken)
-            throws Exception {
+    public String projects(Model model,
+                           @CookieValue(name = "authToken", required = false) String authToken) throws Exception {
 
         List<ProjectTemplate> projects = projectService.getCurrentProjectRecruits();
 
