@@ -17,6 +17,7 @@ import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.service.ProjectService;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
+import wap.web2.server.teambuild.service.ApplyService;
 import wap.web2.server.teambuild.service.TeamBuildResultService;
 
 @Slf4j
@@ -25,22 +26,22 @@ import wap.web2.server.teambuild.service.TeamBuildResultService;
 @RequiredArgsConstructor
 public class TeamBuildControllerV1 {
 
+    private final ApplyService applyService;
     private final TokenProvider tokenProvider;
     private final ProjectService projectService;
     private final TeamBuildResultService teamBuildResultService;
 
     @GetMapping
     public String entry(Model model,
-                        @CurrentUser UserPrincipal userPrincipal,
                         @RequestParam(value = "token", required = false) String tokenParam,
                         @CookieValue(name = "authToken", required = false) String cookieToken,
                         HttpServletResponse response) throws Exception {
-        log.info("[/team-build] cookieToken?={} / tokenParam?={}",
-                cookieToken != null, tokenParam != null);
+        log.info("[/team-build] cookieToken?={} / tokenParam?={}", cookieToken != null, tokenParam != null);
 
+        // 0) 쿠키로부터 or 쿼리 파라미터로부터 주입될 토큰
         String token = null;
 
-        // 1) 쿼리 파라미터 우선 확인
+        // 1) 쿼리 파라미터 확인
         if (tokenParam != null && !tokenParam.isBlank()) {
             token = tokenParam;
             // 쿠키로 심기
@@ -62,16 +63,27 @@ public class TeamBuildControllerV1 {
             token = cookieToken;
         }
 
+        // 3) 토큰이 여전히 null이면 로그인이 안된 것! (지금은 프론트 검증을 믿고 무시한다.)
+
         // 4) 토큰 파싱 후 분기
         Long userId = tokenProvider.getUserIdFromToken(token);
+
+        // 4-1) 이번 학기 이미 지원을 한 사용자인가?
+        if (applyService.hasAppliedThisSemester(userId)) {
+            log.info("[/team-build] user {} already voted this semester", userId);
+            return "already-applied";
+        }
+
+        // 4-2) 이번 학기 리더인가?
         boolean isLeader = projectService.isLeader(userId);
 
+        // 4-3) 리더이면 모집화면으로, 아니라면 지원화면으로 redirect 한다.
         return isLeader ? "redirect:/team-build/recruit" : "redirect:/team-build/projects";
     }
 
     @GetMapping("/projects")
-    public String projects(Model model, @CookieValue(name = "authToken", required = false) String authToken)
-            throws Exception {
+    public String projects(Model model,
+                           @CookieValue(name = "authToken", required = false) String authToken) throws Exception {
 
         List<ProjectTemplate> projects = projectService.getCurrentProjectRecruits();
 
