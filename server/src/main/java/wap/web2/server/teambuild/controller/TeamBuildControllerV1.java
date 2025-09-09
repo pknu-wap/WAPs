@@ -43,6 +43,7 @@ public class TeamBuildControllerV1 {
 
         // 1) 쿼리 파라미터 확인
         if (tokenParam != null && !tokenParam.isBlank()) {
+            log.info("[/team-build] first request");
             token = tokenParam;
             // 쿠키로 심기
             ResponseCookie set = ResponseCookie.from("authToken", token)
@@ -58,6 +59,8 @@ public class TeamBuildControllerV1 {
             return "redirect:/team-build";
         }
 
+        log.info("[/team-build] second request");
+
         // 2) 쿠키 확인
         if (cookieToken != null && !cookieToken.isBlank()) {
             token = cookieToken;
@@ -67,6 +70,8 @@ public class TeamBuildControllerV1 {
 
         // 4) 토큰 파싱 후 분기
         Long userId = tokenProvider.getUserIdFromToken(token);
+
+        log.info("[/team-build] success to parsing userId from token");
 
         // 4-1) 이번 학기 이미 지원을 한 사용자인가?
         if (applyService.hasAppliedThisSemester(userId)) {
