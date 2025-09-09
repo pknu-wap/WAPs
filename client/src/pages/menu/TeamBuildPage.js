@@ -19,7 +19,7 @@ function TeamBuildPage() {
     }
 
     // REACT_APP_API_BASE_URL 뒤에 슬래시가 중복되지 않도록 정리
-    const base = (process.env.REACT_APP_API_BASE_URL || "").replace(/\/+$/, "");
+    // const base = (process.env.REACT_APP_API_BASE_URL || "").replace(/\/+$/, "");
 
     // URL 파라미터로 token 전달
     setMsg("이동 중...");
