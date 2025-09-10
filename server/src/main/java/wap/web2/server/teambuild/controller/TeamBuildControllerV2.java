@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -106,6 +108,20 @@ public class TeamBuildControllerV2 {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
         }
+    }
+
+    // csv로 지원 현황을 반환한다.
+    @GetMapping(value = "/export/applies.csv", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<byte[]> exportAppliesCsv() {
+        // (필요 시) 여기서 인증/권한 검사를 모두 끝낸 뒤 진행
+        byte[] bytes = applyService.generateAppliesCsvBytes();
+
+        String filename = "applies_" + java.time.LocalDate.now() + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .contentLength(bytes.length)
+                .body(bytes);
     }
 
 }
