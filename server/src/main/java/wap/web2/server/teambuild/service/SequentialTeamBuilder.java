@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import wap.web2.server.teambuild.dto.ApplyInfo;
 import wap.web2.server.teambuild.dto.RecruitInfo;
 
+@Slf4j
 public class SequentialTeamBuilder implements TeamBuilder {
 
     @Override
@@ -69,7 +71,7 @@ public class SequentialTeamBuilder implements TeamBuilder {
             temporaryTeam.add(applicant);
         }
     }
-    
+
     private Set<Long> getDuplicateMemberOf(Map<Long, Set<Long>> teams) {
         int size = teams.values().stream().mapToInt(Set::size).sum();
         Set<Long> memberIds = new HashSet<>(size); // resize 비용을 줄이기 위해
@@ -106,6 +108,10 @@ public class SequentialTeamBuilder implements TeamBuilder {
             Long teamId = apply.getProjectId();     // 어떤 프로젝트에 지원했는지
             Set<Long> members = teams.get(teamId);  // 그 프로젝트의 현재 멤버
 
+            if (members == null) {
+                log.info("[TeamBuilder] members is NULL: member's apply={}, teamId={}, memberId={}, teams={}",
+                        apply.toString(), teamId, memberId, teams.toString());
+            }
             if (!members.contains(memberId)) {      // 멤버가 초기에 new 설정되었고 remove 하기에 null 검사 필요없음
                 continue;
             }
