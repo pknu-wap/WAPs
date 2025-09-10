@@ -22,6 +22,7 @@ import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.service.ApplyService;
+import wap.web2.server.teambuild.service.TeamBuildExportService;
 import wap.web2.server.teambuild.service.TeamBuildService;
 
 @Slf4j
@@ -30,6 +31,7 @@ import wap.web2.server.teambuild.service.TeamBuildService;
 @RequiredArgsConstructor
 public class TeamBuildControllerV2 {
 
+    private final TeamBuildExportService teamBuildExportService;
     private final TeamBuildService teamBuildService;
     private final ApplyService applyService;
 
@@ -110,11 +112,10 @@ public class TeamBuildControllerV2 {
         }
     }
 
-    // csv로 지원 현황을 반환한다.
+    // 지원 현황 반환 (.CSV)
     @GetMapping(value = "/export/applies.csv", produces = "text/csv; charset=UTF-8")
     public ResponseEntity<byte[]> exportAppliesCsv() {
-        // (필요 시) 여기서 인증/권한 검사를 모두 끝낸 뒤 진행
-        byte[] bytes = applyService.generateAppliesCsvBytes();
+        byte[] bytes = teamBuildExportService.generateAppliesCsvBytes();
 
         String filename = "applies_" + java.time.LocalDate.now() + ".csv";
         return ResponseEntity.ok()
