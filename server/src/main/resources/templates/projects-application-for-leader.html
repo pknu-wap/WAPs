@@ -732,18 +732,8 @@
         for (const pos of POSITIONS) {
             const cap = Number(document.getElementById(`cap_${pos}`).value || 0);
 
-            // 기존: const applicantIds = selectedCandidates[pos].map(...)
-            // 변경: let으로 선언 후 cap === 0이면 빈 배열로 강제
-            let applicantIds = (selectedCandidates[pos] || []).map(c => c.applicantId);
-
-            // cap이 0이면 무조건 빈 리스트로 강제
-            if (cap === 0) {
-                applicantIds = [];
-            }
-
-            if (cap > 0 || applicantIds.length > 0) {
-                roasters.push({position: pos, capacity: cap, applicantIds});
-            }
+            const applicantIds = selectedCandidates[pos].map(c => c.applicantId);
+            if (cap > 0 || applicantIds.length > 0) roasters.push({position: pos, capacity: cap, applicantIds});
         }
 
         try {
