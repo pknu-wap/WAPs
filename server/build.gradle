@@ -53,6 +53,9 @@ dependencies {
     // thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation "org.thymeleaf.extras:thymeleaf-extras-springsecurity6"
+
+    // csv
+    implementation 'org.apache.commons:commons-csv:1.11.0'
 }
 
 test {
