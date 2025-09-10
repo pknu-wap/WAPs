@@ -24,5 +24,4 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findProjectsByYearAndSemesterOrderByProjectIdDesc(@Param("year") Integer year,
                                                                     @Param("semester") Integer semester);
 
-    List<Project> findAllBySemester(String semester);
 }
