@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import wap.web2.server.teambuild.dto.ApplyInfo;
 import wap.web2.server.teambuild.dto.RecruitInfo;
 
+@Slf4j
 public class SequentialTeamBuilder implements TeamBuilder {
 
     @Override
@@ -48,6 +50,10 @@ public class SequentialTeamBuilder implements TeamBuilder {
         for (Entry<Long, RecruitInfo> team : leaderWishes.entrySet()) {
             Long teamId = team.getKey(); // projectId
             Integer capacity = team.getValue().getCapacity();
+            if (capacity < 0) {
+                capacity = 0;
+                log.info("[TeamBuilder] 팀장이 원하는 팀의 규모가 0보다 작아서 0으로 변경합니다.");
+            }
 
             Set<Long> temporaryTeam = new LinkedHashSet<>();
             addAcceptableMember(team, capacity, temporaryTeam);
@@ -69,7 +75,7 @@ public class SequentialTeamBuilder implements TeamBuilder {
             temporaryTeam.add(applicant);
         }
     }
-    
+
     private Set<Long> getDuplicateMemberOf(Map<Long, Set<Long>> teams) {
         int size = teams.values().stream().mapToInt(Set::size).sum();
         Set<Long> memberIds = new HashSet<>(size); // resize 비용을 줄이기 위해
@@ -77,6 +83,10 @@ public class SequentialTeamBuilder implements TeamBuilder {
 
         for (Set<Long> currentMembers : teams.values()) {
             for (Long id : currentMembers) {
+                if (id == null) {
+                    log.info("[TeamBuilder] 팀의 멤버 리스트에 NULL이 포함되어 있습니다.");
+                    continue;
+                }
                 boolean isNew = memberIds.add(id);
                 if (!isNew) {
                     duplicateMemberIds.add(id);
@@ -102,10 +112,19 @@ public class SequentialTeamBuilder implements TeamBuilder {
         List<ApplyInfo> applyInfos = applicantWishes.get(memberId); // 한 명의 중복되는 멤버가 가지는 모든 지원서
 
         boolean isJoin = false;
+
+        if (applyInfos == null) {
+            log.info("[TeamBuilder] 중복되는 멤버 {}의 지원서가 NULL 입니다.", memberId);
+        }
+
         for (ApplyInfo apply : applyInfos) {
             Long teamId = apply.getProjectId();     // 어떤 프로젝트에 지원했는지
             Set<Long> members = teams.get(teamId);  // 그 프로젝트의 현재 멤버
 
+            if (members == null) {
+                log.info("[TeamBuilder] {}팀에 멤버 리스트가 초기화되지 않았습니다: member's apply={}, memberId={}, teams={}",
+                        teamId, apply.toString(), memberId, teams.toString());
+            }
             if (!members.contains(memberId)) {      // 멤버가 초기에 new 설정되었고 remove 하기에 null 검사 필요없음
                 continue;
             }
