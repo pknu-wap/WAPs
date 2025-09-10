@@ -787,6 +787,8 @@
     // 선택된 프로젝트 목록
     let selectedProjects = new Set();
 
+    const MAX_SELECTION = 5; // ★ 6개 이상 금지 (최대 5개)
+
     // 돌아가기 기능
     function goBack() {
         window.history.go(-2);
@@ -891,6 +893,11 @@
             return;
         }
 
+        if (selectedProjects.size >= MAX_SELECTION) {
+            alert(`프로젝트는 최대 ${MAX_SELECTION}개까지만 선택할 수 있습니다.`);
+            return;
+        }
+
         selectedProjects.add(projectId);
         updateProjectCard(projectId, true);
         updateCartDisplay();
@@ -958,24 +965,22 @@
 
         const count = selectedProjects.size;
 
-        // 장바구니 배지 업데이트
         cartBadge.textContent = count;
         floatingCartCount.textContent = count;
 
-        // 장바구니 상태에 따른 스타일 변경
         if (count > 0) {
             cartSection.classList.add('has-items');
             clearCartBtn.style.display = 'block';
-            applyAllBtn.disabled = false;
             cartCounter.classList.remove('hide');
         } else {
             cartSection.classList.remove('has-items');
             clearCartBtn.style.display = 'none';
-            applyAllBtn.disabled = true;
             cartCounter.classList.add('hide');
         }
 
-        // 장바구니 항목 표시
+        // ★ 0개이거나 6개 이상이면 제출 버튼 비활성화
+        applyAllBtn.disabled = (count === 0 || count > MAX_SELECTION);
+
         if (count === 0) {
             cartItems.innerHTML = '<div class="cart-empty">아직 선택된 프로젝트가 없습니다. 프로젝트를 선택해주세요.</div>';
         } else {
@@ -986,11 +991,19 @@
             });
 
             cartItems.innerHTML = projectTitles.map(project => `
-                <div class="cart-item">
-                    <span>${project.title}</span>
-                    <span class="cart-item-remove" onclick="removeFromCart(${project.id})">×</span>
-                </div>
-            `).join('');
+            <div class="cart-item">
+                <span>${project.title}</span>
+                <span class="cart-item-remove" onclick="removeFromCart(${project.id})">×</span>
+            </div>
+        `).join('');
+
+            // ★ 6개 이상 경고 메시지(옵션)
+            if (count > MAX_SELECTION) {
+                cartItems.insertAdjacentHTML('beforeend',
+                    `<div class="cart-empty" style="color:#b91c1c;">
+                   프로젝트는 최대 ${MAX_SELECTION}개까지만 선택할 수 있습니다.
+                 </div>`);
+            }
         }
     }
 
@@ -1005,6 +1018,11 @@
     function openCartApplicationModal() {
         if (selectedProjects.size === 0) {
             alert('먼저 프로젝트를 선택해주세요.');
+            return;
+        }
+
+        if (selectedProjects.size > MAX_SELECTION) {
+            alert(`프로젝트는 최대 ${MAX_SELECTION}개까지만 지원할 수 있습니다.`);
             return;
         }
 
@@ -1150,9 +1168,16 @@
     }
 
     // 선택한 모든 프로젝트에 지원서 제출 (우선순위 순서대로)
-    function submitAllApplications() {
-        if (selectedProjects.size === 0) {
+    async function submitAllApplications() {
+        const count = selectedProjects.size;
+
+        if (count === 0) {
             alert('제출할 프로젝트가 없습니다.');
+            return;
+        }
+
+        if (count > MAX_SELECTION) {
+            alert(`프로젝트는 최대 ${MAX_SELECTION}개까지만 지원할 수 있습니다.`);
             return;
         }
 
@@ -1167,16 +1192,12 @@
                 projectId: projectId,
                 position: commonApplication.position,
                 comment: commonApplication.message,
-                priority: index + 1 // 우선순위 추가
+                priority: index + 1
             };
         });
 
         const authToken = /*[[${authToken}]]*/ '';
 
-        console.log('우선순위가 적용된 지원 데이터:', allApplications);
-        console.log('authToken=', authToken);
-
-        // 사용자에게 최종 확인
         const projectTitles = Array.from(selectedProjects).map(projectId => {
             const card = document.getElementById(`project-${projectId}`);
             return card ? card.querySelector('h3').textContent : `프로젝트 ${projectId}`;
@@ -1186,35 +1207,50 @@
             `지원 직무: ${getPositionName(commonApplication.position)}\n\n` +
             projectTitles.map((title, index) => `${index + 1}순위: ${title}`).join('\n');
 
-        if (!confirm(confirmMessage)) {
-            return;
-        }
+        if (!confirm(confirmMessage)) return;
 
-        // 실제 서버 전송 로직
-        fetch('/team-build/apply', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + authToken
-            },
-            body: JSON.stringify({
-                applies: allApplications
-            })
-        })
-            //.then(response => response.json())
-            .then(data => {
-                alert(`${allApplications.length}개 프로젝트에 우선순위대로 지원이 완료되었습니다!`);
-                closeCartModal();
-
-                // 지원 완료 후 장바구니 비우기
-                clearCartAfterSubmit();
-
-                window.history.go(-2);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('지원 중 오류가 발생했습니다. 다시 시도해주세요.');
+        try {
+            const response = await fetch('/team-build/apply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: JSON.stringify({applies: allApplications})
             });
+
+            // ★ 응답 상태에 따라 분기
+            if (!response.ok) {
+                // 서버가 JSON 에러 메시지를 줄 수도, text를 줄 수도 있음
+                let msg = '';
+                try {
+                    const data = await response.json();
+                    msg = data?.message || data?.error || data?.detail || '';
+                } catch (_) {
+                    msg = (await response.text()) || '';
+                }
+                const statusMsg = `지원 실패 (HTTP ${response.status})`;
+                alert(msg ? `${statusMsg}\n\n사유: ${msg}` : statusMsg);
+                return;
+            }
+
+            // 성공 처리 (204 No Content 대비)
+            try {
+                await response.json();
+            } catch (_) {
+            }
+
+            alert(`${allApplications.length}개 프로젝트에 우선순위대로 지원이 완료되었습니다!`);
+            closeCartModal();
+
+            // 지원 완료 후 장바구니 비우기
+            clearCartAfterSubmit();
+
+            window.history.go(-2);
+        } catch (error) {
+            console.error('Error:', error);
+            alert(`지원 중 오류가 발생했습니다. 다시 시도해주세요.\n\n사유: ${error?.message || error}`);
+        }
     }
 
     // 지원 완료 후 장바구니 정리
