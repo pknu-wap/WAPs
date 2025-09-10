@@ -64,6 +64,21 @@ public class ApplyService {
     }
 
     @Transactional(readOnly = true)
+    public boolean hasApplied(UserPrincipal userPrincipal, Long projectId) {
+        User user = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
+
+        if (!project.isOwner(user)) {
+            throw new IllegalArgumentException("[ERROR] 프로젝트의 팀장이 아닙니다.");
+        }
+
+        ProjectRecruit projectRecruit = recruitRepository.findProjectRecruitByProject_ProjectId(projectId);
+        return projectRecruit != null;
+    }
+
+    @Transactional(readOnly = true)
     public ProjectAppliesResponse getApplies(UserPrincipal userPrincipal, Long projectId) {
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
