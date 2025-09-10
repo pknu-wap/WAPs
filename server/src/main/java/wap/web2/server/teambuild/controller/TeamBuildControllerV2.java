@@ -1,6 +1,7 @@
 package wap.web2.server.teambuild.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -117,7 +118,20 @@ public class TeamBuildControllerV2 {
     public ResponseEntity<byte[]> exportAppliesCsv() {
         byte[] bytes = teamBuildExportService.generateAppliesCsvBytes();
 
-        String filename = "applies_" + java.time.LocalDate.now() + ".csv";
+        String filename = "applies_" + LocalDate.now() + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .contentLength(bytes.length)
+                .body(bytes);
+    }
+
+    // 모집 현황 반환 (.CSV)
+    @GetMapping(value = "/export/recruits.csv", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<byte[]> exportRecruitsCsv() {
+        byte[] bytes = teamBuildExportService.generateRecruitsCsvBytes();
+
+        String filename = "recruits_" + LocalDate.now() + ".csv";
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                 .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))

@@ -1,6 +1,8 @@
 package wap.web2.server.teambuild.repository;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,5 +23,7 @@ public interface ProjectApplyRepository extends JpaRepository<ProjectApply, Long
     List<TeamMemberResult> findAllByUserId(@Param("userIds") List<Long> userIds);
 
     boolean existsByUserIdAndSemester(Long userId, String semester);
+
+    Page<ProjectApply> findAllBySemester(String semester, Pageable pageable);
 
 }

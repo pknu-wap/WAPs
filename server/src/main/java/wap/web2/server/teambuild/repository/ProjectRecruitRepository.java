@@ -1,6 +1,8 @@
 package wap.web2.server.teambuild.repository;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import wap.web2.server.teambuild.entity.Position;
@@ -12,5 +14,7 @@ public interface ProjectRecruitRepository extends JpaRepository<ProjectRecruit, 
     Boolean existsByProjectIdAndSemester(Long projectId, String semester);
 
     List<ProjectRecruit> findAllBySemesterAndPosition(String semester, Position position);
+
+    Page<ProjectRecruit> findAllBySemester(String semester, PageRequest of);
 
 }
