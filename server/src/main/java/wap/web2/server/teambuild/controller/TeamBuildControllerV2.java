@@ -50,7 +50,7 @@ public class TeamBuildControllerV2 {
     public ResponseEntity<?> getApplies(@CurrentUser UserPrincipal userPrincipal,
                                         @PathVariable("projectId") Long projectId) {
         try {
-            boolean hasApplied = applyService.hasApplied(userPrincipal, projectId);
+            boolean hasApplied = applyService.hasRecruited(userPrincipal, projectId);
             if (hasApplied) {
                 throw new Exception("이미 제출된 모집이 존재합니다.");
             }
