@@ -7,8 +7,10 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecruitmentDto {
@@ -20,6 +22,7 @@ public class RecruitmentDto {
     private List<@Valid RecruitmentInfo> roasters;
 
     @Getter
+    @ToString
     @NoArgsConstructor
     @AllArgsConstructor
     public static final class RecruitmentInfo {

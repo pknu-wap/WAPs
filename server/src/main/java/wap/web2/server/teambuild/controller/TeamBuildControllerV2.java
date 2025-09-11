@@ -80,7 +80,7 @@ public class TeamBuildControllerV2 {
                                            @Valid @RequestBody RecruitmentDto request) {
         try {
             applyService.setPreference(userPrincipal, request);
-
+            log.info("[preference] {}", request.toString());
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "팀 구성이 완료되었습니다.");
@@ -90,8 +90,8 @@ public class TeamBuildControllerV2 {
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
-            errorResponse.put("message", "팀 구성 중 오류가 발생했습니다.");
-            errorResponse.put("error", e.getMessage());
+            errorResponse.put("message", e.getMessage());
+            errorResponse.put("error", "팀 구성 중 오류가 발생했습니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
