@@ -744,9 +744,13 @@
 
             <div class="form-group">
                 <label for="commonMessage">자기소개 및 PR 메시지</label>
-                <textarea id="commonMessage" name="message"
+                <textarea id="commonMessage" name="message" maxlength="255"
                           placeholder="자신의 경험, 기술 스택, 프로젝트에 기여할 수 있는 부분 등을 작성해주세요. 이 메시지는 선택한 모든 프로젝트에 동일하게 전송됩니다."
                           required></textarea>
+                <!-- 🔴 안내 메시지 추가 -->
+                <div id="messageError" style="color:#ef4444; font-size:0.9rem; margin-top:4px; display:none;">
+                    최대 255자까지만 작성할 수 있습니다.
+                </div>
             </div>
 
             <button type="button" class="submit-btn" onclick="saveCommonApplication()">
@@ -1286,6 +1290,22 @@
             closeCartModal();
         }
     }
+
+    // ====== 메시지 글자 수 제한 ======
+    document.getElementById('commonMessage').addEventListener('input', function () {
+        const errorMsg = document.getElementById('messageError');
+        if (this.value.length > 255) {
+            this.value = this.value.slice(0, 255); // 255자 이상 입력 차단
+        }
+
+        if (this.value.length >= 255) {
+            this.style.borderColor = '#ef4444';  // 빨간 테두리
+            errorMsg.style.display = 'block';
+        } else {
+            this.style.borderColor = ''; // 기본 상태로 복구
+            errorMsg.style.display = 'none';
+        }
+    });
     /*]]>*/
 </script>
 </body>
