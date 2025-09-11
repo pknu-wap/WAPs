@@ -15,6 +15,7 @@ import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.TokenProvider;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.service.ProjectService;
+import wap.web2.server.teambuild.dto.TeamMemberResult;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.service.ApplyService;
@@ -117,9 +118,12 @@ public class TeamBuildControllerV1 {
     @GetMapping("/results")
     public String getTeamBuildResults(Model model) {
         TeamBuildingResults results = teamBuildResultService.getResults();
+        List<TeamMemberResult> unassigned = teamBuildResultService.getUnassignedMembers(results);
 
-        log.info("[TeamBuildingResults]: {}", results.toString());
+        log.info("[TeamBuildingResults]: {}", results);
+
         model.addAttribute("teams", results);
+        model.addAttribute("unassigned", unassigned);
         return "teams";
     }
 
