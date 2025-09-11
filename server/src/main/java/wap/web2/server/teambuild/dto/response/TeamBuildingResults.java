@@ -20,4 +20,5 @@ public class TeamBuildingResults {
     public void add(TeamBuildingResult result) {
         this.results.add(result);
     }
+
 }
