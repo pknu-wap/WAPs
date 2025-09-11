@@ -23,5 +23,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT p FROM Project p WHERE p.projectYear = :year AND p.semester = :semester ORDER BY p.projectId DESC")
     List<Project> findProjectsByYearAndSemesterOrderByProjectIdDesc(@Param("year") Integer year,
                                                                     @Param("semester") Integer semester);
-    
+
 }

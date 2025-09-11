@@ -1,6 +1,8 @@
 package wap.web2.server.teambuild.service;
 
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
+import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
+import static wap.web2.server.util.SemesterGenerator.generateYearValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.teambuild.dto.ApplyInfo;
 import wap.web2.server.teambuild.dto.RecruitInfo;
@@ -42,6 +45,10 @@ public class TeamBuildService {
         // TODO: ADMIN만 관리가능하도록?
         TeamBuilder teamBuilder = new SequentialTeamBuilder();
 
+        // 이번학기 모든 프로젝트
+        List<Project> projects
+                = projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue());
+
         // Map<projectId, Map<position, Set<userId>>>
         Map<Long, Map<Position, Set<Long>>> results = new HashMap<>();
         for (Position position : Position.values()) {
@@ -51,7 +58,7 @@ public class TeamBuildService {
                 continue;
             }
             // Map<projectId, RecruitInfo>
-            Map<Long, RecruitInfo> recruitMap = getRecruits(position);
+            Map<Long, RecruitInfo> recruitMap = getRecruits(position, projects);
             if (recruitMap.isEmpty()) {
                 continue;
             }
@@ -102,7 +109,7 @@ public class TeamBuildService {
         return applyMap;
     }
 
-    private Map<Long, RecruitInfo> getRecruits(Position pos) {
+    private Map<Long, RecruitInfo> getRecruits(Position pos, List<Project> projects) {
         List<ProjectRecruit> recruitEntities = recruitRepository.findAllBySemesterAndPosition(generateSemester(), pos);
         if (recruitEntities.isEmpty()) {
             return Collections.emptyMap();
@@ -124,6 +131,20 @@ public class TeamBuildService {
                     .userIds(userIds)
                     .build()
             );
+        }
+
+        // 현재 pos에 관심이 없는 프로젝트는 cap(0), userIds(empty)로 세팅한다.
+        for (Project project : projects) {
+            long projectId = project.getProjectId();
+            if (!recruitMap.containsKey(projectId)) {
+                recruitMap.put(projectId, RecruitInfo.builder()
+                        .leaderId(project.getUser().getId())
+                        .projectId(projectId)
+                        .position(pos)
+                        .capacity(0)
+                        .userIds(new LinkedHashSet<>()) // 불변이 보장된다면 Collections.emptySet() 가능
+                        .build());
+            }
         }
 
         return recruitMap;

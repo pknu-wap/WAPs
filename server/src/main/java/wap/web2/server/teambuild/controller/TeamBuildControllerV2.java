@@ -1,11 +1,14 @@
 package wap.web2.server.teambuild.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +23,7 @@ import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.service.ApplyService;
+import wap.web2.server.teambuild.service.TeamBuildExportService;
 import wap.web2.server.teambuild.service.TeamBuildService;
 
 @Slf4j
@@ -28,6 +32,7 @@ import wap.web2.server.teambuild.service.TeamBuildService;
 @RequiredArgsConstructor
 public class TeamBuildControllerV2 {
 
+    private final TeamBuildExportService teamBuildExportService;
     private final TeamBuildService teamBuildService;
     private final ApplyService applyService;
 
@@ -106,6 +111,32 @@ public class TeamBuildControllerV2 {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
         }
+    }
+
+    // 지원 현황 반환 (.CSV)
+    @GetMapping(value = "/export/applies.csv", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<byte[]> exportAppliesCsv() {
+        byte[] bytes = teamBuildExportService.generateAppliesCsvBytes();
+
+        String filename = "applies_" + LocalDate.now() + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .contentLength(bytes.length)
+                .body(bytes);
+    }
+
+    // 모집 현황 반환 (.CSV)
+    @GetMapping(value = "/export/recruits.csv", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<byte[]> exportRecruitsCsv() {
+        byte[] bytes = teamBuildExportService.generateRecruitsCsvBytes();
+
+        String filename = "recruits_" + LocalDate.now() + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .contentLength(bytes.length)
+                .body(bytes);
     }
 
 }
