@@ -138,6 +138,21 @@
             }
         }
 
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 28px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-sub {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
         .card {
             background: var(--card);
             border: 1px solid var(--border);
@@ -253,18 +268,16 @@
                 총 <b th:text="${#lists.size(teams.getResults())}">0</b>개 팀
             </div>
         </div>
-        <button class="back-btn" onclick="goBack()">
-            ← 돌아가기
-        </button>
+        <button class="back-btn" onclick="goBack()">← 돌아가기</button>
     </div>
 
     <div class="toolbar">
         <div>
             <div class="search">
-                <input id="q" type="text" placeholder="팀명/팀장/팀원 검색…" oninput="filterCards()"/>
+                <input id="q" type="text" placeholder="팀명/팀장/팀원/미배정 검색…" oninput="filterCards()"/>
                 <button class="btn" onclick="clearSearch()">지우기</button>
             </div>
-            <div class="search-help">예) "알파", "김개발", "FRONTEND" 같이 검색할 수 있어요.</div>
+            <div class="search-help">예) "알파", "김개발", "FRONTEND", "홍길동" 같이 검색할 수 있어요.</div>
         </div>
         <div class="sorts">
             <button class="btn" onclick="sortByName()">팀명순</button>
@@ -281,7 +294,6 @@
         <div class="card"
              th:each="team : ${teams.getResults()}"
              th:attr="data-key=|${team.teamName} ${team.leader.name} ${#strings.listJoin(team.members.![#this.name], ' ')} ${team.leader.position} ${#strings.listJoin(team.members.![#this.position], ' ')}|">
-
             <div class="card-header">
                 <div class="team-name">
                     <span th:text="${team.teamName}">알파</span>
@@ -302,25 +314,25 @@
             <div>
                 <div class="muted" style="margin-bottom:6px;">팀원</div>
                 <div class="members">
-          <span class="chip" th:each="m : ${team.members}">
-            <span th:text="${m.name}">이프론</span>
-            <span class="muted" th:if="${m.position != null}" th:text="'· ' + ${m.position}">· FRONTEND</span>
-          </span>
+                  <span class="chip" th:each="m : ${team.members}">
+                    <span th:text="${m.name}">이프론</span>
+                    <span class="muted" th:if="${m.position != null}" th:text="'· ' + ${m.position}">· FRONTEND</span>
+                  </span>
                 </div>
             </div>
 
             <div th:if="${team.summary != null}" class="muted" th:text="${team.summary}">설명/비고</div>
 
-            <!-- 복사용 숨김 텍스트: DOM에서 읽어 복사 -->
+            <!-- 복사용 숨김 텍스트 -->
             <div class="rosterText" style="display:none;">
                 <span th:text="'팀명: ' + ${team.teamName}"></span>
                 <span> / </span>
                 <span th:text="'팀장: ' + ${team.leader.name} + (${team.leader.position} != null ? '·' + ${team.leader.position} : '')"></span>
                 <span> / 팀원: </span>
                 <span th:each="m, stat : ${team.members}">
-          <span th:text="${m.name} + (${m.position} != null ? '·' + ${m.position} : '')"></span><span
-                        th:if="${!stat.last}">, </span>
-        </span>
+                    <span th:text="${m.name} + (${m.position} != null ? '·' + ${m.position} : '')"></span>
+                    <span th:if="${!stat.last}">, </span>
+                </span>
             </div>
 
             <div class="footer">
@@ -333,18 +345,42 @@
             </div>
         </div>
     </div>
+
+    <!-- ▼▼ 미배정 지원자 섹션 ▼▼ -->
+    <div class="section-title">미배정 지원자</div>
+    <div class="section-sub">
+        총 <b th:text="${unassigned != null ? #lists.size(unassigned) : 0}">0</b>명
+    </div>
+
+    <div th:if="${unassigned == null || #lists.isEmpty(unassigned)}" class="empty">
+        모든 지원자가 팀에 배정되었습니다 🎉
+    </div>
+
+    <div id="unassignedGrid" class="grid" th:if="${unassigned != null && !#lists.isEmpty(unassigned)}">
+        <div class="card"
+             th:each="m : ${unassigned}"
+             th:attr="data-key=|${m.name} ${m.position} 미배정|">
+            <div class="card-header">
+                <div class="team-name">
+                    <span th:text="${m.name}">홍길동</span>
+                    <span class="badge" th:text="${m.position}">FRONTEND</span>
+                </div>
+                <div class="muted">미배정</div>
+            </div>
+        </div>
+    </div>
+    <!-- ▲▲ 미배정 지원자 섹션 ▲▲ -->
 </div>
 
 <script>
-    // 돌아가기 기능
     function goBack() {
         window.history.go(-2);
     }
 
-    // 검색: data-key(팀명/팀장/팀원/포지션)에서 포함 여부로 필터링
+    // 검색: 팀 카드 + 미배정 카드 동시 필터
     function filterCards() {
         const q = document.getElementById('q').value.trim().toLowerCase();
-        const cards = document.querySelectorAll('#grid .card');
+        const cards = document.querySelectorAll('#grid .card, #unassignedGrid .card');
         cards.forEach(card => {
             const key = (card.getAttribute('data-key') || '').toLowerCase();
             card.style.display = key.includes(q) ? '' : 'none';
@@ -358,7 +394,7 @@
         input.focus();
     }
 
-    // 정렬: 팀명
+    // 정렬: 팀 카드만 (미배정은 정렬 대상 아님)
     function sortByName() {
         sortCards((a, b) => {
             const an = a.querySelector('.team-name span').innerText.trim();
@@ -367,17 +403,11 @@
         });
     }
 
-    // 정렬: 팀원수(내림차순)
     function sortBySize() {
-        sortCards((a, b) => {
-            const asz = getMemberSize(a);
-            const bsz = getMemberSize(b);
-            return bsz - asz;
-        });
+        sortCards((a, b) => getMemberSize(b) - getMemberSize(a));
     }
 
     function getMemberSize(card) {
-        // 배지의 숫자 파싱
         const badge = card.querySelector('.badge');
         if (!badge) return 0;
         const m = badge.innerText.match(/멤버\s+(\d+)/);
@@ -386,18 +416,17 @@
 
     function sortCards(comparator) {
         const grid = document.getElementById('grid');
+        if (!grid) return;
         const cards = Array.from(grid.children);
         cards.sort(comparator).forEach(c => grid.appendChild(c));
     }
 
-    // 명단 복사
     function copyRoster(btn) {
         const card = btn.closest('.card');
         const text = card.querySelector('.rosterText').innerText.trim();
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(text).then(() => flash(btn));
         } else {
-            // fallback
             const ta = document.createElement('textarea');
             ta.value = text;
             document.body.appendChild(ta);

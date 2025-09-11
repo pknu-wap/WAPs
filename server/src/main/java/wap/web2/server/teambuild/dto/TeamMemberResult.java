@@ -1,6 +1,7 @@
 package wap.web2.server.teambuild.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import wap.web2.server.teambuild.entity.Position;
 import wap.web2.server.teambuild.entity.ProjectApply;
 
 @Getter
+@Builder
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor

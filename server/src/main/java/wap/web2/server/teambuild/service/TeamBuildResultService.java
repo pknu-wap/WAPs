@@ -4,9 +4,13 @@ import static wap.web2.server.util.SemesterGenerator.generateSemester;
 import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
 import static wap.web2.server.util.SemesterGenerator.generateYearValue;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,7 @@ import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.teambuild.dto.TeamMemberResult;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResult;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
+import wap.web2.server.teambuild.entity.ProjectApply;
 import wap.web2.server.teambuild.entity.Team;
 import wap.web2.server.teambuild.repository.ProjectApplyRepository;
 import wap.web2.server.teambuild.repository.TeamRepository;
@@ -65,6 +70,52 @@ public class TeamBuildResultService {
         }
 
         return results;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TeamMemberResult> getUnassignedMembers(TeamBuildingResults results) {
+        final String semester = generateSemester();
+
+        // 1. 이미 배정된 유저 ID 수집
+        Set<Long> allocatedUserIds = new HashSet<>();
+        results.getResults().forEach(r -> {
+            if (r.getMembers() != null) {
+                r.getMembers().forEach(m -> allocatedUserIds.add(m.getId()));
+            }
+            // 팀장을 포함해서 배정자로 볼지 여부는 정책에 따라 결정
+            if (r.getLeader() != null && r.getLeader().getId() != null) {
+                allocatedUserIds.add(r.getLeader().getId());
+            }
+        });
+
+        // 2. 이번 학기 전체 지원 내역 조회
+        List<ProjectApply> applies = projectApplyRepository.findAllBySemester(semester);
+
+        // 3. 유저별 대표 지원(최저 priority)만 선택
+        Map<Long, ProjectApply> bestApplyByUser = new HashMap<>();
+        for (ProjectApply a : applies) {
+            Long uid = a.getUser().getId();
+            ProjectApply prev = bestApplyByUser.get(uid);
+            if (prev == null || a.getPriority() < prev.getPriority()) {
+                bestApplyByUser.put(uid, a);
+            }
+        }
+
+        // 4. 배정 안된 사람만 필터링
+        List<TeamMemberResult> unassigned = new ArrayList<>();
+        for (ProjectApply rep : bestApplyByUser.values()) {
+            if (!allocatedUserIds.contains(rep.getUser().getId())) {
+                unassigned.add(
+                        TeamMemberResult.builder()
+                                .id(rep.getUser().getId())
+                                .name(rep.getUser().getName())
+                                .position(rep.getPosition())
+                                .build()
+                );
+            }
+        }
+
+        return unassigned;
     }
 
 }
