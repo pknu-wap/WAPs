@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 import "../assets/Filter/Type.css";
@@ -10,11 +10,20 @@ const ContentBox = () => {
   const [filter, setFilter] = useState("All");
   const [yearAccordionOpen, setYearAccordionOpen] = useState(false);
   const [typeAccordionOpen, setTypeAccordionOpen] = useState(false);
-  const currentYear = 2025; // 현재 연도를 2024로 고정
+  const currentYear = new Date().getFullYear();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // URL에서 값을 읽어와 초기 상태를 설정(프젝 연도, 학기)
+  const initialYear = searchParams.get("projectYear") || currentYear;
+  const initialSemester = searchParams.get("semester") || 1;
+
   const [semesterFilter, setSemesterFilter] = useState({
-    year: currentYear,
-    semester: 1,
-  }); // 기본값: 2024년과 2학기
+    // URL에서 읽어온 문자이므로 정수로 변환
+    year: parseInt(initialYear),
+    semester: parseInt(initialSemester),
+  });
+
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +32,7 @@ const ContentBox = () => {
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list`;
 
   useEffect(() => {
+    console.log("useEffect triggered. Fetching data for semester:", semesterFilter);
     const timeoutId = setTimeout(() => {
       setIsMounted(true); // 일정 시간 후에 마운트 상태 변경
     }, 700);
@@ -87,7 +97,10 @@ const ContentBox = () => {
   };
 
   const handleSemesterChange = (year, semester) => {
-    setSemesterFilter({ year, semester });
+    const newFilter = { year, semester };
+    console.log("Semester changed to:", newFilter);
+    setSemesterFilter(newFilter); // 학기 필터 상태 변경
+    setSearchParams({ projectYear: year, semester: semester });
     setYearAccordionOpen(false); // 드롭다운 닫기
   };
 
