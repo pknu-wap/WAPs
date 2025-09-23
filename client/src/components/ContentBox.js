@@ -32,7 +32,7 @@ const ContentBox = () => {
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list`;
 
   useEffect(() => {
-    console.log("useEffect triggered. Fetching data for semester:", semesterFilter);
+
     const timeoutId = setTimeout(() => {
       setIsMounted(true); // 일정 시간 후에 마운트 상태 변경
     }, 700);
@@ -98,7 +98,6 @@ const ContentBox = () => {
 
   const handleSemesterChange = (year, semester) => {
     const newFilter = { year, semester };
-    console.log("Semester changed to:", newFilter);
     setSemesterFilter(newFilter); // 학기 필터 상태 변경
     setSearchParams({ projectYear: year, semester: semester });
     setYearAccordionOpen(false); // 드롭다운 닫기
