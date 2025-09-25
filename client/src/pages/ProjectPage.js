@@ -62,7 +62,7 @@ const ProjectPage = () => {
 
       fetchProjectDetails();
     }
-  }, [isEditMode, projectId, navigate]);
+  }, [isEditMode, projectId, navigate, token]);
 
   const handleSubmit = async (projectData) => {
     const token = Cookies.get("authToken");

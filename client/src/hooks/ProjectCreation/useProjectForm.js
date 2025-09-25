@@ -8,7 +8,7 @@ const useProjectForm = () => {
   const [projectType, setProjectType] = useState("");
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
-  const [semester, setSemester] = useState(""); // 1,2
+  //const [semester, setSemester] = useState(""); 학기 관련 상태 제거
   const [password, setPassword] = useState("");
   const [removalList, setRemovalList] = useState([]); // 삭제된 이미지 URL들 저장용
 
@@ -34,7 +34,7 @@ const useProjectForm = () => {
   const [selectedTechStacks, setSelectedTechStacks] = useState([]);
 
   // 업로드 관련 상태
-  const [uploading, setUploading] = useState(false);
+  const [uploading /*, setUploading*/] = useState(false);
   const [uploadError, setUploadError] = useState(null);
 
   // 오류 메시지 상태
@@ -46,7 +46,7 @@ const useProjectForm = () => {
   const handleImgUpload = (file, type, index = null) => {
     // 파일이 없는 경우 또는 파일 타입이 유효하지 않은 경우를 먼저 확인
     if (!file || !file.type || !file.type.startsWith("image/")) {
-      const key = type === "thumbnail" ? "thumbnail" : `image${index}`;
+      //const key = type === "thumbnail" ? "thumbnail" : `image${index}`;
 
       return;
     }
@@ -208,7 +208,7 @@ const useProjectForm = () => {
     setProjectType("");
     setContent("");
     setSummary("");
-    setSemester("");
+    // setSemester("");
     setProjectYear("");
     setIsLeader(false);
     setTeamMembers([{ name: "", image: null, role: "" }]);
@@ -271,11 +271,11 @@ const useProjectForm = () => {
     setContent,
     summary,
     setSummary,
-    semester,
-    setSemester,
+    // semester,
+    // setSemester,
     projectYear,
     setProjectYear,
-    teamMembers,
+    // teamMembers, <-중복
     thumbnail,
     setThumbnail,
     images,
