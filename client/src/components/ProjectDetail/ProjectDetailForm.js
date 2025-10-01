@@ -32,16 +32,11 @@ const ProjectDetailForm = () => {
         setProjectData(data); // 프로젝트 데이터 설정
         console.log("API 응답 데이터:", data);
 
-        if (token) {
-          const decodedToken = jwtDecode(token); // JWT 디코딩
-          // console.log("디코딩된 토큰:", decodedToken);
-
-          // 토큰에서 추출한 ID와 프로젝트 작성자 ID 비교
-          if (decodedToken.userId === data.ownerId) {
-            setIsOwner(true);
-          } else {
-            setIsOwner(false);
-          }
+        // 작성자인지 여부 확인
+        if (data.isOwner === true) {
+          setIsOwner(true);
+        } else {
+          setIsOwner(false);
         }
 
         // 일정 시간 후 데이터 렌더링을 완료하도록 설정
