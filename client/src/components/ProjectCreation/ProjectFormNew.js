@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { /*useState,*/ useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import axios from "axios";
@@ -11,7 +11,7 @@ import RadioButton from "./RadioButton";
 import TextInputForm from "./TextInputForm";
 import TechStackSelector from "./TechStackSelector";
 import TeamMemberInputForm from "./TeamMemberInputForm";
-import TeamMemberInputNew from "./TeamMemberInputNew";
+// import TeamMemberInputNew from "./TeamMemberInputNew";
 import InputPin from "./InputPin";
 
 // 사용성을 높인 버전의 프로젝트 생성 폼
@@ -43,8 +43,8 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     setContent,
     summary,
     setSummary,
-    semester,
-    setSemester,
+    // semester,
+    // setSemester,
     projectYear,
     setProjectYear,
     teamMembers,
@@ -71,10 +71,9 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     toggleTechStack,
     resetForm,
     setPassword,
-    validateForm,
-
+    // validateForm,
     removalList,
-    setRemovalList,
+    // setRemovalList,
   } = useProjectForm();
 
   // 기존 데이터 초기화
@@ -84,9 +83,9 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       console.log("받아온 기존 프로젝트 데이터", existingProject);
       setThumbnail(existingProject.thumbnail || null);
       setProjectYear(existingProject.projectYear || new Date().getFullYear());
-      setSemester(
-        existingProject.semester ? existingProject.semester.toString() : ""
-      );
+      // setSemester(
+      //   existingProject.semester ? existingProject.semester.toString() : ""
+      // );
       setProjectType(existingProject.projectType || "");
       setTitle(existingProject.title || "");
       setSummary(existingProject.summary || "");
@@ -124,7 +123,18 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       setSelectedTechStacks(existingProject.techStack || []);
       setPassword("");
     }
-  }, [isEdit, existingProject]);
+  }, [isEdit, existingProject,
+      setContent,      // 상태 변경 함수를 의존성 배열에 추가
+      setImages,       
+      setPassword,     
+      setProjectType,  
+      setProjectYear,  
+      setSelectedTechStacks, 
+      setSummary,      
+      setTeamMembers,  
+      setThumbnail,
+      setTitle      
+  ]);
 
   useEffect(() => {
     console.log("삭제된 이미지 목록:", removalList);
@@ -145,7 +155,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       projectType,
       content,
       summary,
-      semester: parseInt(semester),
+      // semester: parseInt(semester),
       projectYear,
       teamMember: teamMembers.map((member) => ({
         memberName: member.memberName,
@@ -242,13 +252,13 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         type="thumbnail"
       />
       <YearScroll setSelectedYear={setProjectYear} selectedYear={projectYear} />
-      <RadioButton
+      {/* <RadioButton
         labelname={"학기"}
         name="semester"
         options={["1", "2"]}
         selected={semester}
         setSelected={setSemester}
-      />
+      /> */}
       <RadioButton
         labelname={"프로젝트 타입"}
         name="projectType"
