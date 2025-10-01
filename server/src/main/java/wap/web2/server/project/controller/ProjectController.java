@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Encoding;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +35,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final ApplyService applyService;
+    private final PropertyResolver propertyResolver;
 
     // TODO: ProjectsResponse에 담기 전에 검사하는건 별로인가요?
     //  또는 컨트롤러에서는 try catch를 두고 ProjectResponse안에서 throw 하는 것은?
@@ -94,13 +95,14 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<?> getProject(@PathVariable Long projectId) {
-        Optional<ProjectDetailsResponse> projectDetails = projectService.getProjectDetails(projectId);
-
-        if (projectDetails.isPresent()) {
-            return ResponseEntity.ok(projectDetails.get());
+    public ResponseEntity<?> getProject(@PathVariable Long projectId,
+                                        @CurrentUser UserPrincipal userPrincipal) {
+        try {
+            ProjectDetailsResponse projectDetails = projectService.getProjectDetails(projectId, userPrincipal);
+            return ResponseEntity.ok(projectDetails);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Project not found for id: " + projectId);
     }
 
     @GetMapping("/{projectId}/update")

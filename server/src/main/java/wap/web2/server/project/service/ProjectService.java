@@ -9,7 +9,6 @@ import static wap.web2.server.util.SemesterGenerator.generateYearValue;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -105,8 +104,24 @@ public class ProjectService {
                 .stream().map(ProjectTemplate::from).toList();
     }
 
-    public Optional<ProjectDetailsResponse> getProjectDetails(Long projectId) {
-        return projectRepository.findById(projectId).map(ProjectDetailsResponse::from);
+    public ProjectDetailsResponse getProjectDetails(Long projectId, UserPrincipal userPrincipal) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("프로젝트가 없습니다.")); // 아래 메서드와 예외처리를 동일하게
+
+        // response는 isOwner 플랙그가 false인 채로 생성된다.
+        ProjectDetailsResponse projectDetailsResponse = ProjectDetailsResponse.from(project);
+
+        if (userPrincipal != null) {
+            User user = userRepository.findById(userPrincipal.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid user Id")); // 아래 메서드와 예외처리를 동일하게
+
+            if (project.isOwner(user)) {
+                // 로그인한 사용자이고, 프로젝트의 주인이면 isOwner 플래그를 true로 바꾸고 리턴한다.
+                return projectDetailsResponse.changeIsOwner(true);
+            }
+        }
+
+        return projectDetailsResponse;
     }
 
     public ProjectDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
