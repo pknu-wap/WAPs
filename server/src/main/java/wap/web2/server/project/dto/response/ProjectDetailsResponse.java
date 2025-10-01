@@ -11,8 +11,8 @@ import wap.web2.server.project.dto.TeamMemberDto;
 import wap.web2.server.project.dto.TechStackDto;
 import wap.web2.server.project.entity.Project;
 
-@Builder
 @Getter
+@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProjectDetailsResponse {
 
@@ -29,6 +29,7 @@ public class ProjectDetailsResponse {
     private List<TechStackDto> techStack;
     private List<ImageDto> images;
     private List<CommentDto> comments;
+    private Boolean isOwner;
 
     public static ProjectDetailsResponse from(Project project) {
         List<TeamMemberDto> teamMembers = project.getTeamMembers().stream()
@@ -54,6 +55,13 @@ public class ProjectDetailsResponse {
                 .techStack(techStacks)
                 .images(images)
                 .comments(comments)
+                .isOwner(false)
                 .build();
     }
+
+    public ProjectDetailsResponse changeIsOwner(boolean isOwner) {
+        this.isOwner = isOwner;
+        return this;
+    }
+
 }
