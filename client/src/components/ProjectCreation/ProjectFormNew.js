@@ -154,7 +154,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       projectType,
       content,
       summary,
-      // semester: parseInt(semester),
+      semester,
       projectYear,
       teamMember: teamMembers.map((member) => ({
         memberName: member.memberName,
