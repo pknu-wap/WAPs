@@ -14,8 +14,8 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
     const semesters = [];
 
     for (let year = startYear; year <= endYear; year++) {
-      semesters.push({ year, semester: 1 });
-      semesters.push({ year, semester: 2 });
+      semesters.push({ projectYear: year, semester: 1 });
+      semesters.push({ projectYear: year, semester: 2 });
     }
     // 역순 정렬
     semesters.reverse();
@@ -58,7 +58,7 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
     if (scrollRef.current && selectedYear) {
       const index = semesters.findIndex(
         (s) =>
-          s.year === selectedYear.year && s.semester === selectedYear.semester
+          s.projectYear === selectedYear.projectYear && s.semester === selectedYear.semester
       );
       if (index !== -1) {
         const itemHeight = 26;
@@ -73,7 +73,7 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
     if (scrollRef.current) {
       // 클릭 시 스크롤을 해당 위치로 이동
       const index = semesters.findIndex(
-        (s) => s.year === item.year && s.semester === item.semester
+        (s) => s.projectYear === item.projectYear && s.semester === item.semester
       );
       if (index !== -1) {
         const itemHeight = 26; // 각 아이템의 높이
@@ -88,17 +88,17 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
       <div className="scroll-container" ref={scrollRef}>
         {semesters.map((item, idx) => (
           <p
-            key={`${item.year}-${item.semester}`}
+            key={`${item.projectYear}-${item.semester}`}
             className={`year-item ${
               selectedYear &&
-              item.year === selectedYear.year &&
+              item.projectYear === selectedYear.projectYear &&
               item.semester === selectedYear.semester
                 ? "selected"
                 : ""
             }`}
             onClick={() => handleClick(item)} // 클릭 이벤트 추가
           >
-            {item.year}년 {item.semester}학기
+            {item.projectYear}년 {item.semester}학기
           </p>
         ))}
       </div>

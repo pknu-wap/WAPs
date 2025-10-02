@@ -8,13 +8,12 @@ const useProjectForm = () => {
   const [projectType, setProjectType] = useState("");
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
-  //const [semester, setSemester] = useState(""); 학기 관련 상태 제거
+  
+  const [semester, setSemester] = useState(2); // 기본값: 현재 학기
   const [password, setPassword] = useState("");
   const [removalList, setRemovalList] = useState([]); // 삭제된 이미지 URL들 저장용
 
-  // 프로젝트 년도 선택 상태관리
-  // 원래 ""이었으나, null로 변경 -> "" 설정하고 props 전달하니까 "is not a function"
-  const [projectYear, setProjectYear] = useState(null);
+  const [projectYear, setProjectYear] = useState(new Date().getFullYear());
 
   // 팀장 선택 상태관리
   const [isLeader, setIsLeader] = useState(false);
@@ -133,7 +132,6 @@ const useProjectForm = () => {
   };
 
   // 팀원 추가 핸들러
-  // 팀원 추가 핸들러
   const addTeamMember = () => {
     const lastMember = teamMembers[teamMembers.length - 1];
     // 마지막 팀원의 이름이 비어있지 않고, 역할이 비어있지 않은 경우에만 추가
@@ -208,10 +206,10 @@ const useProjectForm = () => {
     setProjectType("");
     setContent("");
     setSummary("");
-    // setSemester("");
-    setProjectYear("");
+    setSemester(2); // 학기 초기화
+    setProjectYear(new Date().getFullYear());
     setIsLeader(false);
-    setTeamMembers([{ name: "", image: null, role: "" }]);
+    setTeamMembers([{ memberName: "", image: null, memberRole: "" }]); // 이름을 일관되게 수정(기존: name, role)
     setThumbnail(null);
     setImages([null, null, null, null]);
     setErrorMessage({});
@@ -271,11 +269,10 @@ const useProjectForm = () => {
     setContent,
     summary,
     setSummary,
-    // semester,
-    // setSemester,
+    semester,
+    setSemester,
     projectYear,
     setProjectYear,
-    // teamMembers, <-중복
     thumbnail,
     setThumbnail,
     images,
