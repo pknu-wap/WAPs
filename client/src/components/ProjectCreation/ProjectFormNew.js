@@ -43,8 +43,8 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     setContent,
     summary,
     setSummary,
-    // semester,
-    // setSemester,
+    semester,
+    setSemester,
     projectYear,
     setProjectYear,
     teamMembers,
@@ -83,9 +83,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       console.log("받아온 기존 프로젝트 데이터", existingProject);
       setThumbnail(existingProject.thumbnail || null);
       setProjectYear(existingProject.projectYear || new Date().getFullYear());
-      // setSemester(
-      //   existingProject.semester ? existingProject.semester.toString() : ""
-      // );
+      setSemester(existingProject.semester || 1);
       setProjectType(existingProject.projectType || "");
       setTitle(existingProject.title || "");
       setSummary(existingProject.summary || "");
@@ -124,11 +122,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       setPassword("");
     }
   }, [isEdit, existingProject,
-      setContent,      // 상태 변경 함수를 의존성 배열에 추가
+      setContent,
       setImages,       
       setPassword,     
       setProjectType,  
-      setProjectYear,  
+      setProjectYear,
+      setSemester,  
       setSelectedTechStacks, 
       setSummary,      
       setTeamMembers,  
@@ -155,7 +154,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       projectType,
       content,
       summary,
-      // semester: parseInt(semester),
+      semester,
       projectYear,
       teamMember: teamMembers.map((member) => ({
         memberName: member.memberName,
@@ -251,14 +250,13 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         handleRemoveImage={() => handleRemoveImage("thumbnail", null)}
         type="thumbnail"
       />
-      <YearScroll setSelectedYear={setProjectYear} selectedYear={projectYear} />
-      {/* <RadioButton
-        labelname={"학기"}
-        name="semester"
-        options={["1", "2"]}
-        selected={semester}
-        setSelected={setSemester}
-      /> */}
+      <YearScroll 
+      selectedYear={{ projectYear, semester }}  // 전달
+      setSelectedYear={(yearData) => {           // 객체를 받아서 분리
+      setProjectYear(yearData.projectYear);
+      setSemester(yearData.semester);
+    }}
+    />
       <RadioButton
         labelname={"프로젝트 타입"}
         name="projectType"
