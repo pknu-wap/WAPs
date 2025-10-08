@@ -141,40 +141,50 @@ const ContentBox = () => {
   }
 
   return (
-    <div>
-      <div className="filter-container">
-        {/* ▶ 유형: 알약 버튼 그룹 (드롭다운 대체, 기능 동일) */}
-        <div className="pill-filter" role="tablist" aria-label="project type">
-          {TYPE_OPTIONS.map((t) => (
-            <button
-              key={t.value}
-              role="tab"
-              aria-selected={filter === t.value}
-              className={`pill ${filter === t.value ? "active" : ""}`}
-              onClick={() => setFilter(t.value)}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
 
-        {/* 학기 필터 드롭다운 */}
-        <div className="filter-dropdown">
-          <button onClick={toggleYearAccordion} className="dropdown-button">
-            {yearAccordionOpen ? "년도/학기 ▲" : "년도/학기 ▼"}
-          </button>
-          {yearAccordionOpen && (
-            <div className="dropdown-content">
-              <button onClick={() => handleSemesterChange(currentYear, 1)}>
-                1학기
-              </button>
-              <button onClick={() => handleSemesterChange(currentYear, 2)}>
-                2학기
-              </button>
+    <div>
+      <div className="hero">
+        <div className="hero__inner">
+          <h1 className="hero__title">
+            WAP의<br/>다양한 활동들을 만나보세요
+          </h1>
+          <p className="hero__subtitle">Discover WAP's diverse activities</p>
+          <div className="filter-container">
+            {/* ▶ 유형: 알약 버튼 그룹 (드롭다운 대체, 기능 동일) */}
+            <div className="pill-filter" role="tablist" aria-label="project type">
+              {TYPE_OPTIONS.map((t) => (
+                <button
+                  key={t.value}
+                  role="tab"
+                  aria-selected={filter === t.value}
+                  className={`pill ${filter === t.value ? "active" : ""}`}
+                  onClick={() => setFilter(t.value)}
+                >
+                  {t.label}
+                </button>
+              ))}
             </div>
-          )}
+
+            {/* 학기 필터 드롭다운 */}
+            <div className="filter-dropdown">
+              <button onClick={toggleYearAccordion} className="dropdown-button">
+                {yearAccordionOpen ? "년도/학기 ▲" : "년도/학기 ▼"}
+              </button>
+              {yearAccordionOpen && (
+                <div className="dropdown-content">
+                  <button onClick={() => handleSemesterChange(currentYear, 1)}>
+                    1학기
+                  </button>
+                  <button onClick={() => handleSemesterChange(currentYear, 2)}>
+                    2학기
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
+      
 
       <div className="content-box mount1">
         {filteredData.map((item, index) => (
