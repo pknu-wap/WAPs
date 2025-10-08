@@ -4,7 +4,28 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import "../assets/Filter/Type.css";
 import "../App.css";
+import "../assets/Filter/Contentbox.css";
 import LoadingImage from "../assets/img/WAP_white_NoBG.png";
+
+/* 알약 버튼 목록 (UI 전용) */
+const TYPE_OPTIONS = [
+  { label: "전체", value: "All" },
+  { label: "웹", value: "Web" },
+  { label: "앱", value: "App" },
+  { label: "게임", value: "Game" },
+  { label: "임베디드", value: "기타" }, // 서버 값에 맞게 value 조정
+];
+
+// 프로젝트 타입을 한글로 변환하는 함수
+const getTypeLabel = (type) => {
+  const typeMap = {
+    "web": "웹",
+    "app": "앱",
+    "game": "게임",
+    "기타": "임베디드"
+  };
+  return typeMap[type?.toLowerCase()] || type;
+};
 
 const ContentBox = () => {
   const [filter, setFilter] = useState("All");
@@ -107,6 +128,7 @@ const ContentBox = () => {
     return (
       <img
         src={LoadingImage}
+        alt="Loading"
         style={{
           width: "150px",
           position: "absolute",
@@ -121,26 +143,25 @@ const ContentBox = () => {
   return (
     <div>
       <div className="filter-container">
-        <div className="filter-dropdown">
-          {/* 유형 필터 드롭다운 */}
-          <button onClick={toggleTypeAccordion} className="dropdown-button">
-            {typeAccordionOpen ? "Project Type ▲" : "Project Type ▼"}
-          </button>
-          {typeAccordionOpen && (
-            <div className="dropdown-content">
-              <button onClick={() => handleFilterChange("All")}>All</button>
-              <button onClick={() => handleFilterChange("App")}>App</button>
-              <button onClick={() => handleFilterChange("Web")}>Web</button>
-              <button onClick={() => handleFilterChange("Game")}>Game</button>
-              <button onClick={() => handleFilterChange("기타")}>Etc</button>
-            </div>
-          )}
+        {/* ▶ 유형: 알약 버튼 그룹 (드롭다운 대체, 기능 동일) */}
+        <div className="pill-filter" role="tablist" aria-label="project type">
+          {TYPE_OPTIONS.map((t) => (
+            <button
+              key={t.value}
+              role="tab"
+              aria-selected={filter === t.value}
+              className={`pill ${filter === t.value ? "active" : ""}`}
+              onClick={() => setFilter(t.value)}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
 
         {/* 학기 필터 드롭다운 */}
         <div className="filter-dropdown">
           <button onClick={toggleYearAccordion} className="dropdown-button">
-            {yearAccordionOpen ? "Semester ▲" : "Semester ▼"}
+            {yearAccordionOpen ? "년도/학기 ▲" : "년도/학기 ▼"}
           </button>
           {yearAccordionOpen && (
             <div className="dropdown-content">
@@ -174,6 +195,9 @@ const ContentBox = () => {
             <div className="titlebox">
               <h2>{item.title}</h2>
               <p>{item.summary}</p>
+              <span className="project-type-tag">
+                {getTypeLabel(item.projectType)}
+              </span>
             </div>
           </div>
         ))}
