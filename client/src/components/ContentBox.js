@@ -13,18 +13,25 @@ const TYPE_OPTIONS = [
   { label: "웹", value: "Web" },
   { label: "앱", value: "App" },
   { label: "게임", value: "Game" },
-  { label: "임베디드", value: "기타" }, // 서버 값에 맞게 value 조정
+  { label: "임베디드", value: "기타" },
 ];
 
 // 프로젝트 타입을 한글로 변환하는 함수
 const getTypeLabel = (type) => {
   const typeMap = {
-    "web": "웹",
-    "app": "앱",
-    "game": "게임",
-    "기타": "임베디드"
+    web: "웹",
+    app: "앱",
+    game: "게임",
+    "기타": "임베디드",
   };
-  return typeMap[type?.toLowerCase()] || type;
+  return typeMap[type?.toLowerCase?.()] || type;
+};
+
+/* 색상용 클래스 키 */
+const typeKey = (t) => {
+  const key = (t || "").toString().toLowerCase();
+  const map = { web: "web", app: "app", game: "game", "기타": "etc" };
+  return map[key] || "etc";
 };
 
 const ContentBox = () => {
@@ -35,7 +42,7 @@ const ContentBox = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // URL에서 값을 읽어와 초기 상태를 설정(프젝 연도, 학기)
+  // URL에서 값을 읽어와 초기 상태 설정
   const initialYear = searchParams.get("projectYear") || currentYear;
   const initialSemester = searchParams.get("semester") || 1;
 
@@ -47,15 +54,13 @@ const ContentBox = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMounted, setIsMounted] = useState(false); // 일정 시간 후 마운트될 상태
-  const [searchTerm, setSearchTerm] = useState("");   // ✅ 검색어 상태
+  const [isMounted, setIsMounted] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list`;
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setIsMounted(true);
-    }, 700);
+    const timeoutId = setTimeout(() => setIsMounted(true), 700);
 
     const fetchData = async () => {
       try {
@@ -65,8 +70,6 @@ const ContentBox = () => {
             projectYear: semesterFilter.year,
           },
         });
-
-        console.log("API 응답 데이터:", response.data);
 
         if (Array.isArray(response.data.projectsResponse)) {
           setData(response.data.projectsResponse);
@@ -85,7 +88,7 @@ const ContentBox = () => {
     return () => clearTimeout(timeoutId);
   }, [semesterFilter]);
 
-  // ✅ 유형 + 제목검색 동시 반영
+  // 유형+검색어 필터
   useEffect(() => {
     let next = data;
 
@@ -107,9 +110,8 @@ const ContentBox = () => {
   const toggleTypeAccordion = () => setTypeAccordionOpen(!typeAccordionOpen);
 
   const handleSemesterChange = (year, semester) => {
-    const newFilter = { year, semester };
-    setSemesterFilter(newFilter);
-    setSearchParams({ projectYear: year, semester: semester });
+    setSemesterFilter({ year, semester });
+    setSearchParams({ projectYear: year, semester });
     setYearAccordionOpen(false);
   };
 
@@ -134,11 +136,11 @@ const ContentBox = () => {
       <div className="hero">
         <div className="hero__inner">
           <h1 className="hero__title">
-            WAP의<br/>다양한 활동들을 만나보세요
+            WAP의<br />다양한 활동들을 만나보세요
           </h1>
           <p className="hero__subtitle">Discover WAP's diverse activities</p>
 
-          {/* ✅ 검색창 (hero__subtitle 바로 아래) */}
+          {/* 검색창 */}
           <div className="hero__search">
             <div className="search-bar">
               <span className="search-icon" aria-hidden="true">
@@ -161,7 +163,7 @@ const ContentBox = () => {
           </div>
 
           <div className="filter-container">
-            {/* ▶ 유형: 알약 버튼 그룹 */}
+            {/* 유형: 알약 버튼 그룹 */}
             <div className="pill-filter" role="tablist" aria-label="project type">
               {TYPE_OPTIONS.map((t) => (
                 <button
@@ -183,8 +185,12 @@ const ContentBox = () => {
               </button>
               {yearAccordionOpen && (
                 <div className="dropdown-content">
-                  <button onClick={() => handleSemesterChange(currentYear, 1)}>1학기</button>
-                  <button onClick={() => handleSemesterChange(currentYear, 2)}>2학기</button>
+                  <button onClick={() => handleSemesterChange(currentYear, 1)}>
+                    1학기
+                  </button>
+                  <button onClick={() => handleSemesterChange(currentYear, 2)}>
+                    2학기
+                  </button>
                 </div>
               )}
             </div>
@@ -208,12 +214,15 @@ const ContentBox = () => {
                 />
               )}
             </div>
+
             <div className="titlebox">
-              <h2>{item.title}</h2>
+              <div className="title-row">
+                <h2>{item.title}</h2>
+                <span className={`project-type-tag tag--${typeKey(item.projectType)}`}>
+                  {getTypeLabel(item.projectType)}
+                </span>
+              </div>
               <p>{item.summary}</p>
-              <span className="project-type-tag">
-                {getTypeLabel(item.projectType)}
-              </span>
             </div>
           </div>
         ))}
