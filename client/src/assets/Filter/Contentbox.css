@@ -298,7 +298,7 @@
   align-items: center;
   padding-left: 46px;  /* 아이콘 공간 */
   padding-right: 14px;
-  box-sizing: border-box;           /* ✅ 보더 포함 */
+  box-sizing: border-box;           /*보더 포함 */
   overflow: hidden;  
 }
 
@@ -341,3 +341,4 @@
   .hero__search .search-bar { height: 42px; }
   .hero__search .search-icon { width: 20px; height: 20px; }
 }
+
