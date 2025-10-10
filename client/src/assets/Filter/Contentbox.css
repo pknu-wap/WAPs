@@ -145,6 +145,11 @@
   gap: 6px;                 /* 제목-태그 간격 */
   margin: 0;
   padding: 0;
+  /* ↓↓↓ 추가: 줄바꿈 허용 + 전체 폭 사용 + 좌측 정렬 보장 */
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
 }
 /* 제목 */
 .content-box .box .titlebox h2 {
@@ -155,6 +160,9 @@
   font-weight: 700;
   color: #ffffff;
   line-height: 1.1;         /* 줄간격 타이트 */
+  /* ↓↓↓ 추가: 제목이 한 줄 전체를 차지 + 좌측 정렬 고정 */
+  flex-basis: 100%;
+  text-align: left !important;
 }
 /* 본문: 제목/태그 아래 줄 */
 .content-box .box .titlebox p {
