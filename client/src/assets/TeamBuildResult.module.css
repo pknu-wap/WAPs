@@ -2,19 +2,17 @@
 :root {
   --bg: #f7f8fa;
   --card: #fff;
-  --text: #222;
+  --text: #fff;
   --muted: #6b7280;
   --accent: #2563eb;
   --chip: #eef2ff;
   --chip-text: #3730a3;
-  --border: #e5e7eb;
+  --border: #34486f;
 }
 
 .container {
-  max-width: 1080px;
-  margin: 32px auto;
-  padding: 0 16px;
-  color: var(--text);
+  max-width: 1321px;
+  padding: 0 76px;
 }
 
 .loadingContainer {
@@ -56,11 +54,17 @@
 }
 
 .pageTitle {
+  width: 1070px;
+  height: 216px;
+  color: fff;
   font-size: 28px;
-  font-weight: 800;
   margin-bottom: 6px;
 }
 
+.titleSub {
+  color: ffffff;
+  opacity: 50%;
+}
 .sub {
   color: var(--muted);
   font-size: 14px;

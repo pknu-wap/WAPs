@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 // import Header from "../components/Header";
 // import Menu from "../components/Menu";
 import FloatingButton from "../components/FloatingButton";
@@ -14,30 +14,48 @@ const TeamBuildResultPage = () => {
   //   setMenuOpen(!menuOpen);
   // };
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   // 상태 관리
-  const [teams, setTeams] = useState([]);
-  const [unassigned, setUnassigned] = useState([]);
-  const [isLoding, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState(""); // 검색창 문자열 상태관리
-  const [sortBy, setSortBy] = useState("name"); // 'name' 또는 'size'
+  const [teams, setTeams] = useState([]); // 팀 상태
+  const [unassigned, setUnassigned] = useState([]); // 미배정자 상태
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+  const [error, setError] = useState(null); // 에러 상태
+  const [searchQuery, setSearchQuery] = useState(""); // 검색창 문자열 상태
+  const [sortBy, setSortBy] = useState("name"); // 'name' 또는 'size'으로 정렬
+
+  // 연도와 학기 상태
+  const [year, setYear] = useState(
+    () => parseInt(searchParams.get("projectYear")) || new Date().getFullYear()
+  );
+  const [semester, setSemester] = useState(
+    () => parseInt(searchParams.get("semester")) || 1
+  );
 
   // 데이터 로딩
   useEffect(() => {
     const fetchTeamBuildResult = async () => {
+      setIsLoading(true);
       try {
-        const response = await apiClient.get("vote/result");
-        setTeams(response.data.teams.result || []);
+        const response = await apiClient.get("/api/team-build/v2/result/view", {
+          params: {
+            projectYear: year,
+            semester: semester,
+          },
+        });
+        setTeams(response.data.teams.results || []);
         setUnassigned(response.data.unassigned || []);
+        setError(null);
       } catch (err) {
         console.error("Failed to fetch team build result:", err);
-        setError("데이터를 불러오는 데 실패헀습니다.");
+        setError("데이터를 불러오는 데 실패헀습니다. 해당 학기에 결과가 없을 수도 있습니다.");
+        setTeams([]); // 에러 발생 시 기존 데이터 초기화
+        setUnassigned([]);
       } finally {
         setIsLoading(false);
       }
     };
     fetchTeamBuildResult();
-  }, []);
+  }, [year, semester]); // 연도와 학기가 바뀌는 경우만 리랜더링
 
   // 검색 및 정렬 로직 
   const filteredAndSortedTeams = useMemo(() => {
@@ -61,7 +79,7 @@ const TeamBuildResultPage = () => {
 
 
   // 미배정자 정렬
-  const filteredUnassingned = useMemo(() => {
+  const filteredUnassigned = useMemo(() => {
     return unassigned.filter(member => {
       const searchKey = `${member.name} ${member.position} 미배정`.toLowerCase();
       return searchKey.includes(searchQuery.toLowerCase());
@@ -79,60 +97,33 @@ const TeamBuildResultPage = () => {
     });
   };
 
+  // 학기 변경 이벤트 헨들러
+  const handleSemesterChange = (newYear, newSemester) => {
+    setYear(newYear);
+    setSemester(newSemester);
+    setSearchParams({ projectYear: newYear, semester: newSemester });
+  };
+
   // 돌아가기 버튼을 위한 함수
   const goBack = () => {
     navigate('/HomePage');
   }
 
-  // 렌더링
-  if (isLoding) {
-    return <div><img src={LoadingImage} alt="Loading..."></img></div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>
-  }
-
-  return (
-    <>
-      {/* <Header toggleMenu={toggleMenu} /> */}
-      {/* <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} /> */}
-
-      <div className={styles.container}>
-        {/* 헤더 부분 */}
-        <div className={styles.header}>
-          <div className={styles.titleSection}>
-            <div className={styles.pageTitle}>팀빌딩 결과</div>
-            <div className={styles.sub}>
-              총 <b>{filteredAndSortedTeams.length}</b>개 팀
-            </div>
-          </div>
-          <button className={styles.backBtn} onClick={goBack}>← 돌아가기</button>
-        </div>
-
-        {/* 검색창 및 정렬*/}
-        <div className={styles.toolbar}>
-          <div>
-            <div className={styles.search}>
-              <input
-                type="text"
-                placeholder="팀명/팀장/팀원/미배정 검색…"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button className={styles.btn} onClick={() => setSearchQuery("")}>지우기</button>
-            </div>
-            <div className={styles.searchHelp}>예) "알파", "김개발", "FRONTEND", "홍길동" 같이 검색할 수 있어요.</div>
-          </div>
-          <div className={styles.sorts}>
-            <button className={styles.btn} onClick={() => setSortBy('name')}>팀명순</button>
-            <button className={styles.btn} onClick={() => setSortBy('size')}>팀원수순</button>
-          </div>
-        </div>
-
-        {/* 카드 그리드 */}
-        {filteredAndSortedTeams.length === 0 ? (
-          <div className={styles.empty}>아직 팀 결과가 없어요. 팀빌딩을 완료하면 여기에서 확인할 수 있어요.</div>
+  // 렌더링 
+  const renderContent = () => {
+    if (isLoading) {
+      return <div className={styles.loadingContainer}><img src={LoadingImage} alt="Loading..." className={styles.loadingImage} /></div>;
+    }
+    if (error) {
+      return <div className={styles.empty}>{error}</div>;
+    }
+    return (
+      <>
+        {/* 팀 카드 그리드 */}
+        {filteredAndSortedTeams.length === 0 && searchQuery === "" ? (
+          <div className={styles.empty}>해당 학기의 팀 빌딩 결과가 없습니다.</div>
+        ) : filteredAndSortedTeams.length === 0 && searchQuery !== "" ? (
+          <div className={styles.empty}>검색 결과가 없습니다.</div>
         ) : (
           <div className={styles.grid}>
             {filteredAndSortedTeams.map(team => (
@@ -176,61 +167,86 @@ const TeamBuildResultPage = () => {
           </div>
         )}
 
+        {/* 미배정 지원자 그리드 */}
+        <div className={styles.sectionTitle}>미배정 지원자</div>
+        <div className={styles.sectionSub}>
+          총 <b>{filteredUnassigned.length}</b>명
+        </div>
 
-
-
-        <div id="grid" class="grid" th:if="${!#lists.isEmpty(teams.getResults())}">
-
-          {/* 복사용 숨김 텍스트 */}
-          <div class="rosterText" style="display:none;">
-            <span th:text="'팀명: ' + ${team.teamName}"></span>
-            <span> / </span>
-            <span th:text="'팀장: ' + ${team.leader.name} + (${team.leader.position} != null ? '·' + ${team.leader.position} : '')"></span>
-            <span> / 팀원: </span>
-            <span th:each="m, stat : ${team.members}">
-              <span th:text="${m.name} + (${m.position} != null ? '·' + ${m.position} : '')"></span>
-              <span th:if="${!stat.last}">, </span>
-            </span>
+        {filteredUnassigned.length === 0 ? (
+          <div className={styles.empty}>모든 지원자가 팀에 배정되었습니다 🎉</div>
+        ) : (
+          <div className={styles.grid}>
+            {filteredUnassigned.map(m => (
+              <div className={styles.card} key={m.name}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.teamName}>
+                    <span>{m.name}</span>
+                    <span className={styles.badge}>{m.position}</span>
+                  </div>
+                  <div className={styles.muted}>미배정</div>
+                </div>
+              </div>
+            ))}
           </div>
+        )}
+      </>
+    );
+  };
 
-          <div class="footer">
-            <div class="muted">
-              총 인원: <b th:text="${1 + #lists.size(team.members)}">0</b>명 (팀장 포함)
+
+  return (
+    <>
+      <div className={styles.container}>
+
+        <div className={styles.header}>
+          <div className={styles.titleSection}>
+            <div className={styles.pageTitle}>TEAM BULDING RESULT</div>
+            <div className={styles.titleSub}>팀 빌딩 결과를 확인하세요</div>
+            {/* 총 인원 수 일단 보류
+            <div className={styles.sub}>
+              총 <b>{filteredAndSortedTeams.length}</b>개 팀
+            </div> */}
+          </div>
+          {/* 돌아가기 키 도 일단 보류
+          <button className={styles.backBtn} onClick={goBack}>← 돌아가기</button> */}
+        </div>
+
+        {/* 연도별 구현도 일단 보류
+        <div className={styles.semesterSelector}>
+          <h3>{year}년 {semester}학기</h3>
+          <div>
+            <button className={styles.btn} onClick={() => handleSemesterChange(2024, 1)}>2024-1</button>
+            <button className={styles.btn} onClick={() => handleSemesterChange(2024, 2)}>2024-2</button>
+            <button className={styles.btn} onClick={() => handleSemesterChange(2025, 1)}>2025-1</button>
+          </div>
+        </div> */}
+
+        <div className={styles.toolbar}>
+          <div>
+            <div className={styles.search}>
+              <input
+                type="text"
+                placeholder="팀명/팀장/팀원/미배정 검색…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button className={styles.btn} onClick={() => setSearchQuery("")}>지우기</button>
             </div>
-            <div class="actions">
-              <button class="btn copy" onclick="copyRoster(this)">명단 복사</button>
-            </div>
+            <div className={styles.searchHelp}>예) "알파", "김개발", "FRONTEND", "홍길동" 같이 검색할 수 있어요.</div>
+          </div>
+          <div className={styles.sorts}>
+            <button className={styles.btn} onClick={() => setSortBy('name')}>팀명순</button>
+            <button className={styles.btn} onClick={() => setSortBy('size')}>팀원수순</button>
           </div>
         </div>
-      </div>
 
-      {/* 미배정 지원자 섹션 */}
-      <div class="section-title">미배정 지원자</div>
-      <div class="section-sub">
-        총 <b th:text="${unassigned != null ? #lists.size(unassigned) : 0}">0</b>명
-      </div>
+        {renderContent()}
 
-      <div th:if="${unassigned == null || #lists.isEmpty(unassigned)}" class="empty">
-        모든 지원자가 팀에 배정되었습니다 🎉
+        <FloatingButton />
       </div>
-
-      <div id="unassignedGrid" class="grid" th:if="${unassigned != null && !#lists.isEmpty(unassigned)}">
-        <div class="card"
-          th:each="m : ${unassigned}"
-          th:attr="data-key=|${m.name} ${m.position} 미배정|">
-          <div class="card-header">
-            <div class="team-name">
-              <span th:text="${m.name}">홍길동</span>
-              <span class="badge" th:text="${m.position}">FRONTEND</span>
-            </div>
-            <div class="muted">미배정</div>
-          </div>
-        </div>
-      </div>
-    </div >
-      <FloatingButton />
     </>
   );
-}
+};
 
 export default TeamBuildResultPage;
