@@ -4,203 +4,146 @@
   font-weight: 400;
   font-style: normal;
 }
-/* 헤더 스타일 수정 */
+
+/* 본문과 헤더 폭을 맞추는 공통 값 */
+:root {
+  --container-max: 400px; /* 필요 시 한 곳만 수정 */
+}
+
+/* ===== 헤더: 전폭 fixed + 내부 래퍼로 실제 표시 폭 제한 ===== */
 .App-header {
-  position: fixed; /* 헤더를 고정된 위치로 설정 */
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  z-index: 101; /* 사이드바 위에 나타나도록 높은 z-index 설정 */
+  right: 0;                /* 화면 가로 전체 */
+  z-index: 101;            /* 메뉴(100)보다 위 */
+  background: transparent; /* 완전 투명 */
+  height: 60px;            /* 기존 높이에 맞게 조정 */
+}
+
+/* 컨테이너 폭 안에서 로고–아이콘 양끝 배치 */
+.header-inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  height: 100%;
   display: flex;
-  justify-content: space-between;
-  padding: 20px;
-  background-color: rgb(0, 0, 0);
+  justify-content: space-between; /* 로고 ↔ 아이콘 */
+  align-items: center;
+  padding: 0 20px;                /* 예전 패딩 감각 유지 */
   color: white;
+
 }
 
-/* 모바일 화면을 위한 미디어 쿼리 수정 */
-@media (max-width: 768px) {
-  .menu {
-    position: fixed; /* 사이드바를 고정된 위치로 변경 */
-    top: 60px; /* 헤더 높이만큼 아래쪽으로 사이드바 위치 조정 */
-    left: 0;
-    width: 200px; /* 모바일 환경에서 사이드바 너비 조정 */
-    height: calc(100vh - 60px); /* 헤더 높이를 제외한 화면 높이 */
-    box-sizing: border-box; /* 패딩 포함하여 사이즈 계산 */
-    z-index: 100; /* 헤더 아래에 위치하도록 설정 */
-  }
+/* 로고/아이콘 */
+.waplogo { 
+  width: 70px; 
+  height: auto; 
+  margin-left: 20px;
+}
 
-  .content {
-    margin-top: 60px; /* 헤더 높이만큼 콘텐츠 여백 설정 */
-    margin-left: 250px; /* 사이드바 너비만큼 콘텐츠 여백 설정 */
-  }
+/* ✅ 아이콘: 절대배치 제거 → 컨테이너 안 오른쪽 끝에 위치 */
+.menu-icon {
+  font-size: 25px;
+  cursor: pointer;
+  z-index: 102;
+  margin-right: 20px;
 }
 
 
-
-html{
+/* 글로벌 기본 */
+html {
   font-family: 'Pretendard-Regular';
   height: 100%;
   color: white;
   margin: 0 auto;
 }
 
-/* 컨테이너 스타일 */
+ul { list-style-type: none; padding: 0; }
+li { padding: 10px 0; }
+
+/* 본문 컨테이너 */
 .container {
-  background-color: rgb(0, 0, 0);
-  max-width: 400px;
+  background-color: #000;       /* 페이지 배경 검정 */
+  max-width: var(--container-max);
   margin-left: auto;
   margin-right: auto;
   border: 2px;
 }
 
-/* 헤더 스타일 */
-.App-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-  background-color: rgba(0, 0, 0, 0);
-  color: white;
-  position: sticky;
-  z-index: 100;
-  top: 0;
-  left: 0;
-  right: 0;
-}
-
-/* 로고 스타일 */
-.waplogo {
-  width: 70px;
-  height: auto;
-}
-
-/* 메뉴 아이콘 스타일 */
-.menu-icon {
-  cursor: pointer;
-  font-size: 25px;
-}
-
-/* 메뉴 컨테이너 스타일 */
+/* ===== 메뉴 래퍼: 위치 지정 제거(전폭 영향 X) ===== */
 .menuContainer {
   display: flex;
-  justify-content: flex-end; /* 오른쪽 정렬 */
-  right: 0;
-  position: sticky;
-  z-index: 100;
-  top: 30px;
-  left: 0;
+  justify-content: flex-end;
 }
 
-/* 메뉴 스타일 */
+/* ===== 사이드 메뉴: 화면 고정, 헤더 아래 레이어 ===== */
 .menu {
+  position: fixed;
+  top: 50%;                  /* 최상단부터 */
+  left: 50%;     
+  transform: translate(-50%, -50%);  /* 오른쪽에서 열려면 right:0; left:auto */
   width: 380px;
-  height: 100%;
-  background-color: #000000;
+  height: 100vh;          /* 전체 높이 */
+  background-color: #000;
   color: white;
   padding: 10px;
-  position: fixed;
+  z-index: 100;           /* 헤더(101)보다 아래 */
 }
 
-/* 메뉴 구분선 스타일 */
-.startLine {
-  border: none;
-  border-top: 3px solid #fff;
-}
+/* 구분선 */
+.startLine { border: none; border-top: 3px solid #fff; }
+.line      { border: none; border-top: 0.7px solid #fff; }
 
-.line {
-  border: none;
-  border-top: 0.7px solid #fff;
-}
-
-/* 메뉴 리스트 스타일 */
-.menu ul {
-  list-style-type: none; /* 기본 리스트 스타일 제거 */
-  padding: 0;
-  margin: 0;
-}
-
+/* 메뉴 리스트 */
+.menu ul { padding: 0; margin: 0; }
 .menu li {
-  margin-right: 40px; /* 각 아이템 간의 간격 조절 */
+  margin-right: 40px;
   color: white;
   padding: 10px;
   font-size: x-large;
   font-weight: 700;
   font-family: "Inter", sans-serif;
-  font-style: normal;
   cursor: pointer;
   margin-bottom: 17px;
 }
 
-/* 일반 ul, li 스타일 */
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  padding: 10px 0;
-}
-
-/* 콘텐츠 박스 스타일 */
+/* 콘텐츠 박스 */
 .content-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 15px;
+  margin-top: 15px; /* 필요 시 조정 */
   font-family: 'Pretendard-Regular';
 }
 
-.mount1{ animation: 0.7s ease-in-out loadEffect1; }
+.mount1 { animation: 0.7s ease-in-out loadEffect1; }
+@keyframes loadEffect1 { 0% {opacity:0;} 100% {opacity:1;} }
 
-@keyframes loadEffect1 {
-    0%{
-        opacity: 0;
-    }
-    100%{
-        opacity: 1;
-    }
-}
-
+/* 카드 */
 .box {
   width: 340px;
   height: 200px;
   margin: 10px;
   background-color: #ffffff;
   padding: 15px;
-  text-align: left; /* 왼쪽 정렬로 수정 */
+  text-align: left;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-start;
-  position: relative; /* 부모 요소를 기준으로 자식 요소의 위치를 설정하기 위해 */
+  position: relative;
 }
 
-/* 이미지 컨테이너 스타일 */
-.image {
-  width: 100%; /* 부모 요소에 맞춰 가로 채우기 */
-  height: 100%; /* 부모 요소에 맞춰 세로 채우기 */
-  overflow: hidden;
+/* 이미지 */
+.image { width: 100%; height: 100%; overflow: hidden; }
+.project-image, .project1 {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  position: absolute; top: 0; left: 0;
 }
 
-/* 프로젝트 이미지 스타일 */
-.project-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* 이미지가 박스를 꽉 채우도록 설정 */
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-/* 프로젝트1 이미지 스타일 */
-.project1 {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* 이미지 비율을 유지하면서 박스에 맞춰 자르기 */
-}
-
-/* 타이틀 박스 스타일 */
+/* 타이틀 그라데이션 */
 .titlebox {
   width: 355px;
   height: 100px;
@@ -212,35 +155,22 @@ li {
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-start;
-  position: absolute; /* 위치를 자유롭게 조정하기 위해 */
-  bottom: 0; /* 박스의 아래쪽에 위치하도록 설정 */
-  left: 0; /* 박스의 왼쪽을 기준으로 위치 설정 */
+  position: absolute;
+  bottom: 0; left: 0;
   color: #ffffff;
 }
+.titlebox h2 { margin: 0; font-size: 25px; }
+.titlebox p  { margin: 5px 0 0; font-size: 15px; text-align: left; }
 
-.titlebox h2 {
-  margin: 0;
-  font-size: 25px;
-}
-
-.titlebox p {
-  margin: 5px 0 0;
-  font-size: 15px; /* 폰트 크기는 최신 CSS에 맞게 유지 */
-  text-align: left; /* 왼쪽 정렬 추가 */
-}
-
-
+/* 환영/인증 텍스트 */
 .welcome-message{
-  margin-right: 40px; /* 각 아이템 간의 간격 조절 */
+  margin-right: 40px;
   color: white;
   padding: 10px;
   font-size: 120%;
   font-weight: 700;
   font-family: "Inter", sans-serif;
-  font-style: normal;
-  cursor: pointer;
 }
-
 .auth-text{
   text-align: right;
   padding-right: 5%;
@@ -249,11 +179,30 @@ li {
   font-weight: 700;
 }
 
-
+/* 프로젝트 컨테이너 */
 .project-container {
-  border: 2px solid black; /* 테두리 두께와 색상 */
-  border-radius: 10px;     /* 모서리를 둥글게 (옵션) */
-  padding: 20px;           /* 테두리와 내용 사이의 여백 */
-  margin: 20px auto;       /* 페이지 중앙으로 맞추기 */
-  max-width: 800px;        /* 적당한 최대 너비 설정 (필요시) */
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 800px; /* 카드 영역은 별도 폭 사용 시 유지 */
 }
+
+/* ===== 모바일 ===== */
+@media (max-width: 768px) {
+  .menu {
+    width: 200px;
+    height: 100vh;
+  }
+
+  /* 이전처럼 헤더 높이만큼 밀던 여백 제거 유지 */
+  .content {
+    margin-top: 0;
+    margin-left: 250px; /* 사이드바 전략에 따라 조정/삭제 */
+  }
+}
+
+/* ===== 주의 =====
+   - 중복 .App-header(position: sticky) 정의는 삭제한다.
+   - 아이콘 위치는 컨테이너 폭 안에서 .header-inner의 flex로 결정된다.
+*/

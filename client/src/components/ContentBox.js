@@ -40,7 +40,6 @@ const ContentBox = () => {
   const initialSemester = searchParams.get("semester") || 1;
 
   const [semesterFilter, setSemesterFilter] = useState({
-    // URL에서 읽어온 문자이므로 정수로 변환
     year: parseInt(initialYear),
     semester: parseInt(initialSemester),
   });
@@ -49,16 +48,15 @@ const ContentBox = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false); // 일정 시간 후 마운트될 상태
+  const [searchTerm, setSearchTerm] = useState("");   // ✅ 검색어 상태
   const navigate = useNavigate();
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list`;
 
   useEffect(() => {
-
     const timeoutId = setTimeout(() => {
-      setIsMounted(true); // 일정 시간 후에 마운트 상태 변경
+      setIsMounted(true);
     }, 700);
 
-    // API 호출 함수
     const fetchData = async () => {
       try {
         const response = await axios.get(apiUrl, {
@@ -68,17 +66,13 @@ const ContentBox = () => {
           },
         });
 
-        // 응답 데이터를 콘솔에 출력하여 형식을 확인
         console.log("API 응답 데이터:", response.data);
 
         if (Array.isArray(response.data.projectsResponse)) {
           setData(response.data.projectsResponse);
           setFilteredData(response.data.projectsResponse);
         } else {
-          console.error(
-            "API 응답의 projectsResponse가 배열이 아닙니다:",
-            response.data
-          );
+          console.error("API 응답의 projectsResponse가 배열이 아닙니다:", response.data);
         }
         setIsLoading(false);
       } catch (error) {
@@ -87,41 +81,36 @@ const ContentBox = () => {
       }
     };
 
-    fetchData(); // API 호출
-
-    // 클린업 함수: 컴포넌트 언마운트 시 타임아웃 정리
+    fetchData();
     return () => clearTimeout(timeoutId);
-  }, [semesterFilter]); // 학기 필터가 변경될 때마다 fetchData 호출
+  }, [semesterFilter]);
 
+  // ✅ 유형 + 제목검색 동시 반영
   useEffect(() => {
-    if (filter === "All") {
-      setFilteredData(data);
-    } else {
-      setFilteredData(
-        data.filter(
-          (item) => item.projectType.toLowerCase() === filter.toLowerCase()
-        )
+    let next = data;
+
+    if (filter !== "All") {
+      next = next.filter(
+        (item) => item.projectType?.toLowerCase() === filter.toLowerCase()
       );
     }
-  }, [filter, data]);
 
-  const handleFilterChange = (newFilter) => {
-    setFilter(newFilter);
-  };
+    if (searchTerm.trim() !== "") {
+      const q = searchTerm.toLowerCase();
+      next = next.filter((item) => item.title?.toLowerCase().includes(q));
+    }
 
-  const toggleYearAccordion = () => {
-    setYearAccordionOpen(!yearAccordionOpen);
-  };
+    setFilteredData(next);
+  }, [filter, data, searchTerm]);
 
-  const toggleTypeAccordion = () => {
-    setTypeAccordionOpen(!typeAccordionOpen);
-  };
+  const toggleYearAccordion = () => setYearAccordionOpen(!yearAccordionOpen);
+  const toggleTypeAccordion = () => setTypeAccordionOpen(!typeAccordionOpen);
 
   const handleSemesterChange = (year, semester) => {
     const newFilter = { year, semester };
-    setSemesterFilter(newFilter); // 학기 필터 상태 변경
+    setSemesterFilter(newFilter);
     setSearchParams({ projectYear: year, semester: semester });
-    setYearAccordionOpen(false); // 드롭다운 닫기
+    setYearAccordionOpen(false);
   };
 
   if (isLoading) {
@@ -137,11 +126,10 @@ const ContentBox = () => {
           transform: "translate(-50%, -50%)",
         }}
       />
-    ); // 일정 시간 후 컴포넌트가 마운트되지 않으면 로딩 표시
+    );
   }
 
   return (
-
     <div>
       <div className="hero">
         <div className="hero__inner">
@@ -149,8 +137,31 @@ const ContentBox = () => {
             WAP의<br/>다양한 활동들을 만나보세요
           </h1>
           <p className="hero__subtitle">Discover WAP's diverse activities</p>
+
+          {/* ✅ 검색창 (hero__subtitle 바로 아래) */}
+          <div className="hero__search">
+            <div className="search-bar">
+              <span className="search-icon" aria-hidden="true">
+                <img
+                  src="https://svgsilh.com/svg_v2/1093183.svg"
+                  alt=""
+                  className="search-icon-img"
+                  loading="lazy"
+                />
+              </span>
+              <input
+                type="text"
+                placeholder="왑의 프로젝트를 검색해보세요!"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="project title search"
+                className="search-input"
+              />
+            </div>
+          </div>
+
           <div className="filter-container">
-            {/* ▶ 유형: 알약 버튼 그룹 (드롭다운 대체, 기능 동일) */}
+            {/* ▶ 유형: 알약 버튼 그룹 */}
             <div className="pill-filter" role="tablist" aria-label="project type">
               {TYPE_OPTIONS.map((t) => (
                 <button
@@ -172,19 +183,14 @@ const ContentBox = () => {
               </button>
               {yearAccordionOpen && (
                 <div className="dropdown-content">
-                  <button onClick={() => handleSemesterChange(currentYear, 1)}>
-                    1학기
-                  </button>
-                  <button onClick={() => handleSemesterChange(currentYear, 2)}>
-                    2학기
-                  </button>
+                  <button onClick={() => handleSemesterChange(currentYear, 1)}>1학기</button>
+                  <button onClick={() => handleSemesterChange(currentYear, 2)}>2학기</button>
                 </div>
               )}
             </div>
           </div>
         </div>
       </div>
-      
 
       <div className="content-box mount1">
         {filteredData.map((item, index) => (

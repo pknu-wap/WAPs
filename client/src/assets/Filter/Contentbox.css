@@ -166,14 +166,14 @@
 .hero {
   position: relative;
   width: 100%;
-  min-height: 180px;
+  min-height: 300px;
   display: flex;
   align-items: flex-end;        /* 텍스트/컨트롤을 아래쪽에 붙임 */
   padding: 32px 20px 28px;
   box-sizing: border-box;
   isolation: isolate;
   background: linear-gradient(90deg, #A0AFFF 0%, #B4EDFE 100%); /* 좌→우 */
-  overflow: visible;            /* 드롭다운이 밖으로 펼쳐져도 보이게 */
+  overflow: hidden;      /* 드롭다운이 밖으로 펼쳐져도 보이게 */
 }
 /* 아래→위 명암 오버레이 */
 .hero::after {
@@ -202,7 +202,7 @@
 /* Hero 내부 필터바 — 배경/그림자 제거(검은 박스 제거) */
 .hero__controls,
 .hero .filter-container {
-  margin-top: 16px;
+  margin-top: 20px;
   padding: 0;
   background: transparent;
   box-shadow: none !important;
@@ -268,3 +268,70 @@
   color: #0f172a;
 }
 
+
+
+/* ========== 검색창 (Hero) ========== */
+.hero__search {
+  margin-top: 28px;
+  width: 100%;
+  max-width: 560px;                 /* ✅ 최대폭 제한 */
+  box-sizing: border-box;           /* ✅ 패딩/보더 포함 계산 */
+  align-self: flex-start;   
+}
+
+.hero__search .search-bar {
+  position: relative;
+  width: 100%;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.653);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0);
+  display: flex;
+  align-items: center;
+  padding-left: 46px;  /* 아이콘 공간 */
+  padding-right: 14px;
+  box-sizing: border-box;           /* ✅ 보더 포함 */
+  overflow: hidden;  
+}
+
+.hero__search .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero__search .search-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0.8; /* 배경과 어울리도록 살짝 투명 */
+  filter: grayscale(20%);
+}
+
+.hero__search .search-input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.hero__search .search-input::placeholder {
+  color: rgba(31,41,55,0.72);
+}
+
+@media (max-width: 480px) {
+  .hero__search { max-width: 100%; }
+  .hero__search .search-bar { height: 42px; }
+  .hero__search .search-icon { width: 20px; height: 20px; }
+}
