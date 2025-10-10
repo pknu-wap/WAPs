@@ -173,7 +173,8 @@
   box-sizing: border-box;
   isolation: isolate;
   background: linear-gradient(90deg, #A0AFFF 0%, #B4EDFE 100%); /* 좌→우 */
-  overflow: hidden;      /* 드롭다운이 밖으로 펼쳐져도 보이게 */
+  overflow: visible;           /* <- hidden 제거 */
+  z-index: 1;       /* 드롭다운이 밖으로 펼쳐져도 보이게 */
 }
 /* 아래→위 명암 오버레이 */
 .hero::after {
@@ -239,8 +240,13 @@
 
 /* 드롭다운 메뉴를 버튼의 오른쪽 가장자리에 정렬 */
 .hero .filter-container > .filter-dropdown .dropdown-content {
-  left: auto !important;
-  right: 0 !important;
+  left:50%;
+  right: 50%;
+  position: absolute;
+  top: calc(100% + 6px);       /* 버튼 ‘바로 아래’ + 간격 */
+  right: auto;
+  z-index: 1000;
+  transform: translateX(-50%) translateX(var(--dd-offset-x, 0px)); 
 }
 
 
