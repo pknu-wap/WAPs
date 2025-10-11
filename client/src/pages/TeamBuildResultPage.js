@@ -231,9 +231,7 @@ const TeamBuildResultPage = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button className={styles.btn} onClick={() => setSearchQuery("")}>지우기</button>
             </div>
-            <div className={styles.searchHelp}>예) "알파", "김개발", "FRONTEND", "홍길동" 같이 검색할 수 있어요.</div>
           </div>
           <div className={styles.sorts}>
             <button className={styles.btn} onClick={() => setSortBy('name')}>팀명순</button>

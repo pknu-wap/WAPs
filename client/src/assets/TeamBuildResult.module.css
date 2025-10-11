@@ -12,7 +12,7 @@
 
 .container {
   max-width: 1321px;
-  padding: 0 76px;
+  padding: 0 30px;
 }
 
 .loadingContainer {
@@ -109,6 +109,8 @@
 }
 
 .search {
+  width: 200px;
+  height: 45px;
   display: flex;
   gap: 8px;
 }
@@ -117,7 +119,7 @@
   flex: 1;
   padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 52px;
   font-size: 14px;
   min-width: 100px;
 }
@@ -134,19 +136,14 @@
 }
 
 .btn {
-  padding: 9px 12px;
+  padding: 5px 12px;
   border: 1px solid var(--border);
-  background: var(--card);
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
+  background: transparent;
+  border-radius: 103px;
+  font-size: 10px;
+  border-color: #fff;
+  text-align: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
 }
 
 /*카드 그리드*/
