@@ -1,3 +1,13 @@
+/* --- 폰트 임포트 --- */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+
+/* --- 전역 폰트 지정 --- */
+html,
+body {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
 /* --- 기본 스타일 및 변수 --- */
 :root {
   --bg: #f7f8fa;
@@ -12,7 +22,7 @@
 
 .container {
   max-width: 1321px;
-  padding: 0 20px;
+  padding: 40px 20px;
 }
 
 .loadingContainer {
@@ -43,7 +53,7 @@
 /* --- 헤더 --- */
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-start;
   margin-bottom: 20px;
   flex-wrap: wrap; /* 모바일 대응 */
@@ -54,16 +64,21 @@
 }
 
 .pageTitle {
-  width: 1070px;
-  height: 216px;
+  padding: 0 20px;
   color: fff;
-  font-size: 28px;
+  font-size: 30px;
+  font-weight: 610;
+  text-align: center;
   margin-bottom: 6px;
 }
 
 .titleSub {
+  font-size: 10px;
+  text-align: center;
+  font-weight: 100;
   color: ffffff;
   opacity: 50%;
+  margin-top: 7px;
 }
 .sub {
   color: var(--muted);
@@ -106,10 +121,12 @@
   gap: 5px;
   align-items: center;
   margin-bottom: 16px;
+  margin-top: 40px;
 }
 
 .search {
-  height: 50px;
+  height: 48px;
+  width: 217px;
   display: flex;
   gap: 8px;
 }
@@ -118,7 +135,7 @@
   flex: 1;
   padding: 10px 12px;
   border: 1px;
-  border-radius: 18px;
+  border-radius: 15px;
   font-size: 14px;
   min-width: 100px;
   background: rgba(255, 255, 255, 0.2);
@@ -133,10 +150,10 @@
 }
 
 .btn {
-  padding: 5px 12px;
+  padding: 7px 11px;
   border: 1px solid var(--border);
   background: transparent;
-  border-radius: 103px;
+  border-radius: 50px;
   font-size: 12px;
   border-color: #fff;
   text-align: center;
