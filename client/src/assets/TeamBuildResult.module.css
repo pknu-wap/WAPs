@@ -12,7 +12,7 @@
 
 .container {
   max-width: 1321px;
-  padding: 0 30px;
+  padding: 0 20px;
 }
 
 .loadingContainer {
@@ -103,14 +103,13 @@
 .toolbar {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 12px;
+  gap: 5px;
   align-items: center;
   margin-bottom: 16px;
 }
 
 .search {
-  width: 200px;
-  height: 45px;
+  height: 50px;
   display: flex;
   gap: 8px;
 }
@@ -118,18 +117,16 @@
 .search input {
   flex: 1;
   padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 52px;
+  border: 1px;
+  border-radius: 18px;
   font-size: 14px;
   min-width: 100px;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.searchHelp {
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 4px;
+.search input:focus {
+  outline: none;
 }
-
 .sorts {
   display: flex;
   gap: 8px;
@@ -140,7 +137,7 @@
   border: 1px solid var(--border);
   background: transparent;
   border-radius: 103px;
-  font-size: 10px;
+  font-size: 12px;
   border-color: #fff;
   text-align: center;
   cursor: pointer;
