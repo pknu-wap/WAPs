@@ -99,18 +99,6 @@ public class TeamBuildControllerV2 {
         }
     }
 
-    // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
-    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘을 돌리는 api
-    //@PostMapping
-    public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
-        try {
-            teamBuildService.makeTeam(userPrincipal);
-            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
-        }
-    }
-
     // 지원 현황 반환 (.CSV)
     //@GetMapping(value = "/export/applies.csv", produces = "text/csv; charset=UTF-8")
     public ResponseEntity<byte[]> exportAppliesCsv() {

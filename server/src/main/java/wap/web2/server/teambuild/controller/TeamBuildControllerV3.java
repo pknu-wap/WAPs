@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.ouath2.security.CurrentUser;
@@ -13,12 +14,14 @@ import wap.web2.server.project.service.ProjectService;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.dto.response.RoleResponse;
 import wap.web2.server.teambuild.service.ApplyService;
+import wap.web2.server.teambuild.service.TeamBuildService;
 
 @RestController
 @RequestMapping("/team-build")
 @RequiredArgsConstructor
 public class TeamBuildControllerV3 {
 
+    private final TeamBuildService teamBuildService;
     private final ProjectService projectService;
     private final ApplyService applyService;
 
@@ -30,6 +33,18 @@ public class TeamBuildControllerV3 {
             return ResponseEntity.ok(new RoleResponse(isLeader ? "leader" : "member"));
         } catch (Exception e) {
             return ResponseEntity.status(401).body("[ERROR] 잘못된 유저입니다.");
+        }
+    }
+
+    // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
+    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘을 돌리는 api
+    @PostMapping
+    public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
+        try {
+            teamBuildService.makeTeam(userPrincipal);
+            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
         }
     }
 
