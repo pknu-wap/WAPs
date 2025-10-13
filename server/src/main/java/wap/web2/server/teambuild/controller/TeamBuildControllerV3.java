@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.ouath2.security.CurrentUser;
 import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.service.ProjectService;
+import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.dto.response.RoleResponse;
@@ -53,6 +54,18 @@ public class TeamBuildControllerV3 {
             return ResponseEntity.ok().body("[INFO ] 성공적으로 지원하였습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("[ERROR] 지원 실패");
+        }
+    }
+
+    // 희망 팀 구성 제출 (for 팀장)
+    @PostMapping("/recruit/submit")
+    public ResponseEntity<?> setPreference(@CurrentUser UserPrincipal userPrincipal,
+                                           @Valid @RequestBody RecruitmentDto request) {
+        try {
+            applyService.setPreference(userPrincipal, request);
+            return ResponseEntity.ok().body("[INFO ] 성공적으로 등록하였습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 등록 실패");
         }
     }
 
