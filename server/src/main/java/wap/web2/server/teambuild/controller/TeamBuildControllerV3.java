@@ -1,7 +1,10 @@
 package wap.web2.server.teambuild.controller;
 
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +17,7 @@ import wap.web2.server.project.service.ProjectService;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.dto.response.RoleResponse;
 import wap.web2.server.teambuild.service.ApplyService;
+import wap.web2.server.teambuild.service.TeamBuildExportService;
 import wap.web2.server.teambuild.service.TeamBuildService;
 
 @RestController
@@ -21,6 +25,7 @@ import wap.web2.server.teambuild.service.TeamBuildService;
 @RequiredArgsConstructor
 public class TeamBuildControllerV3 {
 
+    private final TeamBuildExportService exportService;
     private final TeamBuildService teamBuildService;
     private final ProjectService projectService;
     private final ApplyService applyService;
@@ -68,6 +73,32 @@ public class TeamBuildControllerV3 {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("[ERROR] 멤버 불러오기가 실패했습니다. " + e.getMessage());
         }
+    }
+
+    // 지원 현황 반환 (.CSV)
+    @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<byte[]> exportAppliesCsv() {
+        byte[] bytes = exportService.generateAppliesCsvBytes();
+
+        String filename = "applies_" + LocalDate.now() + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .contentLength(bytes.length)
+                .body(bytes);
+    }
+
+    // 모집 현황 반환 (.CSV)
+    @GetMapping(value = "/recruits/export", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<byte[]> exportRecruitsCsv() {
+        byte[] bytes = exportService.generateRecruitsCsvBytes();
+
+        String filename = "recruits_" + LocalDate.now() + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .contentLength(bytes.length)
+                .body(bytes);
     }
 
 }
