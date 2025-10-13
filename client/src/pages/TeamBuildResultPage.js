@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-// import Header from "../components/Header";
-// import Menu from "../components/Menu";
+import Header from "../components/Header";
+import Menu from "../components/Menu";
 import FloatingButton from "../components/FloatingButton";
 import apiClient from "../utils/api";
 import styles from "../assets/TeamBuildResult.module.css";
@@ -22,6 +22,11 @@ const TeamBuildResultPage = () => {
   const [error, setError] = useState(null); // 에러 상태
   const [searchQuery, setSearchQuery] = useState(""); // 검색창 문자열 상태
   const [sortBy, setSortBy] = useState("name"); // 'name' 또는 'size'으로 정렬
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
   // 연도와 학기 상태
   const [year, setYear] = useState(
@@ -197,22 +202,24 @@ const TeamBuildResultPage = () => {
 
   return (
     <>
-      <div className={styles.container}>
-
-        <div className={styles.header}>
-          <div className={styles.titleSection}>
-            <div className={styles.pageTitle}>TEAM BULDING RESULT</div>
-            <div className={styles.titleSub}>팀 빌딩 결과를 확인하세요</div>
-            {/* 총 인원 수 일단 보류
+      <Header toggleMenu={toggleMenu} />
+      <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      <main>
+        <div className={styles.container}>
+          <div className={styles.header}>
+            <div className={styles.titleSection}>
+              <div className={styles.pageTitle}>TEAM BUILDING RESULTS</div>
+              <div className={styles.titleSub}>팀빌딩 결과를 확인하세요</div>
+              {/* 총 인원 수 일단 보류
             <div className={styles.sub}>
               총 <b>{filteredAndSortedTeams.length}</b>개 팀
             </div> */}
-          </div>
-          {/* 돌아가기 키 도 일단 보류
+            </div>
+            {/* 돌아가기 키 도 일단 보류
           <button className={styles.backBtn} onClick={goBack}>← 돌아가기</button> */}
-        </div>
+          </div>
 
-        {/* 연도별 구현도 일단 보류
+          {/* 연도별 구현도 일단 보류
         <div className={styles.semesterSelector}>
           <h3>{year}년 {semester}학기</h3>
           <div>
@@ -222,30 +229,30 @@ const TeamBuildResultPage = () => {
           </div>
         </div> */}
 
-        <div className={styles.toolbar}>
-          <div>
-            <div className={styles.search}>
-              <input
-                type="text"
-                placeholder="팀명/팀장/팀원/미배정 검색…"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button className={styles.btn} onClick={() => setSearchQuery("")}>지우기</button>
+          <div className={styles.toolbar}>
+            <div>
+              <div className={styles.search}>
+                <input
+                  type="text"
+                  placeholder="팀명/팀장/팀원/미배정 검색…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
-            <div className={styles.searchHelp}>예) "알파", "김개발", "FRONTEND", "홍길동" 같이 검색할 수 있어요.</div>
+            <div className={styles.sorts}>
+              <button className={styles.btn} onClick={() => setSortBy('name')}>팀명순</button>
+              <button className={styles.btn} onClick={() => setSortBy('size')}>팀원수순</button>
+            </div>
           </div>
-          <div className={styles.sorts}>
-            <button className={styles.btn} onClick={() => setSortBy('name')}>팀명순</button>
-            <button className={styles.btn} onClick={() => setSortBy('size')}>팀원수순</button>
-          </div>
+
+          {renderContent()}
+
+          <FloatingButton />
         </div>
-
-        {renderContent()}
-
-        <FloatingButton />
-      </div>
+      </main>
     </>
+
   );
 };
 
