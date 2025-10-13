@@ -10,9 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,7 +35,7 @@ public class TeamBuildControllerV2 {
     private final ApplyService applyService;
 
     // 프로젝트 신청 (for 팀원)
-    @PostMapping("/apply")
+    //@PostMapping("/apply")
     public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal,
                                    @Valid @RequestBody ProjectAppliesRequest request) {
         try {
@@ -51,7 +49,7 @@ public class TeamBuildControllerV2 {
 
     // 프로젝트에 신청한 사람 보기 (for 팀장)
     @ResponseBody
-    @GetMapping("/{projectId}/applies")
+    //@GetMapping("/{projectId}/applies")
     public ResponseEntity<?> getApplies(@CurrentUser UserPrincipal userPrincipal,
                                         @PathVariable("projectId") Long projectId) {
         try {
@@ -80,7 +78,7 @@ public class TeamBuildControllerV2 {
 
     // 팀 구성 완료 (RecruitmentDto 사용)
     @ResponseBody
-    @PostMapping("/preference")
+    //@PostMapping("/preference")
     public ResponseEntity<?> setPreference(@CurrentUser UserPrincipal userPrincipal,
                                            @Valid @RequestBody RecruitmentDto request) {
         try {
@@ -103,7 +101,7 @@ public class TeamBuildControllerV2 {
 
     // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
     // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘을 돌리는 api
-    @PostMapping
+    //@PostMapping
     public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
         try {
             teamBuildService.makeTeam(userPrincipal);
@@ -114,7 +112,7 @@ public class TeamBuildControllerV2 {
     }
 
     // 지원 현황 반환 (.CSV)
-    @GetMapping(value = "/export/applies.csv", produces = "text/csv; charset=UTF-8")
+    //@GetMapping(value = "/export/applies.csv", produces = "text/csv; charset=UTF-8")
     public ResponseEntity<byte[]> exportAppliesCsv() {
         byte[] bytes = teamBuildExportService.generateAppliesCsvBytes();
 
@@ -127,7 +125,7 @@ public class TeamBuildControllerV2 {
     }
 
     // 모집 현황 반환 (.CSV)
-    @GetMapping(value = "/export/recruits.csv", produces = "text/csv; charset=UTF-8")
+    //@GetMapping(value = "/export/recruits.csv", produces = "text/csv; charset=UTF-8")
     public ResponseEntity<byte[]> exportRecruitsCsv() {
         byte[] bytes = teamBuildExportService.generateRecruitsCsvBytes();
 
