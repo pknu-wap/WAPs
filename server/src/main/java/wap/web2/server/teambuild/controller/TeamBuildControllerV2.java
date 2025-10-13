@@ -1,14 +1,11 @@
 package wap.web2.server.teambuild.controller;
 
 import jakarta.validation.Valid;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -97,44 +94,6 @@ public class TeamBuildControllerV2 {
             errorResponse.put("error", "팀 구성 중 오류가 발생했습니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
-    }
-
-    // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
-    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘을 돌리는 api
-    //@PostMapping
-    public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
-        try {
-            teamBuildService.makeTeam(userPrincipal);
-            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
-        }
-    }
-
-    // 지원 현황 반환 (.CSV)
-    //@GetMapping(value = "/export/applies.csv", produces = "text/csv; charset=UTF-8")
-    public ResponseEntity<byte[]> exportAppliesCsv() {
-        byte[] bytes = teamBuildExportService.generateAppliesCsvBytes();
-
-        String filename = "applies_" + LocalDate.now() + ".csv";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                .contentLength(bytes.length)
-                .body(bytes);
-    }
-
-    // 모집 현황 반환 (.CSV)
-    //@GetMapping(value = "/export/recruits.csv", produces = "text/csv; charset=UTF-8")
-    public ResponseEntity<byte[]> exportRecruitsCsv() {
-        byte[] bytes = teamBuildExportService.generateRecruitsCsvBytes();
-
-        String filename = "recruits_" + LocalDate.now() + ".csv";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                .contentLength(bytes.length)
-                .body(bytes);
     }
 
 }

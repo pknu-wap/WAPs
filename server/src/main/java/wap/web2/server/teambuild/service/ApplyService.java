@@ -63,7 +63,7 @@ public class ApplyService {
         }
     }
 
-    // 이미 지원했는가
+    // 이미 모집했는가
     @Transactional(readOnly = true)
     public boolean hasRecruited(UserPrincipal userPrincipal, Long projectId) {
         User user = userRepository.findById(userPrincipal.getId())
@@ -86,7 +86,7 @@ public class ApplyService {
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
 
         if (!project.isOwner(user)) {
-            throw new IllegalArgumentException("[ERROR] 프로젝트의 팀장이 아닙니다.");
+            throw new IllegalArgumentException("[ERROR] 해당 프로젝트의 팀장이 아닙니다.");
         }
 
         List<ProjectApply> applies = applyRepository.findAllByProject(project);
