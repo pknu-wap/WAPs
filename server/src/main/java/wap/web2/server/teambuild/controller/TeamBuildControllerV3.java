@@ -69,18 +69,6 @@ public class TeamBuildControllerV3 {
         }
     }
 
-    // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
-    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘을 돌리는 api
-    @PostMapping
-    public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
-        try {
-            teamBuildService.makeTeam(userPrincipal);
-            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
-        }
-    }
-
     // 내 프로젝트에 지원한 멤버 불러오기
     @GetMapping("/{projectId}/applies")
     public ResponseEntity<?> getRecruitPageData(@CurrentUser UserPrincipal userPrincipal,
@@ -100,6 +88,18 @@ public class TeamBuildControllerV3 {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("[ERROR] 멤버 불러오기가 실패했습니다. " + e.getMessage());
+        }
+    }
+
+    // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
+    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘을 돌리는 api
+    @PostMapping
+    public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
+        try {
+            teamBuildService.makeTeam(userPrincipal);
+            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
         }
     }
 
