@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.member.dto.UserResponse;
+import wap.web2.server.member.dto.UserRoleResponse;
 import wap.web2.server.member.dto.UserVoteResponse;
 import wap.web2.server.member.service.UserService;
 import wap.web2.server.ouath2.security.CurrentUser;
@@ -44,6 +45,12 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(401).body("회원 등록에 실패했습니다!");
         }
+    }
+
+    @GetMapping("/role")
+    public ResponseEntity<?> getMyRole(@CurrentUser UserPrincipal userPrincipal) {
+        UserRoleResponse response = userService.getMyRole(userPrincipal.getId());
+        return ResponseEntity.ok(response);
     }
 
 }
