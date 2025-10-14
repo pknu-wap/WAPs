@@ -1,5 +1,6 @@
 package wap.web2.server.member.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +49,7 @@ public class UserController {
     }
 
     @GetMapping("/role")
+    @Operation(summary = "사용자 권한 확인", description = "사용자가 권한을 설정했는지, 어떤 권한을 가지는지 확인합니다.")
     public ResponseEntity<?> getMyRole(@CurrentUser UserPrincipal userPrincipal) {
         UserRoleResponse response = userService.getMyRole(userPrincipal.getId());
         return ResponseEntity.ok(response);
