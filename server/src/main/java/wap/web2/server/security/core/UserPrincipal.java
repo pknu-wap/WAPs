@@ -1,4 +1,4 @@
-package wap.web2.server.ouath2.security;
+package wap.web2.server.security.core;
 
 import java.util.Collection;
 import java.util.Collections;

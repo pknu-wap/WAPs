@@ -1,4 +1,4 @@
-package wap.web2.server.ouath2.security;
+package wap.web2.server.security.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

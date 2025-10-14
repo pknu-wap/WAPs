@@ -1,4 +1,4 @@
-package wap.web2.server.ouath2.payload;
+package wap.web2.server.auth.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

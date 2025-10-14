@@ -1,4 +1,4 @@
-package wap.web2.server.ouath2.security.oauth2.user;
+package wap.web2.server.security.oauth2.attributes;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

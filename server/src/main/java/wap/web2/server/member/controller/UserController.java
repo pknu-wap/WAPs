@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.member.dto.UserResponse;
 import wap.web2.server.member.dto.UserVoteResponse;
 import wap.web2.server.member.service.UserService;
-import wap.web2.server.ouath2.security.CurrentUser;
-import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.security.core.CurrentUser;
+import wap.web2.server.security.core.UserPrincipal;
 
 @RestController
 @RequestMapping("/user")

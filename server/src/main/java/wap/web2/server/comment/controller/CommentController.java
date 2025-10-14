@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.comment.dto.request.CommentCreateRequest;
 import wap.web2.server.comment.service.CommentService;
-import wap.web2.server.ouath2.security.CurrentUser;
-import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.security.core.CurrentUser;
+import wap.web2.server.security.core.UserPrincipal;
 
 @RestController
 @RequestMapping("/comment")

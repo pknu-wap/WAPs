@@ -8,7 +8,7 @@ import wap.web2.server.member.dto.UserVoteResponse;
 import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.security.core.UserPrincipal;
 
 @Service
 @RequiredArgsConstructor
