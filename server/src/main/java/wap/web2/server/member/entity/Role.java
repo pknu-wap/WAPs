@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public enum Role {
 
+    ADMIN,     // WAP 임원진 및 waps 개발자
     MEMBER,    // 왑 회원
     GUEST;     // 비회원
 
