@@ -1,4 +1,4 @@
-package wap.web2.server.ouath2.security;
+package wap.web2.server.security.core;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

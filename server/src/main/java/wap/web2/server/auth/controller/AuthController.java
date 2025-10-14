@@ -1,4 +1,4 @@
-package wap.web2.server.ouath2.controller;
+package wap.web2.server.auth.controller;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import wap.web2.server.auth.payload.ApiResponse;
+import wap.web2.server.auth.payload.AuthResponse;
+import wap.web2.server.auth.payload.LoginRequest;
+import wap.web2.server.auth.payload.SignUpRequest;
 import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.member.entity.AuthProvider;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.ouath2.payload.ApiResponse;
-import wap.web2.server.ouath2.payload.AuthResponse;
-import wap.web2.server.ouath2.payload.LoginRequest;
-import wap.web2.server.ouath2.payload.SignUpRequest;
-import wap.web2.server.ouath2.security.TokenProvider;
+import wap.web2.server.security.jwt.TokenProvider;
 
 @RestController
 @RequestMapping("/auth")

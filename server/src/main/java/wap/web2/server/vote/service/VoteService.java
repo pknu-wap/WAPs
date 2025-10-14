@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteRequest;

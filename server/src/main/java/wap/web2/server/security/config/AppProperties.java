@@ -1,4 +1,4 @@
-package wap.web2.server.ouath2.config;
+package wap.web2.server.security.config;
 
 import java.util.ArrayList;
 import java.util.List;

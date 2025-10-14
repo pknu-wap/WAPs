@@ -1,4 +1,4 @@
-package wap.web2.server.ouath2.security;
+package wap.web2.server.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -14,7 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import wap.web2.server.ouath2.config.AppProperties;
+import wap.web2.server.security.core.UserPrincipal;
+import wap.web2.server.security.config.AppProperties;
 
 @Service
 public class TokenProvider {

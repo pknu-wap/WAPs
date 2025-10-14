@@ -1,4 +1,4 @@
-package wap.web2.server.ouath2.security.oauth2;
+package wap.web2.server.security.oauth2;
 
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
