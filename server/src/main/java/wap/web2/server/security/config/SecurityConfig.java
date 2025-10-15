@@ -5,6 +5,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -51,6 +53,18 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    // 계층형 Role 정의 (반드시 '\n'으로 구분해야함)
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl rh = new RoleHierarchyImpl();
+        rh.setHierarchy(
+                "ROLE_ADMIN > ROLE_MEMBER\n" +
+                        "ROLE_MEMBER > ROLE_USER\n" +
+                        "ROLE_USER > ROLE_GUEST"
+        );
+        return rh;
     }
 
     @Bean
