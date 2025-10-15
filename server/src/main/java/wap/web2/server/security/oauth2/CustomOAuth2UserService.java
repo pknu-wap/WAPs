@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import wap.web2.server.exception.OAuth2AuthenticationProcessingException;
 import wap.web2.server.member.entity.AuthProvider;
+import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.security.core.UserPrincipal;
@@ -71,6 +72,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user.setName(oAuth2UserInfo.getName());
         user.setEmail(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
+        user.setRole(Role.ROLE_GUEST);
         return userRepository.save(user);
     }
 

@@ -26,8 +26,9 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     }
 
     public static UserPrincipal create(User user) {
+        // TODO: 의논 후 변경 (null or GUEST default val) -> null 이면 collection에 넣기 전에 다른 처리 해야할듯
         List<GrantedAuthority> authorities = Collections.
-                singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+                singletonList(new SimpleGrantedAuthority(user.getRole().toString()));
 
         return new UserPrincipal(
                 user.getId(),
