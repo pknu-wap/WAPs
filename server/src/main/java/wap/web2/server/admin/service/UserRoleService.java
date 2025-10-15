@@ -3,6 +3,7 @@ package wap.web2.server.admin.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.dto.RoleChangeResponse;
 import wap.web2.server.admin.dto.UserRoleRequest;
 import wap.web2.server.admin.repository.UserRoleRepository;
@@ -14,6 +15,7 @@ public class UserRoleService {
 
     private final UserRoleRepository userRoleRepository;
 
+    @Transactional
     public RoleChangeResponse change(UserRoleRequest userRoleRequest) {
         List<Long> userIds = userRoleRequest.getUserIds();
         Role newRole = userRoleRequest.getNewRole();
