@@ -13,6 +13,7 @@ import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
 import wap.web2.server.vote.entity.Vote;
+import wap.web2.server.vote.entity.VoteResult;
 import wap.web2.server.vote.repository.VoteRepository;
 import wap.web2.server.vote.repository.VoteResultRepository;
 
@@ -72,17 +73,22 @@ public class VoteService {
         }
 
         Vote vote = voteRepository.findVoteByYearAndSemester(year, semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지않는 투표입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 투표입니다."));
 
-        List<VoteResultResponse> results = vote.getProjectList().stream()
+        List<VoteResult> voteResults = voteResultRepository.findByVoteId(vote.getId());
+        if (voteResults.isEmpty()) {
+            throw new IllegalArgumentException("[ERROR] 투표 결과가 존재하지 않습니다.");
+        }
+
+        List<VoteResultResponse> results = voteResults.stream()
                 .map(VoteResultResponse::from)
                 .toList();
 
-        // 전체 수
-        long sum = results.stream()
+        long totalVoteCount = results.stream()
                 .mapToLong(VoteResultResponse::getVoteCount)
                 .sum();
-        results.forEach(result -> result.calcVoteRate(sum));
+
+        results.forEach(result -> result.calculateVoteRate(totalVoteCount));
 
         return results;
     }
