@@ -54,9 +54,9 @@ public class VoteController {
     @GetMapping("/result")
     public ResponseEntity<?> getVoteResults(@RequestParam(value = "projectYear", required = false) Integer year,
                                             @RequestParam(value = "semester", required = false) Integer semester) {
-        // 정렬 했나요?
         List<VoteResultResponse> voteResults = voteService.getVoteResults(year, semester);
 
         return ResponseEntity.ok().body(voteResults);
     }
+
 }

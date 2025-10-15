@@ -34,9 +34,12 @@ public class VoteService {
 
         Vote vote = voteRepository.findVoteByYearAndSemester(year, semester)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지않는 투표입니다."));
+        if (!vote.isOpen()) {
+            throw new IllegalStateException("[ERROR] 종료된 투표입니다.");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-
         if (!user.canVote()) {
             throw new IllegalStateException("[ERROR] 투표를 이미 완료했습니다.");
         }

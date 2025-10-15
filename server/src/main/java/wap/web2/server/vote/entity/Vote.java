@@ -32,4 +32,8 @@ public class Vote {
     @OneToMany(mappedBy = "vote")
     private List<Project> projectList = new ArrayList<>();
 
+    public boolean isOpen() {
+        return isOpen;
+    }
+
 }
