@@ -28,6 +28,7 @@ public class Vote {
     @Column
     private Integer semester;
 
+    @Deprecated
     @OneToMany(mappedBy = "vote")
     private List<Project> projectList = new ArrayList<>();
 
