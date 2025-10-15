@@ -45,15 +45,15 @@ public class VoteController {
     // TODO: fe에서 2번의 요청을 통한 분기처리로 확인하던것을, 오류코드를 반환하는 식으로 개선해서 1번의 요청으로 줄일 수 있을 듯
     @GetMapping("/now")
     public ResponseEntity<?> getVoteInfo(@CurrentUser UserPrincipal userPrincipal,
-                                         @RequestParam("projectYear") Integer year,
-                                         @RequestParam("semester") Integer semester) {
+                                         @RequestParam(value = "projectYear", required = false) Integer year,
+                                         @RequestParam(value = "semester", required = false) Integer semester) {
         VoteInfoResponse voteInfo = voteService.getVoteInfo(userPrincipal, year, semester);
         return ResponseEntity.ok().body(voteInfo);
     }
 
     @GetMapping("/result")
-    public ResponseEntity<?> getVoteResults(@RequestParam("projectYear") Integer year,
-                                            @RequestParam("semester") Integer semester) {
+    public ResponseEntity<?> getVoteResults(@RequestParam(value = "projectYear", required = false) Integer year,
+                                            @RequestParam(value = "semester", required = false) Integer semester) {
         // 정렬 했나요?
         List<VoteResultResponse> voteResults = voteService.getVoteResults(year, semester);
 

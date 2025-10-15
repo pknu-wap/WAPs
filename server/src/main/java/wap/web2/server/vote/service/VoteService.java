@@ -6,8 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.project.repository.ProjectRepository;
+import wap.web2.server.security.core.UserPrincipal;
+import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
@@ -37,8 +38,13 @@ public class VoteService {
         user.updateVotedProjectIds(voteRequest);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public VoteInfoResponse getVoteInfo(UserPrincipal userPrincipal, Integer year, Integer semester) {
+        if (year == null || semester == null) {
+            year = SemesterGenerator.generateYearValue();
+            semester = SemesterGenerator.generateSemesterValue();
+        }
+
         Vote vote = voteRepository.findVoteByYearAndSemester(year, semester)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지않는 투표입니다."));
         User user = userRepository.findById(userPrincipal.getId())
@@ -47,8 +53,13 @@ public class VoteService {
         return new VoteInfoResponse(vote.getIsOpen(), user.getVoted());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<VoteResultResponse> getVoteResults(Integer year, Integer semester) {
+        if (year == null || semester == null) {
+            year = SemesterGenerator.generateYearValue();
+            semester = SemesterGenerator.generateSemesterValue();
+        }
+
         Vote vote = voteRepository.findVoteByYearAndSemester(year, semester)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지않는 투표입니다."));
 
