@@ -64,8 +64,14 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(new RestAuthenticationEntryPoint()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(staticResources()).permitAll()
+
+                        // swagger
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
                                 "/swagger-resources/**", "/swagger-resources", "/webjars/**").permitAll()
+
+                        // admin
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
                         .requestMatchers("/vote/result", "/project/**", "/techStack/**", "/comment/**").permitAll()
                         .requestMatchers("/team-build", "/team-build/projects", "/team-build/recruit",
                                 "team-build/results")
