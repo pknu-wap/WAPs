@@ -15,6 +15,7 @@ import wap.web2.server.teambuild.dto.TeamMemberResult;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TeamBuildingResult {
+
     private Long projectId;
     private String teamName;
     private String summary; // note
@@ -22,7 +23,12 @@ public class TeamBuildingResult {
     private List<TeamMemberResult> members;
 
     public static TeamBuildingResult of(Project project, TeamMemberResult leader, List<TeamMemberResult> members) {
-        return new TeamBuildingResult(project.getProjectId(), project.getTitle(), project.getSummary(), leader,
-                members);
+        return new TeamBuildingResult(project.getProjectId(),
+                project.getTitle(),
+                project.getSummary(),
+                leader,
+                members
+        );
     }
+
 }
