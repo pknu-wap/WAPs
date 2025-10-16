@@ -2,6 +2,7 @@ package wap.web2.server.teambuild.controller;
 
 import jakarta.validation.Valid;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,15 @@ import wap.web2.server.project.service.ProjectService;
 import wap.web2.server.security.core.CurrentUser;
 import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.teambuild.dto.RecruitmentDto;
+import wap.web2.server.teambuild.dto.TeamMemberResult;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.dto.response.RoleResponse;
+import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
+import wap.web2.server.teambuild.dto.response.TeamResultsResponse;
 import wap.web2.server.teambuild.service.ApplyService;
 import wap.web2.server.teambuild.service.TeamBuildExportService;
+import wap.web2.server.teambuild.service.TeamBuildResultService;
 import wap.web2.server.teambuild.service.TeamBuildService;
 
 @RestController
@@ -29,6 +34,7 @@ import wap.web2.server.teambuild.service.TeamBuildService;
 @RequiredArgsConstructor
 public class TeamBuildControllerV3 {
 
+    private final TeamBuildResultService teamBuildResultService;
     private final TeamBuildExportService exportService;
     private final TeamBuildService teamBuildService;
     private final ProjectService projectService;
@@ -92,7 +98,7 @@ public class TeamBuildControllerV3 {
     }
 
     // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
-    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘을 돌리는 api
+    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘 실행 트리거
     @PostMapping
     public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
         try {
@@ -102,6 +108,23 @@ public class TeamBuildControllerV3 {
             return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
         }
     }
+
+    // 팀 빌딩 결과를 가져오기
+    @GetMapping("/results")
+    public ResponseEntity<?> getTeamBuildResults() {
+        try {
+            TeamBuildingResults results = teamBuildResultService.getResults();
+            List<TeamMemberResult> unassigned = teamBuildResultService.getUnassignedMembers(results);
+
+            // response가 requests: { requests : {}, unassigned: {} } 즉, requests가 requests를 감싸는 구조를 해결.
+            //  TeamBuildingResults의 일급컬랙션 형태를 유지하기위해서 results에서 results를 꺼냄.
+            TeamResultsResponse response = new TeamResultsResponse(results.getResults(), unassigned);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 결과 불러오기 실패" + e.getMessage());
+        }
+    }
+
 
     // 지원 현황 반환 (.CSV)
     @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
