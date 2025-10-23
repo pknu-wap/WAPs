@@ -10,7 +10,7 @@ import wap.web2.server.member.entity.Role;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRoleRequest {
+public class RoleChangeRequest {
 
     @NotNull
     private Role newRole;

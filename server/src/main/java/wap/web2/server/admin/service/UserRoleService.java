@@ -4,8 +4,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.admin.dto.RoleChangeRequest;
 import wap.web2.server.admin.dto.RoleChangeResponse;
-import wap.web2.server.admin.dto.UserRoleRequest;
 import wap.web2.server.admin.repository.UserRoleRepository;
 import wap.web2.server.member.entity.Role;
 
@@ -16,9 +16,9 @@ public class UserRoleService {
     private final UserRoleRepository userRoleRepository;
 
     @Transactional
-    public RoleChangeResponse change(UserRoleRequest userRoleRequest) {
-        List<Long> userIds = userRoleRequest.getUserIds();
-        Role newRole = userRoleRequest.getNewRole();
+    public RoleChangeResponse change(RoleChangeRequest roleChangeRequest) {
+        List<Long> userIds = roleChangeRequest.getUserIds();
+        Role newRole = roleChangeRequest.getNewRole();
 
         if (userIds.isEmpty()) {
             return new RoleChangeResponse(0, newRole);
