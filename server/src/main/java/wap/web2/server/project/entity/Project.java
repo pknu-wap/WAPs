@@ -52,6 +52,7 @@ public class Project {
     @Column
     private Integer semester;
 
+    @Deprecated
     @Column
     private Long voteCount; // 득표 수
 
@@ -77,6 +78,7 @@ public class Project {
     @JoinColumn(name = "user_id")
     private User user; // Owner
 
+    @Deprecated
     @ManyToOne
     @JoinColumn(name = "vote_id")
     private Vote vote;
