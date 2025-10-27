@@ -178,19 +178,35 @@ const ContentBox = () => {
               ))}
             </div>
 
-            {/* 학기 필터 드롭다운 */}
+            {/* 연도 + 학기 필터 드롭다운 */}
             <div className="filter-dropdown">
               <button onClick={toggleYearAccordion} className="dropdown-button">
                 {yearAccordionOpen ? "년도/학기 ▲" : "년도/학기 ▼"}
               </button>
               {yearAccordionOpen && (
-                <div className="dropdown-content">
-                  <button onClick={() => handleSemesterChange(currentYear, 1)}>
-                    1학기
-                  </button>
-                  <button onClick={() => handleSemesterChange(currentYear, 2)}>
-                    2학기
-                  </button>
+                <div
+                  className="dropdown-content"
+                  style={{
+                    maxHeight: "300px",
+                    overflowY: "auto",
+                  }}
+                >
+                  {/* 2000년부터 현재년도까지 역순 표시 */}
+                  {Array.from({ length: currentYear - 2000 + 1 }, (_, i) => currentYear - i).map(
+                    (year) => (
+                      <div
+                        key={year}
+                        style={{ borderBottom: "1px solid #ddd", paddingBottom: "4px" }}
+                      >
+                        <button onClick={() => handleSemesterChange(year, 2)}>
+                          {year} 2학기
+                        </button>
+                        <button onClick={() => handleSemesterChange(year, 1)}>
+                          {year} 1학기
+                        </button>
+                      </div>
+                    )
+                  )}
                 </div>
               )}
             </div>
