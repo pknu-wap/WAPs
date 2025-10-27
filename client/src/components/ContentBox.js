@@ -184,20 +184,11 @@ const ContentBox = () => {
                 {yearAccordionOpen ? "년도/학기 ▲" : "년도/학기 ▼"}
               </button>
               {yearAccordionOpen && (
-                <div
-                  className="dropdown-content"
-                  style={{
-                    maxHeight: "300px",
-                    overflowY: "auto",
-                  }}
-                >
+                <div className="dropdown-content">
                   {/* 2000년부터 현재년도까지 역순 표시 */}
                   {Array.from({ length: currentYear - 2000 + 1 }, (_, i) => currentYear - i).map(
                     (year) => (
-                      <div
-                        key={year}
-                        style={{ borderBottom: "1px solid #ddd", paddingBottom: "4px" }}
-                      >
+                      <div key={year}>
                         <button onClick={() => handleSemesterChange(year, 2)}>
                           {year} 2학기
                         </button>

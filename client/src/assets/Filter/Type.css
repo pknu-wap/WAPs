@@ -37,6 +37,9 @@
   }
   
   .dropdown-content {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
     text-align: left;
     position: absolute;
     top: 100%;
@@ -44,11 +47,10 @@
     background-color: rgba(0, 0, 0, 0.236);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
-    overflow: hidden;
     z-index: 50;
     margin-right: 15%;
     transform: translateX(-50%);
-    width: 80px;
+    width: 100px;
   }
   
   .dropdown-content button {

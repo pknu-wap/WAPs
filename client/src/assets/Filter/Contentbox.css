@@ -64,7 +64,6 @@
   border: 1px solid #e5e5e5;
   border-radius: 10px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  overflow: hidden;
   z-index: 10;
 }
 .dropdown-content > button {
