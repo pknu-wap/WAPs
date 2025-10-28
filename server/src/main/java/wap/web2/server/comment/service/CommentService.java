@@ -8,7 +8,7 @@ import wap.web2.server.comment.entity.Comment;
 import wap.web2.server.comment.repository.CommentRepository;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 

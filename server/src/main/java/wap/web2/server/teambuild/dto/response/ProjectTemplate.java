@@ -23,4 +23,5 @@ public class ProjectTemplate {
 
         return new ProjectTemplate(project.getProjectId(), project.getTitle(), project.getSummary(), techStackNames);
     }
+
 }

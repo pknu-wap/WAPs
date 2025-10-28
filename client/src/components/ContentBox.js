@@ -4,7 +4,35 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import "../assets/Filter/Type.css";
 import "../App.css";
+import "../assets/Filter/Contentbox.css";
 import LoadingImage from "../assets/img/WAP_white_NoBG.png";
+
+/* 알약 버튼 목록 (UI 전용) */
+const TYPE_OPTIONS = [
+  { label: "전체", value: "All" },
+  { label: "웹", value: "Web" },
+  { label: "앱", value: "App" },
+  { label: "게임", value: "Game" },
+  { label: "임베디드", value: "기타" },
+];
+
+// 프로젝트 타입을 한글로 변환하는 함수
+const getTypeLabel = (type) => {
+  const typeMap = {
+    web: "웹",
+    app: "앱",
+    game: "게임",
+    "기타": "임베디드",
+  };
+  return typeMap[type?.toLowerCase?.()] || type;
+};
+
+/* 색상용 클래스 키 */
+const typeKey = (t) => {
+  const key = (t || "").toString().toLowerCase();
+  const map = { web: "web", app: "app", game: "game", "기타": "etc" };
+  return map[key] || "etc";
+};
 
 const ContentBox = () => {
   const [filter, setFilter] = useState("All");
@@ -14,12 +42,11 @@ const ContentBox = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // URL에서 값을 읽어와 초기 상태를 설정(프젝 연도, 학기)
+  // URL에서 값을 읽어와 초기 상태 설정
   const initialYear = searchParams.get("projectYear") || currentYear;
   const initialSemester = searchParams.get("semester") || 1;
 
   const [semesterFilter, setSemesterFilter] = useState({
-    // URL에서 읽어온 문자이므로 정수로 변환
     year: parseInt(initialYear),
     semester: parseInt(initialSemester),
   });
@@ -27,17 +54,14 @@ const ContentBox = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMounted, setIsMounted] = useState(false); // 일정 시간 후 마운트될 상태
+  const [isMounted, setIsMounted] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list`;
 
   useEffect(() => {
+    const timeoutId = setTimeout(() => setIsMounted(true), 700);
 
-    const timeoutId = setTimeout(() => {
-      setIsMounted(true); // 일정 시간 후에 마운트 상태 변경
-    }, 700);
-
-    // API 호출 함수
     const fetchData = async () => {
       try {
         const response = await axios.get(apiUrl, {
@@ -47,17 +71,11 @@ const ContentBox = () => {
           },
         });
 
-        // 응답 데이터를 콘솔에 출력하여 형식을 확인
-        console.log("API 응답 데이터:", response.data);
-
         if (Array.isArray(response.data.projectsResponse)) {
           setData(response.data.projectsResponse);
           setFilteredData(response.data.projectsResponse);
         } else {
-          console.error(
-            "API 응답의 projectsResponse가 배열이 아닙니다:",
-            response.data
-          );
+          console.error("API 응답의 projectsResponse가 배열이 아닙니다:", response.data);
         }
         setIsLoading(false);
       } catch (error) {
@@ -66,47 +84,42 @@ const ContentBox = () => {
       }
     };
 
-    fetchData(); // API 호출
-
-    // 클린업 함수: 컴포넌트 언마운트 시 타임아웃 정리
+    fetchData();
     return () => clearTimeout(timeoutId);
-  }, [semesterFilter]); // 학기 필터가 변경될 때마다 fetchData 호출
+  }, [semesterFilter]);
 
+  // 유형+검색어 필터
   useEffect(() => {
-    if (filter === "All") {
-      setFilteredData(data);
-    } else {
-      setFilteredData(
-        data.filter(
-          (item) => item.projectType.toLowerCase() === filter.toLowerCase()
-        )
+    let next = data;
+
+    if (filter !== "All") {
+      next = next.filter(
+        (item) => item.projectType?.toLowerCase() === filter.toLowerCase()
       );
     }
-  }, [filter, data]);
 
-  const handleFilterChange = (newFilter) => {
-    setFilter(newFilter);
-  };
+    if (searchTerm.trim() !== "") {
+      const q = searchTerm.toLowerCase();
+      next = next.filter((item) => item.title?.toLowerCase().includes(q));
+    }
 
-  const toggleYearAccordion = () => {
-    setYearAccordionOpen(!yearAccordionOpen);
-  };
+    setFilteredData(next);
+  }, [filter, data, searchTerm]);
 
-  const toggleTypeAccordion = () => {
-    setTypeAccordionOpen(!typeAccordionOpen);
-  };
+  const toggleYearAccordion = () => setYearAccordionOpen(!yearAccordionOpen);
+  const toggleTypeAccordion = () => setTypeAccordionOpen(!typeAccordionOpen);
 
   const handleSemesterChange = (year, semester) => {
-    const newFilter = { year, semester };
-    setSemesterFilter(newFilter); // 학기 필터 상태 변경
-    setSearchParams({ projectYear: year, semester: semester });
-    setYearAccordionOpen(false); // 드롭다운 닫기
+    setSemesterFilter({ year, semester });
+    setSearchParams({ projectYear: year, semester });
+    setYearAccordionOpen(false);
   };
 
   if (isLoading) {
     return (
       <img
         src={LoadingImage}
+        alt="Loading"
         style={{
           width: "150px",
           position: "absolute",
@@ -115,43 +128,73 @@ const ContentBox = () => {
           transform: "translate(-50%, -50%)",
         }}
       />
-    ); // 일정 시간 후 컴포넌트가 마운트되지 않으면 로딩 표시
+    );
   }
 
   return (
     <div>
-      <div className="filter-container">
-        <div className="filter-dropdown">
-          {/* 유형 필터 드롭다운 */}
-          <button onClick={toggleTypeAccordion} className="dropdown-button">
-            {typeAccordionOpen ? "Project Type ▲" : "Project Type ▼"}
-          </button>
-          {typeAccordionOpen && (
-            <div className="dropdown-content">
-              <button onClick={() => handleFilterChange("All")}>All</button>
-              <button onClick={() => handleFilterChange("App")}>App</button>
-              <button onClick={() => handleFilterChange("Web")}>Web</button>
-              <button onClick={() => handleFilterChange("Game")}>Game</button>
-              <button onClick={() => handleFilterChange("기타")}>Etc</button>
-            </div>
-          )}
-        </div>
+      <div className="hero">
+        <div className="hero__inner">
+          <h1 className="hero__title">
+            WAP의<br />다양한 활동들을 만나보세요
+          </h1>
+          <p className="hero__subtitle">Discover WAP's diverse activities</p>
 
-        {/* 학기 필터 드롭다운 */}
-        <div className="filter-dropdown">
-          <button onClick={toggleYearAccordion} className="dropdown-button">
-            {yearAccordionOpen ? "Semester ▲" : "Semester ▼"}
-          </button>
-          {yearAccordionOpen && (
-            <div className="dropdown-content">
-              <button onClick={() => handleSemesterChange(currentYear, 1)}>
-                1학기
-              </button>
-              <button onClick={() => handleSemesterChange(currentYear, 2)}>
-                2학기
-              </button>
+          {/* 검색창 */}
+          <div className="hero__search">
+            <div className="search-bar">
+              <span className="search-icon" aria-hidden="true">
+                <img
+                  src="https://svgsilh.com/svg_v2/1093183.svg"
+                  alt=""
+                  className="search-icon-img"
+                  loading="lazy"
+                />
+              </span>
+              <input
+                type="text"
+                placeholder="왑의 프로젝트를 검색해보세요!"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="project title search"
+                className="search-input"
+              />
             </div>
-          )}
+          </div>
+
+          <div className="filter-container">
+            {/* 유형: 알약 버튼 그룹 */}
+            <div className="pill-filter" role="tablist" aria-label="project type">
+              {TYPE_OPTIONS.map((t) => (
+                <button
+                  key={t.value}
+                  role="tab"
+                  aria-selected={filter === t.value}
+                  className={`pill ${filter === t.value ? "active" : ""}`}
+                  onClick={() => setFilter(t.value)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            {/* 학기 필터 드롭다운 */}
+            <div className="filter-dropdown">
+              <button onClick={toggleYearAccordion} className="dropdown-button">
+                {yearAccordionOpen ? "년도/학기 ▲" : "년도/학기 ▼"}
+              </button>
+              {yearAccordionOpen && (
+                <div className="dropdown-content">
+                  <button onClick={() => handleSemesterChange(currentYear, 1)}>
+                    1학기
+                  </button>
+                  <button onClick={() => handleSemesterChange(currentYear, 2)}>
+                    2학기
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -171,8 +214,14 @@ const ContentBox = () => {
                 />
               )}
             </div>
+
             <div className="titlebox">
-              <h2>{item.title}</h2>
+              <div className="title-row">
+                <h2>{item.title}</h2>
+                <span className={`project-type-tag tag--${typeKey(item.projectType)}`}>
+                  {getTypeLabel(item.projectType)}
+                </span>
+              </div>
               <p>{item.summary}</p>
             </div>
           </div>

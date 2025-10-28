@@ -17,6 +17,7 @@ import wap.web2.server.teambuild.entity.ProjectApply;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TeamMemberResult {
+
     private Long id;
     private String name;
     private Position position;
@@ -26,7 +27,10 @@ public class TeamMemberResult {
     }
 
     public static TeamMemberResult from(ProjectApply memberApplication) {
-        return new TeamMemberResult(memberApplication.getUser().getId(), memberApplication.getUser().getName(),
-                memberApplication.getPosition());
+        return new TeamMemberResult(memberApplication.getUser().getId(),
+                memberApplication.getUser().getName(),
+                memberApplication.getPosition()
+        );
     }
+
 }

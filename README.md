@@ -20,3 +20,55 @@
 
 ## 🚀 프로젝트 실행 방법
 https://wap-projects.netlify.app
+
+## 2025-2 참여 인원
+<table>
+  <tr>
+    <td align="center">
+       <img src="" width="120px;"/>   
+        <br />
+        <a href="https://github.com/kangrae-jo" title="Code"><b>kangrae-jo</b></a>
+    </td>
+        <td align="center">
+       <img src="" width="120px;"/>   
+        <br />
+        <a href="https://github.com/g0rnn" title="Code"><b>g0rnn</b></a>
+    </td>
+    <td align="center">
+       <img src="" width="120px;"/>   
+        <br />
+        <a href="https://github.com/daimlee" title="Code"><b>daimlee</b></a>
+    </td>
+    <td align="center">
+       <img src="" width="120px;"/>   
+        <br />
+        <a href="https://github.com/SH-MooDy" title="Code"><b>SH-MooDy</b></a>
+    </td>
+    <td align="center">
+       <img src="" width="120px;"/>   
+        <br />
+        <a href="https://github.com/2siyeon" title="Code"><b>2siyeon</b></a>
+    </td>
+    <td align="center">
+        <img src="" width="120px;"/> 
+        <br />
+        <a href="https://github.com/rlaexram" title="Code"><b>rlaexram</b></a>
+    </td> 
+  </tr>
+  <tr>
+    <td align="center"><b>조강래</b></td>
+    <td align="center"><b>김균호</b></td>
+    <td align="center"><b>이수빈</b></td>
+    <td align="center"><b>이승훈</b></td>
+    <td align="center"><b>이시연</b></td>
+    <td align="center"><b>김예람</b></td>
+  </tr>
+  <tr>
+    <td align="center"><b>BE</b></td>
+    <td align="center"><b>BE</b></td>
+    <td align="center"><b>FE</b></td>
+    <td align="center"><b>FE</b></td>
+    <td align="center"><b>FE</b></td>
+    <td align="center"><b>DE</b></td>
+  </tr>
+</table>

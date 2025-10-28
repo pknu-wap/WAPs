@@ -8,13 +8,12 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import wap.web2.server.ouath2.security.CurrentUser;
-import wap.web2.server.ouath2.security.TokenProvider;
-import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.service.ProjectService;
+import wap.web2.server.security.core.CurrentUser;
+import wap.web2.server.security.core.UserPrincipal;
+import wap.web2.server.security.jwt.TokenProvider;
 import wap.web2.server.teambuild.dto.TeamMemberResult;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
@@ -32,7 +31,7 @@ public class TeamBuildControllerV1 {
     private final ProjectService projectService;
     private final TeamBuildResultService teamBuildResultService;
 
-    @GetMapping
+    //@GetMapping
     public String entry(Model model,
                         @RequestParam(value = "token", required = false) String tokenParam,
                         @CookieValue(name = "authToken", required = false) String cookieToken,
@@ -87,7 +86,7 @@ public class TeamBuildControllerV1 {
         return isLeader ? "redirect:/team-build/recruit" : "redirect:/team-build/projects";
     }
 
-    @GetMapping("/projects")
+    //@GetMapping("/projects")
     public String projects(Model model,
                            @CookieValue(name = "authToken", required = false) String authToken) throws Exception {
 
@@ -100,7 +99,7 @@ public class TeamBuildControllerV1 {
     }
 
     // 리더용 모집하기 페이지
-    @GetMapping("/recruit")
+    //@GetMapping("/recruit")
     public String recruitPage(Model model,
                               @CookieValue(name = "authToken", required = false) String authToken,
                               @CurrentUser UserPrincipal userPrincipal) throws Exception {
@@ -115,7 +114,7 @@ public class TeamBuildControllerV1 {
         return "projects-application-for-leader";
     }
 
-    @GetMapping("/results")
+    //@GetMapping("/results")
     public String getTeamBuildResults(Model model) {
         TeamBuildingResults results = teamBuildResultService.getResults();
         List<TeamMemberResult> unassigned = teamBuildResultService.getUnassignedMembers(results);

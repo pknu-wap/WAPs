@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.member.dto.UserResponse;
+import wap.web2.server.member.dto.UserRoleResponse;
 import wap.web2.server.member.dto.UserVoteResponse;
 import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.security.core.UserPrincipal;
 
 @Service
 @RequiredArgsConstructor
@@ -40,5 +41,13 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public UserRoleResponse getMyRole(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
+        Role role = user.getRole();
+        boolean isAssigned = (role != null);
+
+        return new UserRoleResponse(role, isAssigned);
+    }
 }
 

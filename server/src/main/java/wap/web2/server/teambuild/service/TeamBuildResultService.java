@@ -40,10 +40,10 @@ public class TeamBuildResultService {
                 = projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue());
 
         // 2) 이번 학기 팀 배정 결과(없을 수도 있음)
-        List<Team> teamRows = teamRepository.findAllBySemester(generateSemester());
+        List<Team> teams = teamRepository.findAllBySemester(generateSemester());
 
         // 3) 프로젝트별 팀원 ID 묶기
-        Map<Long, List<Long>> memberIdsByProject = teamRows.stream()
+        Map<Long, List<Long>> memberIdsByProject = teams.stream()
                 .collect(Collectors.groupingBy(
                         Team::getProjectId,
                         Collectors.mapping(Team::getMemberId, Collectors.toList())
@@ -78,13 +78,13 @@ public class TeamBuildResultService {
 
         // 1. 이미 배정된 유저 ID 수집
         Set<Long> allocatedUserIds = new HashSet<>();
-        results.getResults().forEach(r -> {
-            if (r.getMembers() != null) {
-                r.getMembers().forEach(m -> allocatedUserIds.add(m.getId()));
+        results.getResults().forEach(result -> {
+            if (result.getMembers() != null) {
+                result.getMembers().forEach(m -> allocatedUserIds.add(m.getId()));
             }
             // 팀장을 포함해서 배정자로 볼지 여부는 정책에 따라 결정
-            if (r.getLeader() != null && r.getLeader().getId() != null) {
-                allocatedUserIds.add(r.getLeader().getId());
+            if (result.getLeader() != null && result.getLeader().getId() != null) {
+                allocatedUserIds.add(result.getLeader().getId());
             }
         });
 
@@ -92,24 +92,25 @@ public class TeamBuildResultService {
         List<ProjectApply> applies = projectApplyRepository.findAllBySemester(semester);
 
         // 3. 유저별 대표 지원(최저 priority)만 선택
+        //  이번 학기 지원한 유저를 뽑아내기 위함!
         Map<Long, ProjectApply> bestApplyByUser = new HashMap<>();
-        for (ProjectApply a : applies) {
-            Long uid = a.getUser().getId();
-            ProjectApply prev = bestApplyByUser.get(uid);
-            if (prev == null || a.getPriority() < prev.getPriority()) {
-                bestApplyByUser.put(uid, a);
+        for (ProjectApply apply : applies) {
+            Long userId = apply.getUser().getId();
+            ProjectApply prev = bestApplyByUser.get(userId);
+            if (prev == null || apply.getPriority() < prev.getPriority()) {
+                bestApplyByUser.put(userId, apply);
             }
         }
 
         // 4. 배정 안된 사람만 필터링
         List<TeamMemberResult> unassigned = new ArrayList<>();
-        for (ProjectApply rep : bestApplyByUser.values()) {
-            if (!allocatedUserIds.contains(rep.getUser().getId())) {
+        for (ProjectApply apply : bestApplyByUser.values()) {
+            if (!allocatedUserIds.contains(apply.getUser().getId())) {
                 unassigned.add(
                         TeamMemberResult.builder()
-                                .id(rep.getUser().getId())
-                                .name(rep.getUser().getName())
-                                .position(rep.getPosition())
+                                .id(apply.getUser().getId())
+                                .name(apply.getUser().getName())
+                                .position(apply.getPosition())
                                 .build()
                 );
             }
