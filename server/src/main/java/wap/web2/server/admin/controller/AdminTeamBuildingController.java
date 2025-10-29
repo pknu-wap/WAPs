@@ -1,5 +1,7 @@
 package wap.web2.server.admin.controller;
 
+import static wap.web2.server.util.SemesterGenerator.generateSemester;
+
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.admin.service.AdminTeamBuildingService;
 import wap.web2.server.admin.service.TeamBuildExportService;
@@ -34,6 +37,20 @@ public class AdminTeamBuildingController {
     }
 
 
+    @PostMapping("/building/status")
+    @Operation(summary = "팀빌딩 기능 열고닫기", description = "이번 학기 팀빌딩 기능을 열고 닫습니다.")
+    public ResponseEntity<?> open(@RequestParam Boolean open) {
+        adminTeamBuildingService.openTeamBuilding(generateSemester(), open);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/applies")
+    @Operation(summary = "팀빌딩 지원하기 기능 열고닫기", description = "지원자가 원하는 팀에 지원하는 기능을 열고 닫습니다.")
+    public ResponseEntity<?> openApply(@RequestParam Boolean open) {
+        adminTeamBuildingService.openApply(generateSemester(), open);
+        return ResponseEntity.ok().build();
+    }
+    
     // 지원 현황 반환 (.CSV)
     @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
     public ResponseEntity<byte[]> exportAppliesCsv() {
@@ -45,6 +62,13 @@ public class AdminTeamBuildingController {
                 .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
                 .contentLength(bytes.length)
                 .body(bytes);
+    }
+
+    @PostMapping("/recruits")
+    @Operation(summary = "팀빌딩 모집하기 기능 열고닫기", description = "팀장이 원하는 팀원을 모집하는 기능을 열고 닫습니다.")
+    public ResponseEntity<?> openRecruit(@RequestParam Boolean open) {
+        adminTeamBuildingService.openRecruit(generateSemester(), open);
+        return ResponseEntity.ok().build();
     }
 
     // 모집 현황 반환 (.CSV)

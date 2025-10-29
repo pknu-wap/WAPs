@@ -8,11 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.admin.entity.TeamBuildingMeta;
+import wap.web2.server.admin.repository.TeamBuildingMetaRepository;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
+import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.RecruitmentDto.RecruitmentInfo;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
@@ -36,9 +38,13 @@ public class ApplyService {
     private final ProjectApplyRepository applyRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final TeamBuildingMetaRepository teamBuildingMetaRepository;
 
     @Transactional
     public void apply(UserPrincipal userPrincipal, ProjectAppliesRequest request) {
+        if (!isTeamApplyOpen()) {
+            throw new IllegalArgumentException("[ERROR] 팀빌딩 지원 기능이 열리지 않았습니다.");
+        }
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
 
@@ -98,6 +104,10 @@ public class ApplyService {
     // 팀장이 선호하는 지원자를 나열한 wishList 저장
     @Transactional
     public void setPreference(UserPrincipal userPrincipal, RecruitmentDto request) {
+        if (!isTeamRecruitOpen()) {
+            throw new IllegalArgumentException("[ERROR] 팀빌딩 모집 기능이 열리지 않았습니다.");
+        }
+
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
         Project project = projectRepository.findById(request.getProjectId())
@@ -140,4 +150,19 @@ public class ApplyService {
         return applyRepository.existsByUserIdAndSemester(userId, generateSemester());
     }
 
+    private boolean isTeamApplyOpen() {
+        String semester = generateSemester();
+        TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
+                .orElseThrow(() -> new IllegalArgumentException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+
+        return teamBuildingMeta.isOpen() && teamBuildingMeta.isCanApply();
+    }
+
+    private boolean isTeamRecruitOpen() {
+        String semester = generateSemester();
+        TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
+                .orElseThrow(() -> new IllegalArgumentException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+
+        return teamBuildingMeta.isOpen() && teamBuildingMeta.isCanRecruit();
+    }
 }
