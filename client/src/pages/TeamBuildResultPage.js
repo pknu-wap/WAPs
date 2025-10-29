@@ -99,6 +99,11 @@ const TeamBuildResultPage = () => {
     navigate('/HomePage');
   }
 
+  // 미배정자 이동 헨들러
+  const handleMoveUnassigned = () => {
+    document.getElementById('scrollTarget')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   // 렌더링 
   const renderContent = () => {
     if (isLoading) {
@@ -158,7 +163,7 @@ const TeamBuildResultPage = () => {
         )}
 
         {/* 미배정 지원자 그리드 */}
-        <div className={styles.sectionTitle}>미배정 지원자</div>
+        <div id="scrollTarget" className={styles.sectionTitle}>미배정 지원자</div>
         <div className={styles.sectionSub}>
           총 <b>{filteredUnassigned.length}</b>명
         </div>
@@ -214,7 +219,7 @@ const TeamBuildResultPage = () => {
             </div>
             <div className={styles.sorts}>
               <button className={styles.btn} onClick={() => setSortBy('name')}>팀명순</button>
-              <button className={styles.btn} onClick={() => setSortBy('size')}>팀원수순</button>
+              <button className={styles.btn} onClick={handleMoveUnassigned}>미배정</button>
             </div>
           </div>
 
