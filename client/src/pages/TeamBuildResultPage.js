@@ -28,31 +28,20 @@ const TeamBuildResultPage = () => {
     setMenuOpen(!menuOpen);
   };
 
-  // 연도와 학기 상태
-  const [year, setYear] = useState(
-    () => parseInt(searchParams.get("projectYear")) || new Date().getFullYear()
-  );
-  const [semester, setSemester] = useState(
-    () => parseInt(searchParams.get("semester")) || 1
-  );
 
   // 데이터 로딩
   useEffect(() => {
     const fetchTeamBuildResult = async () => {
       setIsLoading(true);
+      setError(null);
       try {
-        const response = await apiClient.get("/api/team-build/v2/result/view", {
-          params: {
-            projectYear: year,
-            semester: semester,
-          },
-        });
-        setTeams(response.data.teams.results || []);
+        const response = await apiClient.get("/team-build/results");
+
+        setTeams(response.data.results || []);
         setUnassigned(response.data.unassigned || []);
-        setError(null);
       } catch (err) {
         console.error("Failed to fetch team build result:", err);
-        setError("데이터를 불러오는 데 실패헀습니다. 해당 학기에 결과가 없을 수도 있습니다.");
+        setError("데이터를 불러오는데 실패하였습니다. 해당 학기에 결과가 없을 수 있습니다.");
         setTeams([]); // 에러 발생 시 기존 데이터 초기화
         setUnassigned([]);
       } finally {
@@ -60,7 +49,7 @@ const TeamBuildResultPage = () => {
       }
     };
     fetchTeamBuildResult();
-  }, [year, semester]); // 연도와 학기가 바뀌는 경우만 리랜더링
+  }, []);
 
   // 검색 및 정렬 로직 
   const filteredAndSortedTeams = useMemo(() => {
@@ -76,7 +65,9 @@ const TeamBuildResultPage = () => {
         return a.teamName.localeCompare(b.teamName, 'ko');
       }
       if (sortBy === 'size') {
-        return (b.members.length + 1) - (a.members.length + 1);
+        const teamASize = 1 + (a.members?.length || 0);
+        const teamBSize = 1 + (b.members?.length || 0);
+        return teamBSize - teamASize;
       }
       return 0;
     });
@@ -102,12 +93,6 @@ const TeamBuildResultPage = () => {
     });
   };
 
-  // 학기 변경 이벤트 헨들러
-  const handleSemesterChange = (newYear, newSemester) => {
-    setYear(newYear);
-    setSemester(newSemester);
-    setSearchParams({ projectYear: newYear, semester: newSemester });
-  };
 
   // 돌아가기 버튼을 위한 함수
   const goBack = () => {
@@ -210,24 +195,11 @@ const TeamBuildResultPage = () => {
             <div className={styles.titleSection}>
               <div className={styles.pageTitle}>TEAM BUILDING RESULTS</div>
               <div className={styles.titleSub}>팀빌딩 결과를 확인하세요</div>
-              {/* 총 인원 수 일단 보류
-            <div className={styles.sub}>
-              총 <b>{filteredAndSortedTeams.length}</b>개 팀
-            </div> */}
+
             </div>
             {/* 돌아가기 키 도 일단 보류
           <button className={styles.backBtn} onClick={goBack}>← 돌아가기</button> */}
           </div>
-
-          {/* 연도별 구현도 일단 보류
-        <div className={styles.semesterSelector}>
-          <h3>{year}년 {semester}학기</h3>
-          <div>
-            <button className={styles.btn} onClick={() => handleSemesterChange(2024, 1)}>2024-1</button>
-            <button className={styles.btn} onClick={() => handleSemesterChange(2024, 2)}>2024-2</button>
-            <button className={styles.btn} onClick={() => handleSemesterChange(2025, 1)}>2025-1</button>
-          </div>
-        </div> */}
 
           <div className={styles.toolbar}>
             <div>

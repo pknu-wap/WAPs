@@ -1,24 +1,42 @@
 package wap.web2.server.teambuild.controller;
 
+import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wap.web2.server.ouath2.security.CurrentUser;
-import wap.web2.server.ouath2.security.UserPrincipal;
 import wap.web2.server.project.service.ProjectService;
+import wap.web2.server.security.core.CurrentUser;
+import wap.web2.server.security.core.UserPrincipal;
+import wap.web2.server.teambuild.dto.RecruitmentDto;
+import wap.web2.server.teambuild.dto.TeamMemberResult;
+import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.dto.response.RoleResponse;
+import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
+import wap.web2.server.teambuild.dto.response.TeamResultsResponse;
 import wap.web2.server.teambuild.service.ApplyService;
+import wap.web2.server.teambuild.service.TeamBuildExportService;
+import wap.web2.server.teambuild.service.TeamBuildResultService;
+import wap.web2.server.teambuild.service.TeamBuildService;
 
 @RestController
 @RequestMapping("/team-build")
 @RequiredArgsConstructor
 public class TeamBuildControllerV3 {
 
+    private final TeamBuildResultService teamBuildResultService;
+    private final TeamBuildExportService exportService;
+    private final TeamBuildService teamBuildService;
     private final ProjectService projectService;
     private final ApplyService applyService;
 
@@ -30,6 +48,30 @@ public class TeamBuildControllerV3 {
             return ResponseEntity.ok(new RoleResponse(isLeader ? "leader" : "member"));
         } catch (Exception e) {
             return ResponseEntity.status(401).body("[ERROR] 잘못된 유저입니다.");
+        }
+    }
+
+    // 프로젝트 신청 (for 팀원)
+    @PostMapping("/apply/submit")
+    public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal,
+                                   @Valid @RequestBody ProjectAppliesRequest request) {
+        try {
+            applyService.apply(userPrincipal, request);
+            return ResponseEntity.ok().body("[INFO ] 성공적으로 지원하였습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 지원 실패");
+        }
+    }
+
+    // 희망 팀 구성 제출 (for 팀장)
+    @PostMapping("/recruit/submit")
+    public ResponseEntity<?> setPreference(@CurrentUser UserPrincipal userPrincipal,
+                                           @Valid @RequestBody RecruitmentDto request) {
+        try {
+            applyService.setPreference(userPrincipal, request);
+            return ResponseEntity.ok().body("[INFO ] 성공적으로 등록하였습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 등록 실패");
         }
     }
 
@@ -53,6 +95,61 @@ public class TeamBuildControllerV3 {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("[ERROR] 멤버 불러오기가 실패했습니다. " + e.getMessage());
         }
+    }
+
+    // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
+    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘 실행 트리거
+    @PostMapping
+    public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
+        try {
+            teamBuildService.makeTeam(userPrincipal);
+            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
+        }
+    }
+
+    // 팀 빌딩 결과를 가져오기
+    @GetMapping("/results")
+    public ResponseEntity<?> getTeamBuildResults() {
+        try {
+            TeamBuildingResults results = teamBuildResultService.getResults();
+            List<TeamMemberResult> unassigned = teamBuildResultService.getUnassignedMembers(results);
+
+            // response가 requests: { requests : {}, unassigned: {} } 즉, requests가 requests를 감싸는 구조를 해결.
+            //  TeamBuildingResults의 일급컬랙션 형태를 유지하기위해서 results에서 results를 꺼냄.
+            TeamResultsResponse response = new TeamResultsResponse(results.getResults(), unassigned);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 결과 불러오기 실패" + e.getMessage());
+        }
+    }
+
+
+    // 지원 현황 반환 (.CSV)
+    @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<byte[]> exportAppliesCsv() {
+        byte[] bytes = exportService.generateAppliesCsvBytes();
+
+        String filename = "applies_" + LocalDate.now() + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .contentLength(bytes.length)
+                .body(bytes);
+    }
+
+    // 모집 현황 반환 (.CSV)
+    @GetMapping(value = "/recruits/export", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<byte[]> exportRecruitsCsv() {
+        byte[] bytes = exportService.generateRecruitsCsvBytes();
+
+        String filename = "recruits_" + LocalDate.now() + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .contentLength(bytes.length)
+                .body(bytes);
     }
 
 }

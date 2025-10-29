@@ -1,5 +1,6 @@
 package wap.web2.server.member.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.member.dto.UserResponse;
+import wap.web2.server.member.dto.UserRoleResponse;
 import wap.web2.server.member.dto.UserVoteResponse;
 import wap.web2.server.member.service.UserService;
-import wap.web2.server.ouath2.security.CurrentUser;
-import wap.web2.server.ouath2.security.UserPrincipal;
+import wap.web2.server.security.core.CurrentUser;
+import wap.web2.server.security.core.UserPrincipal;
 
 @RestController
 @RequestMapping("/user")
@@ -44,6 +46,13 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(401).body("회원 등록에 실패했습니다!");
         }
+    }
+
+    @GetMapping("/role")
+    @Operation(summary = "사용자 권한 확인", description = "사용자가 권한을 설정했는지, 어떤 권한을 가지는지 확인합니다.")
+    public ResponseEntity<?> getMyRole(@CurrentUser UserPrincipal userPrincipal) {
+        UserRoleResponse response = userService.getMyRole(userPrincipal.getId());
+        return ResponseEntity.ok(response);
     }
 
 }
