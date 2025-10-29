@@ -54,7 +54,6 @@ public class AdminTeamBuildingController {
 
     // 지원 현황 반환 (.CSV)
     @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
-    @Operation(summary = "지원 현황을 CSV로 내보내기", description = "현재까지 완성된 지원현황을 CSV 형식으로 내보냅니다.")
     public ResponseEntity<byte[]> exportAppliesCsv() {
         byte[] bytes = exportService.generateAppliesCsvBytes();
 
@@ -75,7 +74,6 @@ public class AdminTeamBuildingController {
 
     // 모집 현황 반환 (.CSV)
     @GetMapping(value = "/recruits/export", produces = "text/csv; charset=UTF-8")
-    @Operation(summary = "모집 현황을 CSV로 내보내기", description = "현재까지 완성된 모집현황을 CSV 형식으로 내보냅니다.")
     public ResponseEntity<byte[]> exportRecruitsCsv() {
         byte[] bytes = exportService.generateRecruitsCsvBytes();
 
