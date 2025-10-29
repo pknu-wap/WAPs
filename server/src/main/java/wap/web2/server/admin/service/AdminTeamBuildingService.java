@@ -47,13 +47,13 @@ public class AdminTeamBuildingService {
 
     @Transactional
     public void openApply(String semester, Boolean status) {
-        validateApplyStatus(status);
+        validateTeamBuildingStatus();
         teamBuildingMetaRepository.updateApplyStatus(semester, status);
     }
 
     @Transactional
     public void openRecruit(String semester, Boolean status) {
-        validateRecruitStatus(status);
+        validateTeamBuildingStatus();
         teamBuildingMetaRepository.updateRecruitStatus(semester, status);
     }
 
@@ -176,34 +176,18 @@ public class AdminTeamBuildingService {
         return recruitMap;
     }
 
-    private TeamBuildingMeta findCurrentMeta() {
-        String semester = generateSemester();
-        return teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
-    }
-
-    private TeamBuildingMeta validateTeamBuildingStatus() {
-        TeamBuildingMeta current = findCurrentMeta();
-        if (!current.isOpen()) {
+    private void validateTeamBuildingStatus() {
+        if (!isTeamBuildingOpen()) {
             throw new IllegalArgumentException("[ERROR] 팀빌딩 기능이 열리지 않았습니다.");
         }
-        return current;
     }
 
-    // 상태를 열려고 할 때만 예외를 검사
-    private void validateApplyStatus(Boolean status) {
-        TeamBuildingMeta current = validateTeamBuildingStatus();
-        if (status && current.isCanRecruit()) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 모집 기능이 아직 열려 있습니다.");
-        }
-    }
+    private boolean isTeamBuildingOpen() {
+        String semester = generateSemester();
+        TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
 
-    // 상태를 열려고 할 때만 예외를 검사
-    private void validateRecruitStatus(Boolean status) {
-        TeamBuildingMeta current = validateTeamBuildingStatus();
-        if (status && current.isCanApply()) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 지원 기능이 아직 열려 있습니다.");
-        }
+        return teamBuildingMeta.isOpen();
     }
 
     //TODO: transactional 로 바꾸기
