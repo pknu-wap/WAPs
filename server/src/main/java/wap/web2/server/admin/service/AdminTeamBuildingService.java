@@ -16,9 +16,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import wap.web2.server.admin.entity.TeamBuildingMeta;
-import wap.web2.server.admin.repository.TeamBuildingMetaRepository;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.teambuild.dto.ApplyInfo;
@@ -38,39 +35,13 @@ import wap.web2.server.teambuild.service.TeamBuilder;
 @RequiredArgsConstructor
 public class AdminTeamBuildingService {
 
-    private final TeamBuildingMetaRepository teamBuildingMetaRepository;
     private final ProjectRecruitRepository recruitRepository;
     private final ProjectApplyRepository applyRepository;
     private final ProjectRepository projectRepository;
     private final TeamRepository teamRepository;
     private final TeamBuilder teamBuilder;
 
-    @Transactional
-    public void openApply(String semester, Boolean status) {
-        validateApplyStatus(status);
-        teamBuildingMetaRepository.updateApplyStatus(semester, status);
-    }
-
-    @Transactional
-    public void openRecruit(String semester, Boolean status) {
-        validateRecruitStatus(status);
-        teamBuildingMetaRepository.updateRecruitStatus(semester, status);
-    }
-
-    @Transactional
-    public void openTeamBuilding(String semester, Boolean status) {
-        TeamBuildingMeta meta = teamBuildingMetaRepository
-                .findBySemester(semester)
-                .orElseGet(() -> new TeamBuildingMeta(semester)); // 없으면 새로 생성
-
-        meta.changeTo(status);
-        teamBuildingMetaRepository.save(meta);
-    }
-
-    @Transactional
     public void makeTeam() {
-        validateTeamBuildingStatus();
-
         // 이번학기 모든 프로젝트
         List<Project> projects
                 = projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue());
@@ -176,37 +147,6 @@ public class AdminTeamBuildingService {
         return recruitMap;
     }
 
-    private TeamBuildingMeta findCurrentMeta() {
-        String semester = generateSemester();
-        return teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
-    }
-
-    private TeamBuildingMeta validateTeamBuildingStatus() {
-        TeamBuildingMeta current = findCurrentMeta();
-        if (!current.isOpen()) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 기능이 열리지 않았습니다.");
-        }
-        return current;
-    }
-
-    // 상태를 열려고 할 때만 예외를 검사
-    private void validateApplyStatus(Boolean status) {
-        TeamBuildingMeta current = validateTeamBuildingStatus();
-        if (status && current.isCanRecruit()) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 모집 기능이 아직 열려 있습니다.");
-        }
-    }
-
-    // 상태를 열려고 할 때만 예외를 검사
-    private void validateRecruitStatus(Boolean status) {
-        TeamBuildingMeta current = validateTeamBuildingStatus();
-        if (status && current.isCanApply()) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 지원 기능이 아직 열려 있습니다.");
-        }
-    }
-
-    //TODO: transactional 로 바꾸기
     private void saveTeamBuildingResults(Map<Long, Map<Position, Set<Long>>> results) {
         List<Team> teams = new ArrayList<>();
         for (Map.Entry<Long, Map<Position, Set<Long>>> projectEntry : results.entrySet()) {
@@ -233,4 +173,5 @@ public class AdminTeamBuildingService {
 
         teamRepository.saveAll(teams);
     }
+
 }

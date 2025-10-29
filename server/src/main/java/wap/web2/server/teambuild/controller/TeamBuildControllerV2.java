@@ -18,6 +18,8 @@ import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
 import wap.web2.server.teambuild.service.ApplyService;
+import wap.web2.server.teambuild.service.TeamBuildExportService;
+import wap.web2.server.teambuild.service.TeamBuildService;
 
 @Slf4j
 @RestController
@@ -25,6 +27,8 @@ import wap.web2.server.teambuild.service.ApplyService;
 @RequiredArgsConstructor
 public class TeamBuildControllerV2 {
 
+    private final TeamBuildExportService teamBuildExportService;
+    private final TeamBuildService teamBuildService;
     private final ApplyService applyService;
 
     // 프로젝트 신청 (for 팀원)
