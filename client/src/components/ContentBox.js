@@ -187,16 +187,19 @@ const ContentBox = () => {
                 <div className="dropdown-content">
                   {/* 2000년부터 현재년도까지 역순 표시 */}
                   {Array.from({ length: currentYear - 2000 + 1 }, (_, i) => currentYear - i).map(
-                    (year) => (
+                    (year) => {
+                      const twoDigitYear = ('0' + (year - 2000)).slice(-2); //연도가 두자릿수로 표시되도록
+                      return (
                       <div key={year}>
                         <button onClick={() => handleSemesterChange(year, 2)}>
-                          {year} 2학기
+                          {twoDigitYear}-2
                         </button>
                         <button onClick={() => handleSemesterChange(year, 1)}>
-                          {year} 1학기
+                          {twoDigitYear}-1
                         </button>
                       </div>
                     )
+                  }
                   )}
                 </div>
               )}
