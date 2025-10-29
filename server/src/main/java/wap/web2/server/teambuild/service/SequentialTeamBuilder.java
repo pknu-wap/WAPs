@@ -8,10 +8,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 import wap.web2.server.teambuild.dto.ApplyInfo;
 import wap.web2.server.teambuild.dto.RecruitInfo;
 
 @Slf4j
+@Primary
+@Component
 public class SequentialTeamBuilder implements TeamBuilder {
 
     @Override

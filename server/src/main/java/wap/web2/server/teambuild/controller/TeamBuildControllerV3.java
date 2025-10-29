@@ -27,7 +27,6 @@ import wap.web2.server.teambuild.dto.response.TeamResultsResponse;
 import wap.web2.server.teambuild.service.ApplyService;
 import wap.web2.server.teambuild.service.TeamBuildExportService;
 import wap.web2.server.teambuild.service.TeamBuildResultService;
-import wap.web2.server.teambuild.service.TeamBuildService;
 
 @RestController
 @RequestMapping("/team-build")
@@ -36,7 +35,6 @@ public class TeamBuildControllerV3 {
 
     private final TeamBuildResultService teamBuildResultService;
     private final TeamBuildExportService exportService;
-    private final TeamBuildService teamBuildService;
     private final ProjectService projectService;
     private final ApplyService applyService;
 
@@ -94,18 +92,6 @@ public class TeamBuildControllerV3 {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("[ERROR] 멤버 불러오기가 실패했습니다. " + e.getMessage());
-        }
-    }
-
-    // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
-    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘 실행 트리거
-    @PostMapping
-    public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
-        try {
-            teamBuildService.makeTeam(userPrincipal);
-            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
         }
     }
 

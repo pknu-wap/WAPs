@@ -1,4 +1,4 @@
-package wap.web2.server.teambuild.service;
+package wap.web2.server.admin.service;
 
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
@@ -16,7 +16,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.teambuild.dto.ApplyInfo;
@@ -29,22 +28,20 @@ import wap.web2.server.teambuild.entity.Team;
 import wap.web2.server.teambuild.repository.ProjectApplyRepository;
 import wap.web2.server.teambuild.repository.ProjectRecruitRepository;
 import wap.web2.server.teambuild.repository.TeamRepository;
+import wap.web2.server.teambuild.service.TeamBuilder;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TeamBuildService {
+public class AdminTeamBuildingService {
 
     private final ProjectRecruitRepository recruitRepository;
     private final ProjectApplyRepository applyRepository;
     private final ProjectRepository projectRepository;
     private final TeamRepository teamRepository;
+    private final TeamBuilder teamBuilder;
 
-    // TODO: TeamBuilder 의존성을 주입받도록 수정할 수 있을듯
-    public void makeTeam(UserPrincipal userPrincipal) {
-        // TODO: ADMIN만 관리가능하도록?
-        TeamBuilder teamBuilder = new SequentialTeamBuilder();
-
+    public void makeTeam() {
         // 이번학기 모든 프로젝트
         List<Project> projects
                 = projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue());
