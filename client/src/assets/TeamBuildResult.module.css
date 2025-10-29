@@ -10,13 +10,11 @@ body {
 
 /* --- 기본 스타일 및 변수 --- */
 :root {
-  --bg: #f7f8fa;
-  --card: #fff;
+  --bg: var(--bg);
   --text: #fff;
   --muted: #6b7280;
   --accent: #2563eb;
   --chip: #eef2ff;
-  --chip-text: #3730a3;
   --border: #34486f;
 }
 
@@ -138,7 +136,7 @@ body {
   border-radius: 15px;
   font-size: 14px;
   min-width: 100px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg);
 }
 
 .search input:focus {
@@ -167,12 +165,6 @@ body {
   gap: 14px;
 }
 
-@media (min-width: 760px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 .sectionTitle {
   font-size: 20px;
   font-weight: 800;
@@ -190,7 +182,7 @@ body {
 
 /*카드 스타일*/
 .card {
-  background: var(--card);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 18px;
@@ -207,8 +199,8 @@ body {
 }
 
 .teamName {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -216,15 +208,15 @@ body {
 
 .badge {
   background: var(--chip);
-  color: var(--chip-text);
-  font-size: 11px;
+  color: #cacaca;
+  padding: 5px 10px;
+  font-size: 10px;
   font-weight: 600;
-  padding: 3px 8px;
   border-radius: 999px;
 }
 
 .muted {
-  color: var(--muted);
+  color: #cacaca;
   font-size: 12px;
 }
 .label {
