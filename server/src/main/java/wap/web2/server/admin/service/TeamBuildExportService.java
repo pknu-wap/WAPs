@@ -1,4 +1,4 @@
-package wap.web2.server.teambuild.service;
+package wap.web2.server.admin.service;
 
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
