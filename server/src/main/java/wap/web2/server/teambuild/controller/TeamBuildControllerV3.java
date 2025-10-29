@@ -1,12 +1,9 @@
 package wap.web2.server.teambuild.controller;
 
 import jakarta.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,9 +22,7 @@ import wap.web2.server.teambuild.dto.response.RoleResponse;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.dto.response.TeamResultsResponse;
 import wap.web2.server.teambuild.service.ApplyService;
-import wap.web2.server.teambuild.service.TeamBuildExportService;
 import wap.web2.server.teambuild.service.TeamBuildResultService;
-import wap.web2.server.teambuild.service.TeamBuildService;
 
 @RestController
 @RequestMapping("/team-build")
@@ -35,8 +30,6 @@ import wap.web2.server.teambuild.service.TeamBuildService;
 public class TeamBuildControllerV3 {
 
     private final TeamBuildResultService teamBuildResultService;
-    private final TeamBuildExportService exportService;
-    private final TeamBuildService teamBuildService;
     private final ProjectService projectService;
     private final ApplyService applyService;
 
@@ -97,18 +90,6 @@ public class TeamBuildControllerV3 {
         }
     }
 
-    // TODO: userPrincipal로 admin인지 권한 검사 할 수 있을듯
-    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘 실행 트리거
-    @PostMapping
-    public ResponseEntity<?> makeTeam(@CurrentUser UserPrincipal userPrincipal) {
-        try {
-            teamBuildService.makeTeam(userPrincipal);
-            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
-        }
-    }
-
     // 팀 빌딩 결과를 가져오기
     @GetMapping("/results")
     public ResponseEntity<?> getTeamBuildResults() {
@@ -124,32 +105,4 @@ public class TeamBuildControllerV3 {
             return ResponseEntity.badRequest().body("[ERROR] 결과 불러오기 실패" + e.getMessage());
         }
     }
-
-
-    // 지원 현황 반환 (.CSV)
-    @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
-    public ResponseEntity<byte[]> exportAppliesCsv() {
-        byte[] bytes = exportService.generateAppliesCsvBytes();
-
-        String filename = "applies_" + LocalDate.now() + ".csv";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                .contentLength(bytes.length)
-                .body(bytes);
-    }
-
-    // 모집 현황 반환 (.CSV)
-    @GetMapping(value = "/recruits/export", produces = "text/csv; charset=UTF-8")
-    public ResponseEntity<byte[]> exportRecruitsCsv() {
-        byte[] bytes = exportService.generateRecruitsCsvBytes();
-
-        String filename = "recruits_" + LocalDate.now() + ".csv";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                .contentLength(bytes.length)
-                .body(bytes);
-    }
-
 }
