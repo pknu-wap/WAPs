@@ -198,7 +198,7 @@
   padding: 32px 20px 28px;
   box-sizing: border-box;
   isolation: isolate;
-  background: linear-gradient(90deg, #A0AFFF 0%, #B4EDFE 100%); /* 좌→우 */
+  background: linear-gradient(90deg, #a0aeffe8 0%, #b4edfed2 100%); /* 좌→우 */
   overflow: visible;           /* <- hidden 제거 */
   z-index: 1;       /* 드롭다운이 밖으로 펼쳐져도 보이게 */
 }
@@ -218,13 +218,14 @@
 .hero__inner {
   width: 100%;
   max-width: 1040px;
+  margin-left: 3px;
   margin: 0 auto;
   color: #fff;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+
 }
 .hero__badge { font-weight: 800; letter-spacing: 0.5px; opacity: .95; margin-bottom: 8px; font-size: 18px; }
-.hero__title { margin: 0; font-size: 18px; line-height: 1.2; font-weight: 600; text-align: left; }
-.hero__subtitle { margin: 10px 0 0; font-size: 18px; font-weight: 600; color: rgba(255,255,255,.632); }
+.hero__title { margin: 0; margin-left: 5px;font-size: 19px; line-height: 1.2; font-weight: 600; text-align: left; }
+.hero__subtitle { margin-top: 6px; margin-left: 5px; font-size: 20px; font-weight: 600; color: rgba(255,255,255,.632); }
 
 /* Hero 내부 필터바 — 배경/그림자 제거(검은 박스 제거) */
 .hero__controls,
@@ -346,7 +347,7 @@
   outline: none;
   background: transparent;
   color: #1f2937;
-  font-size: 14px;
+  font-size: 11px;
 }
 .hero__search .search-input::placeholder {
   color: rgba(31,41,55,0.72);
