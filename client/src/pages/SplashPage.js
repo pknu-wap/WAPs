@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
-import styles from "../assets/Main/Main.module.css";
+import styles from "../assets/Main/Splash.module.css";
 import "../assets/transition.css"; // 애니메이션 CSS 추가
 
-const MainPage = () => {
+const SplashPage = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [inTransition, setInTransition] = useState(false); // 트랜지션 상태 관리
   const navigate = useNavigate();
@@ -75,4 +75,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default SplashPage;
