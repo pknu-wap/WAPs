@@ -35,7 +35,10 @@ public class TeamBuildingMeta {
     @Column(nullable = false)
     private boolean canRecruit = false;
 
-    public void changeTo(Boolean status) {
+    // 팀빌딩을 열고 닫을 때엔 항상 지원과 모집 상태를 초기화한다.
+    public void changeTo(boolean status) {
         this.isOpen = status;
+        this.canApply = false;
+        this.canRecruit = false;
     }
 }
