@@ -24,8 +24,10 @@ public class AdminTeamBuildingController {
     private final TeamBuildExportService exportService;
     private final AdminTeamBuildingService adminTeamBuildingService;
 
+    // 현재 상태를 가져오는 api
+
     // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘 실행 트리거
-    @PostMapping("/building")
+    @PostMapping("/building/run")
     @Operation(summary = "팀 생성하기", description = "팀 지원과 팀원 모집이 완료되면 팀을 생성합니다.")
     public ResponseEntity<?> makeTeam() {
         try {
@@ -36,21 +38,20 @@ public class AdminTeamBuildingController {
         }
     }
 
-
-    @PostMapping("/building/status")
+    @PostMapping("/building")
     @Operation(summary = "팀빌딩 기능 열고닫기", description = "이번 학기 팀빌딩 기능을 열고 닫습니다.")
-    public ResponseEntity<?> open(@RequestParam Boolean open) {
-        adminTeamBuildingService.openTeamBuilding(generateSemester(), open);
+    public ResponseEntity<?> open(@RequestParam("status") Boolean status) {
+        adminTeamBuildingService.openTeamBuilding(generateSemester(), status);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/applies")
     @Operation(summary = "팀빌딩 지원하기 기능 열고닫기", description = "지원자가 원하는 팀에 지원하는 기능을 열고 닫습니다.")
-    public ResponseEntity<?> openApply(@RequestParam Boolean open) {
-        adminTeamBuildingService.openApply(generateSemester(), open);
+    public ResponseEntity<?> openApply(@RequestParam("status") Boolean status) {
+        adminTeamBuildingService.openApply(generateSemester(), status);
         return ResponseEntity.ok().build();
     }
-    
+
     // 지원 현황 반환 (.CSV)
     @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
     public ResponseEntity<byte[]> exportAppliesCsv() {
@@ -66,8 +67,8 @@ public class AdminTeamBuildingController {
 
     @PostMapping("/recruits")
     @Operation(summary = "팀빌딩 모집하기 기능 열고닫기", description = "팀장이 원하는 팀원을 모집하는 기능을 열고 닫습니다.")
-    public ResponseEntity<?> openRecruit(@RequestParam Boolean open) {
-        adminTeamBuildingService.openRecruit(generateSemester(), open);
+    public ResponseEntity<?> openRecruit(@RequestParam("status") Boolean status) {
+        adminTeamBuildingService.openRecruit(generateSemester(), status);
         return ResponseEntity.ok().build();
     }
 
