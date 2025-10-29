@@ -1,9 +1,12 @@
 package wap.web2.server.teambuild.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +25,7 @@ import wap.web2.server.teambuild.dto.response.RoleResponse;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.dto.response.TeamResultsResponse;
 import wap.web2.server.teambuild.service.ApplyService;
+import wap.web2.server.teambuild.service.TeamBuildExportService;
 import wap.web2.server.teambuild.service.TeamBuildResultService;
 
 @RestController
@@ -30,6 +34,7 @@ import wap.web2.server.teambuild.service.TeamBuildResultService;
 public class TeamBuildControllerV3 {
 
     private final TeamBuildResultService teamBuildResultService;
+    private final TeamBuildExportService exportService;
     private final ProjectService projectService;
     private final ApplyService applyService;
 
@@ -105,4 +110,32 @@ public class TeamBuildControllerV3 {
             return ResponseEntity.badRequest().body("[ERROR] 결과 불러오기 실패" + e.getMessage());
         }
     }
+
+
+    // 지원 현황 반환 (.CSV)
+    @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<byte[]> exportAppliesCsv() {
+        byte[] bytes = exportService.generateAppliesCsvBytes();
+
+        String filename = "applies_" + LocalDate.now() + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .contentLength(bytes.length)
+                .body(bytes);
+    }
+
+    // 모집 현황 반환 (.CSV)
+    @GetMapping(value = "/recruits/export", produces = "text/csv; charset=UTF-8")
+    public ResponseEntity<byte[]> exportRecruitsCsv() {
+        byte[] bytes = exportService.generateRecruitsCsvBytes();
+
+        String filename = "recruits_" + LocalDate.now() + ".csv";
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .contentLength(bytes.length)
+                .body(bytes);
+    }
+
 }
