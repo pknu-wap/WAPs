@@ -5,7 +5,7 @@ import Login from "./pages/menu/Login";
 import Project from "./pages/menu/Project";
 import Map from "./pages/menu/Map";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
-import MainPage from "./pages/MainPage";
+import SplashPage from "./pages/SplashPage";
 import Callback from "./components/Login/Callback";
 import ProtectedPage from "./components/Login/ProtectedPage";
 import VotePage from "./pages/VotePage";
@@ -25,7 +25,7 @@ function App() {
       <div className="container">
         <Routes>
           {/* 기본 홈 화면 */}
-          <Route path="/" element={<MainPage />} />
+          <Route path="/" element={<SplashPage />} />
           {/* 로그인 화면 */}
           <Route path="/login" element={<Login />} />
           {/* 카카오 인증 Callback */}
