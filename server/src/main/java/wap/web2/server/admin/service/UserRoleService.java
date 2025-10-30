@@ -4,27 +4,46 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.admin.dto.RoleChangeRequest;
 import wap.web2.server.admin.dto.RoleChangeResponse;
-import wap.web2.server.admin.dto.UserRoleRequest;
-import wap.web2.server.admin.repository.UserRoleRepository;
+import wap.web2.server.admin.dto.UserRolePageResponse;
+import wap.web2.server.admin.dto.UserRoleResponse;
 import wap.web2.server.member.entity.Role;
+import wap.web2.server.member.entity.User;
+import wap.web2.server.member.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class UserRoleService {
 
-    private final UserRoleRepository userRoleRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public RoleChangeResponse change(UserRoleRequest userRoleRequest) {
-        List<Long> userIds = userRoleRequest.getUserIds();
-        Role newRole = userRoleRequest.getNewRole();
+    public RoleChangeResponse change(RoleChangeRequest roleChangeRequest) {
+        List<Long> userIds = roleChangeRequest.getUserIds();
+        Role newRole = roleChangeRequest.getNewRole();
 
         if (userIds.isEmpty()) {
             return new RoleChangeResponse(0, newRole);
         }
 
-        int updated = userRoleRepository.updateRoleByIds(newRole, userIds);
+        int updated = userRepository.updateRoleByIds(newRole, userIds);
         return new RoleChangeResponse(updated, newRole);
+    }
+
+    @Transactional(readOnly = true)
+    public UserRolePageResponse getUsersForAdmin(int size, int page) {
+        int fetchSize = size + 1; // 다음 페이지 유무를 확인하기 위해 size보다 크게 가져옴
+        int offset = page * size;
+        List<User> users = userRepository.findUserByOffset(fetchSize, offset);
+
+        boolean hasNext = false;
+        List<UserRoleResponse> content = users.stream().map(UserRoleResponse::from).toList();
+        if (users.size() > size) {
+            hasNext = true;
+            content = content.subList(0, size);
+        }
+
+        return new UserRolePageResponse(content, hasNext);
     }
 }
