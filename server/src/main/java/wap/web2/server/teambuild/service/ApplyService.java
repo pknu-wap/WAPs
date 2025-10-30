@@ -153,7 +153,7 @@ public class ApplyService {
     private boolean isTeamApplyOpen() {
         String semester = generateSemester();
         TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
 
         return teamBuildingMeta.isOpen() && teamBuildingMeta.isCanApply();
     }
@@ -161,7 +161,7 @@ public class ApplyService {
     private boolean isTeamRecruitOpen() {
         String semester = generateSemester();
         TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
 
         return teamBuildingMeta.isOpen() && teamBuildingMeta.isCanRecruit();
     }

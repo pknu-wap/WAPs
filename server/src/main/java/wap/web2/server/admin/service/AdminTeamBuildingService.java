@@ -59,8 +59,7 @@ public class AdminTeamBuildingService {
 
     @Transactional
     public void openTeamBuilding(String semester, Boolean status) {
-        TeamBuildingMeta meta = teamBuildingMetaRepository
-                .findBySemester(semester)
+        TeamBuildingMeta meta = teamBuildingMetaRepository.findBySemester(semester)
                 .orElseGet(() -> new TeamBuildingMeta(semester)); // 없으면 새로 생성
 
         meta.changeTo(status);

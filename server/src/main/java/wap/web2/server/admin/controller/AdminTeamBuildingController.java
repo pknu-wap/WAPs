@@ -40,7 +40,7 @@ public class AdminTeamBuildingController {
 
     @PostMapping("/building")
     @Operation(summary = "팀빌딩 기능 열고닫기", description = "이번 학기 팀빌딩 기능을 열고 닫습니다.")
-    public ResponseEntity<?> open(@RequestParam("status") Boolean status) {
+    public ResponseEntity<?> openTeamBuilding(@RequestParam("status") Boolean status) {
         adminTeamBuildingService.openTeamBuilding(generateSemester(), status);
         return ResponseEntity.ok().build();
     }
