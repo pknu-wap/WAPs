@@ -10,14 +10,13 @@ body {
 
 /* --- 기본 스타일 및 변수 --- */
 :root {
-  --bg: #f7f8fa;
-  --card: #fff;
+  --bg: var(--bg);
   --text: #fff;
   --muted: #6b7280;
-  --accent: #2563eb;
+  --accent: #abd4fd;
   --chip: #eef2ff;
-  --chip-text: #3730a3;
   --border: #34486f;
+  --black: #000000;
 }
 
 .container {
@@ -138,7 +137,7 @@ body {
   border-radius: 15px;
   font-size: 14px;
   min-width: 100px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg);
 }
 
 .search input:focus {
@@ -152,7 +151,7 @@ body {
 .btn {
   padding: 7px 11px;
   border: 1px solid var(--border);
-  background: transparent;
+  background-color: transparent;
   border-radius: 50px;
   font-size: 12px;
   border-color: #fff;
@@ -160,17 +159,30 @@ body {
   cursor: pointer;
 }
 
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.activeSort {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--black);
+  font-weight: 500;
+}
+
+.activeSort:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--black);
+}
+
 /*카드 그리드*/
 .grid {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 14px;
-}
-
-@media (min-width: 760px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 .sectionTitle {
@@ -190,7 +202,7 @@ body {
 
 /*카드 스타일*/
 .card {
-  background: var(--card);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 18px;
@@ -207,8 +219,8 @@ body {
 }
 
 .teamName {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -216,15 +228,15 @@ body {
 
 .badge {
   background: var(--chip);
-  color: var(--chip-text);
-  font-size: 11px;
+  color: #cacaca;
+  padding: 5px 10px;
+  font-size: 10px;
   font-weight: 600;
-  padding: 3px 8px;
   border-radius: 999px;
 }
 
 .muted {
-  color: var(--muted);
+  color: #cacaca;
   font-size: 12px;
 }
 .label {
@@ -289,20 +301,4 @@ body {
   border: 1px dashed var(--border);
   border-radius: 14px;
   background: var(--card);
-}
-
-/*반응형*/
-@media (max-width: 640px) {
-  .header {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
-
-  .backBtn {
-    align-self: flex-end;
-  }
-  .toolbar {
-    grid-template-columns: 1fr;
-  }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import FloatingButton from "../components/FloatingButton";
@@ -14,15 +14,14 @@ const TeamBuildResultPage = () => {
   //   setMenuOpen(!menuOpen);
   // };
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
   // 상태 관리
   const [teams, setTeams] = useState([]); // 팀 상태
   const [unassigned, setUnassigned] = useState([]); // 미배정자 상태
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
   const [searchQuery, setSearchQuery] = useState(""); // 검색창 문자열 상태
-  const [sortBy, setSortBy] = useState("name"); // 'name' 또는 'size'으로 정렬
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sortBy, setSortBy] = useState("default");
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -54,23 +53,23 @@ const TeamBuildResultPage = () => {
   // 검색 및 정렬 로직 
   const filteredAndSortedTeams = useMemo(() => {
     const filtered = teams.filter(team => {
-      // 검색을 위한 키들
-      const searchKey = `${team.teamName} ${team.leader.name} ${team.members.map(m => m.name).join(' ')} ${team.leader.position} ${team.members.map(m => m.position).join(' ')}`.toLowerCase();
-      // 해당 키가 포함된 값들을 반환
+      const leaderName = team.leader?.name || '';
+      const leaderPos = team.leader?.position || '';
+      const memberNames = team.members?.map(m => m.name).join(' ') || '';
+      const memberPos = team.members?.map(m => m.position).join(' ') || '';
+
+      const searchKey = `${team.teamName} ${leaderName} ${memberNames} ${leaderPos} ${memberPos}`.toLowerCase();
       return searchKey.includes(searchQuery.toLowerCase());
     });
 
-    return [...filtered].sort((a, b) => {
-      if (sortBy === 'name') {
+    if (sortBy === 'name') {
+      return [...filtered].sort((a, b) => {
         return a.teamName.localeCompare(b.teamName, 'ko');
-      }
-      if (sortBy === 'size') {
-        const teamASize = 1 + (a.members?.length || 0);
-        const teamBSize = 1 + (b.members?.length || 0);
-        return teamBSize - teamASize;
-      }
-      return 0;
-    });
+      });
+    }
+
+    // 'default' 상태이거나 다른 상태일 경우, 필터링된 원본 순서(API 순서) 반환
+    return filtered;
   }, [teams, searchQuery, sortBy]);
 
 
@@ -104,6 +103,9 @@ const TeamBuildResultPage = () => {
     document.getElementById('scrollTarget')?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  const handleSortByName = () => {
+    setSortBy(prevSortBy => (prevSortBy === 'name' ? 'default' : 'name'));
+  };
   // 렌더링 
   const renderContent = () => {
     if (isLoading) {
@@ -218,7 +220,12 @@ const TeamBuildResultPage = () => {
               </div>
             </div>
             <div className={styles.sorts}>
-              <button className={styles.btn} onClick={() => setSortBy('name')}>팀명순</button>
+              <button
+                className={`${styles.btn} ${sortBy === 'name' ? styles.activeSort : ''}`}
+                onClick={handleSortByName}
+              >
+                팀명순
+              </button>
               <button className={styles.btn} onClick={handleMoveUnassigned}>미배정</button>
             </div>
           </div>
