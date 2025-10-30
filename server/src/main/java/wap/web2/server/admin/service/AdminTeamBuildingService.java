@@ -47,13 +47,15 @@ public class AdminTeamBuildingService {
 
     @Transactional
     public void openApply(String semester, Boolean status) {
-        validateApplyStatus(status);
+        TeamBuildingMeta current = findCurrentMeta();
+        validateApplyStatus(current, status);
         teamBuildingMetaRepository.updateApplyStatus(semester, status);
     }
 
     @Transactional
     public void openRecruit(String semester, Boolean status) {
-        validateRecruitStatus(status);
+        TeamBuildingMeta current = findCurrentMeta();
+        validateRecruitStatus(current, status);
         teamBuildingMetaRepository.updateRecruitStatus(semester, status);
     }
 
@@ -68,7 +70,8 @@ public class AdminTeamBuildingService {
 
     @Transactional
     public void makeTeam() {
-        validateTeamBuildingStatus();
+        TeamBuildingMeta current = findCurrentMeta();
+        validateTeamBuildingStatus(current);
 
         // 이번학기 모든 프로젝트
         List<Project> projects
@@ -181,25 +184,23 @@ public class AdminTeamBuildingService {
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
     }
 
-    private TeamBuildingMeta validateTeamBuildingStatus() {
-        TeamBuildingMeta current = findCurrentMeta();
+    private void validateTeamBuildingStatus(TeamBuildingMeta current) {
         if (!current.isOpen()) {
             throw new IllegalArgumentException("[ERROR] 팀빌딩 기능이 열리지 않았습니다.");
         }
-        return current;
     }
 
     // 상태를 열려고 할 때만 예외를 검사
-    private void validateApplyStatus(Boolean status) {
-        TeamBuildingMeta current = validateTeamBuildingStatus();
+    private void validateApplyStatus(TeamBuildingMeta current, Boolean status) {
+        validateTeamBuildingStatus(current);
         if (status && current.isCanRecruit()) {
             throw new IllegalArgumentException("[ERROR] 팀빌딩 모집 기능이 아직 열려 있습니다.");
         }
     }
 
     // 상태를 열려고 할 때만 예외를 검사
-    private void validateRecruitStatus(Boolean status) {
-        TeamBuildingMeta current = validateTeamBuildingStatus();
+    private void validateRecruitStatus(TeamBuildingMeta current, Boolean status) {
+        validateTeamBuildingStatus(current);
         if (status && current.isCanApply()) {
             throw new IllegalArgumentException("[ERROR] 팀빌딩 지원 기능이 아직 열려 있습니다.");
         }
