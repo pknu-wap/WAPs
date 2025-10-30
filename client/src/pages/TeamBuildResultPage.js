@@ -22,6 +22,7 @@ const TeamBuildResultPage = () => {
   const [searchQuery, setSearchQuery] = useState(""); // 검색창 문자열 상태
   const [menuOpen, setMenuOpen] = useState(false);
   const [sortBy, setSortBy] = useState("default");
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };

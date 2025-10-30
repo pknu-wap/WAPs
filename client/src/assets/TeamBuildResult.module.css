@@ -13,9 +13,10 @@ body {
   --bg: var(--bg);
   --text: #fff;
   --muted: #6b7280;
-  --accent: #2563eb;
+  --accent: #abd4fd;
   --chip: #eef2ff;
   --border: #34486f;
+  --black: #000000;
 }
 
 .container {
@@ -150,12 +151,31 @@ body {
 .btn {
   padding: 7px 11px;
   border: 1px solid var(--border);
-  background: transparent;
+  background-color: transparent;
   border-radius: 50px;
   font-size: 12px;
   border-color: #fff;
   text-align: center;
   cursor: pointer;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.activeSort {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--black);
+  font-weight: 500;
+}
+
+.activeSort:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--black);
 }
 
 /*카드 그리드*/
@@ -281,20 +301,4 @@ body {
   border: 1px dashed var(--border);
   border-radius: 14px;
   background: var(--card);
-}
-
-/*반응형*/
-@media (max-width: 640px) {
-  .header {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
-
-  .backBtn {
-    align-self: flex-end;
-  }
-  .toolbar {
-    grid-template-columns: 1fr;
-  }
 }
