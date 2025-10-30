@@ -219,6 +219,7 @@ body {
 }
 
 .teamName {
+  width: 230px;
   font-size: 20px;
   font-weight: 600;
   display: flex;
@@ -254,9 +255,6 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #f3f4f6;
   font-size: 13px;
 }
 
@@ -267,10 +265,6 @@ body {
 }
 
 .chip {
-  background: #f9fafb;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 6px 10px;
   font-size: 13px;
 }
 

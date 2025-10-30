@@ -134,7 +134,7 @@ const TeamBuildResultPage = () => {
                 </div>
                 <div className={styles.leader}>
                   <div className={styles.pill}>
-                    <strong>팀장</strong>
+                    <strong>팀장 |</strong>
                     <span>{team.leader.name}</span>
                     {team.leader.position && <span className={styles.muted}>· {team.leader.position}</span>}
                   </div>
