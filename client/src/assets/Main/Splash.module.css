@@ -92,8 +92,8 @@
 
 
 .submit_button {
-  margin-top: 40px;
-  margin-left: 140px;
+  margin-top: 50px;
+  margin-left: 160px;
   display: flex;
   align-items: center;
   justify-content: center; /* 내부 콘텐츠(텍스트+SVG)를 중앙에 정렬 */
