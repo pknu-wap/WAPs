@@ -1,0 +1,304 @@
+/* --- 폰트 임포트 --- */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+
+/* --- 전역 폰트 지정 --- */
+html,
+body {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* --- 기본 스타일 및 변수 --- */
+:root {
+  --bg: var(--bg);
+  --text: #fff;
+  --muted: #6b7280;
+  --accent: #abd4fd;
+  --chip: #eef2ff;
+  --border: #34486f;
+  --black: #000000;
+}
+
+.container {
+  max-width: 1321px;
+  padding: 40px 20px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loadingImage {
+  width: 150px;
+  opacity: 0.8;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(0.95);
+  }
+}
+
+/* --- 헤더 --- */
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* 모바일 대응 */
+}
+
+.titleSection {
+  flex: 1;
+}
+
+.pageTitle {
+  padding: 0 20px;
+  color: fff;
+  font-size: 30px;
+  font-weight: 610;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.titleSub {
+  font-size: 10px;
+  text-align: center;
+  font-weight: 100;
+  color: ffffff;
+  opacity: 50%;
+  margin-top: 7px;
+}
+.sub {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+.backBtn {
+  padding: 10px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.backBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: #fafafa;
+}
+
+.backBtn:active {
+  transform: translateY(1px);
+}
+
+/* --- 툴바 (검색, 정렬) --- */
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 16px;
+  margin-top: 40px;
+}
+
+.search {
+  height: 48px;
+  width: 217px;
+  display: flex;
+  gap: 8px;
+}
+
+.search input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px;
+  border-radius: 15px;
+  font-size: 14px;
+  min-width: 100px;
+  background: var(--bg);
+}
+
+.search input:focus {
+  outline: none;
+}
+.sorts {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  background-color: transparent;
+  border-radius: 50px;
+  font-size: 12px;
+  border-color: #fff;
+  text-align: center;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.activeSort {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--black);
+  font-weight: 500;
+}
+
+.activeSort:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--black);
+}
+
+/*카드 그리드*/
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 40px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionSub {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+/*카드 스타일*/
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.teamName {
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  background: var(--chip);
+  color: #cacaca;
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.muted {
+  color: #cacaca;
+  font-size: 12px;
+}
+.label {
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.leader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  font-size: 13px;
+}
+
+.members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  background: #f9fafb;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.copy {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  background: var(--card);
+}
