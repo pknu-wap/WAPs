@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import FloatingButton from "../components/FloatingButton";
@@ -23,7 +22,7 @@ const TeamBuildResultPage = () => {
   const [searchQuery, setSearchQuery] = useState(""); // 검색창 문자열 상태
   const [menuOpen, setMenuOpen] = useState(false);
   const [sortBy, setSortBy] = useState("default");
-  const [sortBy, setSortBy] = useState("default");
+
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
