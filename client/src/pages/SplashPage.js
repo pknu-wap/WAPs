@@ -28,12 +28,11 @@ const SplashPage = () => {
       unmountOnExit
     >
       <div>
-        <Header toggleMenu={toggleMenu} />
-        <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+        {/* <Header toggleMenu={toggleMenu} />
+        <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} /> */}
         <main>
           <div className={`${styles.mainContainer} ${styles.mount1}`}>
             <div className={styles.titleBox}>
-              <div className={styles.rectangle}></div>
               <div className={styles.title}>
                 <p>Why</p>
                 <p>Are you</p>
@@ -46,8 +45,7 @@ const SplashPage = () => {
                 <p>우리만의 서비스를 개발하기 위해</p>
                 <p>창설되었습니다.</p>
                 <br />
-                <p>WAP이 진행한,</p>
-                <p>그리고 하고 있는 프로젝트들을 둘러보세요</p>
+                <p>WAP의 모든 프로젝트들을 둘러보세요</p>
               </div>
 
               <button
@@ -67,7 +65,7 @@ const SplashPage = () => {
               </button>
             </div>
 
-            <div className={styles.footer}></div>
+            {/* <div className={styles.footer}></div> */}
           </div>
         </main>
       </div>
