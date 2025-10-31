@@ -1,15 +1,15 @@
 @font-face {
-    font-family: 'Pretendard-Bold';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
-    font-weight: 700;
-    font-display: swap;
+  font-family: 'Pretendard-Bold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
 }
 
 @font-face {
-    font-family: 'Pretendard-Regular';
-    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
-    font-weight: 400;
-    font-style: normal;
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
 }
 
 :global(.App-header),
@@ -25,6 +25,18 @@
     display: flex; 
     flex-direction: column;
     justify-content: space-between; /* 상하 여백 균등 분배 */
+    isolation: isolate;
+    position: relative;
+    background: linear-gradient(180deg, #A0AFFF 0%, #B4EDFE 100%);
+    overflow: visible;
+}
+
+.mainContainer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
+    z-index: -1; /* 배경 뒤로 보냄 */
 }
 
 .mount1{ animation: 0.7s ease-in-out loadEffect1; }
@@ -37,13 +49,13 @@
         opacity: 1;
     }
 }
-  
+
 
 .titleBox{
-    margin-top: 50px;
+    margin-top: 80px;
     margin-left: 40px;
-    font-size: 52px;
-    color: white;
+    font-size: 40px;
+    color: rgba(255,255,255,.632);
     font-family: 'Pretendard-Bold';
     height: 100%;
 }
@@ -53,7 +65,7 @@
 }
 
 .title p::first-letter {
-    color: #02FF2E; /* 원하는 색상으로 설정 */
+    color: #FFFFFF; /* 원하는 색상으로 설정 */
 }
 
 .line{
@@ -61,13 +73,13 @@
     height: 128px;
     margin-top: 40px;
     margin-bottom: 40px;
-    border: 1px solid #B0B0B0;
+    border: 1px solid #FFFFFF;
 }
 
 .caption1{
-    font-size: 20px;
+    font-size: 14px;
     color: white;
-    font-family: 'Pretendard-Regular';
+  font-family: 'Pretendard-Regular';
 }
 
 .caption2{
@@ -78,20 +90,26 @@
 
 
 .submit_button {
-    margin-top: 20px;
+    margin-top: 40px;
+    margin-left: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 158px; /* 버튼 너비 설정 */
     height: 42px; /* 버튼 높이 설정 */
     padding: 4px 10px; /* 패딩을 줄여 버튼 크기 축소 */
-    background-color: #00FF00;
-    color: black;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
     border: none;
     border-radius: 9999px;
     font-size: 18px; /* 글씨 크기 */
     font-weight: bold;
     cursor: pointer;
-    gap: 10px; /* 텍스트와 아이콘 간 간격 */
-    font-family: 'Pretendard-Regular';
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.submit_button:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
 }
