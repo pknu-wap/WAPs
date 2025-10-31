@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
-import Header from "../components/Header";
-import Menu from "../components/Menu";
 import styles from "../assets/Main/Splash.module.css";
 import "../assets/transition.css"; // 애니메이션 CSS 추가
 
 const SplashPage = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [inTransition, setInTransition] = useState(false); // 트랜지션 상태 관리
   const navigate = useNavigate();
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
 
   const handleButtonClick = () => {
     setInTransition(true); // 트랜지션 시작
@@ -28,8 +21,6 @@ const SplashPage = () => {
       unmountOnExit
     >
       <div>
-        {/* <Header toggleMenu={toggleMenu} />
-        <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} /> */}
         <main>
           <div className={`${styles.mainContainer} ${styles.mount1}`}>
             <div className={styles.titleBox}>
@@ -64,8 +55,6 @@ const SplashPage = () => {
                 </svg>
               </button>
             </div>
-
-            {/* <div className={styles.footer}></div> */}
           </div>
         </main>
       </div>
