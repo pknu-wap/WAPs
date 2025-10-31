@@ -2,12 +2,15 @@ package wap.web2.server.admin.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import wap.web2.server.admin.dto.RoleChangeRequest;
 import wap.web2.server.admin.dto.RoleChangeResponse;
-import wap.web2.server.admin.dto.UserRoleRequest;
+import wap.web2.server.admin.dto.UserRolePageResponse;
 import wap.web2.server.admin.service.UserRoleService;
 
 @RestController
@@ -18,10 +21,14 @@ public class UserRoleController {
     private final UserRoleService userRoleService;
 
     @PatchMapping("/user")
-    public ResponseEntity<?> changeUserRole(@RequestBody UserRoleRequest userRoleRequest) {
-        RoleChangeResponse response = userRoleService.change(userRoleRequest);
+    public ResponseEntity<?> changeUserRole(@RequestBody RoleChangeRequest roleChangeRequest) {
+        RoleChangeResponse response = userRoleService.change(roleChangeRequest);
         return ResponseEntity.ok(response);
     }
 
-    // 사용자 정보 확인 기능
+    @GetMapping
+    public ResponseEntity<?> getAllUserInfos(@RequestParam("size") Integer size, @RequestParam("page") Integer page) {
+        UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page);
+        return ResponseEntity.ok(response);
+    }
 }

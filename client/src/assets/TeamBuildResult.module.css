@@ -13,9 +13,10 @@ body {
   --bg: rgba(255, 255, 255, 0.2);
   --text: #fff;
   --muted: #6b7280;
-  --accent: #2563eb;
+  --accent: #abd4fd;
   --chip: #eef2ff;
   --border: #34486f;
+  --black: #000000;
 }
 
 .container {
@@ -176,12 +177,31 @@ body {
 .btn {
   padding: 7px 11px;
   border: 1px solid var(--border);
-  background: transparent;
+  background-color: transparent;
   border-radius: 50px;
   font-size: 12px;
   border-color: #fff;
   text-align: center;
   cursor: pointer;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.activeSort {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--black);
+  font-weight: 500;
+}
+
+.activeSort:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--black);
 }
 
 /*카드 그리드*/
@@ -224,6 +244,7 @@ body {
 }
 
 .teamName {
+  width: 230px;
   font-size: 20px;
   font-weight: 600;
   display: flex;
@@ -259,9 +280,6 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #f3f4f6;
   font-size: 13px;
 }
 
@@ -272,10 +290,6 @@ body {
 }
 
 .chip {
-  background: #f9fafb;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 6px 10px;
   font-size: 13px;
 }
 
