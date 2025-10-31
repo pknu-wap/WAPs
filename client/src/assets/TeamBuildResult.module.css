@@ -10,7 +10,7 @@ body {
 
 /* --- 기본 스타일 및 변수 --- */
 :root {
-  --bg: var(--bg);
+  --bg: rgba(255, 255, 255, 0.2);
   --text: #fff;
   --muted: #6b7280;
   --accent: #2563eb;
@@ -49,6 +49,32 @@ body {
 }
 
 /* --- 헤더 --- */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  align-items: flex-end; /* 텍스트/컨트롤을 아래쪽에 붙임 */
+  padding: 32px 20px 28px;
+  box-sizing: border-box;
+  isolation: isolate;
+  background: linear-gradient(90deg, #a0afff 0%, #b4edfe 100%); /* 좌→우 */
+  overflow: visible; /* <- hidden 제거 */
+  z-index: 1; /* 드롭다운이 밖으로 펼쳐져도 보이게 */
+}
+/* 아래→위 명암 오버레이 */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(30, 30, 30, 0.6) 40%,
+    rgba(102, 102, 102, 0) 100%
+  );
+  z-index: -1;
+}
 .header {
   display: flex;
   justify-content: center;
@@ -183,7 +209,6 @@ body {
 /*카드 스타일*/
 .card {
   background: var(--bg);
-  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 18px;
   display: flex;
@@ -281,20 +306,4 @@ body {
   border: 1px dashed var(--border);
   border-radius: 14px;
   background: var(--card);
-}
-
-/*반응형*/
-@media (max-width: 640px) {
-  .header {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
-
-  .backBtn {
-    align-self: flex-end;
-  }
-  .toolbar {
-    grid-template-columns: 1fr;
-  }
 }
