@@ -22,7 +22,14 @@ body {
 
 .container {
   max-width: 1321px;
-  padding: 40px 20px;
+  padding: 0 0 40px;
+}
+
+.contentBox {
+  margin-top: -65px;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
 }
 
 .loadingContainer {
@@ -51,21 +58,29 @@ body {
 }
 
 /* --- 헤더 --- */
-.hero {
+
+/* 아래→위 명암 오버레이 */
+.header {
   position: relative;
   width: 100%;
-  min-height: 300px;
+  height: 340px;
   display: flex;
-  align-items: flex-end; /* 텍스트/컨트롤을 아래쪽에 붙임 */
   padding: 32px 20px 28px;
   box-sizing: border-box;
   isolation: isolate;
   background: linear-gradient(90deg, #a0afff 0%, #b4edfe 100%); /* 좌→우 */
-  overflow: visible; /* <- hidden 제거 */
-  z-index: 1; /* 드롭다운이 밖으로 펼쳐져도 보이게 */
+  overflow: visible;
 }
-/* 아래→위 명암 오버레이 */
-.hero::after {
+
+.headerInner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-top: 60px;
+}
+
+.header::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -77,25 +92,15 @@ body {
   );
   z-index: -1;
 }
-.header {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  flex-wrap: wrap; /* 모바일 대응 */
-}
-
-.titleSection {
-  flex: 1;
-}
 
 .pageTitle {
   padding: 0 20px;
   color: fff;
-  font-size: 30px;
-  font-weight: 610;
+  font-size: 32px;
+  font-weight: 600;
   text-align: center;
   margin-bottom: 6px;
+  line-height: 1;
 }
 
 .titleSub {
@@ -108,7 +113,7 @@ body {
 }
 .sub {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 12px;
   margin-bottom: 0;
 }
 
@@ -144,27 +149,32 @@ body {
 .toolbar {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 5px;
+  gap: 10px;
   align-items: center;
-  margin-bottom: 16px;
-  margin-top: 40px;
 }
 
 .search {
   height: 48px;
-  width: 217px;
   display: flex;
   gap: 8px;
 }
 
 .search input {
   flex: 1;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border: 1px;
   border-radius: 15px;
   font-size: 14px;
   min-width: 100px;
   background: var(--bg);
+  caret-color: white;
+  color: var(--text);
+}
+
+.search input::placeholder {
+  color: var(--text);
+  opacity: 0.7;
+  font-weight: 100;
 }
 
 .search input:focus {
@@ -172,11 +182,11 @@ body {
 }
 .sorts {
   display: flex;
-  gap: 8px;
+  gap: 7px;
 }
 
 .btn {
-  padding: 7px 11px;
+  padding: 8px 11px;
   border: 1px solid var(--border);
   background-color: transparent;
   border-radius: 50px;
@@ -213,17 +223,18 @@ body {
 }
 
 .sectionTitle {
-  font-size: 20px;
-  font-weight: 800;
-  margin: 40px 0 12px;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 30px 0 5px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .sectionSub {
-  color: var(--muted);
+  color: var(--text);
   font-size: 13px;
+  font-weight: 100;
   margin-bottom: 10px;
 }
 
@@ -244,13 +255,17 @@ body {
   gap: 8px;
 }
 
-.teamName {
-  width: 230px;
-  font-size: 22px;
-  font-weight: 600;
+.nameSpace {
   display: flex;
   align-items: end;
   gap: 8px;
+}
+
+.teamName {
+  max-width: 200px;
+  font-size: 22px;
+  font-weight: 600;
+
   /* 제목이 한줄이상이면 ...으로 생략 */
   white-space: nowrap;
   overflow: hidden;
@@ -260,8 +275,8 @@ body {
 .badge {
   background: var(--bg);
   color: var(--badge);
-  padding: 4px 7px;
-  font-size: 8px;
+  padding: 3px 5.5px;
+  font-size: 7px;
   font-weight: 600;
   border-radius: 999px;
 }
@@ -283,21 +298,28 @@ body {
 }
 
 .members {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
   gap: 3px;
   font-size: 13px;
 }
 
 .footer {
   display: flex;
+  align-items: end;
   justify-content: space-between;
 }
 
 .summary {
-  width: 230px;
+  width: 220px;
   display: flex;
   flex-direction: column;
+  gap: 5px;
+
+  /* 설명 오버플로우 시 공백 단위로 줄넘김 */
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .actions {
@@ -306,8 +328,15 @@ body {
 }
 
 .copy {
-  border-color: var(--accent);
-  color: var(--accent);
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background-color: transparent;
+  border-radius: 50px;
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+  border-color: #7f7f7f;
+  color: #7f7f7f;
   font-weight: 600;
 }
 
@@ -318,4 +347,12 @@ body {
   border: 1px dashed var(--border);
   border-radius: 14px;
   background: var(--card);
+}
+
+.notMatched {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  gap: 10px;
 }

@@ -126,31 +126,30 @@ const TeamBuildResultPage = () => {
             {filteredAndSortedTeams.map(team => (
               <div className={styles.card} key={team.projectId}>
                 <div className={styles.cardHeader}>
-                  <div className={styles.teamName}>
-                    <span>{team.teamName}</span>
+
+                  <div className={styles.nameSpace}>
+                    <span className={styles.teamName}>{team.teamName}</span>
                     <span className={styles.badge}>멤버 {team.members.length}명</span>
                   </div>
+
                   <div className={styles.muted}>ID #{team.projectId}</div>
                 </div>
 
-                <div>
-
-                  <div className={styles.members}>
+                <div className={styles.members}>
+                  <div>
                     <strong>팀장 |</strong>
-                    <span>{team.leader.name}</span>
+                    <span> {team.leader.name}</span>
                     {team.leader.position && <span className={styles.muted}>· {team.leader.position}</span>}
                   </div>
-                  <br />
-                  <div className={styles.members}>
+                  <div>
                     <strong>팀원 |</strong>
                     {team.members.map(m => (
                       <span key={m.name}>
-                        <span>{m.name}</span>
+                        <span> {m.name}</span>
                         {m.position && <span className={styles.roll}> {m.position}</span>}
                       </span>
                     ))}
                   </div>
-
                 </div>
 
                 <div className={styles.footer}>
@@ -162,7 +161,7 @@ const TeamBuildResultPage = () => {
                   </div>
 
                   <div className={styles.actions}>
-                    <button className={`${styles.btn} ${styles.copy}`} onClick={() => handleCopyRoster(team)}>명단 복사</button>
+                    <button className={styles.copy} onClick={() => handleCopyRoster(team)}>명단복사</button>
                   </div>
                 </div>
               </div >
@@ -184,11 +183,11 @@ const TeamBuildResultPage = () => {
               {filteredUnassigned.map(m => (
                 <div className={styles.card} key={m.name}>
                   <div className={styles.cardHeader}>
-                    <div className={styles.teamName}>
+                    <div className={styles.notMatched}>
                       <span>{m.name}</span>
                       <span className={styles.badge}>{m.position}</span>
                     </div>
-                    <div className={styles.muted}>미배정</div>
+                    <div style={{ fontSize: "10px" }}>미배정</div>
                   </div>
                 </div>
               ))}
@@ -206,41 +205,43 @@ const TeamBuildResultPage = () => {
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
         <div className={styles.container}>
+          {/* 헤더 */}
           <div className={styles.header}>
-            <div className={styles.titleSection}>
-              <div className={styles.pageTitle}>TEAM BUILDING RESULTS</div>
-              <div className={styles.titleSub}>팀빌딩 결과를 확인하세요</div>
+            <div className={styles.headerInner}>
+              <div className={styles.titleSection}>
+                <div className={styles.pageTitle}>TEAM BUILDING RESULTS</div>
+                <div className={styles.titleSub}>팀빌딩 결과를 확인하세요</div>
+              </div>
 
-            </div>
-            {/* 돌아가기 키 도 일단 보류
-          <button className={styles.backBtn} onClick={goBack}>← 돌아가기</button> */}
-          </div>
-
-          <div className={styles.toolbar}>
-            <div>
-              <div className={styles.search}>
-                <input
-                  type="text"
-                  placeholder="팀명/팀장/팀원/미배정 검색…"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+              <div className={styles.toolbar}>
+                <div>
+                  <div className={styles.search}>
+                    <input
+                      type="text"
+                      placeholder="팀명/팀장/팀원/미배정 검색…"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className={styles.sorts}>
+                  <button
+                    className={`${styles.btn} ${sortBy === 'name' ? styles.activeSort : ''}`}
+                    onClick={handleSortByName}
+                  >
+                    팀명순
+                  </button>
+                  <button className={styles.btn} onClick={handleMoveUnassigned}>미배정</button>
+                </div>
               </div>
             </div>
-            <div className={styles.sorts}>
-              <button
-                className={`${styles.btn} ${sortBy === 'name' ? styles.activeSort : ''}`}
-                onClick={handleSortByName}
-              >
-                팀명순
-              </button>
-              <button className={styles.btn} onClick={handleMoveUnassigned}>미배정</button>
-            </div>
           </div>
 
-          {renderContent()}
+          <div className={styles.contentBox}>
+            {renderContent()}
+            <FloatingButton />
+          </div>
 
-          <FloatingButton />
         </div>
       </main>
     </>
