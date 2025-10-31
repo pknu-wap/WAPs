@@ -44,14 +44,13 @@ const SplashPage = () => {
                 className={styles.submit_button}
                 onClick={handleButtonClick}
               >
-                <div></div>
-                Projects
+                <div>PROJECTS</div>
                 <svg
-                  viewBox="0 0 45 4"
+                  viewBox="0 0 45 8"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path d="M0 1H25.5L19.5 7" stroke="white" strokeWidth="2" />
+                  <path d="M0 4H25.5L20.5 0M25.5 4L20.5 8" stroke="white" strokeWidth="2" />
                 </svg>
               </button>
             </div>

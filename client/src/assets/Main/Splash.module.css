@@ -61,52 +61,64 @@
 }
 
 .title p {
-    line-height: 0; /* 기본보다 작은 값으로 줄여 간격을 좁힘 */
+    line-height: 0.1; /* 기본보다 작은 값으로 줄여 간격을 좁힘 */
 }
 
 .title p::first-letter {
     color: #FFFFFF; /* 원하는 색상으로 설정 */
 }
 
-.line{
-    width: 0px;
-    height: 128px;
-    margin-top: 40px;
-    margin-bottom: 40px;
-    border: 1px solid #FFFFFF;
-}
 
 .caption1{
-    font-size: 14px;
-    color: white;
+  font-size: 15px;
+  color: white;
   font-family: 'Pretendard-Regular';
 }
 
+.line{
+  width: 0px;
+  height: 128px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #FFFFFF;
+}
+
 .caption2{
-    font-size: 14px;
-    color: white;
-    font-family: 'Pretendard-Regular';
+  font-size: 15px;
+  color: white;
+  font-family: 'Pretendard-Regular';
+  line-height: 0.5;
 }
 
 
 .submit_button {
-    margin-top: 40px;
-    margin-left: 140px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 158px; /* 버튼 너비 설정 */
-    height: 42px; /* 버튼 높이 설정 */
-    padding: 4px 10px; /* 패딩을 줄여 버튼 크기 축소 */
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: none;
-    border-radius: 9999px;
-    font-size: 18px; /* 글씨 크기 */
-    font-weight: bold;
-    cursor: pointer;
-    backdrop-filter: blur(8px);
-    transition: all 0.3s ease;
+  margin-top: 40px;
+  margin-left: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 내부 콘텐츠(텍스트+SVG)를 중앙에 정렬 */
+  gap: 8px; /* 텍스트와 화살표 사이에 간격 추가 */
+  width: 158px; /* 버튼 너비 설정 */
+  height: 42px; /* 버튼 높이 설정 */
+  padding: 4px 4px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-size: 15px;
+  
+  font-family: 'Pretendard-Regular';
+  font-weight: 400;
+
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.submit_button svg {
+    width: 40px; 
+    height: auto; /* SVG의 viewBox 설정 때문에 시각적으로 왼쪽으로 치우치는 현상을 보정 */
+    transform: translateX(5px); 
 }
 
 .submit_button:hover {
