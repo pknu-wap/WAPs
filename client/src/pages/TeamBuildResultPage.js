@@ -132,36 +132,42 @@ const TeamBuildResultPage = () => {
                   </div>
                   <div className={styles.muted}>ID #{team.projectId}</div>
                 </div>
-                <div className={styles.leader}>
-                  <div className={styles.pill}>
+
+                <div>
+
+                  <div className={styles.members}>
                     <strong>팀장 |</strong>
                     <span>{team.leader.name}</span>
                     {team.leader.position && <span className={styles.muted}>· {team.leader.position}</span>}
                   </div>
-                </div>
-                <div>
-                  <div className={`${styles.muted} ${styles.label}`}>팀원</div>
+                  <br />
                   <div className={styles.members}>
+                    <strong>팀원 |</strong>
                     {team.members.map(m => (
-                      <span className={styles.chip} key={m.name}>
+                      <span key={m.name}>
                         <span>{m.name}</span>
-                        {m.position && <span className={styles.muted}>· {m.position}</span>}
+                        {m.position && <span className={styles.roll}> {m.position}</span>}
                       </span>
                     ))}
                   </div>
+
                 </div>
-                {team.summary && <div className={styles.muted}>{team.summary}</div>}
+
                 <div className={styles.footer}>
-                  <div className={styles.muted}>
-                    총 인원: <b>{1 + team.members.length}</b>명 (팀장 포함)
+                  <div div className={styles.summary} >
+                    {team.summary && <div className={styles.muted}>{team.summary}</div>}
+                    <div className={styles.muted}>
+                      총 인원: <b>{1 + team.members.length}</b>명 (팀장 포함)
+                    </div>
                   </div>
+
                   <div className={styles.actions}>
                     <button className={`${styles.btn} ${styles.copy}`} onClick={() => handleCopyRoster(team)}>명단 복사</button>
                   </div>
                 </div>
-              </div>
+              </div >
             ))}
-          </div>
+          </div >
         )}
 
         {/* 미배정 지원자 그리드 */}
@@ -170,23 +176,25 @@ const TeamBuildResultPage = () => {
           총 <b>{filteredUnassigned.length}</b>명
         </div>
 
-        {filteredUnassigned.length === 0 ? (
-          <div className={styles.empty}>모든 지원자가 팀에 배정되었습니다 🎉</div>
-        ) : (
-          <div className={styles.grid}>
-            {filteredUnassigned.map(m => (
-              <div className={styles.card} key={m.name}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.teamName}>
-                    <span>{m.name}</span>
-                    <span className={styles.badge}>{m.position}</span>
+        {
+          filteredUnassigned.length === 0 ? (
+            <div className={styles.empty}>모든 지원자가 팀에 배정되었습니다 🎉</div>
+          ) : (
+            <div className={styles.grid}>
+              {filteredUnassigned.map(m => (
+                <div className={styles.card} key={m.name}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.teamName}>
+                      <span>{m.name}</span>
+                      <span className={styles.badge}>{m.position}</span>
+                    </div>
+                    <div className={styles.muted}>미배정</div>
                   </div>
-                  <div className={styles.muted}>미배정</div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )
+        }
       </>
     );
   };

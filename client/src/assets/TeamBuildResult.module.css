@@ -14,9 +14,10 @@ body {
   --text: #fff;
   --muted: #6b7280;
   --accent: #abd4fd;
-  --chip: #eef2ff;
   --border: #34486f;
   --black: #000000;
+  --badge: #cacaca;
+  --mute: rgba(255, 255, 255, 0.5);
 }
 
 .container {
@@ -245,61 +246,58 @@ body {
 
 .teamName {
   width: 230px;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
   display: flex;
-  align-items: center;
+  align-items: end;
   gap: 8px;
+  /* 제목이 한줄이상이면 ...으로 생략 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .badge {
-  background: var(--chip);
-  color: #cacaca;
-  padding: 5px 10px;
-  font-size: 10px;
+  background: var(--bg);
+  color: var(--badge);
+  padding: 4px 7px;
+  font-size: 8px;
   font-weight: 600;
   border-radius: 999px;
 }
 
 .muted {
-  color: #cacaca;
+  color: var(--mute);
   font-size: 12px;
 }
+
 .label {
   margin-bottom: 6px;
   font-weight: 500;
 }
 
-.leader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
+.roll {
+  color: var(--mute);
+  font-size: 10px;
+  padding: 0px 5px 0px 2px;
 }
 
 .members {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   font-size: 13px;
 }
 
 .footer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-top: 8px;
-  border-top: 1px solid var(--border);
-  padding-top: 14px;
+}
+
+.summary {
+  width: 230px;
+  display: flex;
+  flex-direction: column;
 }
 
 .actions {
