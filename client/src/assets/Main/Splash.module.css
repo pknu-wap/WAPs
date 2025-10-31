@@ -1,0 +1,127 @@
+@font-face {
+  font-family: 'Pretendard-Bold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+:global(.App-header),
+:global(.menuContainer),
+:global(.menu) {
+    display: none !important; /* 메뉴와 헤더 숨기기*/
+}
+
+.mainContainer{
+    margin: 0 auto;
+    max-width: 400px;
+    height: 100vh;
+    display: flex; 
+    flex-direction: column;
+    justify-content: space-between; /* 상하 여백 균등 분배 */
+    isolation: isolate;
+    position: relative;
+    background: linear-gradient(180deg, #A0AFFF 0%, #B4EDFE 100%);
+    overflow: visible;
+}
+
+.mainContainer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
+    z-index: -1; /* 배경 뒤로 보냄 */
+}
+
+.mount1{ animation: 0.7s ease-in-out loadEffect1; }
+
+@keyframes loadEffect1 {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+
+
+.titleBox{
+    margin-top: 80px;
+    margin-left: 40px;
+    font-size: 40px;
+    color: rgba(255,255,255,.632);
+    font-family: 'Pretendard-Bold';
+    height: 100%;
+}
+
+.title p {
+    line-height: 0.1; /* 기본보다 작은 값으로 줄여 간격을 좁힘 */
+}
+
+.title p::first-letter {
+    color: #FFFFFF; /* 원하는 색상으로 설정 */
+}
+
+
+.caption1{
+  font-size: 15px;
+  color: white;
+  font-family: 'Pretendard-Regular';
+}
+
+.line{
+  width: 0px;
+  height: 128px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #FFFFFF;
+}
+
+.caption2{
+  font-size: 15px;
+  color: white;
+  font-family: 'Pretendard-Regular';
+  line-height: 0.5;
+}
+
+
+.submit_button {
+  margin-top: 50px;
+  margin-left: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 내부 콘텐츠(텍스트+SVG)를 중앙에 정렬 */
+  gap: 8px; /* 텍스트와 화살표 사이에 간격 추가 */
+  width: 158px; /* 버튼 너비 설정 */
+  height: 42px; /* 버튼 높이 설정 */
+  padding: 4px 4px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-size: 15px;
+  
+  font-family: 'Pretendard-Regular';
+  font-weight: 400;
+
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.submit_button svg {
+    width: 40px; 
+    height: auto; /* SVG의 viewBox 설정 때문에 시각적으로 왼쪽으로 치우치는 현상을 보정 */
+    transform: translateX(5px); 
+}
+
+.submit_button:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+}

@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
-import Header from "../components/Header";
-import Menu from "../components/Menu";
-import styles from "../assets/Main/Main.module.css";
+import styles from "../assets/Main/Splash.module.css";
 import "../assets/transition.css"; // 애니메이션 CSS 추가
 
-const MainPage = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+const SplashPage = () => {
   const [inTransition, setInTransition] = useState(false); // 트랜지션 상태 관리
   const navigate = useNavigate();
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
 
   const handleButtonClick = () => {
     setInTransition(true); // 트랜지션 시작
@@ -28,12 +21,9 @@ const MainPage = () => {
       unmountOnExit
     >
       <div>
-        <Header toggleMenu={toggleMenu} />
-        <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
         <main>
           <div className={`${styles.mainContainer} ${styles.mount1}`}>
             <div className={styles.titleBox}>
-              <div className={styles.rectangle}></div>
               <div className={styles.title}>
                 <p>Why</p>
                 <p>Are you</p>
@@ -46,8 +36,7 @@ const MainPage = () => {
                 <p>우리만의 서비스를 개발하기 위해</p>
                 <p>창설되었습니다.</p>
                 <br />
-                <p>WAP이 진행한,</p>
-                <p>그리고 하고 있는 프로젝트들을 둘러보세요</p>
+                <p>WAP의 모든 프로젝트들을 둘러보세요</p>
               </div>
 
               <button
@@ -55,19 +44,16 @@ const MainPage = () => {
                 className={styles.submit_button}
                 onClick={handleButtonClick}
               >
-                <div></div>
-                Projects
+                <div>PROJECTS</div>
                 <svg
-                  viewBox="0 0 45 4"
+                  viewBox="0 0 45 8"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path d="M0 1H25.5L19.5 7" stroke="black" strokeWidth="2" />
+                  <path d="M0 4H25.5L20.5 0M25.5 4L20.5 8" stroke="white" strokeWidth="2" />
                 </svg>
               </button>
             </div>
-
-            <div className={styles.footer}></div>
           </div>
         </main>
       </div>
@@ -75,4 +61,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default SplashPage;
