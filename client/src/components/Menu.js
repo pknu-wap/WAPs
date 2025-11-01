@@ -59,7 +59,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     <div className="menuContainer">
       {menuOpen && (
         <nav className="menu">
-          <div className="menu-header">
+          <div>
             {isLoggedIn && userName ? (
               <p className="welcome-message">{userName}님 환영합니다!</p>
             ) : (

@@ -203,13 +203,13 @@ li {
 
 /* 환영/인증 텍스트 */
 .welcome-message {
-  margin-right: 40px;
   color: white;
   padding: 10px;
   font-size: 120%;
   font-weight: 700;
   font-family: "Inter", sans-serif;
 }
+
 .auth-text {
   text-align: right;
   padding-right: 5%;
@@ -230,7 +230,7 @@ li {
 /* ===== 모바일 ===== */
 @media (max-width: 768px) {
   .menu {
-    width: 200px;
+    width: 400px;
     height: 100vh;
   }
 
