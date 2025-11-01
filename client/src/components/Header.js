@@ -33,13 +33,15 @@ const Header = () => {
       <header className="App-header">
         <div className="header-inner">
           <div className="logo">
-            <img
+
+            <p
               className="waplogo"
               alt="wap"
-              src={wapLogo}
               onClick={() => navigate("/HomePage")}
               style={{ cursor: "pointer" }}
-            />
+            >
+              WAPs
+            </p>
           </div>
 
           {/* 아이콘은 CSS에서 absolute로 오른쪽 고정 */}

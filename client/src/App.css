@@ -1,6 +1,7 @@
 @font-face {
-  font-family: 'Pretendard-Regular';
-  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
   font-weight: 400;
   font-style: normal;
 }
@@ -15,10 +16,10 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;                /* 화면 가로 전체 */
-  z-index: 101;            /* 메뉴(100)보다 위 */
+  right: 0; /* 화면 가로 전체 */
+  z-index: 101; /* 메뉴(100)보다 위 */
   background: transparent; /* 완전 투명 */
-  height: 60px;            /* 기존 높이에 맞게 조정 */
+  height: 60px; /* 기존 높이에 맞게 조정 */
 }
 
 /* 컨테이너 폭 안에서 로고–아이콘 양끝 배치 */
@@ -29,16 +30,16 @@
   display: flex;
   justify-content: space-between; /* 로고 ↔ 아이콘 */
   align-items: center;
-  padding: 0 20px;                /* 예전 패딩 감각 유지 */
+  padding: 0 20px; /* 예전 패딩 감각 유지 */
   color: white;
-
 }
 
 /* 로고/아이콘 */
-.waplogo { 
-  width: 70px; 
-  height: auto; 
+.waplogo {
+  font-size: 20px;
+  font-weight: 800;
   margin-left: 20px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* ✅ 아이콘: 절대배치 제거 → 컨테이너 안 오른쪽 끝에 위치 */
@@ -49,21 +50,25 @@
   margin-right: 20px;
 }
 
-
 /* 글로벌 기본 */
 html {
-  font-family: 'Pretendard-Regular';
+  font-family: "Pretendard-Regular";
   height: 100%;
   color: white;
   margin: 0 auto;
 }
 
-ul { list-style-type: none; padding: 0; }
-li { padding: 10px 0; }
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  padding: 10px 0;
+}
 
 /* 본문 컨테이너 */
 .container {
-  background-color: #000;       /* 페이지 배경 검정 */
+  background-color: #000; /* 페이지 배경 검정 */
   max-width: var(--container-max);
   margin-left: auto;
   margin-right: auto;
@@ -79,23 +84,32 @@ li { padding: 10px 0; }
 /* ===== 사이드 메뉴: 화면 고정, 헤더 아래 레이어 ===== */
 .menu {
   position: fixed;
-  top: 50%;                  /* 최상단부터 */
-  left: 50%;     
-  transform: translate(-50%, -50%);  /* 오른쪽에서 열려면 right:0; left:auto */
+  top: 50%; /* 최상단부터 */
+  left: 50%;
+  transform: translate(-50%, -50%); /* 오른쪽에서 열려면 right:0; left:auto */
   width: 380px;
-  height: 100vh;          /* 전체 높이 */
+  height: 100vh; /* 전체 높이 */
   background-color: #000;
   color: white;
   padding: 10px;
-  z-index: 100;           /* 헤더(101)보다 아래 */
+  z-index: 100; /* 헤더(101)보다 아래 */
 }
 
 /* 구분선 */
-.startLine { border: none; border-top: 3px solid #fff; }
-.line      { border: none; border-top: 0.7px solid #fff; }
+.startLine {
+  border: none;
+  border-top: 3px solid #fff;
+}
+.line {
+  border: none;
+  border-top: 0.7px solid #fff;
+}
 
 /* 메뉴 리스트 */
-.menu ul { padding: 0; margin: 0; }
+.menu ul {
+  padding: 0;
+  margin: 0;
+}
 .menu li {
   margin-right: 40px;
   color: white;
@@ -113,11 +127,20 @@ li { padding: 10px 0; }
   flex-direction: column;
   align-items: center;
   margin-top: 15px; /* 필요 시 조정 */
-  font-family: 'Pretendard-Regular';
+  font-family: "Pretendard-Regular";
 }
 
-.mount1 { animation: 0.7s ease-in-out loadEffect1; }
-@keyframes loadEffect1 { 0% {opacity:0;} 100% {opacity:1;} }
+.mount1 {
+  animation: 0.7s ease-in-out loadEffect1;
+}
+@keyframes loadEffect1 {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
 /* 카드 */
 .box {
@@ -136,11 +159,19 @@ li { padding: 10px 0; }
 }
 
 /* 이미지 */
-.image { width: 100%; height: 100%; overflow: hidden; }
-.project-image, .project1 {
-  width: 100%; height: 100%;
+.image {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.project-image,
+.project1 {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  position: absolute; top: 0; left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* 타이틀 그라데이션 */
@@ -156,14 +187,22 @@ li { padding: 10px 0; }
   justify-content: flex-end;
   align-items: flex-start;
   position: absolute;
-  bottom: 0; left: 0;
+  bottom: 0;
+  left: 0;
   color: #ffffff;
 }
-.titlebox h2 { margin: 0; font-size: 25px; }
-.titlebox p  { margin: 5px 0 0; font-size: 15px; text-align: left; }
+.titlebox h2 {
+  margin: 0;
+  font-size: 25px;
+}
+.titlebox p {
+  margin: 5px 0 0;
+  font-size: 15px;
+  text-align: left;
+}
 
 /* 환영/인증 텍스트 */
-.welcome-message{
+.welcome-message {
   margin-right: 40px;
   color: white;
   padding: 10px;
@@ -171,7 +210,7 @@ li { padding: 10px 0; }
   font-weight: 700;
   font-family: "Inter", sans-serif;
 }
-.auth-text{
+.auth-text {
   text-align: right;
   padding-right: 5%;
   margin-top: 5%;
