@@ -12,62 +12,60 @@
   font-style: normal;
 }
 
-:global(.App-header),
-:global(.menuContainer),
-:global(.menu) {
-    display: none !important; /* 메뉴와 헤더 숨기기*/
+.hideGlobalElements :global(.App-header),
+.hideGlobalElements :global(.menuContainer),
+.hideGlobalElements :global(.menu) {
+  display: none !important; /* 메뉴와 헤더 숨기기*/
 }
 
 .mainContainer{
-    margin: 0 auto;
-    max-width: 400px;
-    height: 100vh;
-    display: flex; 
-    flex-direction: column;
-    justify-content: space-between; /* 상하 여백 균등 분배 */
-    isolation: isolate;
-    position: relative;
-    background: linear-gradient(180deg, #A0AFFF 0%, #B4EDFE 100%);
-    overflow: visible;
+  margin: 0 auto;
+  max-width: 400px;
+  height: 100vh;
+  display: flex; 
+  flex-direction: column;
+  justify-content: space-between; /* 상하 여백 균등 분배 */
+  isolation: isolate;
+  position: relative;
+  background: linear-gradient(180deg, #A0AFFF 0%, #B4EDFE 100%);
+  overflow: visible;
 }
 
 .mainContainer::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
-    z-index: -1; /* 배경 뒤로 보냄 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
+  z-index: -1; /* 배경 뒤로 보냄 */
 }
 
 .mount1{ animation: 0.7s ease-in-out loadEffect1; }
 
 @keyframes loadEffect1 {
-    0%{
-        opacity: 0;
-    }
-    100%{
-        opacity: 1;
-    }
+  0%{
+    opacity: 0;
+  }
+  100%{
+    opacity: 1;
+  }
 }
 
-
 .titleBox{
-    margin-top: 80px;
-    margin-left: 40px;
-    font-size: 40px;
-    color: rgba(255,255,255,.632);
-    font-family: 'Pretendard-Bold';
-    height: 100%;
+  margin-top: 80px;
+  margin-left: 40px;
+  font-size: 40px;
+  color: rgba(255,255,255,.632);
+  font-family: 'Pretendard-Bold';
+  height: 100%;
 }
 
 .title p {
-    line-height: 0.1; /* 기본보다 작은 값으로 줄여 간격을 좁힘 */
+  line-height: 0.1;
 }
 
 .title p::first-letter {
-    color: #FFFFFF; /* 원하는 색상으로 설정 */
+  color: #FFFFFF;
 }
-
 
 .caption1{
   font-size: 15px;
@@ -90,7 +88,6 @@
   line-height: 0.5;
 }
 
-
 .submit_button {
   margin-top: 50px;
   margin-left: 160px;
@@ -106,10 +103,8 @@
   border: none;
   border-radius: 9999px;
   font-size: 15px;
-  
   font-family: 'Pretendard-Regular';
   font-weight: 400;
-
   cursor: pointer;
   backdrop-filter: blur(8px);
   transition: all 0.3s ease;
