@@ -13,10 +13,8 @@
 
 /* ===== 헤더: 전폭 fixed + 내부 래퍼로 실제 표시 폭 제한 ===== */
 .App-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0; /* 화면 가로 전체 */
+  position: absolute;
+  width: var(--container-max);
   z-index: 101; /* 메뉴(100)보다 위 */
   background: transparent; /* 완전 투명 */
   height: 60px; /* 기존 높이에 맞게 조정 */
@@ -30,7 +28,7 @@
   display: flex;
   justify-content: space-between; /* 로고 ↔ 아이콘 */
   align-items: center;
-  padding: 0 20px; /* 예전 패딩 감각 유지 */
+  padding: 0 20px;
   color: white;
 }
 
@@ -38,16 +36,22 @@
 .waplogo {
   font-size: 20px;
   font-weight: 800;
-  margin-left: 20px;
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* ✅ 아이콘: 절대배치 제거 → 컨테이너 안 오른쪽 끝에 위치 */
+/* 아이콘 */
 .menu-icon {
-  font-size: 25px;
+  font-size: 23px;
   cursor: pointer;
   z-index: 102;
-  margin-right: 20px;
+  user-select: none;
+}
+
+.menu-bar {
+  display: inline-block;
+  transform: scale(1.4, 0.95);
+  font-weight: 600;
+  opacity: 70%;
 }
 
 /* 글로벌 기본 */
@@ -93,6 +97,10 @@ li {
   color: white;
   padding: 10px;
   z-index: 100; /* 헤더(101)보다 아래 */
+}
+
+.menu-content {
+  margin: 10px;
 }
 
 /* 구분선 */
@@ -204,7 +212,7 @@ li {
 /* 환영/인증 텍스트 */
 .welcome-message {
   color: white;
-  padding: 10px;
+  padding: 50px 10px 0;
   font-size: 120%;
   font-weight: 700;
   font-family: "Inter", sans-serif;
@@ -225,20 +233,6 @@ li {
   padding: 20px;
   margin: 20px auto;
   max-width: 800px; /* 카드 영역은 별도 폭 사용 시 유지 */
-}
-
-/* ===== 모바일 ===== */
-@media (max-width: 768px) {
-  .menu {
-    width: 400px;
-    height: 100vh;
-  }
-
-  /* 이전처럼 헤더 높이만큼 밀던 여백 제거 유지 */
-  .content {
-    margin-top: 0;
-    margin-left: 250px; /* 사이드바 전략에 따라 조정/삭제 */
-  }
 }
 
 /* ===== 주의 =====

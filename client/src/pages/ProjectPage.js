@@ -72,9 +72,8 @@ const ProjectPage = () => {
       return;
     }
 
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project${
-      isEditMode ? `/${projectId}` : ""
-    }`;
+    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project${isEditMode ? `/${projectId}` : ""
+      }`;
 
     const method = isEditMode ? "put" : "post";
 
@@ -93,8 +92,7 @@ const ProjectPage = () => {
     } catch (error) {
       // console.error(`${isEditMode ? "수정" : "생성"} 실패:`, error);
       alert(
-        `프로젝트 ${
-          isEditMode ? "수정" : "생성"
+        `프로젝트 ${isEditMode ? "수정" : "생성"
         }에 실패했습니다. 다시 시도해 주세요.`
       );
     }
