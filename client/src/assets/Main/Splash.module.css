@@ -111,9 +111,9 @@
 }
 
 .submit_button svg {
-  width: 40px; 
+    width: 40px; 
     height: auto; /* SVG의 viewBox 설정 때문에 시각적으로 왼쪽으로 치우치는 현상을 보정 */
-  transform: translateX(5px); 
+    transform: translateX(5px); 
 }
 
 .submit_button:hover {
