@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Menu from "./Menu";
 
@@ -7,7 +7,6 @@ const Header = () => {
   const [userName, setUserName] = useState(Cookies.get("userName") || null);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // 현재 페이지를 인식하기 위한 변수
 
   const toggleMenu = () => setMenuOpen((p) => !p);
 
@@ -27,6 +26,7 @@ const Header = () => {
   const handleLogin = () => {
     navigate("/login", { state: { from: window.location.pathname } });
   };
+
 
   return (
     <>
