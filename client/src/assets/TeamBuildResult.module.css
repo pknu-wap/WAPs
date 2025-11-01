@@ -10,18 +10,26 @@ body {
 
 /* --- 기본 스타일 및 변수 --- */
 :root {
-  --bg: var(--bg);
+  --bg: rgba(255, 255, 255, 0.2);
   --text: #fff;
   --muted: #6b7280;
   --accent: #abd4fd;
-  --chip: #eef2ff;
   --border: #34486f;
   --black: #000000;
+  --badge: #cacaca;
+  --mute: rgba(255, 255, 255, 0.5);
 }
 
 .container {
   max-width: 1321px;
-  padding: 40px 20px;
+  padding: 0 0 40px;
+}
+
+.contentBox {
+  margin-top: -65px;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
 }
 
 .loadingContainer {
@@ -50,25 +58,49 @@ body {
 }
 
 /* --- 헤더 --- */
+
+/* 아래→위 명암 오버레이 */
 .header {
+  position: relative;
+  width: 100%;
+  height: 340px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  flex-wrap: wrap; /* 모바일 대응 */
+  padding: 32px 20px 28px;
+  box-sizing: border-box;
+  isolation: isolate;
+  background: linear-gradient(90deg, #a0afff 0%, #b4edfe 100%);
+  overflow: visible;
 }
 
-.titleSection {
-  flex: 1;
+.headerInner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-top: 60px;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(30, 30, 30, 0.6) 40%,
+    rgba(102, 102, 102, 0) 100%
+  );
+  z-index: -1;
 }
 
 .pageTitle {
   padding: 0 20px;
   color: fff;
-  font-size: 30px;
-  font-weight: 610;
+  font-size: 32px;
+  font-weight: 600;
   text-align: center;
   margin-bottom: 6px;
+  line-height: 1;
 }
 
 .titleSub {
@@ -81,7 +113,7 @@ body {
 }
 .sub {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 12px;
   margin-bottom: 0;
 }
 
@@ -117,27 +149,32 @@ body {
 .toolbar {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 5px;
+  gap: 10px;
   align-items: center;
-  margin-bottom: 16px;
-  margin-top: 40px;
 }
 
 .search {
   height: 48px;
-  width: 217px;
   display: flex;
   gap: 8px;
 }
 
 .search input {
   flex: 1;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border: 1px;
   border-radius: 15px;
   font-size: 14px;
   min-width: 100px;
   background: var(--bg);
+  caret-color: white;
+  color: var(--text);
+}
+
+.search input::placeholder {
+  color: var(--text);
+  opacity: 0.7;
+  font-weight: 100;
 }
 
 .search input:focus {
@@ -145,11 +182,11 @@ body {
 }
 .sorts {
   display: flex;
-  gap: 8px;
+  gap: 7px;
 }
 
 .btn {
-  padding: 7px 11px;
+  padding: 8px 11px;
   border: 1px solid var(--border);
   background-color: transparent;
   border-radius: 50px;
@@ -157,6 +194,25 @@ body {
   border-color: #fff;
   text-align: center;
   cursor: pointer;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.activeSort {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--black);
+  font-weight: 500;
+}
+
+.activeSort:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--black);
 }
 
 .btn:hover {
@@ -186,24 +242,24 @@ body {
 }
 
 .sectionTitle {
-  font-size: 20px;
-  font-weight: 800;
-  margin: 40px 0 12px;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 30px 0 5px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .sectionSub {
-  color: var(--muted);
+  color: var(--text);
   font-size: 13px;
+  font-weight: 100;
   margin-bottom: 10px;
 }
 
 /*카드 스타일*/
 .card {
   background: var(--bg);
-  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 18px;
   display: flex;
@@ -218,69 +274,71 @@ body {
   gap: 8px;
 }
 
-.teamName {
-  font-size: 20px;
-  font-weight: 600;
+.nameSpace {
   display: flex;
-  align-items: center;
+  align-items: end;
   gap: 8px;
 }
 
+.teamName {
+  max-width: 200px;
+  font-size: 22px;
+  font-weight: 600;
+
+  /* 제목이 한줄이상이면 ...으로 생략 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .badge {
-  background: var(--chip);
-  color: #cacaca;
-  padding: 5px 10px;
-  font-size: 10px;
+  background: var(--bg);
+  color: var(--badge);
+  padding: 3px 5.5px;
+  font-size: 7px;
   font-weight: 600;
   border-radius: 999px;
 }
 
 .muted {
-  color: #cacaca;
+  color: var(--mute);
   font-size: 12px;
 }
+
 .label {
   margin-bottom: 6px;
   font-weight: 500;
 }
 
-.leader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #f3f4f6;
-  font-size: 13px;
+.roll {
+  color: var(--mute);
+  font-size: 10px;
+  padding: 0px 5px 0px 2px;
 }
 
 .members {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.chip {
-  background: #f9fafb;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 6px 10px;
+  flex-direction: column;
+  gap: 3px;
   font-size: 13px;
 }
 
 .footer {
   display: flex;
+  align-items: end;
   justify-content: space-between;
-  align-items: center;
-  margin-top: 8px;
-  border-top: 1px solid var(--border);
-  padding-top: 14px;
+}
+
+.summary {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  /* 설명 오버플로우 시 공백 단위로 줄넘김 */
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .actions {
@@ -289,8 +347,15 @@ body {
 }
 
 .copy {
-  border-color: var(--accent);
-  color: var(--accent);
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background-color: transparent;
+  border-radius: 50px;
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+  border-color: #7f7f7f;
+  color: #7f7f7f;
   font-weight: 600;
 }
 
@@ -301,4 +366,12 @@ body {
   border: 1px dashed var(--border);
   border-radius: 14px;
   background: var(--card);
+}
+
+.notMatched {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  gap: 10px;
 }
