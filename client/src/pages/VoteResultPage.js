@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
 import styles from "../assets/Vote/ProjectVote.module.css";
 
 // 투표 기간이 아닐 때 나타나는 페이지임.
@@ -82,7 +80,21 @@ const VoteResultPage = () => {
             actualRank++;
 
             const isTop3 = displayedRank <= 3;
-
+            // 순위에 따라 투명도 클래스 결정 
+            let opacityClass;
+            if (displayedRank <= 3) {
+              // 1, 2, 3위
+              opacityClass = styles.rank_opacity_top3;
+            } else if (displayedRank === 4) {
+              // 4위
+              opacityClass = styles.rank_opacity_4;
+            } else if (displayedRank === 5) {
+              // 5위
+              opacityClass = styles.rank_opacity_5;
+            } else {
+              // 6위 이하
+              opacityClass = styles.rank_opacity_other;
+            }
             return (
               <div
                 className={`${styles.project_list_box}`}
@@ -90,7 +102,11 @@ const VoteResultPage = () => {
               >
                 <div className={styles.inform_box}>
                   <div
-                    className={isTop3 ? styles.selected_result : ""}
+                    className={`
+                      ${styles.rank_layout}
+                      ${isTop3 ? styles.selected_result : styles.rank_default_color}
+                      ${opacityClass}
+                    `}
                     style={{ marginTop: 10, fontSize: 18 }}
                   >
                     {displayedRank}
@@ -109,7 +125,10 @@ const VoteResultPage = () => {
                     <p className={styles.summary}>{project.projectSummary}</p>
                   </div>
                   <div className={styles.project_result_form}>
-                    <div className={styles.project_vote_count}>
+                    <div className={`
+                        ${styles.project_vote_count}
+                        ${opacityClass}
+                      `}>
                       {project.voteCount} 득표
                     </div>
                     <div className={styles.project_vote_rate}>

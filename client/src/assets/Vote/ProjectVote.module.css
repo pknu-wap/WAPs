@@ -6,6 +6,10 @@
   font-style: normal;
 }
 
+:root {
+  --primary: rgb(163, 175, 249);
+}
+
 .project_vote_form {
   max-width: 400px;
   height: 100%;
@@ -72,14 +76,36 @@
 }
 
 .selected {
-  border: 2px solid #02ff2e; /* 선택된 프로젝트의 테두리 색상 */
-  color: #02ff2e;
+  border: 2px solid var(--primary); /* 선택된 프로젝트의 테두리 색상 */
+  color: var(--primary);
 }
 
 .selected_result {
+  color: var(--primary); /* 1-3위 순위권 색상 */
+}
+
+/* 순위 번호의 기본 스타일 클래스 */
+/* 순위 번호의 '레이아웃' (여백, 글자 크기) - 색상 없음 */
+.rank_layout {
   margin-top: 10px;
   font-size: 18px;
-  color: #02ff2e;
+}
+
+.rank_default_color {
+  color: var(--primary);
+}
+/* 순위별 투명도 조절 클래스 */
+.rank_opacity_top3 {
+  opacity: 1; /* 1-3위: 100% */
+}
+.rank_opacity_4 {
+  opacity: 0.85; /* 4위: 85% */
+}
+.rank_opacity_5 {
+  opacity: 0.7; /* 5위: 70% */
+}
+.rank_opacity_other {
+  opacity: 0.5; /* 6위 이하: 50% */
 }
 
 .inform_box {
@@ -136,7 +162,7 @@
 }
 
 .project_vote_count {
-  color: #02ff2e;
+  color: var(--primary);
   font-size: 14px;
   flex-grow: 0; /* title은 추가 공간을 차지하지 않도록 설정 */
 }
@@ -154,7 +180,7 @@
 }
 
 .selected_title {
-  color: #02ff2e; /* 선택된 프로젝트의 테두리 색상 */
+  color: var(--primary); /* 선택된 프로젝트의 테두리 색상 */
 }
 
 .summary {

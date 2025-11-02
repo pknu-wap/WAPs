@@ -15,7 +15,7 @@ const FloatingButton = () => {
         position: "fixed",
         bottom: "20px",
         left: "20px",
-        backgroundColor: "#02FF2E",
+        backgroundColor: "rgb(163,175,249)",
         color: "#2A2A2A",
         border: "none",
         borderRadius: "50%",

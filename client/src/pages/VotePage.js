@@ -72,9 +72,6 @@ const VotePage = () => {
 
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
-        {/* 이게 내가 사용해야할 코드임!! 지금 백엔드가 안되어있어서 임시방편으로
-        아래방법 선택함. */}
-        {/* {isOpen ? <VoteForm /> : <VoteResultPage />} */}
         {isOpen ? <VoteForm isVotedUser={isvotedUser} /> : <VoteResultPage />}
       </main>
       <FloatingButton />
