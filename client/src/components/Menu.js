@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import "../assets/Menu/Menu.css";
 
 const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const navigate = useNavigate();

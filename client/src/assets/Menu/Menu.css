@@ -1,0 +1,86 @@
+/* =========================
+   Menu.css (전용 스타일)
+   - 다른 공용 CSS 건드리지 않음
+   - 메뉴가 렌더될 때만 헤더를 위로 띄움 (CSS :has 사용)
+   ========================= */
+
+/* 메뉴가 열렸을 때만 헤더를 최상단으로 */
+body:has(nav.menu) .App-header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--container-max);
+  height: 60px;
+  z-index: 105;   /* 메뉴/백드롭보다 위 */
+  background: transparent;
+}
+
+/* ===== 백드롭: 화면 전체 덮어 배경 상호작용 차단 ===== */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 102;   /* 헤더(105)보다 아래, 메뉴(103)보다 아래 */
+  touch-action: none;   /* 모바일 스크롤 차단 */
+}
+
+/* ===== 메뉴 패널 ===== */
+.menu {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  height: 100vh;
+  background-color: #000;
+  color: #fff;
+  padding: 10px;
+  z-index: 103;   /* 헤더 아래, 백드롭 위 */
+}
+
+/* 컨텐츠 래퍼 */
+.menu-content {
+  margin: 10px;
+}
+
+/* ===== 목록/구분선 (Menu 내부 한정) ===== */
+.menu .startLine {
+  border: none;
+  border-top: 3px solid #fff;
+}
+.menu .line {
+  border: none;
+  border-top: 0.7px solid #fff;
+}
+
+.menu ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.menu li {
+  margin-right: 40px;
+  color: #fff;
+  padding: 10px;
+  font-size: x-large;
+  font-weight: 700;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  margin-bottom: 17px;
+}
+
+/* ===== 환영 문구 (선택) ===== */
+.welcome-message {
+  color: #fff;
+  padding: 50px 10px 0;
+  font-size: 120%;
+  font-weight: 700;
+  font-family: "Inter", sans-serif;
+}
+
+/* ===== 메뉴 컨테이너 정렬 (필요 시) ===== */
+.menuContainer {
+  display: flex;
+  justify-content: flex-end;
+}
