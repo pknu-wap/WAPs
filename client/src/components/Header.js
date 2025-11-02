@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import wapLogo from "../assets/img/WAP_white_NoBG.png";
 import Menu from "./Menu";
 
 const Header = () => {
@@ -28,23 +27,26 @@ const Header = () => {
     navigate("/login", { state: { from: window.location.pathname } });
   };
 
+
   return (
     <>
       <header className="App-header">
         <div className="header-inner">
-          <div className="logo">
-            <img
+          <div>
+
+            <p
               className="waplogo"
               alt="wap"
-              src={wapLogo}
               onClick={() => navigate("/HomePage")}
               style={{ cursor: "pointer" }}
-            />
+            >
+              WAPs
+            </p>
           </div>
 
           {/* 아이콘은 CSS에서 absolute로 오른쪽 고정 */}
           <div className="menu-icon" onClick={toggleMenu}>
-            {menuOpen ? "✕" : "☰"}
+            {menuOpen ? <p>✕</p> : <p className="menu-bar">☰</p>}
           </div>
         </div>
       </header>

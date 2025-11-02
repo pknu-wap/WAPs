@@ -49,7 +49,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const handleLogout = () => {
     Cookies.remove("authToken");
     Cookies.remove("userName");
-    setIsLoggedIn(false); // ✅ 상태 수동 갱신
+    setIsLoggedIn(false); // 상태 수동 갱신
     alert("로그아웃 되었습니다.");
     toggleMenu();
     navigate("/");
@@ -59,62 +59,55 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     <div className="menuContainer">
       {menuOpen && (
         <nav className="menu">
-          <div className="menu-header">
-            {isLoggedIn && userName ? (
-              <p className="welcome-message">{userName}님 환영합니다!</p>
-            ) : (
-              <p></p>
-            )}
-          </div>
+          <div className="menu-content">
+            <div>
+              {isLoggedIn && userName ? (
+                <p className="welcome-message">{userName}님 환영합니다!</p>
+              ) : (
+                <p></p>
+              )}
+            </div>
 
-          <ul>
-            <hr className="startLine" />
-            <li
-              onClick={() => {
-                if (isLoggedIn) {
-                  handleLogout();
-                } else {
+            <ul>
+              <hr className="startLine" />
+              <li
+                onClick={() => {
+                  if (isLoggedIn) {
+                    handleLogout();
+                  } else {
+                    toggleMenu();
+                    navigate("/login");
+                  }
+                }}
+              >
+                {isLoggedIn ? "Logout" : "Login"}
+              </li>
+              <hr className="line" />
+              <li
+                onClick={() => {
+                  navigate("/HomePage");
                   toggleMenu();
-                  navigate("/login");
-                }
-              }}
-            >
-              {isLoggedIn ? "Logout" : "Login"}
-            </li>
-            <hr className="line" />
-            <li
-              onClick={() => {
-                navigate("/HomePage");
-                toggleMenu();
-              }}
-            >
-              Projects
-            </li>
-            <hr className="line" />
-            <li onClick={() => handleNavigationWithAuth("/project/create")}>
-              Create Project
-            </li>
-            <hr className="line"></hr>
-            <li onClick={handleVotePageNavigate}>Vote</li>
-            {/*<hr className="line"></hr>
-            <li
-              onClick={() => {
-                navigate("/map");
-                toggleMenu();
-              }}
-            >
-              Map
-            </li>*/}
-            <hr className="line" />
-            <li onClick={() => handleNavigationWithAuth("/team-build")}>
-              TeamBuilding
-            </li>
-            <hr className="line" />
-            <li onClick={() => navigate("/team-build/result")}>
-              TeamBuilding Result
-            </li>
-            <hr className="startLine"></hr>
-          </ul>
+                }}
+              >
+                Projects
+              </li>
+              <hr className="line" />
+              <li onClick={() => handleNavigationWithAuth("/project/create")}>
+                Create Project
+              </li>
+              <hr className="line"></hr>
+              <li onClick={handleVotePageNavigate}>Vote</li>
+              <hr className="line" />
+              <li onClick={() => handleNavigationWithAuth("/team-build")}>
+                TeamBuilding
+              </li>
+              <hr className="line" />
+              <li onClick={() => navigate("/team-build/result")}>
+                TeamBuilding Result
+              </li>
+              <hr className="startLine"></hr>
+            </ul>
+          </div>
         </nav>
       )}
     </div>

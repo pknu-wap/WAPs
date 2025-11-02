@@ -201,7 +201,7 @@ const TeamBuildResultPage = () => {
 
 
   return (
-    <>
+    <div className={styles.container}>
       <Header toggleMenu={toggleMenu} />
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
@@ -245,7 +245,7 @@ const TeamBuildResultPage = () => {
 
         </div>
       </main>
-    </>
+    </div>
 
   );
 };
