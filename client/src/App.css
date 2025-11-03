@@ -91,7 +91,7 @@ li {
   top: 50%; /* 최상단부터 */
   left: 50%;
   transform: translate(-50%, -50%); /* 오른쪽에서 열려면 right:0; left:auto */
-  width: 380px;
+  width: 400px;
   height: 100vh; /* 전체 높이 */
   background-color: #000;
   color: white;
@@ -209,22 +209,7 @@ li {
   text-align: left;
 }
 
-/* 환영/인증 텍스트 */
-.welcome-message {
-  color: white;
-  padding: 50px 10px 0;
-  font-size: 120%;
-  font-weight: 700;
-  font-family: "Inter", sans-serif;
-}
 
-.auth-text {
-  text-align: right;
-  padding-right: 5%;
-  margin-top: 5%;
-  font-family: "Inter", sans-serif;
-  font-weight: 700;
-}
 
 /* 프로젝트 컨테이너 */
 .project-container {
