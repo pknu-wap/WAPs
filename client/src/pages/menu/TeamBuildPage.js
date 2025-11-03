@@ -18,12 +18,14 @@ function TeamBuildPage() {
       return;
     }
 
+    alert("현재 팀빌딩이 열려 있지 않습니다!");
+    navigate("/HomePage");
     // REACT_APP_API_BASE_URL 뒤에 슬래시가 중복되지 않도록 정리
     // const base = (process.env.REACT_APP_API_BASE_URL || "").replace(/\/+$/, "");
 
     // URL 파라미터로 token 전달
-    setMsg("이동 중...");
-    window.location.href = `${process.env.REACT_APP_API_BASE_URL}/team-build?token=${encodeURIComponent(token)}`;
+    // setMsg("이동 중...");
+    // window.location.href = `${process.env.REACT_APP_API_BASE_URL}/team-build?token=${encodeURIComponent(token)}`;
   }, [navigate]);
 
   return (
