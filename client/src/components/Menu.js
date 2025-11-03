@@ -1,13 +1,14 @@
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { FaChevronRight } from "react-icons/fa";
 import "../assets/Menu/Menu.css";
 
 const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const navigate = useNavigate();
 
   const [canNavigate, setCanNavigate] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!Cookies.get("authToken")); // ✅ 초기값 설정
+  const [isLoggedIn, setIsLoggedIn] = useState(!!Cookies.get("authToken"));
 
   const handleNavigationWithAuth = (path) => {
     const token = Cookies.get("authToken");
@@ -21,11 +22,9 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   };
 
   useEffect(() => {
-    // 로그인 상태 확인 (초기 mount 시)
     const token = Cookies.get("authToken");
     setIsLoggedIn(!!token);
 
-    // 특정 날짜 이후 접근 허용
     const allowedDate = new Date("2024-11-29T18:00:00");
     const now = new Date();
 
@@ -50,7 +49,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const handleLogout = () => {
     Cookies.remove("authToken");
     Cookies.remove("userName");
-    setIsLoggedIn(false); // 상태 수동 갱신
+    setIsLoggedIn(false);
     alert("로그아웃 되었습니다.");
     toggleMenu();
     navigate("/");
@@ -61,53 +60,83 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
       {menuOpen && (
         <nav className="menu">
           <div className="menu-content">
-            <div>
-              {isLoggedIn && userName ? (
-                <p className="welcome-message">{userName}님 환영합니다!</p>
-              ) : (
-                <p></p>
-              )}
+            {isLoggedIn && userName ? (
+              <p className="welcome-message">{userName}님 환영합니다.</p>
+            ) : (
+              <p className="welcome-message">로그인을 해주십시오.</p>
+            )}
+            
+            <h2 className="menu-title">MENU PAGE</h2>
+
+            <div className="menu-section">
+              <h3 className="section-title">PROJECTS</h3>
+              <div className="menu-items">
+                <button 
+                  className="menu-item"
+                  onClick={() => {
+                    navigate("/HomePage");
+                    toggleMenu();
+                  }}
+                >
+                  <span>프로젝트 Projects</span>
+                  <span className="arrow"><FaChevronRight /></span>
+                </button>
+                <button 
+                  className="menu-item"
+                  onClick={() => handleNavigationWithAuth("/project/create")}
+                >
+                  <span>프로젝트 만들기 Create Project</span>
+                  <span className="arrow"><FaChevronRight /></span>
+                </button>
+              </div>
             </div>
 
-            <ul>
-              <hr className="startLine" />
-              <li
-                onClick={() => {
-                  if (isLoggedIn) {
-                    handleLogout();
-                  } else {
-                    toggleMenu();
-                    navigate("/login");
-                  }
-                }}
-              >
-                {isLoggedIn ? "Logout" : "Login"}
-              </li>
-              <hr className="line" />
-              <li
-                onClick={() => {
-                  navigate("/HomePage");
+            <div className="menu-section">
+              <h3 className="section-title">TEAMBUILDING</h3>
+              <div className="menu-items">
+                <button 
+                  className="menu-item"
+                  onClick={() => handleNavigationWithAuth("/team-build")}
+                >
+                  <span>팀빌딩 Team Building</span>
+                  <span className="arrow"><FaChevronRight /></span>
+                </button>
+                <button 
+                  className="menu-item"
+                  onClick={() => navigate("/team-build/result")}
+                >
+                  <span>팀빌딩 결과 Team Building Result</span>
+                  <span className="arrow"><FaChevronRight /></span>
+                </button>
+              </div>
+            </div>
+
+            <div className="menu-section">
+              <h3 className="section-title">VOTE</h3>
+              <div className="menu-items">
+                <button 
+                  className="menu-item"
+                  onClick={handleVotePageNavigate}
+                >
+                  <span>투표 Vote</span>
+                  <span className="arrow"><FaChevronRight /></span>
+                </button>
+              </div>
+            </div>
+
+            <button 
+              className="logout-button"
+              onClick={() => {
+                if (isLoggedIn) {
+                  handleLogout();
+                } else {
                   toggleMenu();
-                }}
-              >
-                Projects
-              </li>
-              <hr className="line" />
-              <li onClick={() => handleNavigationWithAuth("/project/create")}>
-                Create Project
-              </li>
-              <hr className="line"></hr>
-              <li onClick={handleVotePageNavigate}>Vote</li>
-              <hr className="line" />
-              <li onClick={() => handleNavigationWithAuth("/team-build")}>
-                TeamBuilding
-              </li>
-              <hr className="line" />
-              <li onClick={() => navigate("/team-build/result")}>
-                TeamBuilding Result
-              </li>
-              <hr className="startLine"></hr>
-            </ul>
+                  navigate("/login");
+                }
+              }}
+            >
+              {isLoggedIn ? "로그아웃 Logout" : "로그인 Login"}
+            </button>
           </div>
         </nav>
       )}
