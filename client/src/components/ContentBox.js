@@ -44,7 +44,7 @@ const ContentBox = () => {
 
   // URL에서 값을 읽어와 초기 상태 설정
   const initialYear = searchParams.get("projectYear") || currentYear;
-  const initialSemester = searchParams.get("semester") || 1;
+  const initialSemester = searchParams.get("semester") || 2;
 
   const [semesterFilter, setSemesterFilter] = useState({
     year: parseInt(initialYear),
