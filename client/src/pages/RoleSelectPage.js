@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "../assets/RoleSelect.module.css";
-import style from "../assets/ProjectCreation/ProjectForm.module.css";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -46,14 +45,14 @@ const RoleSelectPage = () => {
         <div className={styles.btnGroup}>
           <button
             type="button"
-            className={style.submit_button}
+            className={styles.roleButton}
             onClick={() => handleSelectRole("member")}
           >
             예
           </button>
           <button
             type="button"
-            className={style.submit_button}
+            className={styles.roleButton}
             onClick={() => handleSelectRole("guest")}
           >
             아니오

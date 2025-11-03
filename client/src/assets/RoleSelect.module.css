@@ -50,12 +50,16 @@
   flex-direction: column;
   align-items: center;
   font-family: 'Pretendard-Regular';
+  width: 100%; /* 이 줄 추가 */
+  padding: 0 20px; /* 좌우 여백 추가 (선택사항) */
+  box-sizing: border-box; /* padding 포함한 너비 계산 */
 }
 
 .question {
+  width: 80%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
   margin-bottom: 20px;
   font-size: 18px;
@@ -70,7 +74,7 @@
   align-items: center;
 }
 
-.roleSelectForm button {
+.roleButton {
   width: 80%;
   height: 55px;
   border-radius: 15px;
@@ -85,7 +89,7 @@
   transition: background-color 0.3s ease, opacity 0.3s ease;
 }
 
-.roleSelectForm button:hover {
+.roleButton:hover {
   background-color: rgba(255, 255, 255, 0.2);
   opacity: 0.9;
 }
