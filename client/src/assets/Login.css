@@ -8,29 +8,49 @@
     margin-right: auto;
     padding-bottom: 15px;
     padding-top: 20px;
+    isolation: isolate;
+    position: relative;
+    background: linear-gradient(180deg, #A0AFFF 0%, #B4EDFE 100%);
+    overflow: visible;
+  }
+
+  .login-page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
+    z-index: -1; /* 배경 뒤로 보냄 */
+}
+
+  .login-page .login-caption{
+    margin-top: 200px;
+    font-size: 15px; 
+    color: white; 
+    font-family: 'Pretendard-Regular';
+    line-height: 0.5;
+    text-align: left;
+    width: 80%;
+    margin-left: 10%; 
+    margin-right: auto; 
   }
 
   .login-button no-login{
     border-color: red;
   }
 
-  .login-page .logo-image {
-    width: 170px;
-    margin-bottom: 40px;
-    margin-top: 140px;
-  }
-
   .login-page .Kakao-image{
     width: 30px;
-    padding-right: 5px;
-    
+    border-radius: 50%;       /* 둥글게 */
+    object-fit: cover;        /* 이미지 비율 유지 */
+    margin-right: 5px;
+    background-color: rgba(250,225,0);
   }
   
   .login-page .login-buttons {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 100px;
+    margin-top: 25px;
     margin-bottom: 20px;
   }
 
@@ -68,3 +88,8 @@
     opacity: 0.9;
   }
   
+  .login-page .login-mini-caption{
+    font-size: 12px; 
+    color: white; 
+    font-family: 'Pretendard-Regular';
+  }

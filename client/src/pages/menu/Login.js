@@ -1,7 +1,6 @@
 // pages/menu/Login.js
 import React from "react";
 import "../../assets/Login.css";
-import logo from "../../assets/img/WAP_white_NoBG.png";
 import img from "../../assets/img/pngwing.com.png";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -35,7 +34,10 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      <img src={logo} alt="WAP Logo" className="logo-image" />
+      <div className="login-caption">
+        <p>WAP에서의</p>
+        <p>프로젝트를 만나보세요</p>
+      </div>
       <div className="login-buttons">
         {isLoggedIn ? (
           <button className="login-button logout" onClick={handleLogout}>
@@ -53,6 +55,7 @@ const Login = () => {
             >
               <span>로그인 없이 진행</span>
             </button>
+            <div className="login-mini-caption">WAPs는 카카오로 로그인이 가능합니다.</div>
           </>
         )}
       </div>
