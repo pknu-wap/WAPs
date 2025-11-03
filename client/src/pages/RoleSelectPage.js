@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import Header from "../components/Header";
-import WAPlogo from "../assets/img/WAP_white_NoBG.png";
 import styles from "../assets/RoleSelect.module.css";
 import style from "../assets/ProjectCreation/ProjectForm.module.css";
 import Cookies from "js-cookie";
@@ -9,12 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 const RoleSelectPage = () => {
   const token = Cookies.get("authToken");
-  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
 
   const handleSelectRole = async (role) => {
     const url = role === "member" ? "/user/role/member" : "/user/role/guest";
@@ -41,12 +34,10 @@ const RoleSelectPage = () => {
 
   return (
     <div>
-      <Header toggleMenu={toggleMenu} />
       <main>
         <div className={styles.role_select_form}>
           <div className={styles.question}>
-            <img style={{ width: 80 }} src={WAPlogo} alt="WAP 로고" />
-            <div className={styles.text}>회원이신가요?</div>
+            <div className={styles.text}>WAP 회원이신가요?</div>
           </div>
           <div className={styles.btn_group}>
             <button
