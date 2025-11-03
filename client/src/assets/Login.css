@@ -23,6 +23,23 @@
     z-index: -1; /* 배경 뒤로 보냄 */
 }
 
+  .login-page .close-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    line-height: 1;
+    transition: opacity 0.2s ease;
+  }
+
+  .login-page .close-button:hover {
+    opacity: 0.7;
+  }
+
   .login-page .login-caption {
     font-size: 20px;
     color: white;

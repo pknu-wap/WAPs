@@ -34,6 +34,9 @@ const Login = () => {
 
   return (
     <div className="login-page">
+      <button className="close-button" onClick={() => navigate("/HomePage")}>
+        &times;
+      </button>
       <div className="login-caption">
         <p>WAP에서의</p>
         <p>프로젝트를 만나보세요</p>
