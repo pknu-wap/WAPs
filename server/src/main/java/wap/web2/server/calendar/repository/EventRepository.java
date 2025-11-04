@@ -2,10 +2,10 @@ package wap.web2.server.calendar.repository;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import wap.web2.server.calendar.entity.Event;
+import wap.web2.server.calendar.entity.CalendarEvent;
 
-public interface EventRepository extends JpaRepository<Long, Event> {
+public interface EventRepository extends JpaRepository<Long, CalendarEvent> {
 
-    List<Event> findAllByIsExpiredFalseOrderByDateAsc();
+    List<CalendarEvent> findAllByIsExpiredFalseOrderByDateAsc();
 
 }

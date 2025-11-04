@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wap.web2.server.calendar.entity.Event;
+import wap.web2.server.calendar.entity.CalendarEvent;
 import wap.web2.server.calendar.repository.EventRepository;
 
 @Service
@@ -14,7 +14,7 @@ public class CalendarService {
     private final EventRepository eventRepository;
 
     @Transactional(readOnly = true)
-    public List<Event> getActiveEvents() {
+    public List<CalendarEvent> getActiveEvents() {
         return eventRepository.findAllByIsExpiredFalseOrderByDateAsc();
     }
 

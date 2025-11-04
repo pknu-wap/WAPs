@@ -1,9 +1,9 @@
 package wap.web2.server.calendar.dto;
 
 import java.time.LocalDateTime;
-import wap.web2.server.calendar.entity.Event;
+import wap.web2.server.calendar.entity.CalendarEvent;
 
-public record EventsResponse(
+public record CalendarEventsResponse(
         Long id,
         String title,
         String content,
@@ -11,8 +11,8 @@ public record EventsResponse(
         String target
 ) {
 
-    public static EventsResponse from(Event event) {
-        return new EventsResponse(
+    public static CalendarEventsResponse from(CalendarEvent event) {
+        return new CalendarEventsResponse(
                 event.getId(),
                 event.getTitle(),
                 event.getContent(),
