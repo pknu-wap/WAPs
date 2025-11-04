@@ -184,7 +184,6 @@ body {
   display: flex;
   gap: 7px;
 }
-
 .btn {
   padding: 8px 11px;
   border: 1px solid var(--border);
@@ -194,31 +193,14 @@ body {
   border-color: #fff;
   text-align: center;
   cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.activeSort {
   background-color: var(--accent);
   border-color: var(--accent);
   color: var(--black);
   font-weight: 500;
-}
-
-.activeSort:hover {
-  background-color: var(--accent);
-  border-color: var(--accent);
-  color: var(--black);
-}
-
-.btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .activeSort {
@@ -357,6 +339,18 @@ body {
   border-color: #7f7f7f;
   color: #7f7f7f;
   font-weight: 600;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.copy:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.copy:active {
+  color: var(--text);
+  border-color: var(--text);
+  background-color: var(--muted);
 }
 
 .empty {
