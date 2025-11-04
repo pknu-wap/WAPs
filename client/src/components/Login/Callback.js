@@ -28,7 +28,28 @@ const Callback = () => {
         console.log("사용자 정보:", data);
         alert("로그인에 성공했습니다!"); // alert창 없애기
         // navigate("/"); // 또는 "/mystudy", 등 원하는 경로
-        navigate("/select/role");
+
+        return fetch(`${process.env.REACT_APP_API_BASE_URL}/user/role`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch role info.");
+        }
+        return response.json();
+      })
+      .then((roleData) => {
+        console.log("역할 정보:", roleData);
+
+        if (roleData.isRoleAssigned) { // 역할을 이미 선택했다면
+          navigate("/HomePage"); // 홈페이지로
+        } else {
+          navigate("/select/role");
+        }
       })
       .catch((error) => {
         console.error("사용자 정보를 가져오는 동안 에러 발생:", error);
