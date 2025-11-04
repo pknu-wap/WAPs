@@ -17,7 +17,7 @@ public class CalendarController {
 
     private final CalendarService calendarService;
 
-    @GetMapping()
+    @GetMapping("/events")
     public ResponseEntity<?> getActiveEvents() {
         try {
             List<EventsResponse> events = calendarService.getActiveEvents()
