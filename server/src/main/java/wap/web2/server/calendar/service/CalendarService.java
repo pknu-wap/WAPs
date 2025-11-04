@@ -9,7 +9,7 @@ import wap.web2.server.calendar.repository.EventRepository;
 
 @Service
 @RequiredArgsConstructor
-public class EventService {
+public class CalendarService {
 
     private final EventRepository eventRepository;
 
