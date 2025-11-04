@@ -45,7 +45,7 @@ const Callback = () => {
       .then((roleData) => {
         console.log("역할 정보:", roleData);
 
-        if (roleData.isRoleAssigned) { // 역할을 이미 선택했다면
+        if (roleData.roleAssigned) { // 역할을 이미 선택했다면
           navigate("/HomePage"); // 홈페이지로
         } else {
           navigate("/select/role");
