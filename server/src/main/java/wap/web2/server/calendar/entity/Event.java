@@ -46,4 +46,11 @@ public class Event {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    // TODO: 서버 설정 시간과 일정 시간의 시간차 문제 있을수도 있음
+    //  TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul")); 을 application에 설정
+    @PrePersist
+    public void checkExpired() {
+        this.isExpired = date.isBefore(LocalDateTime.now());
+    }
+
 }
