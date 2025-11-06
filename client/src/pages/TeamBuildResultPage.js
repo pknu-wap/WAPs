@@ -96,7 +96,7 @@ const TeamBuildResultPage = () => {
 
   // 돌아가기 버튼을 위한 함수
   const goBack = () => {
-    navigate('/HomePage');
+    navigate('/ProjectPage');
   }
 
   // 미배정자 이동 헨들러

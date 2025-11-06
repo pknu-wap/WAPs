@@ -23,7 +23,7 @@ const RoleSelectPage = () => {
         }
       );
       console.log("역할 선택 성공:", response.data);
-      navigate("/HomePage");
+      navigate("/ProjectPage");
     } catch (error) {
       console.error("역할 선택 실패:", error);
       alert("역할 선택에 실패했습니다.");
@@ -34,7 +34,7 @@ const RoleSelectPage = () => {
     <div className={styles.mainContainer}>
       <button
         className={styles.closeButton}
-        onClick={() => navigate("/HomePage")}
+        onClick={() => navigate("/ProjectPage")}
       >
         &times;
       </button>
@@ -61,7 +61,7 @@ const RoleSelectPage = () => {
 
         <div
           className={styles.alreadySelected}
-          onClick={() => navigate("/HomePage")}
+          onClick={() => navigate("/ProjectPage")}
         >
           이미 선택했습니다.
         </div>
