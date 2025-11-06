@@ -10,7 +10,7 @@ const SplashPage = () => {
 
   const handleButtonClick = () => {
     setInTransition(true); // 트랜지션 시작
-    setTimeout(() => navigate("/HomePage"), 500); // 애니메이션 완료 후 이동
+    setTimeout(() => navigate("/ProjectPage"), 500); // 애니메이션 완료 후 이동
   };
 
   return (
