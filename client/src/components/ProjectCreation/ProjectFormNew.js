@@ -122,17 +122,17 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       setPassword("");
     }
   }, [isEdit, existingProject,
-      setContent,
-      setImages,       
-      setPassword,     
-      setProjectType,  
-      setProjectYear,
-      setSemester,  
-      setSelectedTechStacks, 
-      setSummary,      
-      setTeamMembers,  
-      setThumbnail,
-      setTitle      
+    setContent,
+    setImages,
+    setPassword,
+    setProjectType,
+    setProjectYear,
+    setSemester,
+    setSelectedTechStacks,
+    setSummary,
+    setTeamMembers,
+    setThumbnail,
+    setTitle
   ]);
 
   useEffect(() => {
@@ -220,7 +220,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           },
         });
         alert("프로젝트가 성공적으로 생성되었습니다.");
-        navigate(`/HomePage`);
+        navigate(`/ProjectPage`);
       }
 
       resetForm();
@@ -250,13 +250,13 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         handleRemoveImage={() => handleRemoveImage("thumbnail", null)}
         type="thumbnail"
       />
-      <YearScroll 
-      selectedYear={{ projectYear, semester }}  // 전달
-      setSelectedYear={(yearData) => {           // 객체를 받아서 분리
-      setProjectYear(yearData.projectYear);
-      setSemester(yearData.semester);
-    }}
-    />
+      <YearScroll
+        selectedYear={{ projectYear, semester }}  // 전달
+        setSelectedYear={(yearData) => {           // 객체를 받아서 분리
+          setProjectYear(yearData.projectYear);
+          setSemester(yearData.semester);
+        }}
+      />
       <RadioButton
         labelname={"프로젝트 타입"}
         name="projectType"

@@ -101,7 +101,7 @@ const VoteForm = ({ isVotedUser }) => {
       alert("투표가 완료되었습니다.");
       resetForm(); // 폼 리셋
       window.location.reload(); // 페이지 리로드
-      navigate("/HomePage");
+      navigate("/ProjectPage");
     } catch (error) {
       // 에러 발생 정보
       if (error.response) {
@@ -109,13 +109,13 @@ const VoteForm = ({ isVotedUser }) => {
         if (error.response.status === 401) {
           // 인증 실패 시
 
-          navigate("/HomePage");
+          navigate("/ProjectPage");
         } else if (error.response.status === 404) {
           alert("프로젝트가 존재하지 않습니다.");
-          navigate("/HomePage");
+          navigate("/ProjectPage");
         } else {
           alert("알 수 없는 오류 발생");
-          navigate("/HomePage");
+          navigate("/ProjectPage");
         }
       } else if (error.request) {
         // 서버로 요청을 했지만 응답이 없을 경우
