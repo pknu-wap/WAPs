@@ -19,7 +19,7 @@ function TeamBuildPage() {
     }
 
     alert("현재 팀빌딩이 열려 있지 않습니다!");
-    navigate("/HomePage");
+    navigate("/ProjectPage");
     // REACT_APP_API_BASE_URL 뒤에 슬래시가 중복되지 않도록 정리
     // const base = (process.env.REACT_APP_API_BASE_URL || "").replace(/\/+$/, "");
 
