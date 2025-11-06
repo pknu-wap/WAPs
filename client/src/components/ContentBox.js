@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../App.css";
-import "../assets/Filter/Contentbox.css";
+import "../assets/Contentbox.css";
 import LoadingImage from "../assets/img/WAP_white_NoBG.png";
 
 /* 알약 버튼 목록 (UI 전용) */

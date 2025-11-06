@@ -37,7 +37,7 @@ const Header = () => {
             <p
               className="waplogo"
               alt="wap"
-              onClick={() => navigate("/HomePage")}
+              onClick={() => navigate("/ProjectPage")}
               style={{ cursor: "pointer" }}
             >
               WAPs
