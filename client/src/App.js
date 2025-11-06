@@ -7,7 +7,7 @@ import SplashPage from "./pages/SplashPage";
 import Callback from "./components/Login/Callback";
 import ProtectedPage from "./components/Login/ProtectedPage";
 import VotePage from "./pages/VotePage";
-import ProjectPage from "./pages/ProjectPage";
+import ProjectCreatePage from "./pages/ProjectCreatePage";
 import ScrollToTop from "./components/ScrollToTop";
 import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
@@ -29,12 +29,12 @@ function App() {
           {/* 카카오 인증 Callback */}
           <Route path="/oauth/callback" element={<Callback />} />
           {/* 경로 */}
-          <Route path="/project/create" element={<ProjectPage />} />
+          <Route path="/project/create" element={<ProjectCreatePage />} />
           <Route path="/vote" element={<VotePage />} />
           <Route path="/result" element={<VoteResultPage />} />
           <Route path="/HomePage" element={<Home />} />
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
-          <Route path="/project/edit/:projectId" element={<ProjectPage />} />
+          <Route path="/project/edit/:projectId" element={<ProjectCreatePage />} />
           <Route path="/select/role" element={<RoleSelectPage />} />
           <Route path="/team-build" element={<TeamBuildPage />} />
           <Route path="/team-build/result" element={<TeamBuildResultPage />} />
