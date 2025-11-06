@@ -1,7 +1,7 @@
 // pages/menu/Login.js
 import React from "react";
-import "../../assets/Login.css";
-import img from "../../assets/img/pngwing.com.png";
+import "../assets/Login.css";
+import img from "../assets/img/pngwing.com.png";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 

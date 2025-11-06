@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
-import styles from "../assets/Main/Splash.module.css";
+import styles from "../assets/Splash.module.css";
 import "../assets/transition.css"; // 애니메이션 CSS 추가
 
 const SplashPage = () => {
@@ -10,7 +10,7 @@ const SplashPage = () => {
 
   const handleButtonClick = () => {
     setInTransition(true); // 트랜지션 시작
-    setTimeout(() => navigate("/HomePage"), 500); // 애니메이션 완료 후 이동
+    setTimeout(() => navigate("/ProjectPage"), 500); // 애니메이션 완료 후 이동
   };
 
   return (

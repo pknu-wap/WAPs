@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import styles from "../../assets/Vote/ProjectVote.module.css";
+import styles from "../../assets/ProjectVote.module.css";
 import sub_styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import VoteProjectList from "./VoteProjectList";
 // import useProjectvoteForm from "../../hooks/Projectvote/useProjectVoteForm";

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import styles from "../assets/Vote/ProjectVote.module.css";
+import styles from "../assets/ProjectVote.module.css";
 
 // 투표 기간이 아닐 때 나타나는 페이지임.
 const VoteResultPage = () => {

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Cookies from "js-cookie";
-import "../assets/Filter/Type.css";
 import "../App.css";
-import "../assets/Filter/Contentbox.css";
+import "../assets/Contentbox.css";
 import LoadingImage from "../assets/img/WAP_white_NoBG.png";
 
 /* 알약 버튼 목록 (UI 전용) */
@@ -190,16 +188,16 @@ const ContentBox = () => {
                     (year) => {
                       const twoDigitYear = ('0' + (year - 2000)).slice(-2); //연도가 두자릿수로 표시되도록
                       return (
-                      <div key={year}>
-                        <button onClick={() => handleSemesterChange(year, 2)}>
-                          {twoDigitYear}-2
-                        </button>
-                        <button onClick={() => handleSemesterChange(year, 1)}>
-                          {twoDigitYear}-1
-                        </button>
-                      </div>
-                    )
-                  }
+                        <div key={year}>
+                          <button onClick={() => handleSemesterChange(year, 2)}>
+                            {twoDigitYear}-2
+                          </button>
+                          <button onClick={() => handleSemesterChange(year, 1)}>
+                            {twoDigitYear}-1
+                          </button>
+                        </div>
+                      )
+                    }
                   )}
                 </div>
               )}

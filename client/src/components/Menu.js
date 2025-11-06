@@ -2,7 +2,7 @@ import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { FaChevronRight } from "react-icons/fa";
-import "../assets/Menu/Menu.css";
+import "../assets/Menu.css";
 
 const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const navigate = useNavigate();
@@ -65,23 +65,23 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
             ) : (
               <p className="welcome-message">로그인을 해주십시오.</p>
             )}
-            
+
             <h2 className="menu-title">MENU PAGE</h2>
 
             <div className="menu-section">
               <h3 className="section-title">PROJECTS</h3>
               <div className="menu-items">
-                <button 
+                <button
                   className="menu-item"
                   onClick={() => {
-                    navigate("/HomePage");
+                    navigate("/ProjectPage");
                     toggleMenu();
                   }}
                 >
                   <span>프로젝트 Projects</span>
                   <span className="arrow"><FaChevronRight /></span>
                 </button>
-                <button 
+                <button
                   className="menu-item"
                   onClick={() => handleNavigationWithAuth("/project/create")}
                 >
@@ -94,14 +94,14 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
             <div className="menu-section">
               <h3 className="section-title">TEAMBUILDING</h3>
               <div className="menu-items">
-                <button 
+                <button
                   className="menu-item"
                   onClick={() => handleNavigationWithAuth("/team-build")}
                 >
                   <span>팀빌딩 Team Building</span>
                   <span className="arrow"><FaChevronRight /></span>
                 </button>
-                <button 
+                <button
                   className="menu-item"
                   onClick={() => navigate("/team-build/result")}
                 >
@@ -114,7 +114,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
             <div className="menu-section">
               <h3 className="section-title">VOTE</h3>
               <div className="menu-items">
-                <button 
+                <button
                   className="menu-item"
                   onClick={handleVotePageNavigate}
                 >
@@ -124,7 +124,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
               </div>
             </div>
 
-            <button 
+            <button
               className="logout-button"
               onClick={() => {
                 if (isLoggedIn) {
