@@ -1,3 +1,117 @@
+/* =========================
+   Type.css (먼저 적용)
+   ========================= */
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+.filter-container {
+  display: flex;
+  justify-content: flex-end;
+  background-color: #f8f9fa;
+  position: relative;
+  background-color: #000000;
+  margin-right: 5%;
+  font-family: "Pretendard-Regular";
+  gap: 15px;
+}
+
+.filter-dropdown {
+  position: relative;
+}
+
+.dropdown-button {
+  background-color: #000000;
+  color: white;
+  border: none;
+
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.dropdown-button:hover {
+  background-color: #000000;
+}
+
+.dropdown-content {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  text-align: left;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  background-color: rgba(0, 0, 0, 0.236);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  z-index: 50;
+  margin-right: 15%;
+  transform: translateX(-50%);
+  width: 100px;
+}
+
+.dropdown-content button {
+  background-color: rgba(207, 207, 207, 0.521);
+  color: #333;
+  padding: 0.75rem 1.5rem;
+  width: 100%;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dropdown-content button:hover {
+  background-color: #f1f1f1e3;
+}
+
+.content {
+  padding: 1rem;
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+  position: relative;
+  width: 340px;
+  height: 200px;
+  margin: 10px;
+  padding: 15px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 이미지가 박스를 꽉 채우도록 설정 */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+button {
+  text-align: left;
+}
+/* } <- Type.css 끝에 중괄호가 하나 더 있었으나, 유효하지 않은 CSS 구문으로 보여 제외했습니다. */
+
+/* =========================
+   Contentbox.css (덮어쓰기 및 추가)
+   ========================= */
+
 /* ========== 공통(전역) ========== */
 /* 상단 필터 영역 */
 .filter-container {
@@ -6,7 +120,10 @@
   align-items: center;
   gap: 12px;
   padding: 8px 0;
-  flex-wrap: nowrap;        
+  flex-wrap: nowrap;
+  /* Type.css의 background-color, margin-right 등을 덮어씁니다. */
+  background-color: transparent; /* 덮어쓰기 예시 (필요시 명시) */
+  margin-right: 0; /* 덮어쓰기 예시 (필요시 명시) */
 }
 
 /* 알약 버튼 그룹 */
@@ -15,7 +132,7 @@
   display: flex;
   gap: 5px;
   align-items: center;
-  flex-wrap: nowrap; 
+  flex-wrap: nowrap;
 }
 
 /* 알약 버튼 기본(전역 기본값) */
@@ -28,56 +145,74 @@
   line-height: 1;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-  flex-wrap: nowrap; 
-  flex: 0 0 auto; 
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
 }
 .pill:hover {
   color: #000000;
-  background: #ABD4FD;
-  border-color: #ABD4FD;
+  background: #abd4fd;
+  border-color: #abd4fd;
 }
 .pill.active {
-  background: #ABD4FD;
-  border-color: #ABD4FD;
+  background: #abd4fd;
+  border-color: #abd4fd;
   color: #00000000;
 }
 
 /* 학기 드롭다운 버튼(전역 기본값) */
 .dropdown-button {
-  font-size: 80%;
-  background: #f3f3f300;
-  border-radius: 8px;
+  font-size: 80%; /* Type.css의 1rem을 덮어씁니다. */
+  background: #f3f3f300; /* Type.css의 #000000을 덮어씁니다. */
+  border-radius: 8px; /* Type.css의 4px를 덮어씁니다. */
   cursor: pointer;
+  color: inherit; /* Type.css의 white를 덮어씁니다. (필요시) */
+  border: none; /* Type.css와 동일 */
 }
 
 /* hover/포커스 시 하얀 테두리 + 옅은 흰 배경만 */
 .hero .dropdown-button:hover,
 .hero .dropdown-button:focus {
-  background: rgba(255, 255, 255, 0) ;  /* ✅ 원하는 효과 */
+  background: rgba(255, 255, 255, 0); /* 원하는 효과 */
+}
+
+/* Type.css의 .dropdown-button:hover를 덮어씁니다. */
+.dropdown-button:hover {
+  background-color: #f3f3f300; /* (필요시) Type.css의 #000000 호버 효과를 무효화 */
 }
 
 /* 드롭다운 메뉴(전역 기본값) */
 .dropdown-content {
   position: absolute;
   margin-top: 6px;
-  background: #fff;
+  background: #fff; /* Type.css의 rgba(0, 0, 0, 0.236)를 덮어씁니다. */
   border: 1px solid #e5e5e5;
-  border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  z-index: 10;
+  border-radius: 10px; /* Type.css의 4px를 덮어씁니다. */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Type.css의 box-shadow를 덮어씁니다. */
+  z-index: 10; /* Type.css의 50보다 낮지만, 부모(.hero)의 z-index에 따라 동작이 다를 수 있습니다. */
+  /* Type.css의 다른 속성들(max-height, overflow 등)을 덮어씁니다. */
+  max-height: none;
+  overflow: visible;
+  text-align: left;
+  top: auto; /* Type.css의 top: 100%를 무효화 */
+  left: auto; /* Type.css의 left: 50%를 무효화 */
+  transform: none; /* Type.css의 transform을 무효화 */
+  width: auto; /* Type.css의 width: 100px를 무효화 */
+  margin-right: 0;
 }
 .dropdown-content > button {
   display: block;
   width: 100%;
-  padding: 10px 14px;
-  background: #fff;
+  padding: 10px 14px; /* Type.css의 padding을 덮어씁니다. */
+  background: #fff; /* Type.css의 rgba(207, 207, 207, 0.521)를 덮어씁니다. */
   border: none;
   text-align: left;
   cursor: pointer;
   font-size: 14px;
+  color: #333; /* Type.css의 색상 유지 (필요시) */
+  transition: background-color 0.3s;
 }
 .dropdown-content > button:hover {
-  background: #f6f6f6;
+  background: #f6f6f6; /* Type.css의 #f1f1f1e3를 덮어씁니다. */
 }
 
 /* 프로젝트 박스 디자인 */
@@ -86,7 +221,7 @@
   flex-direction: column;
   align-items: center;
   margin-top: 10px;
-  font-family: 'Pretendard-Regular';
+  font-family: "Pretendard-Regular";
   padding: 0 20px;
 }
 .content-box .box {
@@ -103,6 +238,9 @@
   align-items: flex-start;
   gap: 20px;
   position: relative;
+  /* Type.css의 .card 스타일과 매우 다르므로, .box가 우선 적용됩니다. */
+  border: none;
+  box-shadow: none;
 }
 .content-box .box .image {
   width: 170px;
@@ -121,6 +259,7 @@
   object-fit: cover;
   object-position: center;
   position: relative;
+  /* Type.css의 .thumbnail과 유사하지만 .project-image가 적용됩니다. */
 }
 
 /* ====== 타이틀/태그/본문 레이아웃 (병합 적용) ====== */
@@ -128,10 +267,10 @@
   min-width: 0;
   flex: 1;
   display: flex;
-  flex-direction: column;   /* 세로 흐름 유지 */
+  flex-direction: column; /* 세로 흐름 유지 */
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 10px;                   /* 내부 간격 최소화 */
+  gap: 10px; /* 내부 간격 최소화 */
   padding: 1px;
   background: transparent;
   color: #ffffff;
@@ -140,8 +279,8 @@
 /* 제목+태그를 한 줄로 묶는 래퍼 */
 .content-box .box .titlebox .title-row {
   display: inline-flex;
-  align-items: center;    /* 태그를 제목 중앙에 맞춤 */
-  gap: 6px;                 /* 제목-태그 간격 */
+  align-items: center; /* 태그를 제목 중앙에 맞춤 */
+  gap: 6px; /* 제목-태그 간격 */
   margin: 0;
   padding: 0;
   /* ↓↓↓ 추가: 줄바꿈 허용 + 전체 폭 사용 + 좌측 정렬 보장 */
@@ -158,7 +297,7 @@
   font-size: 20px;
   font-weight: 700;
   color: #ffffff;
-  line-height: 1.1;         /* 줄간격 타이트 */
+  line-height: 1.1; /* 줄간격 타이트 */
   /* ↓↓↓ 추가: 제목이 한 줄 전체를 차지 + 좌측 정렬 고정 */
   flex-basis: 100%;
   text-align: left !important;
@@ -169,7 +308,7 @@
 }
 /* 본문: 제목/태그 아래 줄 */
 .content-box .box .titlebox p {
-  margin: 2px 0 0 0;        /* 위 여백 최소화 */
+  margin: 2px 0 0 0; /* 위 여백 최소화 */
   font-size: 10px;
   color: #b0b0b0;
   line-height: 1.5;
@@ -182,7 +321,7 @@
 }
 /* 태그 공통 스타일(색상은 아래 유형별로) */
 .content-box .box .project-type-tag {
-  display: inline-flex;     /* 인라인 흐름 + 높이 안정 */
+  display: inline-flex; /* 인라인 흐름 + 높이 안정 */
   align-items: center;
   padding: 3px 5px;
   border-radius: 20px;
@@ -198,13 +337,13 @@
   width: 100%;
   min-height: 300px;
   display: flex;
-  align-items: flex-end;        /* 텍스트/컨트롤을 아래쪽에 붙임 */
+  align-items: flex-end; /* 텍스트/컨트롤을 아래쪽에 붙임 */
   padding: 32px 20px 28px;
   box-sizing: border-box;
   isolation: isolate;
   background: linear-gradient(90deg, #a0aeffe8 0%, #b4edfed2 100%); /* 좌→우 */
-  overflow: visible;           /* <- hidden 제거 */
-  z-index: 1;       /* 드롭다운이 밖으로 펼쳐져도 보이게 */
+  overflow: visible; /* <- hidden 제거 */
+  z-index: 1; /* 드롭다운이 밖으로 펼쳐져도 보이게 */
 }
 /* 아래→위 명암 오버레이 */
 .hero::after {
@@ -213,9 +352,9 @@
   inset: 0;
   background: linear-gradient(
     0deg,
-    rgba(0, 0, 0, 1.0) 0%,
+    rgba(0, 0, 0, 1) 0%,
     rgba(30, 30, 30, 0.6) 40%,
-    rgba(102, 102, 102, 0.0) 100%
+    rgba(102, 102, 102, 0) 100%
   );
   z-index: -1;
 }
@@ -225,11 +364,29 @@
   margin-left: 3px;
   margin: 0 auto;
   color: #fff;
-
 }
-.hero__badge { font-weight: 800; letter-spacing: 0.5px; opacity: .95; margin-bottom: 8px; font-size: 18px; }
-.hero__title { margin: 0; margin-left: 5px;font-size: 19px; line-height: 1.2; font-weight: 600; text-align: left; }
-.hero__subtitle { margin-top: 6px; margin-left: 5px; font-size: 20px; font-weight: 600; color: rgba(255,255,255,.632); }
+.hero__badge {
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  opacity: 0.95;
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+.hero__title {
+  margin: 0;
+  margin-left: 5px;
+  font-size: 19px;
+  line-height: 1.2;
+  font-weight: 600;
+  text-align: left;
+}
+.hero__subtitle {
+  margin-top: 6px;
+  margin-left: 5px;
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.632);
+}
 
 /* Hero 내부 필터바 — 배경/그림자 제거(검은 박스 제거) */
 .hero__controls,
@@ -250,15 +407,15 @@
 .hero .filter-container {
   width: 100% !important;
   justify-content: flex-start !important; /* space-between 대신 */
-  padding-right: 0 !important;            /* 불필요한 우측 여백 최소화 */
-  gap: 12px !important;                   /* 필요 시 조정 */
+  padding-right: 0 !important; /* 불필요한 우측 여백 최소화 */
+  gap: 12px !important; /* 필요 시 조정 */
 }
 
 /* 왼쪽 알약 그룹의 불필요한 좌측 마진 제거(있으면 오른쪽 끝 여유가 줄어듦) */
 .hero .pill-filter {
   margin-left: 0 !important;
-  flex: 0 1 auto;   /* 내용 넘치면 줄어들 수 있게 */
-  min-width: 0;     /* 줄바꿈 허용을 위한 안전장치 */
+  flex: 0 1 auto; /* 내용 넘치면 줄어들 수 있게 */
+  min-width: 0; /* 줄바꿈 허용을 위한 안전장치 */
 }
 
 /* 드롭다운 래퍼를 오른쪽 끝으로 밀기 + 기준점 설정 */
@@ -270,35 +427,44 @@
 
 /* 드롭다운 메뉴를 버튼의 오른쪽 가장자리에 정렬 */
 .hero .filter-container > .filter-dropdown .dropdown-content {
-  left:50%;
+  left: 50%;
   right: 50%;
   position: absolute;
-  top: calc(100% + 6px);       /* 버튼 '바로 아래' + 간격 */
+  top: calc(100% + 6px); /* 버튼 '바로 아래' + 간격 */
   right: auto;
   z-index: 1000;
-  transform: translateX(-50%) translateX(var(--dd-offset-x, 0px)); 
+  transform: translateX(-50%) translateX(var(--dd-offset-x, 0px));
+  /* Contentbox.css의 기본 .dropdown-content 스타일을 덮어씁니다. */
+  margin-top: 0;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Hero 스코프 덮어쓰기 */
-.hero .pill-filter { margin-left: 0; gap: 4px; }
+.hero .pill-filter {
+  margin-left: 0;
+  gap: 4px;
+}
 
 /* 알약: 투명 배경 + 흰 테두리, 선택 시만 채움 */
 .hero .pill {
   font-size: 11px;
-  color: rgba(255,255,255,0.95);
+  color: rgba(255, 255, 255, 0.95);
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.72);
+  border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 999px;
-  transition: background .15s ease, border-color .15s ease, color .15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 .hero .pill:hover {
-  background: #ABD4FD;
+  background: #abd4fd;
   border-color: rgba(255, 255, 255, 0);
   color: #0f172a;
 }
 .hero .pill.active {
-  background: #ABD4FD;
-  border-color: #ABD4FD;
+  background: #abd4fd;
+  border-color: #abd4fd;
   color: #0f172a;
 }
 
@@ -306,9 +472,9 @@
 .hero__search {
   margin-top: 28px;
   width: 100%;
-  max-width: 560px;                 /* ✅ 최대폭 제한 */
-  box-sizing: border-box;           /* ✅ 패딩/보더 포함 계산 */
-  align-self: flex-start;   
+  max-width: 560px; /* 최대폭 제한 */
+  box-sizing: border-box; /* 패딩/보더 포함 계산 */
+  align-self: flex-start;
 }
 .hero__search .search-bar {
   position: relative;
@@ -321,10 +487,10 @@
   border: 1px solid rgba(255, 255, 255, 0);
   display: flex;
   align-items: center;
-  padding-left: 46px;  /* 아이콘 공간 */
+  padding-left: 46px; /* 아이콘 공간 */
   padding-right: 14px;
-  box-sizing: border-box;           /*보더 포함 */
-  overflow: hidden;  
+  box-sizing: border-box; /*보더 포함 */
+  overflow: hidden;
 }
 .hero__search .search-icon {
   position: absolute;
@@ -354,30 +520,37 @@
   font-size: 11px;
 }
 .hero__search .search-input::placeholder {
-  color: rgba(31,41,55,0.72);
+  color: rgba(31, 41, 55, 0.72);
 }
 @media (max-width: 480px) {
-  .hero__search { max-width: 100%; }
-  .hero__search .search-bar { height: 42px; }
-  .hero__search .search-icon { width: 20px; height: 20px; }
+  .hero__search {
+    max-width: 100%;
+  }
+  .hero__search .search-bar {
+    height: 42px;
+  }
+  .hero__search .search-icon {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 /* =========================
    유형태그 색상
    ========================= */
 .content-box .box .project-type-tag.tag--web {
-  background-color: #9B95CC; /* Blue */
+  background-color: #9b95cc; /* Blue */
   color: #0f172a;
 }
 .content-box .box .project-type-tag.tag--app {
-  background-color: #8AA788; /* Green */
+  background-color: #8aa788; /* Green */
   color: #0b3a2a;
 }
 .content-box .box .project-type-tag.tag--game {
-  background-color: #D1AA6B; /* Purple */
+  background-color: #d1aa6b; /* Purple */
   color: #111827;
 }
 .content-box .box .project-type-tag.tag--etc {
-  background-color: #68A6C7; /* Amber */
+  background-color: #68a6c7; /* Amber */
   color: #1f2937;
 }

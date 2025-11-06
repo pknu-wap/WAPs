@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../assets/Filter/Type.css";
 import "../App.css";
 import "../assets/Filter/Contentbox.css";
 import LoadingImage from "../assets/img/WAP_white_NoBG.png";
