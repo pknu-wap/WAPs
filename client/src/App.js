@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import ProjectPage from "./pages/ProjectCreatePage";
 import Login from "./pages/Login";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import SplashPage from "./pages/SplashPage";
@@ -32,7 +32,7 @@ function App() {
           <Route path="/project/create" element={<ProjectCreatePage />} />
           <Route path="/vote" element={<VotePage />} />
           <Route path="/result" element={<VoteResultPage />} />
-          <Route path="/HomePage" element={<Home />} />
+          <Route path="/ProjectPage" element={<ProjectPage />} />
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
           <Route path="/project/edit/:projectId" element={<ProjectCreatePage />} />
           <Route path="/select/role" element={<RoleSelectPage />} />

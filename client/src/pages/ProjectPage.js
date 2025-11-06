@@ -4,7 +4,7 @@ import Menu from "../components/Menu";
 import ContentBox from "../components/ContentBox";
 import FloatingButton from "../components/FloatingButton";
 
-const Home = () => {
+const ProjectPage = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -23,4 +23,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default ProjectPage;
