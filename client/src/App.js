@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/menu/Login";
 import Project from "./pages/menu/Project";
-import Map from "./pages/menu/Map";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import SplashPage from "./pages/SplashPage";
 import Callback from "./components/Login/Callback";
@@ -36,7 +35,6 @@ function App() {
           <Route path="/result" element={<VoteResultPage />} />
           <Route path="/HomePage" element={<Home />} />
           <Route path="/project" element={<Project />} />
-          <Route path="/map" element={<Map />} />
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
           <Route path="/project/edit/:projectId" element={<ProjectPage />} />
           <Route path="/select/role" element={<RoleSelectPage />} />
