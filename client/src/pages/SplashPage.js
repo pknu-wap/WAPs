@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
-import styles from "../assets/Main/Splash.module.css";
+import styles from "../assets/Splash.module.css";
 import "../assets/transition.css"; // 애니메이션 CSS 추가
 
 const SplashPage = () => {

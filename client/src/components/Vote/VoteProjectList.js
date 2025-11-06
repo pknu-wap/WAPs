@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import styles from "../../assets/Vote/ProjectVote.module.css";
+import styles from "../../assets/ProjectVote.module.css";
 
 const VoteProjectList = ({
   // handleProjectSelect,
@@ -65,9 +65,8 @@ const VoteProjectList = ({
           return (
             <div
               key={project.projectId}
-              className={`${styles.project_list_box} ${
-                isSelected ? styles.selected : ""
-              }`}
+              className={`${styles.project_list_box} ${isSelected ? styles.selected : ""
+                }`}
               onClick={() =>
                 handleProjectSelect(project.projectId, isVotedUser)
               }
@@ -86,9 +85,8 @@ const VoteProjectList = ({
 
                 <div className={styles.project_title_form}>
                   <h2
-                    className={`${styles.title} ${
-                      isSelected ? styles.selected_title : ""
-                    }`}
+                    className={`${styles.title} ${isSelected ? styles.selected_title : ""
+                      }`}
                   >
                     {project.title}
                   </h2>
