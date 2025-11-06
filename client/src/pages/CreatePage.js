@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ProjectForm from "../../components/ProjectCreation/ProjectForm";
-import Header from "../../components/Header";
-import Menu from "../../components/Menu";
+import Header from "../components/Header";
+import Menu from "../components/Menu";
 
 const CreatePage = () => {
   const [menuOpen, setMenuOpen] = useState(false);

@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import Login from "./pages/menu/Login";
+import Login from "./pages/Login";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import SplashPage from "./pages/SplashPage";
 import Callback from "./components/Login/Callback";
@@ -11,7 +11,7 @@ import ProjectPage from "./pages/ProjectPage";
 import ScrollToTop from "./components/ScrollToTop";
 import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
-import TeamBuildPage from "./pages/menu/TeamBuildPage";
+import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 
 import "./App.css";
