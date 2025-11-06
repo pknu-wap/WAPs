@@ -183,8 +183,8 @@ const ContentBox = () => {
               </button>
               {yearAccordionOpen && (
                 <div className="dropdown-content">
-                  {/* 2000년부터 현재년도까지 역순 표시 */}
-                  {Array.from({ length: currentYear - 2000 + 1 }, (_, i) => currentYear - i).map(
+                  {/* 2025년부터 현재년도까지 역순 표시 */}
+                  {Array.from({ length: currentYear - 2025 + 1 }, (_, i) => currentYear - i).map(
                     (year) => {
                       const twoDigitYear = ('0' + (year - 2000)).slice(-2); //연도가 두자릿수로 표시되도록
                       return (
