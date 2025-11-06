@@ -34,7 +34,7 @@ const Login = () => {
 
   return (
     <div className="login-page">
-      <button className="close-button" onClick={() => navigate("/HomePage")}>
+      <button className="close-button" onClick={() => navigate("/ProjectPage")}>
         &times;
       </button>
       <div className="login-caption">
