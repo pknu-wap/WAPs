@@ -13,6 +13,7 @@ import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
+import UserPermissionPage from "./pages/adminPages/UserPermissionPage";
 
 import "./App.css";
 
@@ -38,6 +39,8 @@ function App() {
           <Route path="/select/role" element={<RoleSelectPage />} />
           <Route path="/team-build" element={<TeamBuildPage />} />
           <Route path="/team-build/result" element={<TeamBuildResultPage />} />
+          {/*관리자 페이지*/}
+          <Route path="/admin/user-permission" element={<UserPermissionPage />} />
           {/* 보호된 페이지 */}
           <Route path="/protected" element={<ProtectedPage />} />
         </Routes>
