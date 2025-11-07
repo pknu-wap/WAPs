@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wap.web2.server.calendar.dto.CalendarEventsResponse;
+import wap.web2.server.calendar.dto.CalendarEventResponse;
 import wap.web2.server.calendar.service.CalendarService;
 
 @RestController
@@ -20,7 +20,7 @@ public class CalendarController {
     @GetMapping("/events")
     public ResponseEntity<?> getActiveEvents() {
         try {
-            List<CalendarEventsResponse> activeEvents = calendarService.getActiveEvents();
+            List<CalendarEventResponse> activeEvents = calendarService.getActiveEvents();
             return ResponseEntity.ok(activeEvents);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

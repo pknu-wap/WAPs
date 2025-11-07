@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wap.web2.server.calendar.dto.CalendarEventsResponse;
+import wap.web2.server.calendar.dto.CalendarEventResponse;
 import wap.web2.server.calendar.entity.CalendarEvent;
 import wap.web2.server.calendar.repository.EventRepository;
 
@@ -15,11 +15,11 @@ public class CalendarService {
     private final EventRepository eventRepository;
 
     @Transactional(readOnly = true)
-    public List<CalendarEventsResponse> getActiveEvents() {
+    public List<CalendarEventResponse> getActiveEvents() {
         List<CalendarEvent> calendarEvents = eventRepository.findAllByIsExpiredFalseOrderByDateAsc();
 
         return calendarEvents.stream()
-                .map(CalendarEventsResponse::from)
+                .map(CalendarEventResponse::from)
                 .toList();
     }
 
