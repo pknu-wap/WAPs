@@ -20,12 +20,8 @@ public class CalendarController {
     @GetMapping("/events")
     public ResponseEntity<?> getActiveEvents() {
         try {
-            List<CalendarEventsResponse> events = calendarService.getActiveEvents()
-                    .stream()
-                    .map(CalendarEventsResponse::from)
-                    .toList();
-
-            return ResponseEntity.ok(events);
+            List<CalendarEventsResponse> activeEvents = calendarService.getActiveEvents();
+            return ResponseEntity.ok(activeEvents);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
