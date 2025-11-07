@@ -179,7 +179,8 @@ const ContentBox = () => {
             {/* 연도 + 학기 필터 드롭다운 */}
             <div className="filter-dropdown">
               <button onClick={toggleYearAccordion} className="dropdown-button">
-                {yearAccordionOpen ? "년도/학기 ▲" : "년도/학기 ▼"}
+                {yearAccordionOpen ? "년도/학기 ▲" 
+                : `${('0' + (semesterFilter.year - 2000)).slice(-2)}년 ${semesterFilter.semester}학기 ▼`}
               </button>
               {yearAccordionOpen && (
                 <div className="dropdown-content">
