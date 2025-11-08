@@ -54,7 +54,7 @@ app:
   #      - http://localhost:8080
   oauth2:
     authorizedRedirectUris:
-      - https://wap-projects.netlify.app/oauth2/redirect
+      - https://waps.im/oauth2/redirect
       - https://wapst.netlify.app/oauth2/redirect
       - https://waps-deploy.netlify.app/oauth2/redirect
       - http://localhost:3000/oauth2/redirect
