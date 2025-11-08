@@ -209,8 +209,6 @@ li {
   text-align: left;
 }
 
-
-
 /* 프로젝트 컨테이너 */
 .project-container {
   border: 2px solid black;
@@ -224,3 +222,14 @@ li {
    - 중복 .App-header(position: sticky) 정의는 삭제한다.
    - 아이콘 위치는 컨테이너 폭 안에서 .header-inner의 flex로 결정된다.
 */
+
+/* 어드민 페이지용 컨테이너 */
+.adminContainer {
+  width: 100%;
+  margin: 0;
+  padding: 56px;
+  background-color: #000;
+  min-height: 100vh; /* 화면 전체를 채우도록 보장 */
+  box-sizing: border-box; /* 패딩을 포함한 전체 너비 계산 */
+  color: #fff;
+}

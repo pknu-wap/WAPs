@@ -14,7 +14,7 @@ import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import UserPermissionPage from "./pages/adminPages/UserPermissionPage";
-
+import AdminLayout from "./components/Admin/AdminLayout";
 import "./App.css";
 
 function App() {
@@ -25,10 +25,13 @@ function App() {
         <Routes>
           {/* 기본 홈 화면 */}
           <Route path="/" element={<SplashPage />} />
+
           {/* 로그인 화면 */}
           <Route path="/login" element={<Login />} />
+
           {/* 카카오 인증 Callback */}
           <Route path="/oauth/callback" element={<Callback />} />
+
           {/* 경로 */}
           <Route path="/project/create" element={<ProjectCreatePage />} />
           <Route path="/vote" element={<VotePage />} />
@@ -39,12 +42,21 @@ function App() {
           <Route path="/select/role" element={<RoleSelectPage />} />
           <Route path="/team-build" element={<TeamBuildPage />} />
           <Route path="/team-build/result" element={<TeamBuildResultPage />} />
-          {/*관리자 페이지*/}
-          <Route path="/admin/user-permission" element={<UserPermissionPage />} />
+
           {/* 보호된 페이지 */}
           <Route path="/protected" element={<ProtectedPage />} />
         </Routes>
       </div>
+
+      {/* 관리자 페이지*/}
+      <div className="adminContainer">
+        <Routes>
+          <Route path="/admin">
+            <Route path="user-permission" element={<UserPermissionPage />} />
+          </Route>
+        </Routes>
+      </div>
+
     </Router>
   );
 }
