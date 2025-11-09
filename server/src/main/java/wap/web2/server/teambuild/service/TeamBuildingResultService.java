@@ -27,7 +27,7 @@ import wap.web2.server.teambuild.repository.TeamRepository;
 
 @Service
 @RequiredArgsConstructor
-public class TeamBuildResultService {
+public class TeamBuildingResultService {
 
     private final TeamRepository teamRepository;
     private final ProjectRepository projectRepository;

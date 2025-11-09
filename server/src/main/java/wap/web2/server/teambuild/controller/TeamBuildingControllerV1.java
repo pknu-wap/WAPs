@@ -18,18 +18,18 @@ import wap.web2.server.teambuild.dto.TeamMemberResult;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.service.ApplyService;
-import wap.web2.server.teambuild.service.TeamBuildResultService;
+import wap.web2.server.teambuild.service.TeamBuildingResultService;
 
 @Slf4j
 @Controller
 @RequestMapping("/team-build")
 @RequiredArgsConstructor
-public class TeamBuildControllerV1 {
+public class TeamBuildingControllerV1 {
 
     private final ApplyService applyService;
     private final TokenProvider tokenProvider;
     private final ProjectService projectService;
-    private final TeamBuildResultService teamBuildResultService;
+    private final TeamBuildingResultService teamBuildingResultService;
 
     //@GetMapping
     public String entry(Model model,
@@ -116,8 +116,8 @@ public class TeamBuildControllerV1 {
 
     //@GetMapping("/results")
     public String getTeamBuildResults(Model model) {
-        TeamBuildingResults results = teamBuildResultService.getResults();
-        List<TeamMemberResult> unassigned = teamBuildResultService.getUnassignedMembers(results);
+        TeamBuildingResults results = teamBuildingResultService.getResults();
+        List<TeamMemberResult> unassigned = teamBuildingResultService.getUnassignedMembers(results);
 
         log.info("[TeamBuildingResults]: {}", results);
 

@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.admin.service.AdminTeamBuildingService;
-import wap.web2.server.admin.service.TeamBuildExportService;
+import wap.web2.server.admin.service.TeamBuildingExportService;
 
 @RestController
 @RequestMapping("/admin/team")
 @RequiredArgsConstructor
 public class AdminTeamBuildingController {
 
-    private final TeamBuildExportService exportService;
+    private final TeamBuildingExportService exportService;
     private final AdminTeamBuildingService adminTeamBuildingService;
 
     // 현재 상태를 가져오는 api

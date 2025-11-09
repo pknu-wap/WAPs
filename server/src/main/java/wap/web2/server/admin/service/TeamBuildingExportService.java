@@ -20,7 +20,7 @@ import wap.web2.server.teambuild.repository.ProjectRecruitRepository;
 
 @Service
 @RequiredArgsConstructor
-public class TeamBuildExportService {
+public class TeamBuildingExportService {
 
     private final ProjectApplyRepository applyRepository;
     private final ProjectRecruitRepository projectRecruitRepository;

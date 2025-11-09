@@ -23,7 +23,7 @@ import wap.web2.server.teambuild.service.ApplyService;
 @RestController
 @RequestMapping("/team-build")
 @RequiredArgsConstructor
-public class TeamBuildControllerV2 {
+public class TeamBuildingControllerV2 {
 
     private final ApplyService applyService;
 

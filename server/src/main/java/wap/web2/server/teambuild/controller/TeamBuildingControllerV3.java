@@ -22,14 +22,14 @@ import wap.web2.server.teambuild.dto.response.RoleResponse;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.dto.response.TeamResultsResponse;
 import wap.web2.server.teambuild.service.ApplyService;
-import wap.web2.server.teambuild.service.TeamBuildResultService;
+import wap.web2.server.teambuild.service.TeamBuildingResultService;
 
 @RestController
 @RequestMapping("/team-build")
 @RequiredArgsConstructor
-public class TeamBuildControllerV3 {
+public class TeamBuildingControllerV3 {
 
-    private final TeamBuildResultService teamBuildResultService;
+    private final TeamBuildingResultService teamBuildingResultService;
     private final ProjectService projectService;
     private final ApplyService applyService;
 
@@ -94,8 +94,8 @@ public class TeamBuildControllerV3 {
     @GetMapping("/results")
     public ResponseEntity<?> getTeamBuildResults() {
         try {
-            TeamBuildingResults results = teamBuildResultService.getResults();
-            List<TeamMemberResult> unassigned = teamBuildResultService.getUnassignedMembers(results);
+            TeamBuildingResults results = teamBuildingResultService.getResults();
+            List<TeamMemberResult> unassigned = teamBuildingResultService.getUnassignedMembers(results);
 
             // response가 requests: { requests : {}, unassigned: {} } 즉, requests가 requests를 감싸는 구조를 해결.
             //  TeamBuildingResults의 일급컬랙션 형태를 유지하기위해서 results에서 results를 꺼냄.
