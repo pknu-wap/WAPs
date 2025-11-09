@@ -9,10 +9,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import wap.web2.server.admin.dto.TeamBuildingStatusRequest;
 import wap.web2.server.admin.service.AdminTeamBuildingService;
 import wap.web2.server.admin.service.TeamBuildingExportService;
 
@@ -38,17 +40,18 @@ public class AdminTeamBuildingController {
         }
     }
 
-    @PostMapping("/building")
-    @Operation(summary = "팀빌딩 기능 열고닫기", description = "이번 학기 팀빌딩 기능을 열고 닫습니다.")
-    public ResponseEntity<?> openTeamBuilding(@RequestParam("status") Boolean status) {
-        adminTeamBuildingService.openTeamBuilding(generateSemester(), status);
+    // TODO: status request를 역직렬화할 때 예외가 발생한다면
+    @PatchMapping("/building/status")
+    @Operation(summary = "팀빌딩 기능 상태 변경", description = "팀빌딩 기능의 상태를 열림, 지원중, 모집중, 닫힘 중 1가지로 변경합니다.")
+    public ResponseEntity<?> changeStatus(@RequestBody TeamBuildingStatusRequest statusRequest) {
+        adminTeamBuildingService.changeStatus(statusRequest);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/applies")
-    @Operation(summary = "팀빌딩 지원하기 기능 열고닫기", description = "지원자가 원하는 팀에 지원하는 기능을 열고 닫습니다.")
-    public ResponseEntity<?> openApply(@RequestParam("status") Boolean status) {
-        adminTeamBuildingService.openApply(generateSemester(), status);
+    @PostMapping("/building/open/current")
+    @Operation(summary = "현재 학기의 팀빌딩 기능 생성", description = "현재 학기 팀빌딩 기능을 생성합니다.")
+    public ResponseEntity<?> openTeamBuilding() {
+        adminTeamBuildingService.openTeamBuilding(generateSemester());
         return ResponseEntity.ok().build();
     }
 
@@ -64,13 +67,6 @@ public class AdminTeamBuildingController {
                 .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
                 .contentLength(bytes.length)
                 .body(bytes);
-    }
-
-    @PostMapping("/recruits")
-    @Operation(summary = "팀빌딩 모집하기 기능 열고닫기", description = "팀장이 원하는 팀원을 모집하는 기능을 열고 닫습니다.")
-    public ResponseEntity<?> openRecruit(@RequestParam("status") Boolean status) {
-        adminTeamBuildingService.openRecruit(generateSemester(), status);
-        return ResponseEntity.ok().build();
     }
 
     // 모집 현황 반환 (.CSV)

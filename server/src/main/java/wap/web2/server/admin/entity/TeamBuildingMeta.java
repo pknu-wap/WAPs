@@ -2,6 +2,8 @@ package wap.web2.server.admin.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,18 +29,6 @@ public class TeamBuildingMeta {
     private String semester;
 
     @Column(nullable = false)
-    private boolean isOpen = false;
-
-    @Column(nullable = false)
-    private boolean canApply = false;
-
-    @Column(nullable = false)
-    private boolean canRecruit = false;
-
-    // 팀빌딩을 열고 닫을 때엔 항상 지원과 모집 상태를 초기화한다.
-    public void changeTo(boolean status) {
-        this.isOpen = status;
-        this.canApply = false;
-        this.canRecruit = false;
-    }
+    @Enumerated(EnumType.STRING)
+    private TeamBuildingStatus status = TeamBuildingStatus.OPEN;
 }

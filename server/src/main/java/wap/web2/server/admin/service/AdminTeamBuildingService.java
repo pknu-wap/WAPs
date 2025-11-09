@@ -17,7 +17,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.admin.dto.TeamBuildingStatusRequest;
 import wap.web2.server.admin.entity.TeamBuildingMeta;
+import wap.web2.server.admin.entity.TeamBuildingStatus;
 import wap.web2.server.admin.repository.TeamBuildingMetaRepository;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
@@ -46,26 +48,23 @@ public class AdminTeamBuildingService {
     private final TeamBuilder teamBuilder;
 
     @Transactional
-    public void openApply(String semester, Boolean status) {
-        TeamBuildingMeta current = findCurrentMeta();
-        validateApplyStatus(current, status);
-        teamBuildingMetaRepository.updateApplyStatus(semester, status);
+    public void changeStatus(TeamBuildingStatusRequest statusRequest) {
+        String semester = statusRequest.semester();
+        TeamBuildingStatus status = statusRequest.status();
+        int updated = teamBuildingMetaRepository.updateTeamBuildingMetaStatus(semester, status);
+        if (updated == 0) {
+            throw new IllegalArgumentException(String.format("[ERROR] %s 학기의 팀빌딩이 존재하지 않습니다.", semester));
+        }
     }
 
     @Transactional
-    public void openRecruit(String semester, Boolean status) {
-        TeamBuildingMeta current = findCurrentMeta();
-        validateRecruitStatus(current, status);
-        teamBuildingMetaRepository.updateRecruitStatus(semester, status);
-    }
+    public void openTeamBuilding(String semester) {
+        if (teamBuildingMetaRepository.existsTeamBuildingMetaBySemester(semester)) {
+            throw new IllegalArgumentException("[ERROR] 해당 학기의 팀빌딩이 이미 생성되었습니다.");
+        }
 
-    @Transactional
-    public void openTeamBuilding(String semester, Boolean status) {
-        TeamBuildingMeta meta = teamBuildingMetaRepository.findBySemester(semester)
-                .orElseGet(() -> new TeamBuildingMeta(semester)); // 없으면 새로 생성
-
-        meta.changeTo(status);
-        teamBuildingMetaRepository.save(meta);
+        TeamBuildingMeta teamBuildingMeta = new TeamBuildingMeta(semester);
+        teamBuildingMetaRepository.save(teamBuildingMeta);
     }
 
     @Transactional
@@ -185,24 +184,8 @@ public class AdminTeamBuildingService {
     }
 
     private void validateTeamBuildingStatus(TeamBuildingMeta current) {
-        if (!current.isOpen()) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 기능이 열리지 않았습니다.");
-        }
-    }
-
-    // 상태를 열려고 할 때만 예외를 검사
-    private void validateApplyStatus(TeamBuildingMeta current, Boolean status) {
-        validateTeamBuildingStatus(current);
-        if (status && current.isCanRecruit()) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 모집 기능이 아직 열려 있습니다.");
-        }
-    }
-
-    // 상태를 열려고 할 때만 예외를 검사
-    private void validateRecruitStatus(TeamBuildingMeta current, Boolean status) {
-        validateTeamBuildingStatus(current);
-        if (status && current.isCanApply()) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 지원 기능이 아직 열려 있습니다.");
+        if (current.getStatus() == TeamBuildingStatus.CLOSED) {
+            throw new IllegalArgumentException("[ERROR] 팀빌딩 기능이 닫혀 있습니다");
         }
     }
 

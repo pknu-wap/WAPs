@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.entity.TeamBuildingMeta;
+import wap.web2.server.admin.entity.TeamBuildingStatus;
 import wap.web2.server.admin.repository.TeamBuildingMetaRepository;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
@@ -155,7 +156,7 @@ public class ApplyService {
         TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
 
-        return teamBuildingMeta.isOpen() && teamBuildingMeta.isCanApply();
+        return teamBuildingMeta.getStatus() == TeamBuildingStatus.APPLY;
     }
 
     private boolean isTeamRecruitOpen() {
@@ -163,6 +164,6 @@ public class ApplyService {
         TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
 
-        return teamBuildingMeta.isOpen() && teamBuildingMeta.isCanRecruit();
+        return teamBuildingMeta.getStatus() == TeamBuildingStatus.RECRUIT;
     }
 }
