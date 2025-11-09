@@ -14,7 +14,6 @@ import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import UserPermissionPage from "./pages/adminPages/UserPermissionPage";
-import AdminLayout from "./components/Admin/AdminLayout";
 import "./App.css";
 
 function App() {
