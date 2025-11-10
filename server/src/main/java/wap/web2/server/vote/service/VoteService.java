@@ -80,15 +80,15 @@ public class VoteService {
             throw new IllegalArgumentException("[ERROR] 투표 결과가 존재하지 않습니다.");
         }
 
-        List<VoteResultResponse> results = voteResults.stream()
+        List<VoteResultResponse> results = vote.getProjectList().stream()
                 .map(VoteResultResponse::from)
                 .toList();
 
-        long totalVoteCount = results.stream()
+        // 전체 수
+        long sum = results.stream()
                 .mapToLong(VoteResultResponse::getVoteCount)
                 .sum();
-
-        results.forEach(result -> result.calculateVoteRate(totalVoteCount));
+        results.forEach(result -> result.calculateVoteRate(sum));
 
         return results;
     }
