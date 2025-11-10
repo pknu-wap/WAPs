@@ -13,7 +13,7 @@ import wap.web2.server.admin.service.UserRoleService;
 @RestController
 @RequestMapping("/admin/role")
 @RequiredArgsConstructor
-public class AdminUserController {
+public class UserRoleController {
 
     private final UserRoleService userRoleService;
 
