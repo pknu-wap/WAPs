@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import wap.web2.server.calendar.entity.CalendarEvent;
 
 public record CalendarEventResponse(
-        Long id,
         String title,
         String content,
         LocalDateTime date,
@@ -13,7 +12,6 @@ public record CalendarEventResponse(
 
     public static CalendarEventResponse from(CalendarEvent event) {
         return new CalendarEventResponse(
-                event.getId(),
                 event.getTitle(),
                 event.getContent(),
                 event.getDate(),
