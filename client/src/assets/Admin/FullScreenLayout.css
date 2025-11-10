@@ -1,0 +1,10 @@
+.full-screen-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  z-index: 1000;
+  overflow: auto; /* 페이지 내용이 길어질 경우 스크롤 */
+}
