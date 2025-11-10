@@ -13,15 +13,19 @@ import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
+import UserPermissionPage from "./pages/adminPages/UserPermissionPage";
 
+import MainLayout from "./components/MainLayout";
+import FullScreenLayout from "./components/Admin/FullScreenLayout";
 import "./App.css";
 
 function App() {
   return (
     <Router>
       <ScrollToTop /> {/* 페이지 전환 시 스크롤 위치 초기화 */}
-      <div className="container">
-        <Routes>
+      <Routes>
+        {/* 400px 폭 레이아웃 */}
+        <Route element={<MainLayout />}>
           {/* 기본 홈 화면 */}
           <Route path="/" element={<SplashPage />} />
           {/* 로그인 화면 */}
@@ -40,9 +44,14 @@ function App() {
           <Route path="/team-build/result" element={<TeamBuildResultPage />} />
           {/* 보호된 페이지 */}
           <Route path="/protected" element={<ProtectedPage />} />
-        </Routes>
-      </div>
-    </Router>
+        </Route>
+
+        {/* 전체화면 레이아웃 */}
+        <Route element={<FullScreenLayout />}>
+          <Route path="/admin/user-permission" element={<UserPermissionPage />} />
+        </Route>
+      </Routes>
+    </Router >
   );
 }
 
