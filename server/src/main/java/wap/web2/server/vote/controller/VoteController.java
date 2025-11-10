@@ -54,9 +54,12 @@ public class VoteController {
     @GetMapping("/result")
     public ResponseEntity<?> getVoteResults(@RequestParam(value = "projectYear", required = false) Integer year,
                                             @RequestParam(value = "semester", required = false) Integer semester) {
-        List<VoteResultResponse> voteResults = voteService.getVoteResults(year, semester);
-
-        return ResponseEntity.ok().body(voteResults);
+        try {
+            List<VoteResultResponse> voteResults = voteService.getVoteResults(year, semester);
+            return ResponseEntity.ok().body(voteResults);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 조회 실패");
+        }
     }
 
 }
