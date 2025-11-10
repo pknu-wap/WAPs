@@ -1,12 +1,9 @@
 package wap.web2.server.teambuild.controller;
 
 import jakarta.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,16 +22,14 @@ import wap.web2.server.teambuild.dto.response.RoleResponse;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.dto.response.TeamResultsResponse;
 import wap.web2.server.teambuild.service.ApplyService;
-import wap.web2.server.teambuild.service.TeamBuildExportService;
-import wap.web2.server.teambuild.service.TeamBuildResultService;
+import wap.web2.server.teambuild.service.TeamBuildingResultService;
 
 @RestController
 @RequestMapping("/team-build")
 @RequiredArgsConstructor
-public class TeamBuildControllerV3 {
+public class TeamBuildingControllerV3 {
 
-    private final TeamBuildResultService teamBuildResultService;
-    private final TeamBuildExportService exportService;
+    private final TeamBuildingResultService teamBuildingResultService;
     private final ProjectService projectService;
     private final ApplyService applyService;
 
@@ -99,8 +94,8 @@ public class TeamBuildControllerV3 {
     @GetMapping("/results")
     public ResponseEntity<?> getTeamBuildResults() {
         try {
-            TeamBuildingResults results = teamBuildResultService.getResults();
-            List<TeamMemberResult> unassigned = teamBuildResultService.getUnassignedMembers(results);
+            TeamBuildingResults results = teamBuildingResultService.getResults();
+            List<TeamMemberResult> unassigned = teamBuildingResultService.getUnassignedMembers(results);
 
             // response가 requests: { requests : {}, unassigned: {} } 즉, requests가 requests를 감싸는 구조를 해결.
             //  TeamBuildingResults의 일급컬랙션 형태를 유지하기위해서 results에서 results를 꺼냄.
@@ -110,32 +105,4 @@ public class TeamBuildControllerV3 {
             return ResponseEntity.badRequest().body("[ERROR] 결과 불러오기 실패" + e.getMessage());
         }
     }
-
-
-    // 지원 현황 반환 (.CSV)
-    @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
-    public ResponseEntity<byte[]> exportAppliesCsv() {
-        byte[] bytes = exportService.generateAppliesCsvBytes();
-
-        String filename = "applies_" + LocalDate.now() + ".csv";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                .contentLength(bytes.length)
-                .body(bytes);
-    }
-
-    // 모집 현황 반환 (.CSV)
-    @GetMapping(value = "/recruits/export", produces = "text/csv; charset=UTF-8")
-    public ResponseEntity<byte[]> exportRecruitsCsv() {
-        byte[] bytes = exportService.generateRecruitsCsvBytes();
-
-        String filename = "recruits_" + LocalDate.now() + ".csv";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                .contentLength(bytes.length)
-                .body(bytes);
-    }
-
 }

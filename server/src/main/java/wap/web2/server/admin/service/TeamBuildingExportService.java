@@ -1,4 +1,4 @@
-package wap.web2.server.teambuild.service;
+package wap.web2.server.admin.service;
 
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
@@ -20,7 +20,7 @@ import wap.web2.server.teambuild.repository.ProjectRecruitRepository;
 
 @Service
 @RequiredArgsConstructor
-public class TeamBuildExportService {
+public class TeamBuildingExportService {
 
     private final ProjectApplyRepository applyRepository;
     private final ProjectRecruitRepository projectRecruitRepository;
