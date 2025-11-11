@@ -1,0 +1,74 @@
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+:root {
+  --primary: #abd4fd;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 73px;
+}
+
+.title {
+  width: 351px;
+  text-align: left;
+  margin-top: 16px;
+}
+
+.eng {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.kr {
+  font-size: 25px;
+}
+
+.pageBtn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pageBtn button {
+  width: 292px;
+  height: 66px;
+
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  color: white;
+
+  border-radius: 74px;
+  border-width: 1px;
+  border-color: black;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 35px;
+  gap: 20px;
+}
+
+.pageBtn button svg {
+  /* SVG의 크기를 텍스트 크기에 맞춰 24px로 고정 */
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  vertical-align: middle;
+}
+
+.active {
+  background: var(--primary) !important;
+  color: black !important;
+}
