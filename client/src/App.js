@@ -16,7 +16,7 @@ import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import UserPermissionPage from "./pages/adminPages/UserPermissionPage";
 
 import MainLayout from "./components/MainLayout";
-import FullScreenLayout from "./components/Admin/FullScreenLayout";
+import FullScreenLayout from "./components/FullScreenLayout";
 import "./App.css";
 
 function App() {

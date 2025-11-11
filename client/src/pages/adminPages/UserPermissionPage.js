@@ -1,7 +1,11 @@
+import AdminPageLayout from "../../components/Admin/AdminPageLayout";
+
 const UserPermissionPage = () => {
     return (
         <div>
-            <h1>전체 화면 페이지입니다.</h1>
+            <AdminPageLayout>
+                이 사이에 내용 넣기
+            </AdminPageLayout>
         </div>
     );
 }

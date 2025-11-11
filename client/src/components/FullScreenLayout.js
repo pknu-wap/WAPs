@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import '../../assets/Admin/FullScreenLayout.css'; // 전체 화면용 CSS
+import '../assets/FullScreenLayout.css'; // 전체 화면용 CSS
 
 const FullScreenLayout = () => {
     return (
