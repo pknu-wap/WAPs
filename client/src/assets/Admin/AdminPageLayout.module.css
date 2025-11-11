@@ -19,8 +19,10 @@
 .contentsBox {
   width: 1441px;
   height: 893px;
+  padding: 43px;
   border-radius: 56px;
   background-color: #202020;
+  box-sizing: border-box;
 }
 
 /* 헤더 */
