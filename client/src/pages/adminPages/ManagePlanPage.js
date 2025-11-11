@@ -1,6 +1,6 @@
 import AdminPageLayout from "../../components/Admin/AdminPageLayout";
 
-const UserPermissionPage = () => {
+const ManagePlanPage = () => {
     return (
         <div>
             <AdminPageLayout>
@@ -10,4 +10,4 @@ const UserPermissionPage = () => {
     );
 }
 
-export default UserPermissionPage;
+export default ManagePlanPage;

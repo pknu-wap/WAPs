@@ -13,7 +13,10 @@ import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
-import UserPermissionPage from "./pages/adminPages/UserPermissionPage";
+import ManagePermissionPage from "./pages/adminPages/ManagePermissionPage";
+import ManagePlanPage from "./pages/adminPages/ManagePlanPage"
+import ManageTeamBuildPage from "./pages/adminPages/ManageTeamBuildPage";
+import ManageVotePage from "./pages/adminPages/ManageVotePage";
 
 import MainLayout from "./components/MainLayout";
 import FullScreenLayout from "./components/FullScreenLayout";
@@ -48,7 +51,10 @@ function App() {
 
         {/* 전체화면 레이아웃 */}
         <Route element={<FullScreenLayout />}>
-          <Route path="/admin/user-permission" element={<UserPermissionPage />} />
+          <Route path="/admin/vote" element={<ManageVotePage />} />
+          <Route path="/admin/teambuild" element={<ManagePermissionPage />} />
+          <Route path="/admin/permission" element={<ManagePermissionPage />} />
+          <Route path="/admin/plan" element={<ManagePlanPage />} />
         </Route>
       </Routes>
     </Router >

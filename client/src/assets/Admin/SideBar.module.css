@@ -17,7 +17,9 @@
 }
 
 .title {
+  width: 351px;
   text-align: left;
+  margin-top: 16px;
 }
 
 .eng {
@@ -42,10 +44,16 @@
   font-size: 20px;
   font-weight: 700;
   text-align: center;
-  color: black;
+  color: white;
 
-  background: var(--primary);
   border-radius: 74px;
   border-width: 1px;
   border-color: black;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.active {
+  background: var(--primary) !important;
+  color: black !important;
 }

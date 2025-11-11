@@ -5,13 +5,57 @@
   font-weight: 400;
   font-style: normal;
 }
-
-:root {
-  --primary: #abd4fd;
-  --text: #fff;
-  --black: #000;
-}
-
 .container {
   padding: 39px 55px 72px;
+  gap: 29px;
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+  gap: 78px;
+}
+
+.contentsBox {
+  width: 1441px;
+  height: 893px;
+  border-radius: 56px;
+  background-color: #202020;
+}
+
+/* 헤더 */
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 29px;
+}
+
+.logo {
+  color: #adadad;
+  font-size: 32px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.headerRight {
+  display: flex;
+  gap: 25px;
+}
+
+.adminUser {
+  font-size: 27px;
+  font-weight: 700;
+  text-align: center;
+  color: #c5c5c5;
+}
+
+.backBtn {
+  font-size: 30px;
+  color: #adadad;
+  font-weight: 600;
+  align-self: flex-start;
+  margin-top: 3px;
+  line-height: 1;
+  cursor: pointer;
 }
