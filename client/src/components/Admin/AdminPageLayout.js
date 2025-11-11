@@ -1,19 +1,19 @@
+import styles from "../../assets/Admin/AdminPageLayout.module.css";
 import SideBar from "./SideBar";
-// 어드민 페이지 공용 레이아웃
 
+// 어드민 페이지 공용 레이아웃
 const AdminPageLayout = () => {
     return (
-        <div>
+        <div className={styles.container}>
             {/* 헤더 */}
             <div>
                 여기에 헤더
             </div>
 
             {/* 메인 */}
-            <div>
+            <div class>
                 <SideBar />
-                {/* 메인 컨첸츠가 들어갈 컨테이너 */}
-                <div />
+                <div className="contentsBox" />
             </div>
 
         </div>

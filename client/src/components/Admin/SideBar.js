@@ -1,12 +1,13 @@
+import styles from "../../assets/Admin/SideBar.module.css";
 // 어드민 페이지 사이드바 컴포넌트
 const SideBar = () => {
     return (
-        <div>
-            <div>
-                <p>ADMINISTRATOR PAGE</p>
-                <p>관리자 페이지</p>
+        <div className={styles.container}>
+            <div className={styles.title}>
+                <div className={styles.eng}>ADMINISTRATOR PAGE</div>
+                <div className={styles.kr}>관리자 페이지</div>
             </div>
-            <div>
+            <div className={styles.pageBtn}>
                 <button>투표관리</button>
                 <button>팀빌딩</button>
                 <button>사용자 권한 관리</button>
