@@ -13,12 +13,16 @@ import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
+
+// 관리자 페이지 
 import ManagePermissionPage from "./pages/adminPages/ManagePermissionPage";
 import ManagePlanPage from "./pages/adminPages/ManagePlanPage"
 import ManageTeamBuildPage from "./pages/adminPages/ManageTeamBuildPage";
 import ManageVotePage from "./pages/adminPages/ManageVotePage";
-
 import MainLayout from "./components/MainLayout";
+
+// 레이아웃 컴포넌트들
+import AdminPageLayout from "./components/Admin/AdminPageLayout";
 import FullScreenLayout from "./components/FullScreenLayout";
 import "./App.css";
 
@@ -51,10 +55,12 @@ function App() {
 
         {/* 전체화면 레이아웃 */}
         <Route element={<FullScreenLayout />}>
-          <Route path="/admin/vote" element={<ManageVotePage />} />
-          <Route path="/admin/teambuild" element={<ManagePermissionPage />} />
-          <Route path="/admin/permission" element={<ManagePermissionPage />} />
-          <Route path="/admin/plan" element={<ManagePlanPage />} />
+          <Route path="admin" element={<AdminPageLayout />}>
+            <Route path="vote" element={<ManageVotePage />} />
+            <Route path="teambuild" element={<ManageTeamBuildPage />} />
+            <Route path="permission" element={<ManagePermissionPage />} />
+            <Route path="plan" element={<ManagePlanPage />} />
+          </Route>
         </Route>
       </Routes>
     </Router >
