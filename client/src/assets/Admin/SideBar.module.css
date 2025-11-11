@@ -51,6 +51,21 @@
   border-color: black;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 35px;
+  gap: 20px;
+}
+
+.pageBtn button svg {
+  /* SVG의 크기를 텍스트 크기에 맞춰 24px로 고정 */
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  vertical-align: middle;
 }
 
 .active {

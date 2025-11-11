@@ -36,6 +36,7 @@
   font-size: 32px;
   font-weight: 800;
   cursor: pointer;
+  user-select: none;
 }
 
 .headerRight {
@@ -50,7 +51,7 @@
   color: #c5c5c5;
 }
 
-.backBtn {
+.exitBtn {
   font-size: 30px;
   color: #adadad;
   font-weight: 600;
@@ -58,4 +59,5 @@
   margin-top: 3px;
   line-height: 1;
   cursor: pointer;
+  user-select: none;
 }
