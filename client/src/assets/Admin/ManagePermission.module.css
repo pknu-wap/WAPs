@@ -52,10 +52,9 @@
   justify-content: center;
 }
 
-.memberList {
+.userList {
   width: 100%;
   height: 100%;
-  background-color: aliceblue;
   margin-top: 13px;
 }
 
