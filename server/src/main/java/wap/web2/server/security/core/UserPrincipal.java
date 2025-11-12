@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +24,13 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         this.email = email;
         this.password = password;
         this.authorities = authorities;
+    }
+
+    public Optional<String> getUserRole() {
+        return this.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(auth -> auth.startsWith("ROLE_"))
+                .findFirst();
     }
 
     public static UserPrincipal create(User user) {
