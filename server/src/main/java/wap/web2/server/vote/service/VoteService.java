@@ -4,6 +4,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.admin.entity.VoteStatus;
+import wap.web2.server.admin.repository.VoteMetaRepository;
+import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.project.repository.ProjectRepository;
@@ -11,9 +14,12 @@ import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteRequest;
+import wap.web2.server.vote.dto.VoteRequest2;
 import wap.web2.server.vote.dto.VoteResultResponse;
+import wap.web2.server.vote.entity.Ballot;
 import wap.web2.server.vote.entity.Vote;
 import wap.web2.server.vote.entity.VoteResult;
+import wap.web2.server.vote.repository.BallotRepository;
 import wap.web2.server.vote.repository.VoteRepository;
 import wap.web2.server.vote.repository.VoteResultRepository;
 
@@ -25,6 +31,8 @@ public class VoteService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final VoteRepository voteRepository;
+    private final BallotRepository ballotRepository;
+    private final VoteMetaRepository voteMetaRepository;
 
     // Transactional인 메서드에서 투표 실시, marking user vote 가 들어있어야 transactional 하게 처리할 수 있다.
     // 투표는 '현재 년도&학기'에 '열려있는' 상태에만 가능하다.
@@ -48,6 +56,17 @@ public class VoteService {
         vote(voteRequest, vote.getId());
         markVoted(user.getId());
         user.updateVotedProjectIds(voteRequest);
+    }
+
+    @Transactional
+    public void vote(Long userId, Role userRole, VoteRequest2 voteRequest) {
+        String semester = voteRequest.semester();
+
+        if (voteMetaRepository.findStatusBySemester(semester) == VoteStatus.OPEN) {
+            for (Long projectId : voteRequest.projectIds()) {
+                ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
+            }
+        }
     }
 
     @Transactional(readOnly = true)
