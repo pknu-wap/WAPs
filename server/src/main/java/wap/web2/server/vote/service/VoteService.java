@@ -36,6 +36,7 @@ public class VoteService {
 
     // Transactional인 메서드에서 투표 실시, marking user vote 가 들어있어야 transactional 하게 처리할 수 있다.
     // 투표는 '현재 년도&학기'에 '열려있는' 상태에만 가능하다.
+    @Deprecated
     @Transactional
     public void processVote(Long userId, VoteRequest voteRequest) {
         Integer year = SemesterGenerator.generateYearValue();
@@ -117,6 +118,7 @@ public class VoteService {
         return results;
     }
 
+    @Deprecated
     // TODO: SQL 쿼리를 직접 날려서 스레스 안전을 보장하는 방법말고도 해보기!!!
     //  https://tecoble.techcourse.co.kr/post/2023-08-16-concurrency-managing/ 참고
     private void vote(VoteRequest voteRequest, Long voteId) {
