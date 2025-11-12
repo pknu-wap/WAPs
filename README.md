@@ -19,7 +19,7 @@
 | **DevOps**   | AWS EC2, AWS S3 |
 
 ## 🚀 프로젝트 실행 방법
-https://wap-projects.netlify.app
+https://waps.im
 
 ## 2025-2 참여 인원
 <table>
