@@ -32,6 +32,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     } else if (role !== "ROLE_ADMIN") { // ADMIN 권한만 허용
       alert("관리자 권한이 없습니다.");
     } else {
+      Cookies.set("previousPage", window.location.pathname, { expires: 1 });
       navigate("/admin/vote");
       toggleMenu();
     }
