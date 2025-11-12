@@ -147,7 +147,7 @@
   margin-left: auto;
   text-align: center;
   font-size: 14px;
-  color: #ccc;
+  color: #fff;
   box-sizing: border-box;
   backdrop-filter: blur(8px);
   white-space: nowrap; /* 한 줄 유지 (줄바꿈 방지) */
