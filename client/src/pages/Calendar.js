@@ -24,7 +24,7 @@ const CalendarPage = () => {
         );
         setEvents(sorted);
       } catch (error) {
-        console.error("📛 일정 데이터를 불러오지 못했습니다:", error);
+        console.error("일정 데이터를 불러오지 못했습니다:", error);
 
         // 테스트용 더미 데이터
         const dummyData = [
