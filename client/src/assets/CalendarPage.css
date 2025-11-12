@@ -1,3 +1,16 @@
+@font-face {
+  font-family: 'Pretendard-Bold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
 
 .calendar-page {
   position: relative;
@@ -10,6 +23,7 @@
   padding: 40px 20px;
   box-sizing: border-box;
   overflow: hidden; /* 전체 페이지 스크롤바 숨기기 */
+  font-family: 'Pretendard-Regular';
 }
 
 /* 우측 상단 X 버튼 */
@@ -32,22 +46,24 @@
 
 /* 상단 제목 */
 .calendar-title {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 40px;
+  font-family: 'Pretendard-Bold';
   text-align: center;
 
-  background: linear-gradient(180deg, #A0AFFF 0%, #B4EDFE 100%);
+  background: linear-gradient(90deg, #A0AFFF 0%, #B4EDFE 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
+  margin-top: 50px;
+  margin-bottom: 0px; /* 제목과 설명 사이 간격 */
 }
 
 
 .calendar-desc {
   color: #aaa;
   font-size: 15px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   text-align: center;
 }
 
@@ -93,8 +109,8 @@
 
 /* 일정 본문 */
 .schedule-box {
-  width: 80%;
-  margin-left: 10%;
+  width: 100%;
+  margin: 0;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 20px;
   padding: 20px;
@@ -109,15 +125,14 @@
 }
 
 .schedule-title {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 16px;
   color: #fff;
 }
 
 .schedule-content {
   margin-top: 15px;
   font-size: 16px;
-  color: #ddd;
+  color: #fff;
   white-space: pre-line;
 }
 
@@ -125,10 +140,10 @@
 .target-box {
   display: inline-block; /* 글자 길이에 맞게 자동 너비 조절 */
   background: rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
+  border-radius: 15px;
   padding: 12px 18px;
-  margin-top: 8px;
-  margin-right: 10%;
+  margin-top: 15px;
+  margin-right: 0;
   margin-left: auto;
   text-align: center;
   font-size: 14px;

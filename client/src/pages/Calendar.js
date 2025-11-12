@@ -74,7 +74,7 @@ const CalendarPage = () => {
 
       {/* 헤더 */}
       <h1 className="calendar-title">CALENDAR</h1>
-      <p className="calendar-desc">WAP의 일정들을 보기 쉽게 확인하세요.</p>
+      <p className="calendar-desc">WAP의 일정들을 보기 쉽게 확인하세요</p>
 
       {/* 일정 리스트 */}
       <div className="calendar-list">
@@ -88,7 +88,7 @@ const CalendarPage = () => {
 
             {/* 참가대상 있을 때만 출력 */}
             {event.target && event.target.trim() !== "" && (
-              <div className="target-box">{event.target}</div>
+              <div className="target-box">#{event.target}</div>
             )}
           </div>
         ))}
