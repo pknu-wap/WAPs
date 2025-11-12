@@ -111,12 +111,8 @@ const CalendarPage = () => {
                     <div key={i}>{line}</div>
                   ))}
                 </div>
-              </div>
-
-              {/* 참가 대상 있을 때만 출력 */}
-              {event.target && event.target.trim() !== "" && (
                 <div className="target-box">#{event.target}</div>
-              )}
+              </div>
             </div>
           ))
         ) : (
