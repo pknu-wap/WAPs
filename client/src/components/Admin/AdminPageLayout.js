@@ -19,7 +19,10 @@ const AdminPageLayout = () => {
     const navigate = useNavigate();
 
     const handleExit = () => {
-        navigate("/ProjectPage");
+        // 이전 위치를 가져와서 뒤로 돌려보냄
+        const previousPage = Cookies.get("previousPage") || "/ProjectPage";
+        Cookies.remove("previousPage"); // 사용 후 쿠키 삭제
+        navigate(previousPage);
     };
 
 
