@@ -59,14 +59,19 @@ public class VoteService {
     }
 
     @Transactional
-    public void vote(Long userId, Role userRole, VoteRequest2 voteRequest) {
+    public void vote(Long userId, String role, VoteRequest2 voteRequest) {
         String semester = voteRequest.semester();
+        Role userRole = Role.from(role);
 
         if (voteMetaRepository.findStatusBySemester(semester) == VoteStatus.OPEN) {
             for (Long projectId : voteRequest.projectIds()) {
                 ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
             }
+            return;
         }
+
+        // CLOSED
+        throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 열리지 않았습니다.", semester));
     }
 
     @Transactional(readOnly = true)
