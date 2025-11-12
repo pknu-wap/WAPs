@@ -58,7 +58,7 @@ function App() {
         <Route element={<FullScreenLayout />}>
           {/* 관리자 페이지 */}
           <Route
-            path="admin"
+            path="admin/*"
             element={<AdminRoute requireRole="ROLE_ADMIN" />}
           >
             <Route element={<AdminPageLayout />}>
