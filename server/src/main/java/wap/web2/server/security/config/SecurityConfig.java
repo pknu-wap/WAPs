@@ -86,10 +86,8 @@ public class SecurityConfig {
                         // admin
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        .requestMatchers("/vote/result", "/project/**", "/techStack/**", "/comment/**").permitAll()
-                        .requestMatchers("/team-build", "/team-build/projects", "/team-build/recruit",
-                                "team-build/results")
-                        .permitAll()
+                        .requestMatchers("/vote/result", "/project/**", "/techStack/**", "/calendar/**").permitAll()
+                        .requestMatchers("/team-build", "team-build/results").permitAll()
                         .requestMatchers("/auth/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
