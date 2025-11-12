@@ -2,6 +2,9 @@ package wap.web2.server.vote.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,12 +12,15 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import wap.web2.server.member.entity.Role;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Ballot {
 
     @Id
@@ -28,10 +34,12 @@ public class Ballot {
     private Long userId;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role userRole;
 
     private Long projectId;
 
+    @CreatedDate
     private LocalDateTime createdAt;
 
     private Ballot(String semester, Long userId, Role userRole, Long projectId) {
