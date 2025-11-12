@@ -77,6 +77,17 @@ td:last-child {
   border-right: none;
 }
 
+/* 선택된 행 스타일 */
+.selectedRow {
+  background-color: #505050;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.selectedRow td {
+  background-color: #505050;
+}
+
 /* 유저 목록 박스 */
 .onlyBtn {
   width: 131px;
@@ -111,6 +122,10 @@ td:last-child {
   margin-top: 13px;
   flex: 1;
   min-height: 0;
+}
+
+.selectedBox {
+  background-color: var(--primary);
 }
 
 /* 스크롤바 스타일*/
@@ -148,6 +163,13 @@ td:last-child {
   gap: 12px;
 }
 
+.changeList {
+  margin-top: 43px;
+}
+
+.roleDropdown {
+  cursor: pointer;
+}
 /* 하단 페이지 네이션 */
 .pageNation {
   text-align: center;

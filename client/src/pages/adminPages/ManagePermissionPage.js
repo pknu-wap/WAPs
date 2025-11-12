@@ -12,7 +12,7 @@ const ManagePermissionPage = () => {
 
     // 페이지네이션 상태
     const [page, setPage] = useState(0);
-    const [size, setSize] = useState(10); // 기본 10개씩
+    const [size] = useState(15); // 15개 고정
     const [hasNext, setHasNext] = useState(false); // 다음 페이지 존재 여부
 
     // 권한 변경 상태
@@ -46,12 +46,6 @@ const ManagePermissionPage = () => {
     useEffect(() => {
         fetchUserRoles(page, size);
     }, [fetchUserRoles, page, size]); // fetchUserRoles, page, size가 변경될 때 호출
-
-    // size 변경 핸들러
-    const handleSizeChange = (newSize) => {
-        setSize(newSize);
-        setPage(0); // size가 바뀌면 1페이지로 리셋
-    };
 
     // 이전 페이지 버튼 핸들러
     const handlePrevPage = () => {
@@ -99,7 +93,7 @@ const ManagePermissionPage = () => {
         setUpdateError(null);
 
         try {
-            // Map의 키 목록을 array로 변환하여 API 호출
+            // 맵의 키 목록을 array로 변환하여 API 호출
             const response = await apiClient.patch("/admin/role/user", {
                 newRole: newRole,
                 userId: Array.from(selectedUserMap.keys())
@@ -131,19 +125,6 @@ const ManagePermissionPage = () => {
                 <div className={styles.header}>
                     <span>목록</span>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <select
-                            value={size}
-                            onChange={(e) => handleSizeChange(Number(e.target.value))}
-                            style={{ marginRight: '10px', padding: '5px' }} // 임시 스타일
-                        >
-                            <option value={5}>5개씩 보기</option>
-                            <option value={10}>10개씩 보기</option>
-                            <option value={15}>15개씩 보기</option>
-                            <option value={20}>20개씩 보기</option>
-                            <option value={30}>30개씩 보기</option>
-                            <option value={40}>40개씩 보기</option>
-                            <option value={50}>50개씩 보기</option>
-                        </select>
                         <button className={styles.onlyBtn}>ONLY MEMBER</button>
                     </div>
                 </div>
@@ -206,77 +187,67 @@ const ManagePermissionPage = () => {
                             &gt;&gt;
                         </button>
                     </div>
-
-                    {/* 권한 변경 박스 */}
-                    <div className={styles.Box}>
-                        <span className={styles.header}>권한 변경</span>
-                        <div className={styles.changeContent}>
-                            {/* 권한 선택 및 적용 버튼 UI */}
-                            <div className={styles.controler}>
-                                <span style={{ fontSize: "20px", fontWeight: "700" }}>
-                                    다음으로 권한 변경:
-                                </span>
-
-                                {/* Role 선택 버튼들 */}
-                                <div className={styles.roleButtonContainer}>
-                                    {ROLES.map((role) => (
-                                        <button
-                                            key={role}
-                                            // 선택된 버튼 스타일 (CSS에서 .selectedRole 정의 필요)
-                                            className={`${styles.role} ${newRole === role ? styles.selectedRole : ""}`}
-                                            onClick={() => setNewRole(role)}
-                                        >
-                                            {role.replace("ROLE_", "")}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                {/* 적용 버튼 */}
-                                <button
-                                    className={styles.summit}
-                                    onClick={handleSubmitChange}
-                                    disabled={isUpdating}
-                                >
-                                    {isUpdating ? "적용 중..." : "적용"}
-                                </button>
-                            </div>
-
-                            {/* 선택된 사용자 목록 */}
-                            <div className={styles.changeList}>
-                                {selectedUserMap.size === 0 ? (
-                                    <p style={{ textAlign: 'center', color: '#888', marginTop: '20px' }}>
-                                        왼쪽 목록에서 사용자를 클릭하여 추가하세요.
-                                    </p>
-                                ) : (
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>NAME</th>
-                                                <th>EMAIL</th>
-                                                <th>ROLE</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {/* Map에 저장된 user 객체들을 순회하며 행 생성 */}
-                                            {Array.from(selectedUserMap.values()).map(user => (
-                                                <tr key={user.id}>
-                                                    <td style={{ textAlign: "right" }}>{user.id}</td>
-                                                    <td>{user.name}</td>
-                                                    <td>{user.email}</td>
-                                                    <td>{user.role}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                )}
-                            </div>
-                            {updateError && <p style={{ color: 'red', textAlign: 'center' }}>{updateError}</p>}
-                        </div>
-                    </div>
                 </div>
             </div>
+            {/* 권한 변경 박스 */}
+            <div className={styles.Box}>
+                <span className={styles.header}>권한 변경</span>
+                <div className={styles.changeContent}>
+                    {/* 권한 선택 및 적용 버튼 UI */}
+                    <div className={styles.controler}>
+                        <span style={{ fontSize: "20px", fontWeight: "700" }}>
+                            다음으로 권한 변경:
+                        </span>
 
+                        {/* Role 선택 드롭다운 */}
+                        <select
+                            value={newRole}
+                            onChange={(e) => setNewRole(e.target.value)}
+                            className={styles.roleDropdown}
+                        >
+                            <option value="">권한을 선택하세요</option>
+                            {ROLES.map((role) => (
+                                <option key={role} value={role}>
+                                    {role.replace("ROLE_", "")}
+                                </option>
+                            ))}
+                        </select>
+
+                        {/* 적용 버튼 */}
+                        <button
+                            className={styles.summit}
+                            onClick={handleSubmitChange}
+                            disabled={isUpdating}
+                        >
+                            {isUpdating ? "적용 중..." : "적용"}
+                        </button>
+                    </div>
+
+                    {/* 선택된 사용자 목록 */}
+                    <div className={styles.changeList}>
+                        {selectedUserMap.size === 0 ? (
+                            <p style={{ textAlign: 'center', color: '#888', marginTop: '20px' }}>
+                                왼쪽 목록에서 사용자를 클릭하여 추가하세요.
+                            </p>
+                        ) : (
+                            <table>
+                                <tbody>
+                                    {/* Map에 저장된 user 객체들을 순회하며 행 생성 */}
+                                    {Array.from(selectedUserMap.values()).map(user => (
+                                        <tr key={user.id} onClick={() => handleUserRowClick(user)} style={{ cursor: 'pointer' }}>
+                                            <td style={{ textAlign: "right" }}>{user.id}</td>
+                                            <td>{user.name}</td>
+                                            <td>{user.email}</td>
+                                            <td>{user.role}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                    {updateError && <p style={{ color: 'red', textAlign: 'center' }}>{updateError}</p>}
+                </div>
+            </div>
         </div>
     );
 }
