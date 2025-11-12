@@ -23,7 +23,7 @@ public class AdminVoteService {
         voteMetaRepository.save(voteMeta);
     }
 
-
+    @Transactional
     public void closeVote(String semester, Long userId) {
         if (voteMetaRepository.existsBySemester(semester)) {
             voteMetaRepository.updateToClosed(semester, userId);
