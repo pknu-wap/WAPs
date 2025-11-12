@@ -73,6 +73,6 @@ swagger:
 project:
   password: 1248
 
-logging:
-  level:
-    org.springframework.security: DEBUG
+#logging:
+#  level:
+#    org.springframework.security: DEBUG
