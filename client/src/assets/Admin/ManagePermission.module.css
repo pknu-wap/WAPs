@@ -8,6 +8,7 @@
 
 :root {
   --primary: #abd4fd;
+  --tableLine: rgba(255, 255, 255, 0.5);
 }
 
 .container {
@@ -24,7 +25,7 @@
   height: 100%;
   border-radius: 42px;
   background: #313131;
-  padding: 37px 40px 28px;
+  padding: 37px 40px 28px 27px;
   box-sizing: border-box;
 }
 
@@ -35,19 +36,47 @@
   font-weight: 700;
 }
 
+/* 테이블 관련 */
 table {
   width: 100%;
-  border: 1px solid white;
   border-collapse: collapse;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid var(--tableLine);
+  border-bottom: 1px solid var(--tableLine);
 }
 
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 th {
-  border: 1px solid white;
+  border: 2px solid var(--tableLine);
+  background-color: var(--primary);
+  color: black;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  padding: 10px 13px;
 }
 
 td {
-  border: 1px solid white;
+  border: 2px solid var(--tableLine);
+  font-size: 15px;
+  padding: 10px 5px 10px 10px;
 }
+
+th:first-child,
+td:first-child {
+  border-left: none;
+}
+
+th:last-child,
+td:last-child {
+  border-right: none;
+}
+
 /* 유저 목록 박스 */
 .onlyBtn {
   width: 131px;
@@ -65,10 +94,38 @@ td {
   justify-content: center;
 }
 
-.userList {
+.userContent {
   width: 100%;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  min-height: 0;
+}
+
+.userList {
+  max-width: 557px;
+  max-height: 708px;
+  overflow-y: auto;
+  overflow-x: hidden;
   margin-top: 13px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 스크롤바 스타일*/
+.userList::-webkit-scrollbar {
+  width: 6px;
+  height: 71px;
+}
+
+.userList::-webkit-scrollbar-thumb {
+  background: #969696;
+  border-radius: 123px;
+}
+
+.userList::-webkit-scrollbar-thumb:hover {
+  background: #969799;
 }
 
 /* 권한 변경 박스 */
@@ -89,4 +146,13 @@ td {
 .controler {
   display: flex;
   gap: 12px;
+}
+
+/* 하단 페이지 네이션 */
+.pageNation {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 20px;
+  flex-shrink: 0;
+  user-select: none;
 }

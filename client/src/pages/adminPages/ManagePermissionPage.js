@@ -76,65 +76,72 @@ const ManagePermissionPage = () => {
                             onChange={(e) => handleSizeChange(Number(e.target.value))}
                             style={{ marginRight: '10px', padding: '5px' }} // 임시 스타일
                         >
+                            <option value={5}>5개씩 보기</option>
                             <option value={10}>10개씩 보기</option>
+                            <option value={15}>15개씩 보기</option>
                             <option value={20}>20개씩 보기</option>
-                            <option value={25}>25개씩 보기</option>
+                            <option value={30}>30개씩 보기</option>
+                            <option value={40}>40개씩 보기</option>
+                            <option value={50}>50개씩 보기</option>
                         </select>
                         <button className={styles.onlyBtn}>ONLY MEMBER</button>
                     </div>
                 </div>
 
                 {/* 유저 목록 */}
-                <div className={styles.userList}>
-                    {isLoading ? (
-                        <p>로딩 중...</p>
-                    ) : error ? (
-                        <p>{error}</p>
-                    ) : (
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>NAME</th>
-                                    <th>EMAIL</th>
-                                    <th>ROLE</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {users.length > 0 ? (
-                                    users.map((user) => (
-                                        <tr key={user.id}>
-                                            <td>{user.id}</td>
-                                            <td>{user.name}</td>
-                                            <td>{user.email}</td>
-                                            <td>{user.role}</td>
-                                        </tr>
-                                    ))
-                                ) : (
+                <div className={styles.userContent}>
+                    <div className={styles.userList}>
+                        {isLoading ? (
+                            <p>로딩 중...</p>
+                        ) : error ? (
+                            <p>{error}</p>
+                        ) : (
+                            <table>
+                                <thead>
                                     <tr>
-                                        <td colSpan="4">불러올 데이터가 없습니다.</td>
+                                        <th>ID</th>
+                                        <th>NAME</th>
+                                        <th>EMAIL</th>
+                                        <th>ROLE</th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    )}
+                                </thead>
+                                <tbody>
+                                    {users.length > 0 ? (
+                                        users.map((user) => (
+                                            <tr key={user.id}>
+                                                <td style={{ textAlign: "right" }}>{user.id}</td>
+                                                <td>{user.name}</td>
+                                                <td>{user.email}</td>
+                                                <td>{user.role}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="4">불러올 데이터가 없습니다.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    {/* 페이지 네이션 UI */}
+                    <div className={styles.pageNation}>
+                        <button onClick={handlePrevPage} disabled={page === 0 || isLoading} style={{ cursor: "pointer" }}>
+                            &lt;&lt;
+                        </button>
+
+                        {/* 0부터 시작하므로 +1 해서 보여줌 */}
+                        <span style={{ margin: '0 15px' }}>
+                            {page + 1}
+                        </span>
+
+                        <button onClick={handleNextPage} disabled={!hasNext || isLoading} style={{ cursor: "pointer" }}>
+                            &gt;&gt;
+                        </button>
+                    </div>
                 </div>
 
-                {/* 페이지 네이션 UI */}
-                <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '1.2rem' }}>
-                    <button onClick={handlePrevPage} disabled={page === 0 || isLoading}>
-                        &lt;&lt;
-                    </button>
-
-                    {/* API는 0부터 시작하므로 +1 해서 보여줌 */}
-                    <span style={{ margin: '0 15px' }}>
-                        {page + 1}
-                    </span>
-
-                    <button onClick={handleNextPage} disabled={!hasNext || isLoading}>
-                        &gt;&gt;
-                    </button>
-                </div>
 
             </div>
 
