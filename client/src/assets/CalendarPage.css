@@ -1,3 +1,4 @@
+
 .calendar-page {
   position: relative;
   height: 100vh; /* 페이지 전체 고정 높이 */
@@ -31,12 +32,17 @@
 
 /* 상단 제목 */
 .calendar-title {
-  font-size: 42px;
-  font-weight: bold;
-  margin-top: 70px;
-  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: 700;
   text-align: center;
+
+  background: linear-gradient(180deg, #A0AFFF 0%, #B4EDFE 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
+
 
 .calendar-desc {
   color: #aaa;
@@ -85,7 +91,7 @@
   align-items: flex-start;
 }
 
-/* 일정 본문 (왼쪽 말풍선) */
+/* 일정 본문 */
 .schedule-box {
   width: 80%;
   margin-left: 10%;
@@ -129,5 +135,5 @@
   color: #ccc;
   box-sizing: border-box;
   backdrop-filter: blur(8px);
-  white-space: nowrap; /* ✅ 한 줄 유지 (줄바꿈 방지) */
+  white-space: nowrap; /* 한 줄 유지 (줄바꿈 방지) */
 }
