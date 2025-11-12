@@ -26,7 +26,7 @@ public class VoteMeta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 7)
     private String semester;
 
     @Column(nullable = false)
