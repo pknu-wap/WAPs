@@ -1,0 +1,110 @@
+
+.calendar-page {
+  position: relative;
+  min-height: 100vh;
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* 우측 상단 X 버튼 */
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #888;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+/* 상단 제목 */
+.calendar-title {
+  font-size: 42px;
+  font-weight: bold;
+  margin-top: 70px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.calendar-desc {
+  color: #aaa;
+  font-size: 15px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+/* 일정 리스트 전체 */
+.calendar-list {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-bottom: 60px;
+}
+
+/* 각 일정 묶음 */
+.schedule-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* 일정 본문 (왼쪽 말풍선) */
+.schedule-box {
+  width: 80%;
+  margin-left: 10%;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  backdrop-filter: blur(8px);
+}
+
+.schedule-date {
+  color: #bbb;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.schedule-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.schedule-content {
+  margin-top: 15px;
+  font-size: 16px;
+  color: #ddd;
+  white-space: pre-line;
+}
+
+/* 참가 대상 박스 */
+.target-box {
+  width: 60%;
+  margin-top: 8px;
+  margin-right: 10%;
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 12px 18px;
+  text-align: right;
+  font-size: 14px;
+  color: #ccc;
+  box-sizing: border-box;
+  backdrop-filter: blur(8px);
+}
