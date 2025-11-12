@@ -21,6 +21,12 @@ public interface VoteMetaRepository extends JpaRepository<VoteMeta, Long> {
     void updateToOpen(@Param("semester") String semester);
 
     @Modifying
-    @Query("UPDATE VoteMeta v SET v.status = 'CLOSED' WHERE v.semester = :semester")
-    void updateToClosed(@Param("semester") String semester);
+    @Query("""
+            UPDATE VoteMeta v
+            SET v.status = 'CLOSED',
+                v.closedAt = CURRENT_TIMESTAMP,
+                v.closedBy = :userId
+            WHERE v.semester = :semester
+            """)
+    void updateToClosed(@Param("semester") String semester, @Param("userId") Long userId);
 }
