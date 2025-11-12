@@ -9,6 +9,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
 
   const [canNavigate, setCanNavigate] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!Cookies.get("authToken"));
+  const [userRole, setUserRole] = useState(Cookies.get("userRole") || null);
 
   const handleNavigationWithAuth = (path) => {
     const token = Cookies.get("authToken");
@@ -21,9 +22,27 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     }
   };
 
+  const handleAdminNavigate = () => {
+    const token = Cookies.get("authToken");
+    const role = Cookies.get("userRole");
+
+    if (!token) {
+      alert("해당 페이지는 로그인을 해야 접속 가능합니다.");
+      navigate("/login");
+    } else if (role !== "ROLE_ADMIN") { // ADMIN 권한만 허용
+      alert("관리자 권한이 없습니다.");
+    } else {
+      Cookies.set("previousPage", window.location.pathname, { expires: 1 });
+      navigate("/admin/vote");
+      toggleMenu();
+    }
+  };
+
   useEffect(() => {
     const token = Cookies.get("authToken");
+    const role = Cookies.get("userRole");
     setIsLoggedIn(!!token);
+    setUserRole(role);
 
     const allowedDate = new Date("2024-11-29T18:00:00");
     const now = new Date();
@@ -46,14 +65,18 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     }
   };
 
+
   const handleLogout = () => {
     Cookies.remove("authToken");
     Cookies.remove("userName");
+    Cookies.remove("userRole");
     setIsLoggedIn(false);
+    setUserRole(null);
     alert("로그아웃 되었습니다.");
     toggleMenu();
     navigate("/");
   };
+
 
   return (
     <div className="menuContainer">
@@ -106,6 +129,19 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   onClick={() => navigate("/team-build/result")}
                 >
                   <span>팀빌딩 결과 Team Building Result</span>
+                  <span className="arrow"><FaChevronRight /></span>
+                </button>
+              </div>
+            </div>
+
+            <div className="menu-section">
+              <h3 className="section-title">ADMINISTRATOR</h3>
+              <div className="menu-items">
+                <button
+                  className="menu-item"
+                  onClick={handleAdminNavigate}
+                >
+                  <span>임원진 페이지 Administrator Page</span>
                   <span className="arrow"><FaChevronRight /></span>
                 </button>
               </div>

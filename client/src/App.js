@@ -13,6 +13,7 @@ import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
+import AdminRoute from "./components/Login/PrivateRoute";
 
 // 관리자 페이지 
 import ManagePermissionPage from "./pages/adminPages/ManagePermissionPage";
@@ -55,12 +56,19 @@ function App() {
 
         {/* 전체화면 레이아웃 */}
         <Route element={<FullScreenLayout />}>
-          <Route path="admin" element={<AdminPageLayout />}>
-            <Route path="vote" element={<ManageVotePage />} />
-            <Route path="teambuild" element={<ManageTeamBuildPage />} />
-            <Route path="permission" element={<ManagePermissionPage />} />
-            <Route path="plan" element={<ManagePlanPage />} />
+          {/* 관리자 페이지 */}
+          <Route
+            path="admin/*"
+            element={<AdminRoute requireRole="ROLE_ADMIN" />}
+          >
+            <Route element={<AdminPageLayout />}>
+              <Route path="vote" element={<ManageVotePage />} />
+              <Route path="teambuild" element={<ManageTeamBuildPage />} />
+              <Route path="permission" element={<ManagePermissionPage />} />
+              <Route path="plan" element={<ManagePlanPage />} />
+            </Route>
           </Route>
+
         </Route>
       </Routes>
     </Router >
