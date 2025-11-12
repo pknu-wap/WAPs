@@ -13,6 +13,7 @@ import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
+import CalendarPage from "./pages/Calendar";
 import AdminRoute from "./components/Login/PrivateRoute";
 
 // 관리자 페이지 
@@ -50,6 +51,7 @@ function App() {
           <Route path="/select/role" element={<RoleSelectPage />} />
           <Route path="/team-build" element={<TeamBuildPage />} />
           <Route path="/team-build/result" element={<TeamBuildResultPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
           {/* 보호된 페이지 */}
           <Route path="/protected" element={<ProtectedPage />} />
         </Route>

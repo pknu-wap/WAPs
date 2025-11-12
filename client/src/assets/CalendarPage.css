@@ -1,0 +1,155 @@
+@font-face {
+  font-family: 'Pretendard-Bold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+.calendar-page {
+  position: relative;
+  height: 100vh; /* 페이지 전체 고정 높이 */
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  overflow: hidden; /* 전체 페이지 스크롤바 숨기기 */
+  font-family: 'Pretendard-Regular';
+}
+
+/* 우측 상단 X 버튼 */
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 20px;
+  font-weight: regular;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+/* 상단 제목 */
+.calendar-title {
+  font-size: 40px;
+  font-family: 'Pretendard-Bold';
+  text-align: center;
+
+  background: linear-gradient(90deg, #A0AFFF 0%, #B4EDFE 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  margin-top: 50px;
+  margin-bottom: 0px; /* 제목과 설명 사이 간격 */
+}
+
+
+.calendar-desc {
+  color: #aaa;
+  font-size: 15px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* 일정 리스트 전체 */
+.calendar-list {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  flex-grow: 1;
+  overflow-y: auto; /* 내부만 스크롤 가능 */
+  padding-right: 10px; /* 스크롤바 여유 공간 */
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+/* 스크롤바 */
+.calendar-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.calendar-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.calendar-list::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.calendar-list::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3); /* hover 시 살짝 더 밝게 */
+}
+
+/* 각 일정 묶음 */
+.schedule-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* 일정 본문 */
+.schedule-box {
+  width: 100%;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  backdrop-filter: blur(8px);
+}
+
+.schedule-date {
+  color: #bbb;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.schedule-title {
+  font-size: 16px;
+  color: #fff;
+}
+
+.schedule-content {
+  margin-top: 15px;
+  font-size: 16px;
+  color: #fff;
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+/* 참가 대상 박스 */
+.target-box {
+  display: inline-block; /* 글자 길이에 맞게 자동 너비 조절 */
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 12px 18px;
+  margin-top: 15px;
+  margin-right: 0;
+  margin-left: auto;
+  text-align: center;
+  font-size: 14px;
+  color: #fff;
+  box-sizing: border-box;
+  backdrop-filter: blur(8px);
+  white-space: nowrap; /* 한 줄 유지 (줄바꿈 방지) */
+}
