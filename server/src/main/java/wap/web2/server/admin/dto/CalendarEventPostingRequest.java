@@ -1,16 +1,22 @@
 package wap.web2.server.admin.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
-import software.amazon.awssdk.annotations.NotNull;
 
 public record CalendarEventPostingRequest(
-        @NotNull
+        @NotBlank
+        @Size(max = 20)
         String title,
-        @NotNull
+        @NotBlank
+        @Size(max = 500)
         String content,
-        @NotNull
+        @NotBlank
+        @Size(max = 20)
         String target,
-        @NotNull
+        @NotBlank
+        @Size(max = 20)
         String location,
         @NotNull
         LocalDateTime dateTime
