@@ -35,7 +35,20 @@
   font-weight: 700;
 }
 
-/* 목록 박스 */
+table {
+  width: 100%;
+  border: 1px solid white;
+  border-collapse: collapse;
+}
+
+th {
+  border: 1px solid white;
+}
+
+td {
+  border: 1px solid white;
+}
+/* 유저 목록 박스 */
 .onlyBtn {
   width: 131px;
   height: 30px;
