@@ -6,4 +6,5 @@ import wap.web2.server.vote.entity.Ballot;
 
 @Repository
 public interface BallotRepository extends JpaRepository<Ballot, Long> {
+    long countBallotsBySemesterAndUserId(String semester, Long userId);
 }

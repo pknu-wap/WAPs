@@ -65,6 +65,7 @@ public class VoteService {
         Role userRole = Role.from(role);
 
         if (voteMetaRepository.findStatusBySemester(semester) == VoteStatus.OPEN) {
+            validateUserBallot(semester, userId);
             for (Long projectId : voteRequest.projectIds()) {
                 ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
             }
@@ -116,6 +117,13 @@ public class VoteService {
         results.forEach(result -> result.calculateVoteRate(sum));
 
         return results;
+    }
+
+    private void validateUserBallot(String semester, Long userId) {
+        long votedCount = ballotRepository.countBallotsBySemesterAndUserId(semester, userId);
+        if (votedCount >= 3) {
+            throw new IllegalArgumentException("[ERROR] 투표는 최대 3개까지 가능합니다.");
+        }
     }
 
     @Deprecated
