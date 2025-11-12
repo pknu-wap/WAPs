@@ -22,7 +22,7 @@ const Callback = () => {
         Cookies.set("userName", data.userName, { expires: 7 });
         Cookies.set("authToken", token, { expires: 7 });
 
-        // ✅ 로그인 성공 후 이동한 위치 기억용 쿠키 저장
+        // 로그인 성공 후 이동한 위치 기억용 쿠키 저장
         Cookies.set("lastPage", "/", { expires: 7 }); // 필요하면 "/" 대신 원하는 경로로 수정
 
         console.log("사용자 정보:", data);
@@ -44,6 +44,11 @@ const Callback = () => {
       })
       .then((roleData) => {
         console.log("역할 정보:", roleData);
+
+        // 역할 정보 저장
+        if (roleData.role) {
+          Cookies.set("userRole", roleData.role, { expires: 7 });
+        }
 
         if (roleData.roleAssigned) { // 역할을 이미 선택했다면
           navigate("/ProjectPage"); // 홈페이지로
