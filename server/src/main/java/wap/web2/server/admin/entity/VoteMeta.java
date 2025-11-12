@@ -1,5 +1,6 @@
 package wap.web2.server.admin.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,8 +22,10 @@ public class VoteMeta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String semester;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private VoteStatus status;
 
@@ -33,4 +36,14 @@ public class VoteMeta {
     private Long closedBy;
 
     private LocalDateTime closedAt;
+
+    private VoteMeta(String semester, Long createdBy) {
+        this.semester = semester;
+        this.createdBy = createdBy;
+        this.status = VoteStatus.OPEN;
+    }
+
+    public static VoteMeta of(String semester, Long createdBy) {
+        return new VoteMeta(semester, createdBy);
+    }
 }
