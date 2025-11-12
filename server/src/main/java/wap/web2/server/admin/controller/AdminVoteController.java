@@ -29,8 +29,9 @@ public class AdminVoteController {
 
     @PostMapping("/closed")
     @Operation(summary = "투표 닫기", description = "희망하는 학기의 투표를 닫습니다. 그럼 더이상 투표를 진행할 수 없습니다.")
-    public ResponseEntity<?> closeVoteMeta(@RequestParam("semester") String semester) {
-        adminVoteService.closeVote(semester);
+    public ResponseEntity<?> closeVoteMeta(@CurrentUser UserPrincipal currentUser,
+                                           @RequestParam("semester") String semester) {
+        adminVoteService.closeVote(semester, currentUser.getId());
         return ResponseEntity.ok().build();
     }
 }

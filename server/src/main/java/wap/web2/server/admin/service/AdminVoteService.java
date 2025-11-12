@@ -25,6 +25,11 @@ public class AdminVoteService {
 
 
     public void closeVote(String semester, Long userId) {
+        if (voteMetaRepository.existsBySemester(semester)) {
+            voteMetaRepository.updateToClosed(semester, userId);
+            return;
+        }
 
+        throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 존재하지 않습니다.", semester));
     }
 }
