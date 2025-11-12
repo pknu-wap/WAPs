@@ -1,0 +1,158 @@
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+:root {
+  --primary: #abd4fd;
+  --tableLine: rgba(255, 255, 255, 0.5);
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 29px;
+}
+
+.Box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border-radius: 42px;
+  background: #313131;
+  padding: 37px 40px 28px;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* 테이블 관련 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid var(--tableLine);
+  border-bottom: 1px solid var(--tableLine);
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+th {
+  border: 2px solid var(--tableLine);
+  background-color: var(--primary);
+  color: black;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  padding: 10px 13px;
+}
+
+td {
+  border: 2px solid var(--tableLine);
+  font-size: 15px;
+  padding: 10px 5px 10px 10px;
+}
+
+th:first-child,
+td:first-child {
+  border-left: none;
+}
+
+th:last-child,
+td:last-child {
+  border-right: none;
+}
+
+/* 유저 목록 박스 */
+.onlyBtn {
+  width: 131px;
+  height: 30px;
+  border-style: solid;
+  border-radius: 68px;
+  border-width: 1px;
+  border-color: #626262;
+  font-size: 15px;
+  color: #626262;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  min-height: 0;
+}
+
+.userList {
+  max-width: 557px;
+  max-height: 708px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 13px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 스크롤바 스타일*/
+.userList::-webkit-scrollbar {
+  width: 6px;
+  height: 71px;
+}
+
+.userList::-webkit-scrollbar-thumb {
+  background: #969696;
+  border-radius: 123px;
+}
+
+.userList::-webkit-scrollbar-thumb:hover {
+  background: #969799;
+}
+
+/* 권한 변경 박스 */
+.changeContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.changeContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 51px;
+  align-items: center;
+}
+
+.controler {
+  display: flex;
+  gap: 12px;
+}
+
+/* 하단 페이지 네이션 */
+.pageNation {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 20px;
+  flex-shrink: 0;
+  user-select: none;
+}
