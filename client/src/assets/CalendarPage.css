@@ -139,17 +139,11 @@
 
 /* 참가 대상 박스 */
 .target-box {
-  display: inline-block; /* 글자 길이에 맞게 자동 너비 조절 */
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 15px;
-  padding: 12px 18px;
-  margin-top: 15px;
-  margin-right: 0;
-  margin-left: auto;
-  text-align: center;
-  font-size: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3); /* 줄 */
+  margin-top: 15px; /* 내용과의 간격 */
+  padding-top: 10px; /* 줄 위 여백 */
+  text-align: right;
+  font-size: 16px;
   color: #fff;
-  box-sizing: border-box;
-  backdrop-filter: blur(8px);
-  white-space: nowrap; /* 한 줄 유지 (줄바꿈 방지) */
+  font-family: 'Pretendard-Regular';
 }

@@ -13,7 +13,7 @@ import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
-import CalendarPage from "./pages/Calendar";
+import CalendarPage from "./pages/CalendarPage";
 import AdminRoute from "./components/Login/PrivateRoute";
 
 // 관리자 페이지 

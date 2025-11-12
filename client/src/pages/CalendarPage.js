@@ -69,7 +69,7 @@ const CalendarPage = () => {
             date: "2025-12-15",
             title: "팀별 코드 리뷰 세션",
             content: "프로젝트별 코드 리뷰가 진행됩니다.",
-            target: "",
+            target: "모두",
           },
         ];
 
@@ -111,12 +111,8 @@ const CalendarPage = () => {
                     <div key={i}>{line}</div>
                   ))}
                 </div>
-              </div>
-
-              {/* 참가 대상 있을 때만 출력 */}
-              {event.target && event.target.trim() !== "" && (
                 <div className="target-box">#{event.target}</div>
-              )}
+              </div>
             </div>
           ))
         ) : (
