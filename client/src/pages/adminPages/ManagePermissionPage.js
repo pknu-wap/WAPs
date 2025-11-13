@@ -174,7 +174,7 @@ const ManagePermissionPage = () => {
 
                     {/* 페이지 네이션 UI */}
                     <div className={styles.pageNation}>
-                        <button onClick={handlePrevPage} disabled={page === 0 || isLoading} style={{ cursor: "pointer" }}>
+                        <button onClick={handlePrevPage} disabled={page === 0 || isLoading} className={styles.prevPage}>
                             &lt;&lt;
                         </button>
 
@@ -183,7 +183,7 @@ const ManagePermissionPage = () => {
                             {page + 1}
                         </span>
 
-                        <button onClick={handleNextPage} disabled={!hasNext || isLoading} style={{ cursor: "pointer" }}>
+                        <button onClick={handleNextPage} disabled={!hasNext || isLoading} className={styles.nextPage}>
                             &gt;&gt;
                         </button>
                     </div>

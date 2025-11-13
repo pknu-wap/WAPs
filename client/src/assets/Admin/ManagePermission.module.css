@@ -178,3 +178,9 @@ td:last-child {
   flex-shrink: 0;
   user-select: none;
 }
+
+.prevPage:hover,
+.nextPage:hover {
+  font-size: 22px;
+  cursor: pointer;
+}
