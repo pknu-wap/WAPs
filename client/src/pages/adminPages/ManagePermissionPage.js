@@ -89,14 +89,14 @@ const ManagePermissionPage = () => {
             return;
         }
 
-        setIsLoading(true);
+        setIsUpdating(true);
         setUpdateError(null);
 
         try {
             // 맵의 키 목록을 array로 변환하여 API 호출
             const response = await apiClient.patch("/admin/role/user", {
                 newRole: newRole,
-                userId: Array.from(selectedUserMap.keys())
+                userIds: Array.from(selectedUserMap.keys())
             })
 
             alert(`${response.data.updatedUserCount}명의 사용자가 ${response.data.changeTo} 권한으로 변경되었습니다.`);
