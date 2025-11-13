@@ -134,18 +134,20 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
               </div>
             </div>
 
-            <div className="menu-section">
-              <h3 className="section-title">ADMINISTRATOR</h3>
-              <div className="menu-items">
-                <button
-                  className="menu-item"
-                  onClick={handleAdminNavigate}
-                >
-                  <span>임원진 페이지 Administrator Page</span>
-                  <span className="arrow"><FaChevronRight /></span>
-                </button>
+            {(userRole === "ROLE_ADMIN") &&
+              <div className="menu-section">
+                <h3 className="section-title">ADMINISTRATOR</h3>
+                <div className="menu-items">
+                  <button
+                    className="menu-item"
+                    onClick={handleAdminNavigate}
+                  >
+                    <span>임원진 페이지 Administrator Page</span>
+                    <span className="arrow"><FaChevronRight /></span>
+                  </button>
+                </div>
               </div>
-            </div>
+            }
 
             <div className="menu-section">
               <h3 className="section-title">VOTE</h3>
