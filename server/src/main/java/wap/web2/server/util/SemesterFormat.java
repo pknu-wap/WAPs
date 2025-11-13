@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Constraint(validatedBy = {})
-@Pattern(regexp = "^(19|20)\\d{2}-(01|02)$", message = "semester 형식은 yyyy-00이어야 합니다.")
+@Pattern(regexp = "^(19|20)\\d{2}-(01|02)$", message = "semester 형식은 yyyy-01 또는 yyyy-02여야 합니다.")
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SemesterFormat {
