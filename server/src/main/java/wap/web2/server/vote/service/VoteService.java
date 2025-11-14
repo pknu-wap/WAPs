@@ -4,6 +4,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.admin.entity.VoteStatus;
+import wap.web2.server.admin.repository.VoteMetaRepository;
+import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.project.repository.ProjectRepository;
@@ -11,9 +14,12 @@ import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteRequest;
+import wap.web2.server.vote.dto.VoteRequest2;
 import wap.web2.server.vote.dto.VoteResultResponse;
+import wap.web2.server.vote.entity.Ballot;
 import wap.web2.server.vote.entity.Vote;
 import wap.web2.server.vote.entity.VoteResult;
+import wap.web2.server.vote.repository.BallotRepository;
 import wap.web2.server.vote.repository.VoteRepository;
 import wap.web2.server.vote.repository.VoteResultRepository;
 
@@ -25,9 +31,12 @@ public class VoteService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final VoteRepository voteRepository;
+    private final BallotRepository ballotRepository;
+    private final VoteMetaRepository voteMetaRepository;
 
     // Transactional인 메서드에서 투표 실시, marking user vote 가 들어있어야 transactional 하게 처리할 수 있다.
     // 투표는 '현재 년도&학기'에 '열려있는' 상태에만 가능하다.
+    @Deprecated
     @Transactional
     public void processVote(Long userId, VoteRequest voteRequest) {
         Integer year = SemesterGenerator.generateYearValue();
@@ -48,6 +57,23 @@ public class VoteService {
         vote(voteRequest, vote.getId());
         markVoted(user.getId());
         user.updateVotedProjectIds(voteRequest);
+    }
+
+    @Transactional
+    public void vote(Long userId, String role, VoteRequest2 voteRequest) {
+        String semester = voteRequest.semester();
+        Role userRole = Role.from(role);
+
+        if (voteMetaRepository.findStatusBySemester(semester) == VoteStatus.OPEN) {
+            validateUserBallot(semester, userId);
+            for (Long projectId : voteRequest.projectIds()) {
+                ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
+            }
+            return;
+        }
+
+        // CLOSED
+        throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 열리지 않았습니다.", semester));
     }
 
     @Transactional(readOnly = true)
@@ -93,6 +119,14 @@ public class VoteService {
         return results;
     }
 
+    private void validateUserBallot(String semester, Long userId) {
+        long votedCount = ballotRepository.countBallotsBySemesterAndUserId(semester, userId);
+        if (votedCount >= 3) {
+            throw new IllegalArgumentException("[ERROR] 투표는 최대 3개까지 가능합니다.");
+        }
+    }
+
+    @Deprecated
     // TODO: SQL 쿼리를 직접 날려서 스레스 안전을 보장하는 방법말고도 해보기!!!
     //  https://tecoble.techcourse.co.kr/post/2023-08-16-concurrency-managing/ 참고
     private void vote(VoteRequest voteRequest, Long voteId) {

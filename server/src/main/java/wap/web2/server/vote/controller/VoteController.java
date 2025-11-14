@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.security.core.CurrentUser;
 import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.vote.dto.VoteInfoResponse;
-import wap.web2.server.vote.dto.VoteRequest;
+import wap.web2.server.vote.dto.VoteRequest2;
 import wap.web2.server.vote.dto.VoteResultResponse;
 import wap.web2.server.vote.service.VoteService;
 
@@ -29,16 +29,19 @@ public class VoteController {
 
     @PostMapping
     public ResponseEntity<?> voteProjects(@CurrentUser UserPrincipal userPrincipal,
-                                          @RequestBody @Valid VoteRequest voteRequest) {
+                                          @RequestBody @Valid VoteRequest2 voteRequest) {
         try {
-            voteService.processVote(userPrincipal.getId(), voteRequest);
+            String role = userPrincipal.getUserRole()
+                    .orElseThrow(() -> new IllegalArgumentException("[ERROR] 사용자의 권한 정보가 존재하지 않습니다."));
+
+            voteService.vote(userPrincipal.getId(), role, voteRequest);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalStateException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
