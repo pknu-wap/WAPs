@@ -25,7 +25,7 @@
   height: 100%;
   border-radius: 42px;
   background: #313131;
-  padding: 37px 40px 28px;
+  padding: 37px;
   box-sizing: border-box;
 }
 
@@ -77,6 +77,17 @@ td:last-child {
   border-right: none;
 }
 
+/* 선택된 행 스타일 */
+.selectedRow {
+  background-color: #505050;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.selectedRow td {
+  background-color: #505050;
+}
+
 /* 유저 목록 박스 */
 .onlyBtn {
   width: 131px;
@@ -104,13 +115,16 @@ td:last-child {
 }
 
 .userList {
-  max-width: 557px;
-  max-height: 708px;
+  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 13px;
   flex: 1;
   min-height: 0;
+}
+
+.selectedBox {
+  background-color: var(--primary);
 }
 
 /* 스크롤바 스타일*/
@@ -133,19 +147,58 @@ td:last-child {
   width: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.changeContent {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-top: 51px;
   align-items: center;
+  flex: 1;
+  min-height: 0;
 }
 
 .controler {
   display: flex;
   gap: 12px;
+  align-items: center;
+  margin-top: 45px;
+  margin-bottom: 20px;
+}
+
+.roleDropdown {
+  min-width: 200px;
+  height: 45px;
+  font-size: 18px;
+  border-radius: 26px;
+  cursor: pointer;
+  background-color: #bcbcbc;
+  color: black;
+  flex: 1;
+  max-width: 200px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.changeList {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin-top: 20px;
+}
+
+.adjust {
+  width: 100px;
+  height: 45px;
+  border-radius: 69px;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: 1px solid white;
+  background-color: transparent;
+  font-size: 18px;
+  text-align: center;
+}
+
+.adjust:hover,
+.adjust:active {
+  color: white;
+  border: 1px solid var(--primary);
+  background-color: var(--primary);
 }
 
 /* 하단 페이지 네이션 */
@@ -155,4 +208,10 @@ td:last-child {
   font-size: 20px;
   flex-shrink: 0;
   user-select: none;
+}
+
+.prevPage:hover,
+.nextPage:hover {
+  font-size: 22px;
+  cursor: pointer;
 }
