@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class VoteMeta {
 
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -33,13 +34,17 @@ public class VoteMeta {
     @Enumerated(EnumType.STRING)
     private VoteStatus status;
 
+    @Column
     private Long createdBy;
 
+    @Column
     @CreatedDate
     private LocalDateTime createdAt;
 
+    @Column
     private Long closedBy;
 
+    @Column
     private LocalDateTime closedAt;
 
     private VoteMeta(String semester, Long createdBy) {

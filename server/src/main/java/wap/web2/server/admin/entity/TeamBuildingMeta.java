@@ -22,6 +22,7 @@ public class TeamBuildingMeta {
     }
 
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

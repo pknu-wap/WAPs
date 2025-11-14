@@ -29,6 +29,7 @@ import wap.web2.server.member.entity.Role;
 public class Ballot {
 
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -42,6 +43,7 @@ public class Ballot {
     @Enumerated(EnumType.STRING)
     private Role userRole;
 
+    @Column
     private Long projectId;
 
     @CreatedDate
