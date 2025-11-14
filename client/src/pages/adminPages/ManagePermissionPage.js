@@ -12,7 +12,7 @@ const ManagePermissionPage = () => {
 
     // 페이지네이션 상태
     const [page, setPage] = useState(0);
-    const [size] = useState(15); // 15개 고정
+    const [size] = useState(12); // 12개 고정
     const [hasNext, setHasNext] = useState(false); // 다음 페이지 존재 여부
 
     // 권한 변경 상태
@@ -195,7 +195,7 @@ const ManagePermissionPage = () => {
                 <div className={styles.changeContent}>
                     {/* 권한 선택 및 적용 버튼 UI */}
                     <div className={styles.controler}>
-                        <span style={{ fontSize: "20px", fontWeight: "700" }}>
+                        <span style={{ fontSize: "18px", fontWeight: "700" }}>
                             다음으로 권한 변경:
                         </span>
 
@@ -205,7 +205,7 @@ const ManagePermissionPage = () => {
                             onChange={(e) => setNewRole(e.target.value)}
                             className={styles.roleDropdown}
                         >
-                            <option value="">권한을 선택하세요</option>
+                            <option value="">권한 선택</option>
                             {ROLES.map((role) => (
                                 <option key={role} value={role}>
                                     {role.replace("ROLE_", "")}
@@ -215,7 +215,7 @@ const ManagePermissionPage = () => {
 
                         {/* 적용 버튼 */}
                         <button
-                            className={styles.summit}
+                            className={styles.adjust}
                             onClick={handleSubmitChange}
                             disabled={isUpdating}
                         >
