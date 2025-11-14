@@ -35,4 +35,5 @@ public class AdminVoteController {
         adminVoteService.closeVote(semester, currentUser.getId());
         return ResponseEntity.ok().build();
     }
+
 }

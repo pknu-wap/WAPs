@@ -51,4 +51,5 @@ public class VoteMeta {
     public static VoteMeta of(String semester, Long createdBy) {
         return new VoteMeta(semester, createdBy);
     }
+
 }

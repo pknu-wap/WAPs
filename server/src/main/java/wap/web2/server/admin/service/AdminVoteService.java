@@ -32,4 +32,5 @@ public class AdminVoteService {
 
         throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 존재하지 않습니다.", semester));
     }
+
 }

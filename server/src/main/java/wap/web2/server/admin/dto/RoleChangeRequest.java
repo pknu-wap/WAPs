@@ -15,4 +15,5 @@ public class RoleChangeRequest {
     @NotNull
     private Role newRole;
     private List<Long> userIds;
+
 }

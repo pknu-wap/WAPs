@@ -29,4 +29,5 @@ public interface VoteMetaRepository extends JpaRepository<VoteMeta, Long> {
             WHERE v.semester = :semester
             """)
     void updateToClosed(@Param("semester") String semester, @Param("userId") Long userId);
+
 }

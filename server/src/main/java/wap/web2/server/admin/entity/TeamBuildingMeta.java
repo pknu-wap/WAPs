@@ -31,4 +31,5 @@ public class TeamBuildingMeta {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TeamBuildingStatus status = TeamBuildingStatus.OPEN;
+
 }

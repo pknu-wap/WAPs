@@ -57,4 +57,5 @@ public class Ballot {
     public static Ballot of(String semester, Long userId, Role userRole, Long projectId) {
         return new Ballot(semester, userId, userRole, projectId);
     }
+
 }

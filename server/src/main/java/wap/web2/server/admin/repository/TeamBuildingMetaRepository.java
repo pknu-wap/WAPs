@@ -17,4 +17,5 @@ public interface TeamBuildingMetaRepository extends JpaRepository<TeamBuildingMe
     Optional<TeamBuildingMeta> findBySemester(String semester);
 
     boolean existsTeamBuildingMetaBySemester(String semester);
+
 }
