@@ -22,6 +22,7 @@ public class TeamBuildingMeta {
     }
 
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -31,4 +32,5 @@ public class TeamBuildingMeta {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TeamBuildingStatus status = TeamBuildingStatus.OPEN;
+
 }

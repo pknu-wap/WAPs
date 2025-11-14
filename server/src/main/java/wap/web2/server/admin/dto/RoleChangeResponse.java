@@ -10,4 +10,5 @@ public class RoleChangeResponse {
 
     private int updatedUserCount;
     private Role changeTo;
+
 }

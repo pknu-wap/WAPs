@@ -16,6 +16,7 @@ import wap.web2.server.project.entity.Project;
 public class Vote {
 
     @Id
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

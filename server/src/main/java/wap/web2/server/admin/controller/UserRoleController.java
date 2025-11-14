@@ -31,4 +31,5 @@ public class UserRoleController {
         UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page);
         return ResponseEntity.ok(response);
     }
+
 }
