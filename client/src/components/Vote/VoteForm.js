@@ -19,6 +19,12 @@ const VoteForm = ({ isVotedUser }) => {
 
   const [selectedProjects, setSelectedProjects] = useState([]);
 
+  // 현재 학기를 저장
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1; // getMonth()는 0~11을 반환하므로 +1
+  const currentSemesterNum = currentMonth <= 7 ? 1 : 2; // 1~7월은 1학기, 8~12월은 2학기
+  const semester = `${currentYear}-${String(currentSemesterNum).padStart(2, '0')}`;
+
   // const handleProjectSelect = ({ projectId, isVotedUser }) => {
   //   console.log("클릭됨", projectId);
 
@@ -85,6 +91,7 @@ const VoteForm = ({ isVotedUser }) => {
     // 프로젝트 데이터 : JSON 형식으로 준비
     const projectData = {
       projectIds: selectedProjects,
+      semester: semester
     };
 
     try {
