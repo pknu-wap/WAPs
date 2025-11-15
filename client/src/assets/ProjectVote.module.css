@@ -105,7 +105,7 @@
   width: 90%;
   border-radius: 10px;
   margin: 0 auto;
-  margin-bottom: 15px;
+  margin-bottom: 0px;
   padding: 5px;
   padding-left: 15px;
   padding-right: 15px;
@@ -241,13 +241,13 @@
   margin: 5px ;
   width: 70%;
   text-align: left;
-  margin-top: 10px;
+  margin-top: 5px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;    /* ★ EDIT: 위쪽 정렬로 고정 */
-  gap: 6px;                       /* ★ EDIT: 제목-내용 간 고정 간격 */
+  gap: 4px;                       /* ★ EDIT: 제목-내용 간 고정 간격 */
   height: 50px;
-  overflow: hidden;               /* ★ EDIT: 내부 말줄임 동작을 위해 숨김 */
+  padding-bottom: 2px;           /* ★ EDIT: 내부 말줄임 동작을 위해 숨김 */
 }
 
 .project_result_form {
@@ -274,7 +274,7 @@
 
 .title {
   color: #ffffff;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 700;
   margin: 0;
   flex-grow: 0;
@@ -297,7 +297,7 @@
   -webkit-line-clamp: 3;          /* ★ EDIT: 최대 3줄로 제한(원하면 조절) */
   -webkit-box-orient: vertical;   /* ★ EDIT: 세로 방향 */
   overflow: hidden;               /* ★ EDIT: 넘치는 내용 숨김 */
-  line-height: 1.35;              /* ★ EDIT: 시작 높이 일관성 */
+  line-height: 1.2;              /* ★ EDIT: 시작 높이 일관성 */
 }
 
 .view_button {
@@ -336,4 +336,15 @@
   align-items: flex-end;    /* 텍스트 하단 정렬 */
   gap: 7px;
   line-height: 1;
+}
+
+.project_vote_count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.vote_icon {
+  width: 12px;
+  height: 12px;
 }

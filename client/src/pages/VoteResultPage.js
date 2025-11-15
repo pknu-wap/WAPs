@@ -4,6 +4,20 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../assets/ProjectVote.module.css";
 
+// D 모양 아이콘 SVG 컴포넌트
+const VoteIcon = ({ size = 20, color = "#b8ecff", className = "", ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    {...props}
+  >
+    <path d="M2 2 H12 A10 10 0 0 1 12 22 H2 Z" fill={color} />
+  </svg>
+);
+
 const VoteResultPage = () => {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
@@ -12,8 +26,8 @@ const VoteResultPage = () => {
   const voteUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/result?semester=1&projectYear=${currentYear}`;
   const listUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=1&projectYear=${currentYear}`;
 
-  const [projects, setProjects] = useState([]);          // /vote/result 결과(득표수·비율 포함)
-  const [idByName, setIdByName] = useState({});          // 프로젝트명→ID 매핑
+  const [projects, setProjects] = useState([]); // /vote/result 결과(득표수·비율 포함)
+  const [idByName, setIdByName] = useState({}); // 프로젝트명→ID 매핑
   const [selectedProjects, setSelectedProjects] = useState([]); // 유지(상위 1개)
 
   // 순위 계산용
@@ -89,7 +103,9 @@ const VoteResultPage = () => {
               marginTop: "40px",
             }}
           >
-            VOTING<br/>RESULTS
+            VOTING
+            <br />
+            RESULTS
           </div>
           <div
             className={styles.title}
@@ -113,7 +129,9 @@ const VoteResultPage = () => {
 
             return (
               <div
-                className={`${styles.project_list_box} ${isTop3 ? styles.selected : ""}`}
+                className={`${styles.project_list_box} ${
+                  isTop3 ? styles.selected : ""
+                }`}
                 key={(project.projectId ?? project.projectName ?? index) + "-vote"}
               >
                 {/* 상단: 썸네일(좌) + 오른쪽 컬럼(우) */}
@@ -145,8 +163,12 @@ const VoteResultPage = () => {
 
                     <div className={styles.bottom_row}>
                       <div className={styles.project_result_inline}>
-                        <div className={`${styles.project_vote_count} ${opacityClass}`}>
-                          {project.voteCount} 득표
+                        {/* 아이콘 + 득표수 */}
+                        <div
+                          className={`${styles.project_vote_count} ${opacityClass}`}
+                        >
+                          <VoteIcon className={styles.vote_icon} />
+                          <span>{project.voteCount} 득표</span>
                         </div>
                         <div className={styles.project_vote_rate}>
                           {project.voteRate}%
@@ -156,7 +178,9 @@ const VoteResultPage = () => {
                       <button
                         className={styles.view_button}
                         onClick={() => handleProjectClick(project)}
-                        aria-label={`${project.projectName || project.title || "프로젝트"} 상세 보러가기`}
+                        aria-label={`${
+                          project.projectName || project.title || "프로젝트"
+                        } 상세 보러가기`}
                       >
                         보러가기 →
                       </button>
@@ -175,6 +199,7 @@ const VoteResultPage = () => {
 };
 
 export default VoteResultPage;
+
 
 
 
