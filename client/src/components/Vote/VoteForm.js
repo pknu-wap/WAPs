@@ -22,7 +22,7 @@ const VoteForm = ({ isVotedUser }) => {
   // 현재 학기를 저장
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1; // getMonth()는 0~11을 반환하므로 +1
-  const currentSemesterNum = currentMonth <= 7 ? 1 : 2; // 1~7월은 1학기, 8~12월은 2학기
+  const currentSemesterNum = currentMonth <= 6 ? 1 : 2; // 1~6월은 1학기, 7~12월은 2학기
   const semester = `${currentYear}-${String(currentSemesterNum).padStart(2, '0')}`;
 
   // const handleProjectSelect = ({ projectId, isVotedUser }) => {
