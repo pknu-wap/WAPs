@@ -6,17 +6,6 @@ const CalendarPage = () => {
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
 
-  // 날짜 문자열을 Date 객체로 변환
-  const parseDate = (dateStr) => {
-    const hasTime = dateStr.includes(":");
-    if (hasTime) {
-      return new Date(dateStr);
-    } else {
-      // 날짜만 있으면 해당 날짜 23시 59분으로 보정
-      return new Date(`${dateStr}T23:59:00`);
-    }
-  };
-
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -29,14 +18,8 @@ const CalendarPage = () => {
 
         const data = await response.json();
 
-        const now = new Date();
+        setEvents(data);
 
-        // 과거의 일정은 안 보여주고 날짜 오름차순 정렬
-        const filtered = data
-          .filter((e) => parseDate(e.date) >= now)
-          .sort((a, b) => parseDate(a.date) - parseDate(b.date));
-
-        setEvents(filtered);
       } catch (error) {
         console.error("일정 데이터를 불러오지 못했습니다:", error);
 
@@ -54,13 +37,13 @@ const CalendarPage = () => {
             target: "신입필참!",
           },
           {
-            date: "2025-12-10 15:00",
+            date: "2025-12-05 15:00",
             title: "부스팅데이",
             content: "온라인 Zoom에서 부스팅 데이가 진행됩니다.",
             target: "신입 필참 (정회원 참여 가능)",
           },
           {
-            date: "2025-12-05 18:30",
+            date: "2025-12-07 18:30",
             title: "2025년도 2학기 중간 발표",
             content: "향파관 401호 강의실에서 중간 발표가 진행됩니다.",
             target: "프로젝트 참여 인원",
@@ -73,13 +56,7 @@ const CalendarPage = () => {
           },
         ];
 
-        const now = new Date();
-
-        const filteredDummy = dummyData
-          .filter((e) => parseDate(e.date) >= now)
-          .sort((a, b) => parseDate(a.date) - parseDate(b.date));
-
-        setEvents(filteredDummy);
+        setEvents(dummyData);
       }
     };
 
