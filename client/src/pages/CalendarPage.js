@@ -9,7 +9,9 @@ const CalendarPage = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("/calendar/events", {
+        const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/calendar/events`;
+        
+        const response = await fetch(apiUrl, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
@@ -29,7 +31,7 @@ const CalendarPage = () => {
             date: "2025-12-01",
             title: "10/1(수) 개모임 안내",
             content: `연사자
-            구교황 - “스택 메모리가 무한정으로 커지면 힙 메모리는 필요 없을까?”에 대한 고찰
+            구교황 - "스택 메모리가 무한정으로 커지면 힙 메모리는 필요 없을까?"에 대한 고찰
             김균호 - 내 프로젝트에 100만명의 사용자가 몰려든다면!
             조강래 - 배포 후 추가로 학습하면 좋은 것
             김성준 - TSP문제의 여러 알고리즘과 현재 연구단계
