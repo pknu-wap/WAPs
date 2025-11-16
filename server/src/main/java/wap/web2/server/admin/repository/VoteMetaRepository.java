@@ -1,5 +1,6 @@
 package wap.web2.server.admin.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -30,4 +31,5 @@ public interface VoteMetaRepository extends JpaRepository<VoteMeta, Long> {
             """)
     void updateToClosed(@Param("semester") String semester, @Param("userId") Long userId);
 
+    Optional<VoteMeta> findBySemester(String semester);
 }

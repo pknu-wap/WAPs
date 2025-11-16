@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import wap.web2.server.admin.dto.request.VoteParticipants;
 import wap.web2.server.admin.service.AdminVoteService;
 import wap.web2.server.security.core.CurrentUser;
 import wap.web2.server.security.core.UserPrincipal;
@@ -23,8 +25,9 @@ public class AdminVoteController {
     @Operation(summary = "투표 열기",
             description = "희망하는 학기의 투표를 생성합니다. 혹은 희망하는 학기의 투표를 엽니다. 이제 투표를 진행할 수 있습니다.")
     public ResponseEntity<?> openVoteMeta(@CurrentUser UserPrincipal currentUser,
+                                          @RequestBody VoteParticipants voteParticipants,
                                           @RequestParam("semester") @Semester String semester) {
-        adminVoteService.initializeVote(semester, currentUser.getId());
+        adminVoteService.initializeVote(semester, currentUser.getId(), voteParticipants);
         return ResponseEntity.ok().build();
     }
 
