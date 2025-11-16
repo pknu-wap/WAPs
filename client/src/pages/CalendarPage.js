@@ -37,7 +37,7 @@ const CalendarPage = () => {
             target: "신입필참!",
           },
           {
-            date: "2025-12-5 15:00",
+            date: "2025-12-05 15:00",
             title: "부스팅데이",
             content: "온라인 Zoom에서 부스팅 데이가 진행됩니다.",
             target: "신입 필참 (정회원 참여 가능)",
