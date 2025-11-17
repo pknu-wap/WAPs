@@ -16,7 +16,7 @@ import wap.web2.server.security.core.CurrentUser;
 import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.dto.VoteInfoResponse;
-import wap.web2.server.vote.dto.VoteRequest2;
+import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
 import wap.web2.server.vote.service.VoteService;
 
@@ -31,7 +31,7 @@ public class VoteController {
 
     @PostMapping
     public ResponseEntity<?> voteProjects(@CurrentUser UserPrincipal userPrincipal,
-                                          @RequestBody @Valid VoteRequest2 voteRequest) {
+                                          @RequestBody @Valid VoteRequest voteRequest) {
         try {
             String role = userPrincipal.getUserRole()
                     .orElseThrow(() -> new IllegalArgumentException("[ERROR] 사용자의 권한 정보가 존재하지 않습니다."));

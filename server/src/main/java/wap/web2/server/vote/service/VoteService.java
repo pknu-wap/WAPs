@@ -18,7 +18,7 @@ import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.dto.ProjectVoteCount;
 import wap.web2.server.vote.dto.VoteInfoResponse;
-import wap.web2.server.vote.dto.VoteRequest2;
+import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
 import wap.web2.server.vote.entity.Ballot;
 import wap.web2.server.vote.repository.BallotRepository;
@@ -33,7 +33,7 @@ public class VoteService {
     private final VoteMetaRepository voteMetaRepository;
 
     @Transactional
-    public void vote(Long userId, String role, VoteRequest2 voteRequest) {
+    public void vote(Long userId, String role, VoteRequest voteRequest) {
         String semester = voteRequest.semester();
         Role userRole = Role.from(role);
 
