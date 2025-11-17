@@ -64,16 +64,16 @@ public class VoteService {
         String semester = voteRequest.semester();
         Role userRole = Role.from(role);
 
-        if (voteMetaRepository.findStatusBySemester(semester) == VoteStatus.OPEN) {
-            validateUserBallot(semester, userId);
-            for (Long projectId : voteRequest.projectIds()) {
-                ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
-            }
-            return;
+        VoteStatus voteStatus = voteMetaRepository.findStatusBySemester(semester)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 투표가 존재하지 않습니다."));
+        if (voteStatus != VoteStatus.OPEN) {
+            throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 열리지 않았습니다.", semester));
         }
 
-        // CLOSED
-        throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 열리지 않았습니다.", semester));
+        validateUserBallot(semester, userId);
+        for (Long projectId : voteRequest.projectIds()) {
+            ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
+        }
     }
 
     @Transactional(readOnly = true)
