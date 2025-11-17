@@ -45,7 +45,6 @@ public class VoteController {
         }
     }
 
-    // TODO: fe에서 2번의 요청을 통한 분기처리로 확인하던것을, 오류코드를 반환하는 식으로 개선해서 1번의 요청으로 줄일 수 있을 듯
     @GetMapping("/now")
     public ResponseEntity<?> getVoteInfo(@CurrentUser UserPrincipal userPrincipal,
                                          @RequestParam(value = "projectYear", required = false) Integer year,

@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.Getter;
 import wap.web2.server.project.entity.Project;
 
+@Deprecated
 @Getter
 @Entity
 public class Vote {
