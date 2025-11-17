@@ -1,5 +1,6 @@
 package wap.web2.server.admin.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +13,7 @@ import wap.web2.server.admin.entity.VoteStatus;
 public interface VoteMetaRepository extends JpaRepository<VoteMeta, Long> {
 
     @Query("SELECT v.status FROM VoteMeta v WHERE v.semester = :semester")
-    VoteStatus findStatusBySemester(@Param("semester") String semester);
+    Optional<VoteStatus> findStatusBySemester(@Param("semester") String semester);
 
     boolean existsBySemester(String semester);
 

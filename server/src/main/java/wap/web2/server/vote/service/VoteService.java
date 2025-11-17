@@ -77,18 +77,20 @@ public class VoteService {
     }
 
     @Transactional(readOnly = true)
-    public VoteInfoResponse getVoteInfo(UserPrincipal userPrincipal, Integer year, Integer semester) {
-        if (year == null || semester == null) {
-            year = SemesterGenerator.generateYearValue();
-            semester = SemesterGenerator.generateSemesterValue();
-        }
-
-        Vote vote = voteRepository.findVoteByYearAndSemester(year, semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지않는 투표입니다."));
+    public VoteInfoResponse getVoteInfo(UserPrincipal userPrincipal, String semester) {
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
+        VoteStatus voteStatus = voteMetaRepository.findStatusBySemester(semester)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 투표가 존재하지 않습니다."));
 
-        return new VoteInfoResponse(vote.getIsOpen(), user.getVoted());
+        long votedCount = ballotRepository.countBallotsBySemesterAndUserId(semester, user.getId());
+        boolean isVotedUser = votedCount > 0;
+        boolean isOpen = (voteStatus == VoteStatus.OPEN);
+
+        return VoteInfoResponse.builder()
+                .isVotedUser(isVotedUser)
+                .isOpen(isOpen)
+                .build();
     }
 
     @Transactional(readOnly = true)
