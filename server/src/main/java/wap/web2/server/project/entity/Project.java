@@ -23,7 +23,6 @@ import wap.web2.server.member.entity.User;
 import wap.web2.server.project.dto.TeamMemberDto;
 import wap.web2.server.project.dto.TechStackDto;
 import wap.web2.server.project.dto.request.ProjectRequest;
-import wap.web2.server.vote.entity.Vote;
 
 @Entity
 @Getter

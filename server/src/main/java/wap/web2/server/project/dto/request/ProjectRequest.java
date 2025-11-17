@@ -17,7 +17,6 @@ import wap.web2.server.project.entity.Image;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.entity.TeamMember;
 import wap.web2.server.project.entity.TechStack;
-import wap.web2.server.vote.entity.Vote;
 
 // 프로젝트 생성 및 수정에 사용되는 dto
 @Getter

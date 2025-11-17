@@ -30,8 +30,6 @@ import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.security.jwt.TokenProvider;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
-import wap.web2.server.vote.entity.Vote;
-import wap.web2.server.vote.repository.VoteRepository;
 
 @Slf4j
 @Service
