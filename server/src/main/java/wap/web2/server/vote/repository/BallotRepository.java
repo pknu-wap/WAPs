@@ -1,12 +1,23 @@
 package wap.web2.server.vote.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import wap.web2.server.vote.dto.ProjectVoteCount;
 import wap.web2.server.vote.entity.Ballot;
 
 @Repository
 public interface BallotRepository extends JpaRepository<Ballot, Long> {
 
     long countBallotsBySemesterAndUserId(String semester, Long userId);
+
+    @Query("""
+                SELECT new wap.web2.server.vote.dto.ProjectVoteCount(b.projectId, COUNT(b))
+                FROM Ballot b
+                WHERE b.semester = :semester
+                GROUP BY b.projectId
+            """)
+    List<ProjectVoteCount> countVotesByProject(String semester);
 
 }
