@@ -31,9 +31,9 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/vote")
+    @GetMapping("/vote/{semester}")
     public ResponseEntity<?> getMyVotedInfo(@CurrentUser UserPrincipal userPrincipal,
-                                            @Semester String semester) {
+                                            @PathVariable("semester") @Semester String semester) {
         UserVoteResponse response = userService.getUserVotedInfo(userPrincipal, semester);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
