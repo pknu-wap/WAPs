@@ -41,7 +41,6 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-    private final VoteRepository voteRepository;
     private final ImageRepository imageRepository;
     private final AwsUtils awsUtils;
 
@@ -60,8 +59,6 @@ public class ProjectService {
 
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-        Vote vote = voteRepository.findVoteByYearAndSemester(request.getProjectYear(), request.getSemester())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] Year-Semester not found"));
 
         List<String> imageUrls = Collections.emptyList();
         if (request.getImageS3() != null) {
@@ -77,7 +74,7 @@ public class ProjectService {
 
         // request.toEntity() 를 호출함으로서 매개변수로 넘어온 객체(request)를 사용
         // 기괴한 구조 ㄷㄷ
-        Project project = request.toEntity(request, imageUrls, thumbnailUrl, user, vote);
+        Project project = request.toEntity(request, imageUrls, thumbnailUrl, user);
 
         // 양방향 연관관계 데이터 일관성 유지
         project.getTechStacks().forEach(techStack -> techStack.updateTechStack(project));

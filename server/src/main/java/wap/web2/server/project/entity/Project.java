@@ -77,11 +77,6 @@ public class Project {
     @JoinColumn(name = "user_id")
     private User user; // Owner
 
-    @Deprecated
-    @ManyToOne
-    @JoinColumn(name = "vote_id")
-    private Vote vote;
-
     public void update(ProjectRequest request) {
         // 기본 필드 업데이트
         this.title = request.getTitle();

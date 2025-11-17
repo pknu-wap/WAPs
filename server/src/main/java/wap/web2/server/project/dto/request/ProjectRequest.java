@@ -45,9 +45,7 @@ public class ProjectRequest {
     private String thumbnail; // toEntity
     private MultipartFile thumbnailS3; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
-    public Project toEntity(ProjectRequest request, List<String> imageUrls, String thumbnailUrl,
-                            User user, Vote vote) {
-
+    public Project toEntity(ProjectRequest request, List<String> imageUrls, String thumbnailUrl, User user) {
         List<Image> imagesEntities = imageUrls.stream()
                 .map(ImageDto::toEntity)
                 .collect(Collectors.toList());
@@ -77,8 +75,6 @@ public class ProjectRequest {
                 .techStacks(techStacksEntities)
                 .teamMembers(teamMemberEntities)
                 .thumbnail(thumbnailUrl)
-                .voteCount(0L)
-                .vote(vote)
                 .build();
     }
 
