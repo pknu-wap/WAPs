@@ -20,4 +20,12 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
             """)
     List<ProjectVoteCount> countVotesByProject(String semester);
 
+    @Query("""
+                SELECT b.projectId
+                FROM Ballot b
+                WHERE b.userId = :userId
+                  AND b.semester = :semester
+            """)
+    List<Long> findProjectIdsByUserIdAndSemester(Long userId, String semester);
+
 }
