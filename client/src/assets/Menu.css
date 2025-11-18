@@ -49,6 +49,7 @@ body:has(nav.menu) .App-header {
   overflow-y: auto;
   padding: 20px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* ===== 메뉴 컨텐츠 ===== */
