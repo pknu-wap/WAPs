@@ -11,7 +11,7 @@
 }
 
 /* 투표 열기 전 */
-.beforeVoteBox {
+.preVoteBox {
   display: flex;
   flex-direction: column;
   align-items: center;
