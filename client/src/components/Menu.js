@@ -115,6 +115,22 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
             </div>
 
             <div className="menu-section">
+              <h3 className="section-title">CALENDAR</h3>
+              <div className="menu-items">
+                <button
+                  className="menu-item"
+                  onClick={() => {
+                    navigate("/calendar");
+                    toggleMenu();
+                  }}
+                >
+                  <span>캘린더 CALENDAR</span>
+                  <span className="arrow"><FaChevronRight /></span>
+                </button>
+              </div>
+            </div>
+
+            <div className="menu-section">
               <h3 className="section-title">TEAMBUILDING</h3>
               <div className="menu-items">
                 <button
