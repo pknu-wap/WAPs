@@ -10,7 +10,9 @@ const ManageVotePage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    setSemester(getCurrentSemester());
+    useEffect(() => {
+        setSemester(getCurrentSemester());
+    }, []);
 
     useEffect(() => {
         const fetchVoteStart = async () => {
@@ -33,7 +35,7 @@ const ManageVotePage = () => {
 
         try {
             setIsLoading(true);
-            await apiClient.post("admin/vote/open", { semester: semester });
+            await apiClient.post("/admin/vote/open", { semester: semester });
 
             setVoteStatus("VOTING");
         } catch (e) {
@@ -49,7 +51,7 @@ const ManageVotePage = () => {
 
         try {
             setIsProcessing(true);
-            await apiClient.post("admin/vote/close", { semester: semester });
+            await apiClient.post("/admin/vote/close", { semester: semester });
             setVoteStatus("ENDED");
         } catch (e) {
             setError("투표 종료에 실패했습니다.");
