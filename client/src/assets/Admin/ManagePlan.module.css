@@ -229,7 +229,7 @@
 /* 미리보기 박스 높이 고정 */
 .previewFixedHeight {
   min-height: 360px;
-  height: 220px;
+  height: 422px;
   overflow-y: auto;
 }
 
