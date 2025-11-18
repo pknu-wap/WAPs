@@ -161,12 +161,7 @@
 
 /* 미리보기 내부 컨텐츠(기본 박스) */
 .previewContent {
-  background-color: transparent;
-  padding: 0;
-  flex-grow: 1;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  color: #cccccc;
+ margin: 20px;
 }
 
 /* 미리보기 내용 없을 때 */

@@ -151,11 +151,13 @@ const ManagePlanPage = () => {
               <div className={styles.emptyPreview}></div>
             ) : (
               <>
+              <div className={styles.previewContent}>
                 <div className={styles.scheduleDate}>{preview.date}</div>
                 <div className={styles.scheduleTitle}>{preview.title}</div>
                 <div className={styles.scheduleContent}>{preview.content}</div>
                 {preview.location && <div className={styles.scheduleContent}>{preview.location}</div>}
                 <div className={styles.miniTarget}>#{preview.target}</div>
+                </div>
               </>
             )}
           </div>
