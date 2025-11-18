@@ -74,9 +74,9 @@
 .targetInput {
   background-color: #353535;
   border: none;
-  color: #f0f0f0;
+  color: #ffffff;
   padding: 12px 15px;
-  font-size: 1em;
+  font-size: 20px;
   outline: none;
   box-sizing: border-box;
   width: 100%;
@@ -139,7 +139,6 @@
   padding: 8px 12px;
   border: none;
   outline: none;
-  font-size: 15px;
   box-sizing: border-box;
   flex: 1;
 }
