@@ -10,6 +10,8 @@ const ManageVotePage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    setSemester(getCurrentSemester());
+
     useEffect(() => {
         const fetchVoteStart = async () => {
             try {
@@ -64,7 +66,7 @@ const ManageVotePage = () => {
             {/* PRE_VOTE 상태 */}
             {voteStatus === "PRE_VOTE" && (
                 <div className={styles.PreVoteBox}>
-                    <div className={styles.voteSemester}>{getCurrentSemester()}</div>
+                    <div className={styles.voteSemester}>{semester}</div>
                     <button
                         disabled={isProcessing}
                         onClick={handleOpenVote}
@@ -78,7 +80,7 @@ const ManageVotePage = () => {
             {/* VOTING 상태 */}
             {voteStatus === "VOTING" && (
                 <div className={styles.PreVoteBox}>
-                    <div className={styles.voteSemester}>{getCurrentSemester()}</div>
+                    <div className={styles.voteSemester}>{semester}</div>
                     <button
                         disabled={isProcessing}
                         onClick={handleCloseVote}
