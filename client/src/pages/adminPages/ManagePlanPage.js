@@ -7,6 +7,7 @@ const ManagePlanPage = () => {
   const [monthDay, setMonthDay] = useState("");
   const [content, setContent] = useState("");
   const [target, setTarget] = useState("");
+  const [location, setLocation] = useState("");
 
   const generatePreview = () => {
     const date = year && monthDay ? `${year}-${monthDay}` : "";
@@ -15,19 +16,20 @@ const ManagePlanPage = () => {
       title: title.trim(),
       content: content.trim(),
       target: target.trim(),
+      location: location.trim(),
     };
   };
 
   const preview = generatePreview();
   const hasPreview =
-    preview.date || preview.title || preview.content || preview.target;
+    preview.date || preview.title || preview.content || preview.location|| preview.target;
 
   const handlePublish = async () => {
     const cleanedMonthDay = monthDay.replace(/[^0-9]/g, "").slice(0, 4);
     const fullDate =
       year && cleanedMonthDay ? `${year}-${cleanedMonthDay}` : "";
 
-    if (!title || !fullDate || !content || !target) {
+    if (!title || !fullDate || !content || !target || !location) {
       alert("항목을 모두 입력해 주세요.");
       return;
     }
@@ -37,6 +39,7 @@ const ManagePlanPage = () => {
       dateTime: fullDate,
       content,
       target,
+      location,
     };
 
     try {
@@ -59,6 +62,7 @@ const ManagePlanPage = () => {
       setMonthDay("");
       setContent("");
       setTarget("");
+      setLocation("");
     } catch (error) {
       console.error("일정 등록 실패:", error);
       alert("일정 등록 중 오류가 발생했습니다.");
@@ -126,6 +130,16 @@ const ManagePlanPage = () => {
               placeholder="신입은 필수!"
             />
           </div>
+          <div className={styles.inputRow}>
+            <label className={styles.label}>위치</label>
+            <input
+              className={styles.targetInput}
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="장소를 입력해주세요"
+            />
+          </div>
         </div>
 
         {/* 미리보기 섹션 */}
@@ -140,6 +154,7 @@ const ManagePlanPage = () => {
                 <div className={styles.scheduleDate}>{preview.date}</div>
                 <div className={styles.scheduleTitle}>{preview.title}</div>
                 <div className={styles.scheduleContent}>{preview.content}</div>
+                {preview.location && <div className={styles.scheduleContent}>{preview.location}</div>}
                 <div className={styles.miniTarget}>#{preview.target}</div>
               </>
             )}
