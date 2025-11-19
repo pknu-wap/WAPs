@@ -39,7 +39,7 @@ public class VoteService {
 
         VoteStatus voteStatus = voteMetaRepository.findStatusBySemester(semester)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 투표가 존재하지 않습니다."));
-        if (voteStatus != VoteStatus.OPEN) {
+        if (voteStatus != VoteStatus.VOTING) {
             throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 열리지 않았습니다.", semester));
         }
 
@@ -58,7 +58,7 @@ public class VoteService {
 
         long votedCount = ballotRepository.countBallotsBySemesterAndUserId(semester, user.getId());
         boolean isVotedUser = votedCount > 0;
-        boolean isOpen = (voteStatus == VoteStatus.OPEN);
+        boolean isOpen = (voteStatus == VoteStatus.VOTING);
 
         return VoteInfoResponse.builder()
                 .isVotedUser(isVotedUser)
