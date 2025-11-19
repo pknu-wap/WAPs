@@ -94,18 +94,6 @@
   grid-column: 2 / 3;
 }
 
-/* 날짜 입력 그룹 */
-.dateInputs {
-  grid-column: 2 / 3;
-  display: flex;
-  gap: 10px;
-}
-
-/* 날짜 입력 정렬 */
-.dateInput {
-  flex: 1;
-}
-
 /* 내용 입력 */
 .contentInput {
   grid-column: 2 / 3;
