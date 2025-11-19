@@ -18,12 +18,13 @@
   flex-direction: column;
 }
 
+/* ===== 상단 ===== */
 .upperBox {
   display: flex;
   justify-content: space-between;
+  gap: 10px;
 }
 
-/* 상단 공통부분 */
 .upperLeft {
   display: flex;
   flex-direction: row;
@@ -55,7 +56,6 @@
   border-radius: 23px;
   background-color: var(--primary);
   color: black;
-  flex-shrink: 0;
   cursor: pointer;
   user-select: none;
 }
@@ -68,17 +68,18 @@
   margin-bottom: 45px;
 }
 
-/* 프젝 카드 그리드 */
+/* ===== 카드 그리드 ===== */
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(303px, 1fr));
   gap: 18px;
   height: calc(100vh - 400px);
   overflow-y: auto;
-  padding-right: 10px; /*스크롤바와 카드가 겹치지 않도록 넣었음 */
+  padding-right: 10px;
   justify-items: center;
 }
 
+/* ===== 카드 기본 (선택됨) ===== */
 .card {
   width: 303px;
   height: 230px;
@@ -88,24 +89,22 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 12px;
   cursor: pointer;
   transition: all 0.1s ease-in-out;
-  padding-top: 12px;
 }
 
-.card.selected {
+/* ===== 선택 해제 상태 ===== */
+.deselected {
   border: none;
+  background-color: #1a1a1a;
 }
 
-.card .selected .title {
-  color: var(--disable);
+.deselected .thumbnail {
+  filter: brightness(55%);
 }
 
-.selected .thumbnail {
-  filter: brightness(60%);
-}
-
-.selected .title {
+.deselected .title {
   color: var(--disable);
 }
 
@@ -114,7 +113,7 @@
   height: 175px;
   border-radius: 21px;
   object-fit: cover;
-  transition: filter 0.25s ease-in-out;
+  transition: filter 0.1s ease-in-out;
   user-select: none;
 }
 
@@ -130,6 +129,7 @@
   transition: color 0.1s ease-in-out;
 }
 
+/* ===== 제출 버튼 ===== */
 .summitWrapper {
   display: flex;
   justify-content: flex-end;
@@ -142,11 +142,9 @@
   height: 51px;
   border-radius: 52px;
   background: var(--primary);
-  text-align: center;
   color: black;
   font-size: 20px;
   font-weight: 700;
-  align-self: flex-end;
   cursor: pointer;
+  text-align: center;
 }
-/* 투표 결과 */

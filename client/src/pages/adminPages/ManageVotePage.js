@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import styles from "../../assets/Admin/ManageVote.module.css";
 import apiClient from "../../utils/api";
 import { getCurrentSemester } from "../../utils/dateUtils";
+import SubmitModal from "./SubmitModal";
 
 const ManageVotePage = () => {
     const [voteStatus, setVoteStatus] = useState("NOT_CREATED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
@@ -15,6 +16,7 @@ const ManageVotePage = () => {
     const [searchParams, setSearchParams] = useSearchParams(); // 쿼리 파라미터를 위한 상태
     const [projects, setProjects] = useState([]); // 프로젝트 목록 상태
     const [selectedProjects, setSelectedProjects] = useState([]); // 선택된 프로젝트 ID 목록
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         setSemester(getCurrentSemester());
@@ -56,6 +58,14 @@ const ManageVotePage = () => {
         fetchProjects();
     }, [voteStatus, semester]);
 
+    // 프젝목록을 모두 저장
+    useEffect(() => {
+        if (projects.length > 0) {
+            setSelectedProjects(projects.map(p => p.projectId));
+        }
+    }, [projects]);
+
+
     // 투표 열기 핸들러
     const handleOpenVote = async () => {
         if (voteStatus !== "NOT_CREATED") return;
@@ -96,18 +106,22 @@ const ManageVotePage = () => {
         )
     }
 
+    // 투표할 프로젝트 제출 핸들러
+    const handleSummitProjects = () => {
+        if (selectedProjects.length === 0) {
+            alert("최소 한 개 이상의 프로젝트를 선택해야 합니다.");
+            return;
+        }
+        setIsModalOpen(true);
+    };
+
+    const submitProjectsToServer = () => {
+
+    }
     //if (isLoading) return <div>Loading...</div>;
     //if (error) return <div>{error}</div>;
     return (
         <div className={styles.container}>
-
-
-
-
-
-
-
-
             {/* NOT_CREATED 상태 */}
             {
                 voteStatus === "NOT_CREATED" && (
@@ -130,7 +144,7 @@ const ManageVotePage = () => {
                             {projects.map((p) => (
                                 <div
                                     key={p.projectId}
-                                    className={`${styles.card} ${selectedProjects.includes(p.projectId) ? styles.selected : ""}`}
+                                    className={`${styles.card} ${!selectedProjects.includes(p.projectId) ? styles.deselected : ""}`}
                                     onClick={() => toggleProjectSelect(p.projectId)}
                                 >
                                     <img src={p.thumbnail} alt="project" className={styles.thumbnail} />
@@ -139,8 +153,22 @@ const ManageVotePage = () => {
                             ))}
                         </div>
                         <div className={styles.summitWrapper}>
-                            <button className={styles.summit}>제출</button>
+                            <button
+                                className={styles.summit}
+                                onClick={handleSummitProjects}
+                            >
+                                제출
+                            </button>
                         </div>
+
+                        {isModalOpen && (
+                            <SubmitModal
+                                selectedProjects={selectedProjects}
+                                projects={projects}
+                                onConfirm={submitProjectsToServer}
+                                onCancel={() => setIsModalOpen(false)}
+                            />
+                        )}
                     </div>
                 )
             }
