@@ -47,12 +47,11 @@ public class AdminVoteService {
 
     @Transactional
     public void closeVote(String semester, Long userId) {
-        if (voteMetaRepository.existsBySemester(semester)) {
-            voteMetaRepository.updateToClosed(semester, userId);
-            return;
-        }
+        VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 존재하지 않습니다.", semester)));
 
-        throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 존재하지 않습니다.", semester));
+        voteMeta.close(userId);
     }
 
     private void validateProjectIds(Set<Long> projectIds) {
