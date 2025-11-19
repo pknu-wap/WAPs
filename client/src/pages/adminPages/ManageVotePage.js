@@ -22,12 +22,16 @@ const ManageVotePage = () => {
         setSemester(getCurrentSemester());
     }, []);
 
-    // 투표 상태 조회
+    // // 투표 상태 조회
     // useEffect(() => {
     //     const fetchVoteStart = async () => {
     //         try {
-    //             const response = await apiClient.post("/vote/now");
-    //             setVoteStatus(response.data.isOpen);
+    //             const response = await apiClient.get("/admin/vote/status", {
+    //                 params: {
+    //                     semester: semester
+    //                 }
+    //             });
+    //             setVoteStatus(response.data.status);
 
     //         } catch (e) {
     //             setError("투표 상태 조회 실패");
@@ -36,7 +40,7 @@ const ManageVotePage = () => {
     //         }
     //     };
     //     fetchVoteStart();
-    // }, []);
+    // }, [semester]);
 
     // 프로젝트 목록 불러오기
     useEffect(() => {
@@ -72,7 +76,11 @@ const ManageVotePage = () => {
 
         try {
             setIsLoading(true);
-            await apiClient.post("/admin/vote/open", { semester: semester });
+            await apiClient.post("/admin/vote/open", {
+                params: {
+                    semester: semester
+                }
+            });
 
             setVoteStatus("VOTING");
         } catch (e) {
@@ -118,8 +126,10 @@ const ManageVotePage = () => {
     const submitProjectsToServer = () => {
 
     }
-    //if (isLoading) return <div>Loading...</div>;
-    //if (error) return <div>{error}</div>;
+
+    // if (isLoading) return <div>Loading...</div>;
+    // if (error) return <div>{error}</div>;
+
     return (
         <div className={styles.container}>
             {/* NOT_CREATED 상태 */}
