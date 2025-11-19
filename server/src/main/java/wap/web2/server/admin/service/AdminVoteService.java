@@ -1,7 +1,6 @@
 package wap.web2.server.admin.service;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,18 +19,20 @@ public class AdminVoteService {
     private final ProjectRepository projectRepository;
 
     @Transactional
-    public void initializeVote(String semester, Long userId, VoteParticipants voteParticipants) {
-        validateProjectIds(voteParticipants.projectIds());
+    public void openVote(String semester, Long userId, VoteParticipants voteParticipants) {
+        Set<Long> newProjectIds = voteParticipants.projectIds();
+        validateProjectIds(newProjectIds);
 
-        Optional<VoteMeta> voteMeta = voteMetaRepository.findBySemester(semester);
-        voteMeta.ifPresentOrElse(
-                existingMeta -> existingMeta.reopenTo(voteParticipants.projectIds()),
-                // 이번 학기 처음 VoteMeta 생성 시
-                () -> {
-                    VoteMeta newMeta = VoteMeta.of(semester, userId, voteParticipants.projectIds());
-                    voteMetaRepository.save(newMeta);
-                }
-        );
+        VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
+                .orElse(null);
+
+        if (voteMeta != null) {
+            voteMeta.reopenTo(newProjectIds);
+            return;
+        }
+
+        VoteMeta newMeta = VoteMeta.of(semester, userId, newProjectIds);
+        voteMetaRepository.save(newMeta);
     }
 
     @Transactional

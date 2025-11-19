@@ -27,7 +27,7 @@ public class AdminVoteController {
     public ResponseEntity<?> openVoteMeta(@CurrentUser UserPrincipal currentUser,
                                           @RequestBody VoteParticipants voteParticipants,
                                           @RequestParam("semester") @Semester String semester) {
-        adminVoteService.initializeVote(semester, currentUser.getId(), voteParticipants);
+        adminVoteService.openVote(semester, currentUser.getId(), voteParticipants);
         return ResponseEntity.ok().build();
     }
 
