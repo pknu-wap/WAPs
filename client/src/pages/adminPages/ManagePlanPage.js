@@ -29,15 +29,27 @@ const ManagePlanPage = () => {
       return;
     }
 
-    const dateObj = new Date(date);
+    // 날짜 형식: YYYY-MM-DD HH:mm
+    const pattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+    if (!pattern.test(date)) {
+      alert("날짜 형식을 지켜주세요! (예: 2025-11-20 18:30)");
+      return;
+    }
+
+    // 프런트에서 ISO 타입으로 변환: 2025-11-20 18:30 → 2025-11-20T18:30:00
+    const [datePart, timePart] = date.split(" ");
+    const isoString = `${datePart}T${timePart}:00`;
+
+    // 유효한 날짜인지 체크
+    const dateObj = new Date(isoString);
     if (isNaN(dateObj.getTime())) {
-      alert("올바른 날짜를 입력해 주세요.");
+      alert("유효한 날짜/시간을 입력해 주세요.");
       return;
     }
 
     const requestBody = {
       title,
-      dateTime: dateObj.toISOString(), // 서버용 ISO 8601 문자열
+      dateTime: isoString, // 서버가 인식하는 ISO 포맷
       content,
       target,
       location,
@@ -55,6 +67,7 @@ const ManagePlanPage = () => {
       setLocation("");
     } catch (error) {
       console.error("일정 등록 실패:", error);
+      console.log("서버 응답 데이터:", error.response?.data);
       alert("일정 등록 중 오류가 발생했습니다.");
     }
   };
@@ -82,7 +95,7 @@ const ManagePlanPage = () => {
             <input
               className={styles.dateInput}
               type="text"
-              placeholder="YYYY-MM-DD"
+              placeholder="YYYY-MM-DD HH:mm"
               value={date}
               onChange={(e) => setDate(e.target.value)}
             />
@@ -133,7 +146,9 @@ const ManagePlanPage = () => {
                 <div className={styles.scheduleDate}>{preview.date}</div>
                 <div className={styles.scheduleTitle}>{preview.title}</div>
                 <div className={styles.scheduleContent}>{preview.content}</div>
-                {preview.location && <div className={styles.scheduleContent}>{preview.location}</div>}
+                {preview.location && (
+                  <div className={styles.scheduleContent}>{preview.location}</div>
+                )}
                 <div className={styles.miniTarget}>#{preview.target}</div>
               </div>
             )}
