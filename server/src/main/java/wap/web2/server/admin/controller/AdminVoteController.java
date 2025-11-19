@@ -24,8 +24,8 @@ public class AdminVoteController {
     private final AdminVoteService adminVoteService;
 
     @GetMapping("/status")
-    @Operation(summary = "투표 열기",
-            description = "희망하는 학기의 투표를 생성합니다. 혹은 희망하는 학기의 투표를 엽니다. 이제 투표를 진행할 수 있습니다.")
+    @Operation(summary = "투표 상태 확인",
+            description = "희망하는 학기의 투표 상태를 확인합니다. 투표 상태에 따라 NOT_CREATED, VOTING, ENDED를 반환합니다.")
     public ResponseEntity<?> getStatus(@RequestParam("semester") @Semester String semester) {
         VoteStatusResponse response = adminVoteService.getStatus(semester);
         return ResponseEntity.ok(response);
