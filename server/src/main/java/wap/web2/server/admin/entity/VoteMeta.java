@@ -55,7 +55,6 @@ public class VoteMeta {
     @Column
     private LocalDateTime closedAt;
 
-    // TODO: 여기에 fetch type lazy 걸기
     // DB: unique index (vote_meta_id, project_ids) & index (vote_meta_id) 존재
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
@@ -72,7 +71,6 @@ public class VoteMeta {
         this.participants = participants;
     }
 
-    // TODO: 참조를 바꾸면 dirty한지 제대로 확인 안될 수 있음. -> clear add all하거나 다른 방법 모색
     public void reopenTo(Set<Long> projectIds) {
         this.participants = new ArrayList<>(projectIds);
         this.status = VoteStatus.OPEN;
