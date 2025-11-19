@@ -18,11 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Boolean existsByEmail(String email);
 
-    //업데이트 된 레코드 수를 반환
-    @Modifying
-    @Query("UPDATE User u SET u.voted = true WHERE u.id = :userId")
-    int updateVotedTrueByUserId(@Param("userId") Long userId);
-
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE User u SET u.role = :role WHERE u.id in :ids
@@ -31,4 +26,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u ORDER BY u.id LIMIT :limit OFFSET :offset")
     List<User> findUserByOffset(@Param("limit") Integer limit, @Param("offset") Integer offset);
+
 }
