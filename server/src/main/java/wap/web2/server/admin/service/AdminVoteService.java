@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.dto.request.VoteParticipants;
+import wap.web2.server.admin.dto.response.VoteStatusResponse;
 import wap.web2.server.admin.entity.VoteMeta;
+import wap.web2.server.admin.entity.VoteStatus;
 import wap.web2.server.admin.repository.VoteMetaRepository;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.project.repository.ProjectRepository;
@@ -17,6 +19,14 @@ public class AdminVoteService {
 
     private final VoteMetaRepository voteMetaRepository;
     private final ProjectRepository projectRepository;
+
+    @Transactional(readOnly = true)
+    public VoteStatusResponse getStatus(String semester) {
+        VoteStatus status = voteMetaRepository.findStatusBySemester(semester)
+                .orElse(VoteStatus.NOT_CREATED);
+
+        return new VoteStatusResponse(status);
+    }
 
     @Transactional
     public void openVote(String semester, Long userId, VoteParticipants voteParticipants) {
