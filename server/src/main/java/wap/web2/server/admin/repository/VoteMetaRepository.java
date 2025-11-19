@@ -2,7 +2,6 @@ package wap.web2.server.admin.repository;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,18 +16,5 @@ public interface VoteMetaRepository extends JpaRepository<VoteMeta, Long> {
 
     boolean existsBySemester(String semester);
 
-    @Modifying
-    @Query("UPDATE VoteMeta v SET v.status = 'OPEN' WHERE v.semester = :semester")
-    void updateToOpen(@Param("semester") String semester);
-
-    @Modifying
-    @Query("""
-            UPDATE VoteMeta v
-            SET v.status = 'CLOSED',
-                v.closedAt = CURRENT_TIMESTAMP,
-                v.closedBy = :userId
-            WHERE v.semester = :semester
-            """)
-    void updateToClosed(@Param("semester") String semester, @Param("userId") Long userId);
-
+    Optional<VoteMeta> findBySemester(String semester);
 }
