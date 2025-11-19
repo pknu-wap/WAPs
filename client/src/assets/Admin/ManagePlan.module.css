@@ -80,6 +80,7 @@
   outline: none;
   box-sizing: border-box;
   width: 100%;
+  overflow: auto;
 }
 
 /* 높이 통일 */
@@ -92,18 +93,6 @@
 /* 제목 입력 상세 */
 .titleInput {
   grid-column: 2 / 3;
-}
-
-/* 날짜 입력 그룹 */
-.dateInputs {
-  grid-column: 2 / 3;
-  display: flex;
-  gap: 10px;
-}
-
-/* 날짜 입력 정렬 */
-.dateInput {
-  flex: 1;
 }
 
 /* 내용 입력 */
