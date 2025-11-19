@@ -69,16 +69,14 @@ public class VoteService {
                         String.format("[ERROR] %s학기의 투표가 아직 생성되지 않았습니다.", semester))
                 );
 
-        if (voteStatus == VoteStatus.VOTING) {
-            validateUserBallot(semester, userId);
-            for (Long projectId : voteRequest.projectIds()) {
-                ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
-            }
-            return;
+        if (voteStatus != VoteStatus.VOTING) {
+            throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 열리지 않았습니다.", semester));
         }
 
-        // CLOSED
-        throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 열리지 않았습니다.", semester));
+        validateUserBallot(semester, userId);
+        for (Long projectId : voteRequest.projectIds()) {
+            ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
+        }
     }
 
     @Transactional(readOnly = true)
