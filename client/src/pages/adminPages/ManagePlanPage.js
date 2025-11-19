@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "../../assets/Admin/ManagePlan.module.css";
+import apiClient from "../../utils/api";
 
 const ManagePlanPage = () => {
   const [title, setTitle] = useState("");
@@ -43,18 +44,10 @@ const ManagePlanPage = () => {
     };
 
     try {
-      const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/admin/calendar/event`;
-
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) throw new Error("API 요청 실패");
+      const response = await apiClient.post(
+        "/admin/calendar/event",
+        requestBody
+      );
 
       alert("일정이 성공적으로 발행되었습니다!");
 
