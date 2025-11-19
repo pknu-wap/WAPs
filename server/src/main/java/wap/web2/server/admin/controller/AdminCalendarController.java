@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wap.web2.server.admin.dto.CalendarEventPostingRequest;
+import wap.web2.server.admin.dto.request.CalendarEventPostingRequest;
 import wap.web2.server.admin.service.AdminCalendarService;
 
 @Slf4j

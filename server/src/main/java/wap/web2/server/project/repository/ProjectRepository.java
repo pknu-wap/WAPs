@@ -2,6 +2,7 @@ package wap.web2.server.project.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,5 +24,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query("SELECT p FROM Project p WHERE p.projectYear = :year AND p.semester = :semester ORDER BY p.projectId DESC")
     List<Project> findProjectsByYearAndSemesterOrderByProjectIdDesc(@Param("year") Integer year,
                                                                     @Param("semester") Integer semester);
+
+    @Query("SELECT p.projectId FROM Project p WHERE p.projectId IN :projectIds")
+    List<Long> findExistingProjectIds(@Param("projectIds") Set<Long> projectIds);
 
 }
