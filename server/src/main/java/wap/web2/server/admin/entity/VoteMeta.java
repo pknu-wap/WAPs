@@ -64,16 +64,17 @@ public class VoteMeta {
     )
     private List<Long> participants = new ArrayList<>();
 
+    // 열린 투표를 의미
     private VoteMeta(String semester, Long createdBy, List<Long> participants) {
         this.semester = semester;
         this.createdBy = createdBy;
-        this.status = VoteStatus.OPEN;
+        this.status = VoteStatus.VOTING;
         this.participants = participants;
     }
 
     public void reopenTo(Set<Long> projectIds) {
         this.participants = new ArrayList<>(projectIds);
-        this.status = VoteStatus.OPEN;
+        this.status = VoteStatus.VOTING;
     }
 
     public static VoteMeta of(String semester, Long createdBy, Set<Long> projectIds) {
