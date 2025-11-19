@@ -7,10 +7,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +55,14 @@ public class VoteMeta {
     @Column
     private LocalDateTime closedAt;
 
-    @ElementCollection
-    @CollectionTable(name = "vote_meta_participants", joinColumns = @JoinColumn(name = "vote_meta_id"))
-    @Column(name = "project_ids")
+    // TODO: 여기에 fetch type lazy 걸기
+    // DB: unique index (vote_meta_id, project_ids) & index (vote_meta_id) 존재
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(
+            name = "vote_meta_participants",
+            joinColumns = @JoinColumn(name = "vote_meta_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"vote_meta_id", "participants"})
+    )
     private List<Long> participants = new ArrayList<>();
 
     private VoteMeta(String semester, Long createdBy, List<Long> participants) {
@@ -65,6 +72,7 @@ public class VoteMeta {
         this.participants = participants;
     }
 
+    // TODO: 참조를 바꾸면 dirty한지 제대로 확인 안될 수 있음. -> clear add all하거나 다른 방법 모색
     public void reopenTo(Set<Long> projectIds) {
         this.participants = new ArrayList<>(projectIds);
         this.status = VoteStatus.OPEN;
