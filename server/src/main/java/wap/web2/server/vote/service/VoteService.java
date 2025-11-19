@@ -3,10 +3,12 @@ package wap.web2.server.vote.service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.admin.entity.VoteMeta;
 import wap.web2.server.admin.entity.VoteStatus;
 import wap.web2.server.admin.repository.VoteMetaRepository;
 import wap.web2.server.member.entity.Role;
@@ -37,14 +39,17 @@ public class VoteService {
         String semester = voteRequest.semester();
         Role userRole = Role.from(role);
 
-        VoteStatus voteStatus = voteMetaRepository.findStatusBySemester(semester)
+        VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 투표가 존재하지 않습니다."));
-        if (voteStatus != VoteStatus.VOTING) {
+
+        if (voteMeta.getStatus() != VoteStatus.VOTING) {
             throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 열리지 않았습니다.", semester));
         }
 
+        List<Long> projectIds = voteRequest.projectIds();
         validateUserBallot(semester, userId);
-        for (Long projectId : voteRequest.projectIds()) {
+        validateParticipatingProjects(projectIds, voteMeta.getId());
+        for (Long projectId : projectIds) {
             ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
         }
     }
@@ -91,6 +96,20 @@ public class VoteService {
         long votedCount = ballotRepository.countBallotsBySemesterAndUserId(semester, userId);
         if (votedCount >= 3) {
             throw new IllegalArgumentException("[ERROR] 투표는 최대 3개까지 가능합니다.");
+        }
+    }
+
+    private void validateParticipatingProjects(List<Long> projectIds, Long voteMetaId) {
+        Set<Long> participants = voteMetaRepository.findParticipantsByVoteMetaId(voteMetaId);
+
+        Set<Long> invalidIds = projectIds.stream()
+                .filter(id -> !participants.contains(id))
+                .collect(Collectors.toSet());
+
+        if (!invalidIds.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "[ERROR] 투표에 참여하지 않는 프로젝트가 포함되어 있습니다. invalidProjectIds=" + invalidIds
+            );
         }
     }
 
