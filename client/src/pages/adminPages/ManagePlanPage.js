@@ -4,16 +4,14 @@ import apiClient from "../../utils/api";
 
 const ManagePlanPage = () => {
   const [title, setTitle] = useState("");
-  const [year, setYear] = useState("");
-  const [monthDay, setMonthDay] = useState("");
+  const [date, setDate] = useState("");
   const [content, setContent] = useState("");
   const [target, setTarget] = useState("");
   const [location, setLocation] = useState("");
 
   const generatePreview = () => {
-    const date = year && monthDay ? `${year}-${monthDay}` : "";
     return {
-      date,
+      date: date,
       title: title.trim(),
       content: content.trim(),
       target: target.trim(),
@@ -23,37 +21,35 @@ const ManagePlanPage = () => {
 
   const preview = generatePreview();
   const hasPreview =
-    preview.date || preview.title || preview.content || preview.location|| preview.target;
+    preview.date || preview.title || preview.content || preview.location || preview.target;
 
   const handlePublish = async () => {
-    const cleanedMonthDay = monthDay.replace(/[^0-9]/g, "").slice(0, 4);
-    const fullDate =
-      year && cleanedMonthDay ? `${year}-${cleanedMonthDay}` : "";
-
-    if (!title || !fullDate || !content || !target || !location) {
+    if (!title || !date || !content || !target || !location) {
       alert("항목을 모두 입력해 주세요.");
+      return;
+    }
+
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      alert("올바른 날짜를 입력해 주세요.");
       return;
     }
 
     const requestBody = {
       title,
-      dateTime: fullDate,
+      dateTime: dateObj.toISOString(), // 서버용 ISO 8601 문자열
       content,
       target,
       location,
     };
 
     try {
-      const response = await apiClient.post(
-        "/admin/calendar/event",
-        requestBody
-      );
-
+      await apiClient.post("/admin/calendar/event", requestBody);
       alert("일정이 성공적으로 발행되었습니다!");
 
+      // 입력 초기화
       setTitle("");
-      setYear("");
-      setMonthDay("");
+      setDate("");
       setContent("");
       setTarget("");
       setLocation("");
@@ -83,25 +79,13 @@ const ManagePlanPage = () => {
 
           <div className={styles.inputRow}>
             <label className={styles.label}>날짜</label>
-            <div className={styles.dateInputs}>
-              <input
-                className={styles.dateInput}
-                type="text"
-                placeholder="연도"
-                maxLength={4}
-                value={year}
-                onChange={(e) =>
-                  setYear(e.target.value.replace(/[^0-9]/g, "").slice(0, 4))
-                }
-              />
-              <input
-                className={styles.dateInput}
-                type="text"
-                placeholder="월-일"
-                value={monthDay}
-                onChange={(e) => setMonthDay(e.target.value)}
-              />
-            </div>
+            <input
+              className={styles.dateInput}
+              type="text"
+              placeholder="YYYY-MM-DD"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
           </div>
 
           <div className={styles.inputRow}>
@@ -124,6 +108,7 @@ const ManagePlanPage = () => {
               placeholder="신입은 필수!"
             />
           </div>
+
           <div className={styles.inputRow}>
             <label className={styles.label}>위치</label>
             <input
@@ -144,15 +129,13 @@ const ManagePlanPage = () => {
             {!hasPreview ? (
               <div className={styles.emptyPreview}></div>
             ) : (
-              <>
               <div className={styles.previewContent}>
                 <div className={styles.scheduleDate}>{preview.date}</div>
                 <div className={styles.scheduleTitle}>{preview.title}</div>
                 <div className={styles.scheduleContent}>{preview.content}</div>
                 {preview.location && <div className={styles.scheduleContent}>{preview.location}</div>}
                 <div className={styles.miniTarget}>#{preview.target}</div>
-                </div>
-              </>
+              </div>
             )}
           </div>
 
