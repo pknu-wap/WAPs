@@ -1,10 +1,20 @@
 import styles from "../../assets/Admin/SubmitModal.module.css"
 
+// 투표 관리 페이제 프로젝트 제출 모달 컴포넌트
 const SubmitModal = ({ selectedProjects, projects, onConfirm, onCancel }) => {
     const selectedList = projects.filter(p => selectedProjects.includes(p.projectId));
+
+    // 바깥 클릭 시 종료
+    const handleOverlayClick = (e) => {
+        // modalBox 내부 클릭이면 닫히지 않게
+        if (e.target === e.currentTarget) {
+            onCancel();
+        }
+    };
+
     return (
-        <div className={styles.modalOverlay}>
-            <div className={styles.modalBox}>
+        <div className={styles.modalOverlay} onClick={handleOverlayClick}>
+            <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
                 {/* 헤더 */}
                 <div className={styles.header}>
                     <div className={styles.headerTop}>
@@ -24,8 +34,8 @@ const SubmitModal = ({ selectedProjects, projects, onConfirm, onCancel }) => {
 
                 {/* 버튼 */}
                 <div className={styles.modalActions}>
-                    <button onClick={onCancel}>취소</button>
-                    <button onClick={onConfirm}>확인</button>
+                    <button className={styles.cancelBtn} onClick={onCancel}>취소</button>
+                    <button className={styles.submitBtn} onClick={onConfirm}>제출</button>
                 </div>
             </div>
         </div >

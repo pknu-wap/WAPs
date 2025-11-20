@@ -69,24 +69,28 @@ const ManageVotePage = () => {
         }
     }, [projects]);
 
-
     // 투표 열기 핸들러
     const handleOpenVote = async () => {
         if (voteStatus !== "NOT_CREATED") return;
 
         try {
-            setIsLoading(true);
-            await apiClient.post("/admin/vote/open", {
-                params: {
-                    semester: semester
+            setIsProcessing(true);
+
+            await apiClient.post("/admin/vote/open",
+                {
+                    projectIds: selectedProjects
+                },
+                {
+                    params: { semester: semester }
                 }
-            });
+            );
 
             setVoteStatus("VOTING");
+            setIsModalOpen(false);
         } catch (e) {
-            setError("투표 열기에 실패했습니다.");
+            alert("투표 열기에 실패했습니다");
         } finally {
-            setIsLoading(false);
+            setIsProcessing(false);
         }
     };
 
@@ -96,7 +100,11 @@ const ManageVotePage = () => {
 
         try {
             setIsProcessing(true);
-            await apiClient.post("/admin/vote/close", { semester: semester });
+            await apiClient.post("/admin/vote/close", {
+                params: {
+                    semester: semester
+                }
+            });
             setVoteStatus("ENDED");
         } catch (e) {
             setError("투표 종료에 실패했습니다.");
@@ -123,9 +131,7 @@ const ManageVotePage = () => {
         setIsModalOpen(true);
     };
 
-    const submitProjectsToServer = () => {
 
-    }
 
     // if (isLoading) return <div>Loading...</div>;
     // if (error) return <div>{error}</div>;
@@ -141,7 +147,7 @@ const ManageVotePage = () => {
                                 <div className={styles.voteSemester}>{semester}</div>
                                 <button
                                     disabled={isProcessing}
-                                    onClick={handleOpenVote}
+                                    onClick={handleSummitProjects}
                                     className={styles.openBtn}
                                 >
                                     {isProcessing ? "Opening.." : "OPEN"}
@@ -162,20 +168,12 @@ const ManageVotePage = () => {
                                 </div>
                             ))}
                         </div>
-                        <div className={styles.summitWrapper}>
-                            <button
-                                className={styles.summit}
-                                onClick={handleSummitProjects}
-                            >
-                                제출
-                            </button>
-                        </div>
 
                         {isModalOpen && (
                             <SubmitModal
                                 selectedProjects={selectedProjects}
                                 projects={projects}
-                                onConfirm={submitProjectsToServer}
+                                onConfirm={handleOpenVote}
                                 onCancel={() => setIsModalOpen(false)}
                             />
                         )}
