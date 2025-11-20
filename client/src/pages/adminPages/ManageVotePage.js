@@ -6,7 +6,7 @@ import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
 
 const ManageVotePage = () => {
-    const [voteStatus, setVoteStatus] = useState("NOT_CREATED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
+    const [voteStatus, setVoteStatus] = useState("ENDED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
     const [semester, setSemester] = useState(null); // 현재 학기
     const [isProcessing, setIsProcessing] = useState(false); // 열기,닫기 버튼 누를 때 로딩 상태
 

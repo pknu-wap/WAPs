@@ -145,6 +145,7 @@
 .table {
   overflow-y: auto;
 }
+
 /* 반응형 */
 @media (max-width: 900px) {
   .upperBox {
@@ -163,6 +164,11 @@
   }
 
   .openBtn {
+    font-size: 25px;
+    padding: 5px 20px;
+  }
+
+  .closeBtn {
     font-size: 25px;
     padding: 5px 20px;
   }
