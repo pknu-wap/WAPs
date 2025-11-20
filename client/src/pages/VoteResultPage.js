@@ -1,8 +1,12 @@
-// VoteResultPage.jsx — 썸네일(좌) / 제목·내용·하단바(우) 레이아웃, 하단바(득표+버튼) 정렬
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "../assets/ProjectVote.module.css";
+import Header from "../components/Header";
+import Menu from "../components/Menu";
+import FloatingButton from "../components/FloatingButton";
+import Cookies from "js-cookie"; 
+
 
 // D 모양 아이콘 SVG 컴포넌트
 const VoteIcon = ({ size = 20, color = "#b8ecff", className = "", ...props }) => (
@@ -37,7 +41,33 @@ const VoteResultPage = () => {
 
   // 이름 정규화
   const norm = (s) => (typeof s === "string" ? s.trim().toLowerCase() : "");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+  // 인증 검사
+  useEffect(() => {
+    const token = Cookies.get("authToken");
+    const validateAuth = async () => {
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        navigate("/login");
+        return;
+      }
+      try {
+        // 토큰 유효성 검사
+        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (error) {
+        alert("로그인 유효기간이 만료되었습니다. 재로그인 해주세요.");
+        navigate("/login");
+      }
+    };
+    validateAuth();
+  }, [navigate]); // navigate만 의존성에 포함 (token은 useEffect 내부에서 가져옴)
 
+  // 데이터 fetch 로직
   useEffect(() => {
     const fetchAll = async () => {
       try {
@@ -79,7 +109,7 @@ const VoteResultPage = () => {
     fetchAll();
   }, [voteUrl, listUrl]);
 
-  // 버튼만 이동, ID로만 이동
+  // 버튼 클릭 핸들러 (기존 유지)
   const handleProjectClick = (project) => {
     const name = project?.projectName || project?.title;
     const pid = idByName[norm(name)];
@@ -91,162 +121,119 @@ const VoteResultPage = () => {
   };
 
   return (
-    <div className={`${styles.project_vote_form} ${styles.mount1}`}>
-      <div className={styles.header_bg_zone}>
-        <div className={styles.title_form}>
-          <div
-            className={styles.title}
-            style={{
-              fontSize: "30px",
-              WebkitTextStrokeWidth: "1.3px",
-              WebkitTextStrokeColor: "white",
-              marginTop: "40px",
-            }}
-          >
-            VOTING
-            <br />
-            RESULTS
-          </div>
-          <div
-            className={styles.title}
-            style={{ fontSize: "12px", marginTop: "4px", color: "#ffffffad" }}
-          >
-            투표결과를 확인해보세요
-          </div>
-        </div>
-      </div>
+    <div className="container">
+      <Header toggleMenu={toggleMenu} />
 
-      <div className={styles.project_list_form}>
-        {Array.isArray(projects) && projects.length > 0 ? (
-          projects.map((project, index) => {
-            const isTie = project.voteCount === prevVoteCount;
-            if (!isTie) displayedRank = actualRank;
-            prevVoteCount = project.voteCount;
-            actualRank++;
-
-            const isTop3 = displayedRank <= 3;
-            const opacityClass = isTop3 ? styles.rank_opacity_top3 : "";
-
-            return (
+      <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      <main>
+        <div className={`${styles.project_vote_form} ${styles.mount1}`}>
+          <div className={styles.header_bg_zone}>
+            <div className={styles.title_form}>
               <div
-                className={`${styles.project_list_box} ${
-                  isTop3 ? styles.selected : ""
-                }`}
-                key={(project.projectId ?? project.projectName ?? index) + "-vote"}
+                className={styles.title}
+                style={{
+                  fontSize: "30px",
+                  WebkitTextStrokeWidth: "1.3px",
+                  WebkitTextStrokeColor: "white",
+                  marginTop: "40px",
+                }}
               >
-                {/* 상단: 썸네일(좌) + 오른쪽 컬럼(우) */}
-                <div className={styles.inform_box}>
-                  {project.thumbnail && (
-                    <div className={styles.thumbnail_wrap}>
-                      <span className={styles.rank_badge_out}>{displayedRank}</span>
-                      <div className={styles.project_thumbnail}>
-                        <img
-                          className={styles.thumbnail_image}
-                          alt={project.projectName || project.title || "thumbnail"}
-                          src={project.thumbnail}
-                          loading="lazy"
-                        />
-                      </div>
-                    </div>
-                  )}
+                VOTING
+                <br />
+                RESULTS
+              </div>
+              <div
+                className={styles.title}
+                style={{ fontSize: "12px", marginTop: "4px", color: "#ffffffad" }}
+              >
+                투표결과를 확인해보세요
+              </div>
+            </div>
+          </div>
 
-                  {/* 오른쪽 컬럼: 제목/요약 + 하단바(득표/버튼) */}
-                  <div className={styles.right_col}>
-                    <div className={styles.project_title_form}>
-                      <h2 className={styles.title}>
-                        {project.projectName || project.title}
-                      </h2>
-                      <p className={styles.summary}>
-                        {project.projectSummary || project.summary}
-                      </p>
-                    </div>
+          <div className={styles.project_list_form}>
+            {Array.isArray(projects) && projects.length > 0 ? (
+              projects.map((project, index) => {
+                const isTie = project.voteCount === prevVoteCount;
+                if (!isTie) displayedRank = actualRank;
+                prevVoteCount = project.voteCount;
+                actualRank++;
 
-                    <div className={styles.bottom_row}>
-                      <div className={styles.project_result_inline}>
-                        {/* 아이콘 + 득표수 */}
-                        <div
-                          className={`${styles.project_vote_count} ${opacityClass}`}
-                        >
-                          <VoteIcon className={styles.vote_icon} />
-                          <span>{project.voteCount} 득표</span>
+                const isTop3 = displayedRank <= 3;
+                const opacityClass = isTop3 ? styles.rank_opacity_top3 : "";
+
+                return (
+                  <div
+                    className={`${styles.project_list_box} ${
+                      isTop3 ? styles.selected : ""
+                    }`}
+                    key={(project.projectId ?? project.projectName ?? index) + "-vote"}
+                  >
+                    {/* 상단: 썸네일(좌) + 오른쪽 컬럼(우) */}
+                    <div className={styles.inform_box}>
+                      {project.thumbnail && (
+                        <div className={styles.thumbnail_wrap}>
+                          <span className={styles.rank_badge_out}>{displayedRank}</span>
+                          <div className={styles.project_thumbnail}>
+                            <img
+                              className={styles.thumbnail_image}
+                              alt={project.projectName || project.title || "thumbnail"}
+                              src={project.thumbnail}
+                              loading="lazy"
+                            />
+                          </div>
                         </div>
-                        <div className={styles.project_vote_rate}>
-                          {project.voteRate}%
+                      )}
+
+                      {/* 오른쪽 컬럼: 제목/요약 + 하단바(득표/버튼) */}
+                      <div className={styles.right_col}>
+                        <div className={styles.project_title_form}>
+                          <h2 className={styles.title}>
+                            {project.projectName || project.title}
+                          </h2>
+                          <p className={styles.summary}>
+                            {project.projectSummary || project.summary}
+                          </p>
+                        </div>
+
+                        <div className={styles.bottom_row}>
+                          <div className={styles.project_result_inline}>
+                            {/* 아이콘 + 득표수 */}
+                            <div
+                              className={`${styles.project_vote_count} ${opacityClass}`}
+                            >
+                              <VoteIcon className={styles.vote_icon} />
+                              <span>{project.voteCount} 득표</span>
+                            </div>
+                            <div className={styles.project_vote_rate}>
+                              {project.voteRate}%
+                            </div>
+                          </div>
+
+                          <button
+                            className={styles.view_button}
+                            onClick={() => handleProjectClick(project)}
+                            aria-label={`${
+                              project.projectName || project.title || "프로젝트"
+                            } 상세 보러가기`}
+                          >
+                            보러가기 →
+                          </button>
                         </div>
                       </div>
-
-                      <button
-                        className={styles.view_button}
-                        onClick={() => handleProjectClick(project)}
-                        aria-label={`${
-                          project.projectName || project.title || "프로젝트"
-                        } 상세 보러가기`}
-                      >
-                        보러가기 →
-                      </button>
                     </div>
                   </div>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <p>프로젝트 데이터를 불러오는 중이다...</p>
-        )}
-      </div>
+                );
+              })
+            ) : (
+              <p>프로젝트 데이터를 불러오는 중입니다...</p>
+            )}
+          </div>
+        </div>
+      </main>
+      <FloatingButton />
     </div>
   );
 };
 
 export default VoteResultPage;
-
-
-
-
-
-
-
-
-// 동률 표시하지 않는 코드
-//  projects.map((project, index) => {
-//             const isSelected = index < 3; // 상위 3개만 선택된 상태로 표시
-
-//             return (
-//               <div
-//                 key={project.projectId}
-//                 className={${styles.project_list_box}}
-//               >
-//                 <div className={styles.inform_box}>
-//                   <div
-//                     className={isSelected ? styles.selected_result : ""}
-//                     style={{ marginTop: 10, fontSize: 18 }}
-//                   >
-//                     {index + 1}
-//                   </div>
-//                   {project.thumbnail && (
-//                     <div className={styles.project_thumbnail}>
-//                       <img
-//                         className={styles.thumbnail_image}
-//                         alt={project.title}
-//                         src={project.thumbnail}
-//                       />
-//                     </div>
-//                   )}
-
-//                   <div className={styles.project_title_form}>
-//                     <h2 className={styles.title}>{project.projectName}</h2>
-//                     <p className={styles.summary}>{project.projectSummary}</p>
-//                   </div>
-//                   <div className={styles.project_result_form}>
-//                     <div className={styles.project_vote_count}>
-//                       {project.voteCount} 득표
-//                     </div>
-//                     <div className={styles.project_vote_rate}>
-//                       {project.voteRate}%
-//                     </div>
-//                   </div>
-//                 </div>
-//               </div>
-//             );
-//           })
-//         )
