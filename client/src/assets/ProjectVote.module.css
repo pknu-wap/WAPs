@@ -87,7 +87,7 @@
   position: relative;
   z-index: 0;
   overflow: visible;
-  margin-top: -90px; /* 헤더와 자연스럽게 연결 */
+  margin-top: -20px; /* 헤더와 자연스럽게 연결 */
 }
 
 .project_list_gradient {
