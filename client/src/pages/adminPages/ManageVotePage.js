@@ -6,7 +6,7 @@ import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
 
 const ManageVotePage = () => {
-    const [voteStatus, setVoteStatus] = useState("NOT_CREATED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
+    const [voteStatus, setVoteStatus] = useState("ENDED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
     const [semester, setSemester] = useState(null); // 현재 학기
     const [isProcessing, setIsProcessing] = useState(false); // 열기,닫기 버튼 누를 때 로딩 상태
 
@@ -184,15 +184,38 @@ const ManageVotePage = () => {
             {/* VOTING 상태 */}
             {
                 voteStatus === "VOTING" && (
-                    <div className={styles.PreVoteBox}>
-                        <div className={styles.voteSemester}>{semester}</div>
-                        <button
-                            disabled={isProcessing}
-                            onClick={handleCloseVote}
-                            className={styles.openBtn}
-                        >
-                            {isProcessing ? "Closing.." : "CLOSE"}
-                        </button>
+                    <div>
+                        <div className={styles.upperBox}>
+                            <div className={styles.upperLeft}>
+                                <div className={styles.voteSemester}>{semester}</div>
+                                <button
+                                    disabled={isProcessing}
+                                    onClick={handleCloseVote}
+                                    className={styles.closeBtn}
+                                >
+                                    {isProcessing ? "Closing.." : "CLOSE"}
+                                </button>
+                            </div>
+                        </div>
+                        <div className={styles.bar}></div>
+                        <div className={styles.underBox}>
+                            <div className={styles.resultHeader}>
+                                <div className={styles.resultTitle}>투표 결과</div>
+                                <div className={styles.toggleSwitchs}>
+                                    <div className={styles.nameSwitch}></div>
+                                    <div className={styles.votesSwitch}></div>
+                                </div>
+                            </div>
+                            <div className={styles.resultBody}>
+                                <table>
+
+                                </table>
+                                <div className={styles.publicBtns}>
+                                    <button className={styles.publicBtn}></button>
+                                    <button className={styles.privateBtn}></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )
             }
@@ -200,7 +223,43 @@ const ManageVotePage = () => {
             {
                 voteStatus === "ENDED" && (
                     <div>
+                        <div className={styles.upperBox}>
+                            <div className={styles.upperLeft}>
+                                <div className={styles.voteSemester}>{semester}</div>
+                                <button
+                                    disabled={isProcessing}
+                                    onClick={handleCloseVote}
+                                    className={styles.closeBtn}
+                                >
+                                    {isProcessing ? "Closing.." : "CLOSE"}
+                                </button>
+                            </div>
+                        </div>
+                        <div className={styles.bar}></div>
+                        <div className={styles.underBox}>
+                            <div className={styles.resultHeader}>
+                                <div className={styles.resultTitle}>투표 결과</div>
+                                <div className={styles.toggleSwitchs}>
+                                    <div className={styles.nameSwitchBox}>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
+                                    <div className={styles.votesSwitchBox}>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className={styles.resultBody}>
+                                <table>
 
+                                </table>
+                                <div className={styles.publicBtns}>
+                                    <button className={styles.publicBtn}></button>
+                                    <button className={styles.privateBtn}></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )
             }

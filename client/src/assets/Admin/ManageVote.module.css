@@ -18,7 +18,7 @@
   flex-direction: column;
 }
 
-/* ===== 상단 ===== */
+/* 투표 관리 페이지 고정 상단 */
 .upperBox {
   display: flex;
   justify-content: space-between;
@@ -48,18 +48,25 @@
   text-align: center;
 }
 
-.openBtn {
+.openBtn,
+.closeBtn {
   padding: 5px 39px;
   font-size: 40px;
   font-weight: 700;
   border: none;
   border-radius: 23px;
-  background-color: var(--primary);
   color: black;
   cursor: pointer;
   user-select: none;
 }
 
+.openBtn {
+  background: var(--primary);
+}
+
+.closeBtn {
+  background: var(--active);
+}
 .bar {
   width: 100%;
   height: 3px;
@@ -68,7 +75,7 @@
   margin-bottom: 45px;
 }
 
-/* ===== 카드 그리드 ===== */
+/* 투표 전 (NOT_CREATED) */
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(303px, 1fr));
@@ -79,7 +86,6 @@
   justify-items: center;
 }
 
-/* ===== 카드 기본 (선택됨) ===== */
 .card {
   width: 303px;
   height: 230px;
@@ -94,7 +100,6 @@
   transition: all 0.03s ease-in-out;
 }
 
-/* ===== 선택 해제 상태 ===== */
 .deselected {
   border: none;
   background-color: #1a1a1a;
@@ -129,6 +134,22 @@
   transition: color 0.03s ease-in-out;
 }
 
+/* 투표 중(VOTING) */
+
+/* 투표 후(ENDED) */
+.resulttHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.resultTitle {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.table {
+  overflow-y: auto;
+}
 /* 반응형 */
 @media (max-width: 900px) {
   .upperBox {
