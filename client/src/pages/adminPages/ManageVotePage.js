@@ -6,7 +6,7 @@ import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
 
 const ManageVotePage = () => {
-    const [voteStatus, setVoteStatus] = useState("ENDED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
+    const [voteStatus, setVoteStatus] = useState("VOTING"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
     const [semester, setSemester] = useState(null); // 현재 학기
     const [isProcessing, setIsProcessing] = useState(false); // 열기,닫기 버튼 누를 때 로딩 상태
 
@@ -197,22 +197,18 @@ const ManageVotePage = () => {
                                 </button>
                             </div>
                         </div>
-                        <div className={styles.bar}></div>
-                        <div className={styles.underBox}>
-                            <div className={styles.resultHeader}>
-                                <div className={styles.resultTitle}>투표 결과</div>
-                                <div className={styles.toggleSwitchs}>
-                                    <div className={styles.nameSwitch}></div>
-                                    <div className={styles.votesSwitch}></div>
-                                </div>
-                            </div>
-                            <div className={styles.resultBody}>
-                                <table>
 
-                                </table>
+                        <div className={styles.bar}></div>
+
+                        <div className={styles.underBox}>
+                            <div className={styles.resultTitle}>투표 결과</div>
+                            <div className={styles.resultBody}>
+                                <div className={styles.loadingBox}>
+                                    투표를 기다려주세요
+                                </div>
                                 <div className={styles.publicBtns}>
-                                    <button className={styles.publicBtn}></button>
-                                    <button className={styles.privateBtn}></button>
+                                    <button className={styles.publicBtnDisable}>공개</button>
+                                    <button className={styles.publicBtnDisable}>비공개</button>
                                 </div>
                             </div>
                         </div>
@@ -235,16 +231,18 @@ const ManageVotePage = () => {
                                 </button>
                             </div>
                         </div>
+
                         <div className={styles.bar}></div>
+
                         <div className={styles.underBox}>
                             <div className={styles.resultTitle}>투표 결과</div>
                             <div className={styles.resultBody}>
-                                <table>
-
-                                </table>
+                                <div className={styles.loadingBox}>
+                                    투표를 기다려주세요
+                                </div>
                                 <div className={styles.publicBtns}>
-                                    <button className={styles.publicBtn}></button>
-                                    <button className={styles.privateBtn}></button>
+                                    <button className={styles.publicBtn}>공개</button>
+                                    <button className={styles.publicBtn}>비공개</button>
                                 </div>
                             </div>
                         </div>

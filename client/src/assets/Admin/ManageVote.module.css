@@ -134,16 +134,69 @@
   transition: color 0.03s ease-in-out;
 }
 
-/* 투표 중(VOTING) */
+/* 투표 중, 후 */
 
-/* 투표 후(ENDED) */
 .resultTitle {
   font-size: 40px;
   font-weight: 700;
+  padding-bottom: 25px;
 }
 
-.table {
-  overflow-y: auto;
+.resultBody {
+  display: flex;
+  gap: 30px;
+  height: calc(100vh - 470px);
+}
+
+.loadingBox {
+  height: 100%;
+  flex-grow: 7;
+  border-style: solid;
+  border-width: 2px;
+  border-top-color: white;
+  border-bottom-color: white;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  background-color: #4d4d4d;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.publicBtns {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  justify-content: flex-start;
+  gap: 10px;
+  justify-content: end;
+}
+
+.publicBtn {
+  height: 80px;
+  border: solid 2px white;
+  border-radius: 51px;
+  width: 100%;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.publicBtnDisable {
+  height: 80px;
+  border: solid 2px #767676;
+  border-radius: 51px;
+  width: 100%;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  color: #797979;
+  background: #404040;
 }
 
 /* 반응형 */
