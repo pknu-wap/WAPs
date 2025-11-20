@@ -100,11 +100,11 @@ const ManageVotePage = () => {
 
         try {
             setIsProcessing(true);
-            await apiClient.post("/admin/vote/close", {
-                params: {
-                    semester: semester
-                }
-            });
+            await apiClient.post(
+                "/admin/vote/close",
+                {},
+                { params: { semester } }
+            );
             setVoteStatus("ENDED");
         } catch (e) {
             setError("투표 종료에 실패했습니다.");
@@ -132,125 +132,135 @@ const ManageVotePage = () => {
     };
 
 
+    // 컴포넌트들
+    const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
+        return (
+            <div className={styles.upperBox}>
+                <div className={styles.upperLeft}>
+                    <div className={styles.voteSemester}>{semester}</div>
+                    <button
+                        disabled={isProcessing}
+                        onClick={onClick}
+                        className={voteStatus === "NOT_CREATED" ? styles.openBtn : styles.closeBtn}
+                    >
+                        {isProcessing
+                            ? voteStatus === "NOT_CREATED"
+                                ? "Opening..."
+                                : "Closing..."
+                            : voteStatus === "NOT_CREATED"
+                                ? "OPEN"
+                                : "CLOSE"}
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
+    const NotCreatedView = ({
+        semester,
+        projects,
+        selectedProjects,
+        toggleProjectSelect,
+        openModal
+    }) => {
+        return (
+            <>
+                <div className={styles.upperRight}>프로젝트를 선택해주세요!</div>
+                <div className={styles.cardGrid}>
+                    {projects.map((p) => (
+                        <div
+                            key={p.projectId}
+                            className={`${styles.card} ${!selectedProjects.includes(p.projectId) ? styles.deselected : ""}`}
+                            onClick={() => toggleProjectSelect(p.projectId)}
+                        >
+                            <img src={p.thumbnail} className={styles.thumbnail} alt="" />
+                            <div className={styles.title}>{p.title}</div>
+                        </div>
+                    ))}
+                </div>
+            </>
+        );
+    };
+
+    const VotingView = () => {
+        return (
+            <div className={styles.underBox}>
+                <div className={styles.resultTitle}>투표 결과</div>
+
+                <div className={styles.resultBody}>
+                    <div className={styles.loadingBox}>투표를 기다려주세요</div>
+
+                    <div className={styles.publicBtns}>
+                        <button className={styles.publicBtnDisable}>공개</button>
+                        <button className={styles.publicBtnDisable}>비공개</button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const EndedView = () => {
+        return (
+            <div className={styles.underBox}>
+                <div className={styles.resultTitle}>투표 결과</div>
+
+                <div className={styles.resultBody}>
+                    <div className={styles.loadingBox}>투표를 기다려주세요</div>
+
+                    <div className={styles.publicBtns}>
+                        <button className={styles.publicBtn}>공개</button>
+                        <button className={styles.publicBtn}>비공개</button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
 
     // if (isLoading) return <div>Loading...</div>;
     // if (error) return <div>{error}</div>;
 
     return (
         <div className={styles.container}>
-            {/* NOT_CREATED 상태 */}
-            {
-                voteStatus === "NOT_CREATED" && (
-                    <div>
-                        <div className={styles.upperBox}>
-                            <div className={styles.upperLeft}>
-                                <div className={styles.voteSemester}>{semester}</div>
-                                <button
-                                    disabled={isProcessing}
-                                    onClick={handleSummitProjects}
-                                    className={styles.openBtn}
-                                >
-                                    {isProcessing ? "Opening.." : "OPEN"}
-                                </button>
-                            </div>
-                            <div className={styles.upperRight}>이번 학기 투표에 참가할 프로젝트틀을 선택해주세요!</div>
-                        </div>
-                        <div className={styles.bar}></div>
-                        <div className={styles.cardGrid}>
-                            {projects.map((p) => (
-                                <div
-                                    key={p.projectId}
-                                    className={`${styles.card} ${!selectedProjects.includes(p.projectId) ? styles.deselected : ""}`}
-                                    onClick={() => toggleProjectSelect(p.projectId)}
-                                >
-                                    <img src={p.thumbnail} alt="project" className={styles.thumbnail} />
-                                    <div className={styles.title}>{p.title}</div>
-                                </div>
-                            ))}
-                        </div>
 
-                        {isModalOpen && (
-                            <SubmitModal
-                                selectedProjects={selectedProjects}
-                                projects={projects}
-                                onConfirm={handleOpenVote}
-                                onCancel={() => setIsModalOpen(false)}
-                            />
-                        )}
-                    </div>
-                )
-            }
+            <HeaderSection
+                semester={semester}
+                isProcessing={isProcessing}
+                voteStatus={voteStatus}
+                onClick={
+                    voteStatus === "NOT_CREATED"
+                        ? handleSummitProjects    // OPEN 누르면 모달
+                        : handleCloseVote         // CLOSE
+                }
+            />
 
-            {/* VOTING 상태 */}
-            {
-                voteStatus === "VOTING" && (
-                    <div>
-                        <div className={styles.upperBox}>
-                            <div className={styles.upperLeft}>
-                                <div className={styles.voteSemester}>{semester}</div>
-                                <button
-                                    disabled={isProcessing}
-                                    onClick={handleCloseVote}
-                                    className={styles.closeBtn}
-                                >
-                                    {isProcessing ? "Closing.." : "CLOSE"}
-                                </button>
-                            </div>
-                        </div>
+            <div className={styles.bar}></div>
 
-                        <div className={styles.bar}></div>
+            {voteStatus === "NOT_CREATED" && (
+                <NotCreatedView
+                    semester={semester}
+                    projects={projects}
+                    selectedProjects={selectedProjects}
+                    toggleProjectSelect={toggleProjectSelect}
+                    openModal={handleSummitProjects}
+                />
+            )}
 
-                        <div className={styles.underBox}>
-                            <div className={styles.resultTitle}>투표 결과</div>
-                            <div className={styles.resultBody}>
-                                <div className={styles.loadingBox}>
-                                    투표를 기다려주세요
-                                </div>
-                                <div className={styles.publicBtns}>
-                                    <button className={styles.publicBtnDisable}>공개</button>
-                                    <button className={styles.publicBtnDisable}>비공개</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-            {/* ENDED 상태 */}
-            {
-                voteStatus === "ENDED" && (
-                    <div>
-                        <div className={styles.upperBox}>
-                            <div className={styles.upperLeft}>
-                                <div className={styles.voteSemester}>{semester}</div>
-                                <button
-                                    disabled={isProcessing}
-                                    onClick={handleCloseVote}
-                                    className={styles.closeBtn}
-                                >
-                                    {isProcessing ? "Closing.." : "CLOSE"}
-                                </button>
-                            </div>
-                        </div>
+            {voteStatus === "VOTING" && <VotingView />}
 
-                        <div className={styles.bar}></div>
+            {voteStatus === "ENDED" && <EndedView />}
 
-                        <div className={styles.underBox}>
-                            <div className={styles.resultTitle}>투표 결과</div>
-                            <div className={styles.resultBody}>
-                                <div className={styles.loadingBox}>
-                                    투표를 기다려주세요
-                                </div>
-                                <div className={styles.publicBtns}>
-                                    <button className={styles.publicBtn}>공개</button>
-                                    <button className={styles.publicBtn}>비공개</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-        </div >
+            {isModalOpen && (
+                <SubmitModal
+                    selectedProjects={selectedProjects}
+                    projects={projects}
+                    onConfirm={handleOpenVote}
+                    onCancel={() => setIsModalOpen(false)}
+                />
+            )}
+        </div>
     );
+
 }
 
 export default ManageVotePage;
