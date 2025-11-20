@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 @font-face {
   font-family: "Pretendard-Regular";
   src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
@@ -14,7 +12,6 @@
 
 /*  모달 박스 */
 
->>>>>>> fcc1b6a2da6134bc392d6ab925a5bb33ae45b127
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -29,26 +26,14 @@
 }
 
 .modalBox {
-<<<<<<< HEAD
-  width: 400px;
-  background: #1e1e1e;
-  padding: 25px;
-=======
   width: 500px;
   background: #1e1e1e;
   padding: 35px 25px;
->>>>>>> fcc1b6a2da6134bc392d6ab925a5bb33ae45b127
   border-radius: 20px;
   display: flex;
   flex-direction: column;
 }
 
-<<<<<<< HEAD
-.modalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-=======
 .header {
   display: flex;
   flex-direction: column;
@@ -106,5 +91,4 @@
 .submitBtn:active {
   background: #606060;
   color: white;
->>>>>>> fcc1b6a2da6134bc392d6ab925a5bb33ae45b127
 }
