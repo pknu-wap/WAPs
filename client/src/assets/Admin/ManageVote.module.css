@@ -137,11 +137,6 @@
 /* 투표 중(VOTING) */
 
 /* 투표 후(ENDED) */
-.resulttHeader {
-  display: flex;
-  justify-content: space-between;
-}
-
 .resultTitle {
   font-size: 40px;
   font-weight: 700;
