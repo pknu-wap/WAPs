@@ -112,11 +112,6 @@
   cursor: default;
 }
 
-/* 1~3등 박스에 걸린 .selected 테두리 제거 */
-.project_list_form .project_list_box:nth-child(-n+3).selected {
-  border: none !important;
-}
-
 .selected {
   border: 2px solid var(--primary);
   color: var(--primary);
