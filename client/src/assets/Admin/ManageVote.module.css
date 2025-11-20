@@ -8,38 +8,162 @@
 
 :root {
   --primary: #abd4fd;
+  --active: #d9d9d9;
+  --disable: #616161;
 }
 
-/* 투표 열기 전 */
-.beforeVoteBox {
+.container {
+  width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+/* 투표 관리 페이지 고정 상단 */
+.upperBox {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.upperLeft {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  gap: 29px;
   width: 100%;
-  height: 100%;
-  gap: 20px;
-  padding-top: 200px;
+  box-sizing: border-box;
+}
+
+.upperRight {
+  white-space: nowrap;
+  align-self: flex-end;
+  font-size: 20px;
 }
 
 .voteSemester {
-  font-size: 96px;
+  width: 212px;
+  font-size: 50px;
   font-weight: 700;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.openBtn,
+.closeBtn {
+  padding: 5px 39px;
+  font-size: 40px;
+  font-weight: 700;
+  border: none;
+  border-radius: 23px;
+  color: black;
+  cursor: pointer;
+  user-select: none;
 }
 
 .openBtn {
-  width: 401px;
-  height: 125px;
-  border-radius: 27px;
-  background-color: var(--primary);
-  color: black;
-  font-size: 80px;
-  font-weight: 700;
+  background: var(--primary);
+}
+
+.closeBtn {
+  background: var(--active);
+}
+.bar {
+  width: 100%;
+  height: 3px;
+  background-color: #606060;
+  margin-top: 40px;
+  margin-bottom: 45px;
+}
+
+/* 투표 전 (NOT_CREATED) */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(303px, 1fr));
+  gap: 18px;
+  height: calc(100vh - 360px);
+  overflow-y: auto;
+  padding-right: 10px;
+  justify-items: center;
+}
+
+.card {
+  width: 303px;
+  height: 230px;
+  border: 3px solid var(--primary);
+  border-radius: 31px;
+  background-color: #1e1e1e;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  border: none;
+  padding-top: 12px;
   cursor: pointer;
+  transition: all 0.03s ease-in-out;
+}
+
+.deselected {
+  border: none;
+  background-color: #1a1a1a;
+}
+
+.deselected .thumbnail {
+  filter: brightness(55%);
+}
+
+.deselected .title {
+  color: var(--disable);
+}
+
+.thumbnail {
+  width: 277px;
+  height: 175px;
+  border-radius: 21px;
+  object-fit: cover;
+  transition: filter 0.03s ease-in-out;
   user-select: none;
+}
+
+.title {
+  width: 265px;
+  margin-top: 10px;
+  font-size: 25px;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.03s ease-in-out;
+}
+
+/* 투표 중(VOTING) */
+
+/* 투표 후(ENDED) */
+.resultTitle {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.table {
+  overflow-y: auto;
+}
+/* 반응형 */
+@media (max-width: 900px) {
+  .upperBox {
+    flex-direction: column;
+    align-items: flex-start; /* 왼쪽 정렬 */
+    gap: 10px;
+  }
+
+  .upperRight {
+    white-space: normal; /* 줄바꿈 허용 */
+    font-size: 16px; /* 모바일에 맞게 줄여도 됨 */
+  }
+
+  .voteSemester {
+    font-size: 35px; /* 모바일에서 너무 크면 조절 */
+  }
+
+  .openBtn {
+    font-size: 25px;
+    padding: 5px 20px;
+  }
 }

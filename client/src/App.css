@@ -66,9 +66,6 @@ ul {
   list-style-type: none;
   padding: 0;
 }
-li {
-  padding: 10px 0;
-}
 
 /* 본문 컨테이너 */
 .container {
@@ -208,8 +205,6 @@ li {
   font-size: 15px;
   text-align: left;
 }
-
-
 
 /* 프로젝트 컨테이너 */
 .project-container {
