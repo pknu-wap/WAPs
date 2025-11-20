@@ -22,12 +22,16 @@ const ManageVotePage = () => {
         setSemester(getCurrentSemester());
     }, []);
 
-    // 투표 상태 조회
+    // // 투표 상태 조회
     // useEffect(() => {
     //     const fetchVoteStart = async () => {
     //         try {
-    //             const response = await apiClient.post("/vote/now");
-    //             setVoteStatus(response.data.isOpen);
+    //             const response = await apiClient.get("/admin/vote/status", {
+    //                 params: {
+    //                     semester: semester
+    //                 }
+    //             });
+    //             setVoteStatus(response.data.status);
 
     //         } catch (e) {
     //             setError("투표 상태 조회 실패");
@@ -36,7 +40,7 @@ const ManageVotePage = () => {
     //         }
     //     };
     //     fetchVoteStart();
-    // }, []);
+    // }, [semester]);
 
     // 프로젝트 목록 불러오기
     useEffect(() => {
@@ -65,20 +69,28 @@ const ManageVotePage = () => {
         }
     }, [projects]);
 
-
     // 투표 열기 핸들러
     const handleOpenVote = async () => {
         if (voteStatus !== "NOT_CREATED") return;
 
         try {
-            setIsLoading(true);
-            await apiClient.post("/admin/vote/open", { semester: semester });
+            setIsProcessing(true);
+
+            await apiClient.post("/admin/vote/open",
+                {
+                    projectIds: selectedProjects
+                },
+                {
+                    params: { semester: semester }
+                }
+            );
 
             setVoteStatus("VOTING");
+            setIsModalOpen(false);
         } catch (e) {
-            setError("투표 열기에 실패했습니다.");
+            alert("투표 열기에 실패했습니다");
         } finally {
-            setIsLoading(false);
+            setIsProcessing(false);
         }
     };
 
@@ -88,7 +100,11 @@ const ManageVotePage = () => {
 
         try {
             setIsProcessing(true);
-            await apiClient.post("/admin/vote/close", { semester: semester });
+            await apiClient.post("/admin/vote/close", {
+                params: {
+                    semester: semester
+                }
+            });
             setVoteStatus("ENDED");
         } catch (e) {
             setError("투표 종료에 실패했습니다.");
@@ -115,11 +131,11 @@ const ManageVotePage = () => {
         setIsModalOpen(true);
     };
 
-    const submitProjectsToServer = () => {
 
-    }
-    //if (isLoading) return <div>Loading...</div>;
-    //if (error) return <div>{error}</div>;
+
+    // if (isLoading) return <div>Loading...</div>;
+    // if (error) return <div>{error}</div>;
+
     return (
         <div className={styles.container}>
             {/* NOT_CREATED 상태 */}
@@ -131,7 +147,7 @@ const ManageVotePage = () => {
                                 <div className={styles.voteSemester}>{semester}</div>
                                 <button
                                     disabled={isProcessing}
-                                    onClick={handleOpenVote}
+                                    onClick={handleSummitProjects}
                                     className={styles.openBtn}
                                 >
                                     {isProcessing ? "Opening.." : "OPEN"}
@@ -152,20 +168,12 @@ const ManageVotePage = () => {
                                 </div>
                             ))}
                         </div>
-                        <div className={styles.summitWrapper}>
-                            <button
-                                className={styles.summit}
-                                onClick={handleSummitProjects}
-                            >
-                                제출
-                            </button>
-                        </div>
 
                         {isModalOpen && (
                             <SubmitModal
                                 selectedProjects={selectedProjects}
                                 projects={projects}
-                                onConfirm={submitProjectsToServer}
+                                onConfirm={handleOpenVote}
                                 onCancel={() => setIsModalOpen(false)}
                             />
                         )}
@@ -176,15 +184,38 @@ const ManageVotePage = () => {
             {/* VOTING 상태 */}
             {
                 voteStatus === "VOTING" && (
-                    <div className={styles.PreVoteBox}>
-                        <div className={styles.voteSemester}>{semester}</div>
-                        <button
-                            disabled={isProcessing}
-                            onClick={handleCloseVote}
-                            className={styles.openBtn}
-                        >
-                            {isProcessing ? "Closing.." : "CLOSE"}
-                        </button>
+                    <div>
+                        <div className={styles.upperBox}>
+                            <div className={styles.upperLeft}>
+                                <div className={styles.voteSemester}>{semester}</div>
+                                <button
+                                    disabled={isProcessing}
+                                    onClick={handleCloseVote}
+                                    className={styles.closeBtn}
+                                >
+                                    {isProcessing ? "Closing.." : "CLOSE"}
+                                </button>
+                            </div>
+                        </div>
+                        <div className={styles.bar}></div>
+                        <div className={styles.underBox}>
+                            <div className={styles.resultHeader}>
+                                <div className={styles.resultTitle}>투표 결과</div>
+                                <div className={styles.toggleSwitchs}>
+                                    <div className={styles.nameSwitch}></div>
+                                    <div className={styles.votesSwitch}></div>
+                                </div>
+                            </div>
+                            <div className={styles.resultBody}>
+                                <table>
+
+                                </table>
+                                <div className={styles.publicBtns}>
+                                    <button className={styles.publicBtn}></button>
+                                    <button className={styles.privateBtn}></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )
             }
@@ -192,7 +223,31 @@ const ManageVotePage = () => {
             {
                 voteStatus === "ENDED" && (
                     <div>
+                        <div className={styles.upperBox}>
+                            <div className={styles.upperLeft}>
+                                <div className={styles.voteSemester}>{semester}</div>
+                                <button
+                                    disabled={isProcessing}
+                                    onClick={handleCloseVote}
+                                    className={styles.closeBtn}
+                                >
+                                    {isProcessing ? "Closing.." : "CLOSE"}
+                                </button>
+                            </div>
+                        </div>
+                        <div className={styles.bar}></div>
+                        <div className={styles.underBox}>
+                            <div className={styles.resultTitle}>투표 결과</div>
+                            <div className={styles.resultBody}>
+                                <table>
 
+                                </table>
+                                <div className={styles.publicBtns}>
+                                    <button className={styles.publicBtn}></button>
+                                    <button className={styles.privateBtn}></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )
             }

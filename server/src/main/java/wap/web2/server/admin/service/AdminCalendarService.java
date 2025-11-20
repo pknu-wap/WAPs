@@ -3,7 +3,7 @@ package wap.web2.server.admin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wap.web2.server.admin.dto.CalendarEventPostingRequest;
+import wap.web2.server.admin.dto.request.CalendarEventPostingRequest;
 import wap.web2.server.calendar.entity.CalendarEvent;
 import wap.web2.server.calendar.repository.CalendarEventRepository;
 

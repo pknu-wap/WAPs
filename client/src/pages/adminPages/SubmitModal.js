@@ -1,22 +1,32 @@
 import styles from "../../assets/Admin/SubmitModal.module.css"
 
+// 투표 관리 페이제 프로젝트 제출 모달 컴포넌트
 const SubmitModal = ({ selectedProjects, projects, onConfirm, onCancel }) => {
     const selectedList = projects.filter(p => selectedProjects.includes(p.projectId));
+
+    // 바깥 클릭 시 종료
+    const handleOverlayClick = (e) => {
+        // modalBox 내부 클릭이면 닫히지 않게
+        if (e.target === e.currentTarget) {
+            onCancel();
+        }
+    };
+
     return (
-        <div className={styles.modalOverlay}>
-            <div className={styles.modalBox}>
+        <div className={styles.modalOverlay} onClick={handleOverlayClick}>
+            <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
                 {/* 헤더 */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', fontSize: '25px', justifyContent: 'space-between' }}>
+                <div className={styles.header}>
+                    <div className={styles.headerTop}>
                         <div style={{ fontWeight: '700' }}>제출확인</div>
-                        <button style={{ cursor: 'pointer' }} onClick={onCancel}>✕</button>
+                        <button style={{ cursor: 'pointer', marginTop: '-15px' }} onClick={onCancel}>✕</button>
                     </div>
                     <div>선택한 프로젝트를 다시 한번 확인해주세요. 아 제발요.</div>
                 </div>
 
                 {/* 선택된 프로젝트 목록 */}
-                <div style={{ marginTop: '20px', fontWeight: '700' }}>선택한 프로젝트</div>
-                <ul style={{ marginTop: '10px', marginBottom: '20px', paddingLeft: '20px' }}>
+                <div className={styles.selectedTitle}>선택한 프로젝트</div>
+                <ul>
                     {selectedList.map(p => (
                         <li key={p.projectId}>{p.title}</li>
                     ))}
@@ -24,11 +34,11 @@ const SubmitModal = ({ selectedProjects, projects, onConfirm, onCancel }) => {
 
                 {/* 버튼 */}
                 <div className={styles.modalActions}>
-                    <button onClick={onCancel}>취소</button>
-                    <button onClick={onConfirm}>확인</button>
+                    <button className={styles.cancelBtn} onClick={onCancel}>취소</button>
+                    <button className={styles.submitBtn} onClick={onConfirm}>제출</button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

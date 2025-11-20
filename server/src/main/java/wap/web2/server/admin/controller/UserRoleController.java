@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import wap.web2.server.admin.dto.RoleChangeRequest;
-import wap.web2.server.admin.dto.RoleChangeResponse;
-import wap.web2.server.admin.dto.UserRolePageResponse;
+import wap.web2.server.admin.dto.request.RoleChangeRequest;
+import wap.web2.server.admin.dto.response.RoleChangeResponse;
+import wap.web2.server.admin.dto.response.UserRolePageResponse;
 import wap.web2.server.admin.service.UserRoleService;
 
 @RestController

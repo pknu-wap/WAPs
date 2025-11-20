@@ -23,7 +23,6 @@ import wap.web2.server.member.entity.User;
 import wap.web2.server.project.dto.TeamMemberDto;
 import wap.web2.server.project.dto.TechStackDto;
 import wap.web2.server.project.dto.request.ProjectRequest;
-import wap.web2.server.vote.entity.Vote;
 
 @Entity
 @Getter
@@ -77,11 +76,6 @@ public class Project {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user; // Owner
-
-    @Deprecated
-    @ManyToOne
-    @JoinColumn(name = "vote_id")
-    private Vote vote;
 
     public void update(ProjectRequest request) {
         // 기본 필드 업데이트
