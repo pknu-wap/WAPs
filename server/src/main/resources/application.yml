@@ -76,3 +76,19 @@ project:
 #logging:
 #  level:
 #    org.springframework.security: DEBUG
+
+## monitoring
+management:
+  endpoints:
+    enabled-by-default: false
+    jmx:
+      exposure:
+        exclude: "*"
+    web:
+      exposure:
+        include: info, health
+  endpoint:
+    info:
+      enabled: true
+    health:
+      enabled: true
