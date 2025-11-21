@@ -1,4 +1,4 @@
-package wap.web2.server.admin.dto;
+package wap.web2.server.admin.dto.response;
 
 import java.util.List;
 

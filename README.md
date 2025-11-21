@@ -9,19 +9,23 @@
 -  **프로젝트 소개**: 프로젝트명, 설명, 팀원 정보 확인 가능
 -  **투표 기능**: 원하는 프로젝트에 1인당 3팀 투표 가능
 -  **결과 확인**: 가장 인기 있는 프로젝트를 확인 가능
+-  **팀 빌딩**: 한 학기 함께할 팀을 구성하는 기능
+-  **캘린더 기능**: 왑에서 진행될 일정을 정렬하여 확인하는 기능
 
 ## 🛠️ 사용 기술 스택
 | 구분       | 기술 |
 |------------|------|
-| **Frontend** | React, js, css |
+| **Frontend** | React, JavaScript, CSS |
 | **Backend**  | Java, Spring Boot, Spring Security, JPA |
-| **Database** | MySQL |
+| **Database** | MySQL, AWS RDS |
 | **DevOps**   | AWS EC2, AWS S3 |
 
-## 🚀 프로젝트 실행 방법
+
+## 🚀 WAPs service
 https://waps.im
 
-## 2025-2 참여 인원
+
+## 👤 2025-2 참여 인원
 <table>
   <tr>
     <td align="center">

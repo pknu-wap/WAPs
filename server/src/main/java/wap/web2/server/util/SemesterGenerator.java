@@ -13,7 +13,6 @@ public class SemesterGenerator {
         return now.getMonthValue() <= SECOND_SEMESTER_MONTH
                 ? now.getYear() + FIRST_SEMESTER
                 : now.getYear() + SECOND_SEMESTER;
-
     }
 
     public static Integer generateYearValue() {
@@ -26,6 +25,10 @@ public class SemesterGenerator {
         return now.getMonthValue() <= SECOND_SEMESTER_MONTH
                 ? 1
                 : 2;
+    }
+
+    public static String convertFrom(Integer year, Integer semester) {
+        return String.format("%d-0%d", year, semester);
     }
 
 }

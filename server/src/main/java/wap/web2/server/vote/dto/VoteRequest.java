@@ -1,19 +1,18 @@
 package wap.web2.server.vote.dto;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import wap.web2.server.util.Semester;
 
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class VoteRequest {
+public record VoteRequest(
+        @NotNull
+        @Size(min = 3, max = 3, message = "3개의 프로젝트에 투표해야합니다.")
+        List<Long> projectIds,
 
-    @Size(min = 3, max = 3, message = "3개의 프로젝트에 투표해야합니다.")
-    private List<Long> projectIds;
+        @NotNull
+        @Semester
+        String semester
+) {
 
 }

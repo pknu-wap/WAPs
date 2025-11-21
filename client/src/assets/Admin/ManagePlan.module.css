@@ -1,0 +1,265 @@
+@font-face {
+    font-family: 'Pretendard-Bold';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Pretendard-Regular";
+    src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
+    font-weight: 400;
+}
+
+/* 전체 컨테이너 */
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 29px;
+    padding: 30px;
+    box-sizing: border-box;
+    font-family: "Pretendard-Regular";
+}
+
+/* 페이지 타이틀 */
+.title {
+  font-size: 50px;
+  font-weight: 700;
+  color: white;
+  font-family: "Pretendard-Bold";
+}
+
+/* 좌우 영역 래퍼 */
+.pageContent {
+  display: flex;
+  gap: 30px;
+  flex-grow: 1;
+  margin-top: 40px;
+}
+
+/* 입력 섹션 (왼쪽) */
+.inputSection {
+  flex: 0 0 45%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 그리드 정렬 */
+.inputRow {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+/* 라벨 스타일 */
+.label {
+  font-size: 35px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0; 
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  padding-top: 12px;
+}
+
+/* 입력 공통 */
+.titleInput,
+.dateInput,
+.contentInput,
+.targetInput {
+  background-color: #353535;
+  border: none;
+  color: #ffffff;
+  padding: 12px 15px;
+  font-size: 20px;
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: auto;
+}
+
+/* 높이 통일 */
+.titleInput,
+.targetInput,
+.dateInput {
+  height: 70px;
+}
+
+/* 제목 입력 상세 */
+.titleInput {
+  grid-column: 2 / 3;
+}
+
+/* 내용 입력 */
+.contentInput {
+  grid-column: 2 / 3;
+  min-height: 200px;
+  resize: none;
+  font-family: "Pretendard-Regular";
+  padding-top: 14px;
+}
+
+.targetBox {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.targetLabel {
+  font-size: 35px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.targetInput {
+  padding: 8px 12px;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+/* 미리보기 섹션 (오른쪽) */
+.previewSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 미리보기 제목 */
+.previewTitle {
+  font-size: 35px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 15px;
+  font-family: "Pretendard-Bold";
+}
+
+/* 미리보기 내부 컨텐츠(기본 박스) */
+.previewContent {
+ margin: 20px;
+}
+
+/* 미리보기 내용 없을 때 */
+.emptyPreview {
+  min-height: 1px;
+}
+
+/* 미리보기 박스 */
+.scheduleBox {
+  width: 100%;
+  margin: 0;
+  background: #353535;
+  padding: 20px;
+  box-sizing: border-box;
+  backdrop-filter: blur(8px);
+}
+
+/* 날짜 텍스트 */
+.scheduleDate {
+  color: #bbb;
+  font-size: 19px;
+  margin-bottom: 5px;
+}
+
+/* 제목 텍스트 */
+.scheduleTitle {
+  font-size: 22px;
+  color: #fff;
+}
+
+/* 내용 (줄바꿈 유지) */
+.scheduleContent {
+  margin-top: 15px;
+  font-size: 20px;
+  color: #fff;
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+/* 미리 보기 안의 타겟 영역 */
+.miniTarget {
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  margin-top: 15px;
+  padding-top: 10px;
+  text-align: right;
+  font-size: 20px;
+  color: #fff;
+  font-family: "Pretendard-Regular";
+}
+
+.scheduleBox .scheduleDate {
+  margin-bottom: 6px;
+}
+
+.scheduleBox .scheduleTitle {
+  margin-top: 2px;
+}
+
+/* 미리보기 박스 높이 고정 */
+.previewFixedHeight {
+  min-height: 360px;
+  height: 422px;
+  overflow-y: auto;
+}
+
+/* 미리보기 비어 있을 때 빈 공간 유지 */
+.emptyPreview {
+  width: 100%;
+  height: 100%;
+}
+
+/* 발행 버튼 */
+.publishButton {
+  align-self: flex-end;
+  background-color: transparent;
+  color: #A2A2A2;
+  border: 1px solid #A2A2A2;
+  padding: 10px 30px;
+  font-size: 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.2s;
+  font-family: "Pretendard-Bold";
+}
+
+.publishButton:hover {
+  background-color: #333333;
+}
+
+/* 반응형 */
+@media (max-width: 800px) {
+  .pageContent {
+    flex-direction: column;
+  }
+
+  .inputSection {
+    flex: 1 1 auto;
+  }
+
+  .previewSection {
+    flex: 1 1 auto;
+  }
+
+  .inputRow,
+  .target {
+    grid-template-columns: 100px 1fr;
+  }
+
+  .title {
+    font-size: 36px;
+  }
+}

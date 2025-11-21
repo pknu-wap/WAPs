@@ -15,6 +15,7 @@ import wap.web2.server.member.dto.UserVoteResponse;
 import wap.web2.server.member.service.UserService;
 import wap.web2.server.security.core.CurrentUser;
 import wap.web2.server.security.core.UserPrincipal;
+import wap.web2.server.util.Semester;
 
 @RestController
 @RequestMapping("/user")
@@ -30,9 +31,10 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/vote")
-    public ResponseEntity<?> getMyVotedInfo(@CurrentUser UserPrincipal userPrincipal) {
-        UserVoteResponse response = userService.getUserVotedInfo(userPrincipal);
+    @GetMapping("/vote/{semester}")
+    public ResponseEntity<?> getMyVotedInfo(@CurrentUser UserPrincipal userPrincipal,
+                                            @PathVariable("semester") @Semester String semester) {
+        UserVoteResponse response = userService.getUserVotedInfo(userPrincipal, semester);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

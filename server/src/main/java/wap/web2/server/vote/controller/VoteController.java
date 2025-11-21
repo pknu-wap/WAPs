@@ -1,5 +1,6 @@
 package wap.web2.server.vote.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.security.core.CurrentUser;
 import wap.web2.server.security.core.UserPrincipal;
+import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.dto.VoteInfoResponse;
-import wap.web2.server.vote.dto.VoteRequest2;
+import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
 import wap.web2.server.vote.service.VoteService;
 
@@ -29,7 +31,7 @@ public class VoteController {
 
     @PostMapping
     public ResponseEntity<?> voteProjects(@CurrentUser UserPrincipal userPrincipal,
-                                          @RequestBody @Valid VoteRequest2 voteRequest) {
+                                          @RequestBody @Valid VoteRequest voteRequest) {
         try {
             String role = userPrincipal.getUserRole()
                     .orElseThrow(() -> new IllegalArgumentException("[ERROR] 사용자의 권한 정보가 존재하지 않습니다."));
@@ -45,13 +47,18 @@ public class VoteController {
         }
     }
 
-    // TODO: fe에서 2번의 요청을 통한 분기처리로 확인하던것을, 오류코드를 반환하는 식으로 개선해서 1번의 요청으로 줄일 수 있을 듯
+
     @GetMapping("/now")
-    public ResponseEntity<?> getVoteInfo(@CurrentUser UserPrincipal userPrincipal,
-                                         @RequestParam(value = "projectYear", required = false) Integer year,
-                                         @RequestParam(value = "semester", required = false) Integer semester) {
-        VoteInfoResponse voteInfo = voteService.getVoteInfo(userPrincipal, year, semester);
-        return ResponseEntity.ok().body(voteInfo);
+    @Operation(summary = "현재 학기 투표 상태 보기", description = "현재 학기에 '열린 투표'인지, '내가 투표했는지', '닫힌 투표인지'를 반환한다")
+    public ResponseEntity<?> getVoteInfo(@CurrentUser UserPrincipal userPrincipal) {
+        try {
+            // 해당 api는 "현재 학기"로 고정이다.
+            String semester = SemesterGenerator.generateSemester();
+            VoteInfoResponse response = voteService.getVoteInfo(userPrincipal, semester);
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/result")
