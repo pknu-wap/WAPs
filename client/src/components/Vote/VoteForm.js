@@ -28,7 +28,12 @@ const VoteForm = ({ isVotedUser }) => {
   }, [isVotedUser]);
 
   const handleVoteSubmit = async (e) => {
-    e.preventDefault();
+     e.preventDefault();
+
+  if (selectedProjects.length !== 3) {
+    alert("프로젝트를 3개 선택해야 합니다.");
+    return;
+  }
 
     const voteData = {
       projectIds: selectedProjects,
@@ -67,10 +72,11 @@ const VoteForm = ({ isVotedUser }) => {
 
   return (
     <div className={`${styles.project_vote_form} ${styles.mount1}`}>
-      <div className={styles.title_form}>
-        <div className={styles.title}>마음에 드는 프로젝트에</div>
-        <div className={styles.title}>투표해주세요</div>
-        <p className={styles.title_caption}>최대 3개</p>
+      <div className={styles.bg_zone}>
+        <div className={styles.title_form}>
+          <div className={styles.vote_title}>마음에 드는 프로젝트 3개를 선택해 주세요</div>
+          <p className={styles.title_eng}>Choose 3 projects you like</p>
+        </div>
       </div>
 
       <VoteProjectList

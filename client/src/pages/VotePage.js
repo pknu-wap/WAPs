@@ -7,8 +7,6 @@ import VoteForm from "../components/Vote/VoteForm";
 import FloatingButton from "../components/FloatingButton";
 import Cookies from "js-cookie";
 
-import VoteResultPage from "./VoteResultPage";
-
 // 분기를 결정함.
 // 현재 투표 기간인지에 따라 분기 구별함.
 const VotePage = () => {
@@ -72,7 +70,8 @@ const VotePage = () => {
 
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
-        {isOpen ? <VoteForm isVotedUser={isvotedUser} /> : <VoteResultPage />}
+        <VoteForm isVotedUser={isvotedUser} />
+        {/* {isOpen ? <VoteForm isVotedUser={isvotedUser} /> : <VoteResultPage />} */}
       </main>
       <FloatingButton />
     </div>
