@@ -181,8 +181,8 @@
   flex-direction: column;
   padding: 0px;     /* ← 좌우 간격은 여기서 관리 */
   overflow: hidden;
-  min-height: var(--thumb-h);   /* ★ EDIT: 썸네일 높이와 동기화 */
-  max-height: var(--thumb-h);   /* ★ EDIT: 썸네일 높이와 동기화 */
+  min-height: var(--thumb-h);   /* 썸네일 높이와 동기화 */
+  max-height: var(--thumb-h);   /* 썸네일 높이와 동기화 */
 }
 
 /* 순위 번호 레이아웃(좌측 별도 숫자) – 사용 안 함 */
@@ -201,9 +201,9 @@
 .thumbnail_wrap {
   position: relative;
   --thumb-w: 120px;                          /* ← 기본 너비. 필요 시 숫자만 바꾸면 됨 */
-  --thumb-h: calc(var(--thumb-w) * 287 / 385); /* ★ EDIT: 비율 유지용 높이 계산(385:287) */
+  --thumb-h: calc(var(--thumb-w) * 287 / 385); /* 비율 유지용 높이 계산(385:287) */
   width: var(--thumb-w);
-  height: var(--thumb-h);                    /* ★ EDIT: 계산된 높이 적용 */
+  height: var(--thumb-h);                    /* 계산된 높이 적용 */
   aspect-ratio: 385 / 287;
   margin: 5px;
   background: transparent;
@@ -259,7 +259,6 @@
   mask-composite: add;
 }
 
-/* (참고) 굳이 필요하진 않지만 기존 코드 유지 – 배경 투명 */
 .project_thumbnail::before {
   content: "";
   position: absolute;
@@ -278,14 +277,13 @@
   object-position: center;
 }
 
-/* ========================================= */
 
 .inform_box {
   width: 100%;
   gap: 0px;
   display: flex;
   flex-direction: row;
-  align-items: stretch;           /* ★ EDIT: 좌/우 높이 동일하게 맞춤 */
+  align-items: stretch;           /* 좌/우 높이 동일하게 맞춤 */
   justify-content: space-between;
 }
 
@@ -296,10 +294,10 @@
   margin-top: 5px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;    /* ★ EDIT: 위쪽 정렬로 고정 */
-  gap: 4px;                       /* ★ EDIT: 제목-내용 간 고정 간격 */
+  justify-content: flex-start;    /* 위쪽 정렬로 고정 */
+  gap: 4px;                       /* 제목-내용 간 고정 간격 */
   height: 50px;
-  padding-bottom: 2px;           /* ★ EDIT: 내부 말줄임 동작을 위해 숨김 */
+  padding-bottom: 2px;           /* 내부 말줄임 동작을 위해 숨김 */
 }
 
 .project_result_form {
@@ -330,10 +328,10 @@
   font-weight: 700;
   margin: 0;
   flex-grow: 0;
-  white-space: nowrap;            /* ★ EDIT: 제목 1줄 고정 */
-  overflow: hidden;               /* ★ EDIT: 넘치면 숨김 */
-  text-overflow: ellipsis;        /* ★ EDIT: … 처리 */
-  line-height: 1.2;               /* ★ EDIT: 라인 박스 안정화 */
+  white-space: nowrap;            /* 제목 1줄 고정 */
+  overflow: hidden;               /* 넘치면 숨김 */
+  text-overflow: ellipsis;        /* … 처리 */
+  line-height: 1.2;               /* 라인 박스 안정화 */
 }
 
 .selected_title {
@@ -345,16 +343,16 @@
   font-size: 10px;
   margin: 0;
   flex-grow: 0;
-  display: -webkit-box;           /* ★ EDIT: 여러 줄 말줄임 */
-  -webkit-line-clamp: 3;          /* ★ EDIT: 최대 3줄로 제한(원하면 조절) */
+  display: -webkit-box;           /* 여러 줄 말줄임 */
+  -webkit-line-clamp: 3;          /* 최대 3줄로 제한(원하면 조절) */
   line-clamp: 3;
-  -webkit-box-orient: vertical;   /* ★ EDIT: 세로 방향 */
-  overflow: hidden;               /* ★ EDIT: 넘치는 내용 숨김 */
-  line-height: 1.2;              /* ★ EDIT: 시작 높이 일관성 */
+  -webkit-box-orient: vertical;   /* 세로 방향 */
+  overflow: hidden;               /* 넘치는 내용 숨김 */
+  line-height: 1.2;              /* 시작 높이 일관성 */
 }
 
 .view_button {
-  margin: 0;                      /* ★ EDIT: 위치 흔들림 방지(aut o/left 제거) */
+  margin: 0;                      /* 위치 흔들림 방지 */
   padding: 7px 13px;
   border-radius: 9999px;
   border: 1px solid #ABD4FD;
@@ -380,7 +378,7 @@
   align-items: flex-end;    /* 하단 라인 맞춤 */
   gap: 19px;
   padding: 0 8px 12px;
-  margin-top: auto;         /* ★ EDIT: 항상 우측 컬럼의 맨 아래로 고정 */
+  margin-top: auto;         /* 항상 우측 컬럼의 맨 아래로 고정 */
 }
 
 /* 득표 영역을 가로 배치 */
