@@ -252,6 +252,9 @@
   -webkit-mask-image: radial-gradient(circle 12px at top left, transparent 10px, black 10px),
                       radial-gradient(circle 12px at bottom right, transparent 10px, black 10px),
                       linear-gradient(135deg, transparent 30px, black 30px);
+  mask-image: radial-gradient(circle 12px at top left, transparent 10px, black 10px),
+                      radial-gradient(circle 12px at bottom right, transparent 10px, black 10px),
+                      linear-gradient(135deg, transparent 30px, black 30px);
   -webkit-mask-composite: source-over;
   mask-composite: add;
 }
@@ -344,6 +347,7 @@
   flex-grow: 0;
   display: -webkit-box;           /* ★ EDIT: 여러 줄 말줄임 */
   -webkit-line-clamp: 3;          /* ★ EDIT: 최대 3줄로 제한(원하면 조절) */
+  line-clamp: 3;
   -webkit-box-orient: vertical;   /* ★ EDIT: 세로 방향 */
   overflow: hidden;               /* ★ EDIT: 넘치는 내용 숨김 */
   line-height: 1.2;              /* ★ EDIT: 시작 높이 일관성 */

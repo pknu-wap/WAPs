@@ -71,7 +71,7 @@ const VotePage = () => {
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
         <VoteForm isVotedUser={isvotedUser} />
-        {/* {isOpen ? <VoteForm isVotedUser={isvotedUser} /> : <VoteResultPage />} */}
+        {/* {isOpen ? <VoteForm isVotedUser={isvotedUser} /> : navigate("/login")} */}
       </main>
       <FloatingButton />
     </div>
