@@ -96,7 +96,7 @@
   padding-top:1px;
   padding-bottom:9px;
   text-align: center;
-  margin-top: 40px;
+  margin-top: 30px;
   margin-bottom: 20px;
 }
 
@@ -108,6 +108,12 @@
   text-align: left;
   font-size: 20px;
 }
+
+.vote_title p {
+  margin: 2px 0;   
+  line-height: 1.2;
+}
+
 
 .title_eng {
   margin-top: 10px;

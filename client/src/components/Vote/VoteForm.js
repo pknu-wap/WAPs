@@ -74,8 +74,18 @@ const VoteForm = ({ isVotedUser }) => {
     <div className={`${styles.project_vote_form} ${styles.mount1}`}>
       <div className={styles.bg_zone}>
         <div className={styles.title_form}>
-          <div className={styles.vote_title}>마음에 드는 프로젝트 3개를 선택해 주세요</div>
-          <p className={styles.title_eng}>Choose 3 projects you like</p>
+           {isVotedUser ? (
+            <>
+              <div className={styles.vote_title}><p>투표가 완료되었습니다. </p>
+                <p>투표 결과를 기다려 주세요.</p></div>
+              <p className={styles.title_eng}>Wait for the voting results</p>
+            </>
+          ) : (
+            <>
+              <div className={styles.vote_title}>마음에 드는 프로젝트 3개를 선택해 주세요</div>
+              <p className={styles.title_eng}>Choose 3 projects you like</p>
+            </>
+          )}
         </div>
       </div>
 
