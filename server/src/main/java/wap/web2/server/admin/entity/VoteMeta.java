@@ -62,7 +62,9 @@ public class VoteMeta {
     @Column
     private LocalDateTime closedAt;
 
-    // DB: unique index (vote_meta_id, project_ids) & index (vote_meta_id) 존재
+    @Column(nullable = false)
+    private boolean isResultPublic = true;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "vote_meta_participants",
@@ -84,10 +86,11 @@ public class VoteMeta {
         this.status = VoteStatus.VOTING;
     }
 
-    public void close(Long userId) {
+    public void close(Long userId, boolean isResultPublic) {
         this.status = VoteStatus.ENDED;
         this.closedAt = LocalDateTime.now();
         this.closedBy = userId;
+        this.isResultPublic = isResultPublic;
     }
 
     public static VoteMeta of(String semester, Long createdBy, Set<Long> projectIds) {

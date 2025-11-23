@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.admin.dto.request.VoteParticipants;
+import wap.web2.server.admin.dto.request.VoteResultRequest;
 import wap.web2.server.admin.dto.response.VoteStatusResponse;
 import wap.web2.server.admin.service.AdminVoteService;
 import wap.web2.server.security.core.CurrentUser;
@@ -44,8 +45,9 @@ public class AdminVoteController {
     @PostMapping("/closed")
     @Operation(summary = "투표 닫기", description = "희망하는 학기의 투표를 닫습니다. 그럼 더이상 투표를 진행할 수 없습니다.")
     public ResponseEntity<?> closeVoteMeta(@CurrentUser UserPrincipal currentUser,
-                                           @RequestParam("semester") @Semester String semester) {
-        adminVoteService.closeVote(semester, currentUser.getId());
+                                           @RequestParam("semester") @Semester String semester,
+                                           @RequestBody VoteResultRequest request) {
+        adminVoteService.closeVote(semester, currentUser.getId(), request);
         return ResponseEntity.ok().build();
     }
 
