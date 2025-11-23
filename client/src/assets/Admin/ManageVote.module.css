@@ -10,6 +10,7 @@
   --primary: #abd4fd;
   --active: #d9d9d9;
   --disable: #616161;
+  --tableLine: rgba(255, 255, 255, 0.5);
 }
 
 .container {
@@ -198,6 +199,67 @@
   font-weight: 700;
   color: #797979;
   background: #404040;
+}
+
+/* 테이블 */
+.resultBody {
+  display: flex;
+  gap: 30px;
+  height: calc(100vh - 470px);
+}
+
+.tableWrapper {
+  flex-grow: 7;
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #313131;
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+th {
+  border: 2px solid var(--tableLine);
+  background-color: var(--primary);
+  color: black;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  padding: 10px 13px;
+}
+
+td {
+  border: 2px solid var(--tableLine);
+  font-size: 15px;
+  padding: 10px 5px 10px 10px;
+}
+
+th:first-child,
+td:first-child {
+  border-left: none;
+}
+
+th:last-child,
+td:last-child {
+  border-right: none;
+}
+
+table th:nth-child(1) {
+  background-color: #abd4fd;
+  color: #000;
+  font-weight: 700;
+}
+
+table td:nth-child(1) {
+  background-color: #4d4d4d;
+  font-weight: 700;
 }
 
 /* 반응형 */

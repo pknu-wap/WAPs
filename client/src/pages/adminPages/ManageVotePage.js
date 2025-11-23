@@ -1,19 +1,18 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
 import styles from "../../assets/Admin/ManageVote.module.css";
 import apiClient from "../../utils/api";
 import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
 
 const ManageVotePage = () => {
-    const [voteStatus, setVoteStatus] = useState("NOT_CREATED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
+    const [voteStatus, setVoteStatus] = useState("ENDED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
     const [semester, setSemester] = useState(null); // 현재 학기
     const [isProcessing, setIsProcessing] = useState(false); // 열기,닫기 버튼 누를 때 로딩 상태
 
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(""); // 투표 결과
 
-    const [searchParams, setSearchParams] = useSearchParams(); // 쿼리 파라미터를 위한 상태
+    const [voteResult, setVoteResult] = useState([]);
     const [projects, setProjects] = useState([]); // 프로젝트 목록 상태
     const [selectedProjects, setSelectedProjects] = useState([]); // 선택된 프로젝트 ID 목록
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -101,7 +100,7 @@ const ManageVotePage = () => {
         try {
             setIsProcessing(true);
             await apiClient.post(
-                "/admin/vote/close",
+                "/admin/vote/closed",
                 {},
                 { params: { semester } }
             );
@@ -131,6 +130,21 @@ const ManageVotePage = () => {
         setIsModalOpen(true);
     };
 
+
+    // ENDED 상태일 때 투표 결과 요청하기
+    useEffect(() => {
+        if (voteStatus !== "ENDED" || !semester) return;
+
+        const fetchVoteResult = async () => {
+            try {
+                const response = await apiClient.get("vote/result");
+                setVoteResult(response.data); // 투표 결과 저장
+            } catch (e) {
+                setError("투표 결과 조회 실패");
+            }
+        };
+        fetchVoteResult();
+    }, [voteStatus, semester]);
 
     // 컴포넌트들
     const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
@@ -205,7 +219,38 @@ const ManageVotePage = () => {
                 <div className={styles.resultTitle}>투표 결과</div>
 
                 <div className={styles.resultBody}>
-                    <div className={styles.loadingBox}>투표를 기다려주세요</div>
+                    <div className={styles.tableWrapper}>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>등수</th>
+                                    <th>프로젝트명</th>
+                                    <th>득표수</th>
+                                    <th>득표율</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {voteResult.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="4" style={{ textAlign: "center" }}>
+                                            투표결과가 없습니다
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    voteResult
+                                        .sort((a, b) => b.voteCount - a.voteCount)
+                                        .map((result, idx) => (
+                                            <tr ket={idx}>
+                                                <td>{idx + 1}</td>
+                                                <td>{result.projectName}</td>
+                                                <td>{result.voteCount}</td>
+                                                <td>{(result.voteRate * 100).toFixed(1)}%</td>
+                                            </tr>
+                                        ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
 
                     <div className={styles.publicBtns}>
                         <button className={styles.publicBtn}>공개</button>
