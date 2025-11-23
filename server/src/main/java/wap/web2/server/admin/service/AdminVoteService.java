@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.dto.request.VoteParticipants;
-import wap.web2.server.admin.dto.request.VoteResultRequest;
 import wap.web2.server.admin.dto.response.VoteStatusResponse;
 import wap.web2.server.admin.entity.VoteMeta;
 import wap.web2.server.admin.entity.VoteStatus;
@@ -47,12 +46,17 @@ public class AdminVoteService {
     }
 
     @Transactional
-    public void closeVote(String semester, Long userId, VoteResultRequest request) {
+    public void closeVote(String semester, Long userId) {
         VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
                 .orElseThrow(
                         () -> new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 존재하지 않습니다.", semester)));
 
-        voteMeta.close(userId, request.isResultPublic());
+        voteMeta.close(userId);
+    }
+
+    @Transactional
+    public void changeResultStatus(String semester, Boolean status) {
+        voteMetaRepository.updateResultVisibility(status, semester);
     }
 
     private void validateProjectIds(Set<Long> projectIds) {

@@ -86,11 +86,10 @@ public class VoteMeta {
         this.status = VoteStatus.VOTING;
     }
 
-    public void close(Long userId, boolean isResultPublic) {
+    public void close(Long userId) {
         this.status = VoteStatus.ENDED;
         this.closedAt = LocalDateTime.now();
         this.closedBy = userId;
-        this.isResultPublic = isResultPublic;
     }
 
     public static VoteMeta of(String semester, Long createdBy, Set<Long> projectIds) {
