@@ -33,10 +33,10 @@ public class UserRoleService {
     }
 
     @Transactional(readOnly = true)
-    public UserRolePageResponse getUsersForAdmin(int size, int page) {
+    public UserRolePageResponse getUsersForAdmin(int size, int page, Role role) {
         int fetchSize = size + 1; // 다음 페이지 유무를 확인하기 위해 size보다 크게 가져옴
         int offset = page * size;
-        List<User> users = userRepository.findUserByOffset(fetchSize, offset);
+        List<User> users = userRepository.findUserByOffset(fetchSize, offset, role);
 
         boolean hasNext = false;
         List<UserRoleResponse> content = users.stream()

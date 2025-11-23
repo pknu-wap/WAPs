@@ -12,6 +12,7 @@ import wap.web2.server.admin.dto.request.RoleChangeRequest;
 import wap.web2.server.admin.dto.response.RoleChangeResponse;
 import wap.web2.server.admin.dto.response.UserRolePageResponse;
 import wap.web2.server.admin.service.UserRoleService;
+import wap.web2.server.member.entity.Role;
 
 @RestController
 @RequestMapping("/admin/role")
@@ -27,8 +28,10 @@ public class AdminUserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllUserInfos(@RequestParam("size") Integer size, @RequestParam("page") Integer page) {
-        UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page);
+    public ResponseEntity<?> getAllUserInfos(@RequestParam("size") Integer size,
+                                             @RequestParam("page") Integer page,
+                                             @RequestParam(value = "role", required = false) Role role) {
+        UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page, role);
         return ResponseEntity.ok(response);
     }
 
