@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import wap.web2.server.admin.entity.VoteStatus;
 import wap.web2.server.vote.dto.ProjectVoteCount;
 import wap.web2.server.vote.entity.Ballot;
 
@@ -35,9 +36,10 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
             WHERE b.semester = (
                 SELECT MAX(v.semester)
                 FROM VoteMeta v
-                WHERE v.semester <= :currentSemester and v.isResultPublic = true
+                WHERE v.semester <= :currentSemester and v.status = :ended and v.isResultPublic = true
             )
             GROUP BY b.projectId
             """)
-    List<ProjectVoteCount> findPublicLatestBallots(@Param("currentSemester") String currentSemester);
+    List<ProjectVoteCount> findPublicLatestBallots(@Param("currentSemester") String currentSemester,
+                                                   @Param("ended") VoteStatus ended);
 }
