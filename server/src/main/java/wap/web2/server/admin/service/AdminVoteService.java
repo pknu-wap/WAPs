@@ -54,6 +54,11 @@ public class AdminVoteService {
         voteMeta.close(userId);
     }
 
+    @Transactional
+    public void changeResultStatus(String semester, Boolean status) {
+        voteMetaRepository.updateResultVisibility(status, semester);
+    }
+
     private void validateProjectIds(Set<Long> projectIds) {
         Set<Long> existingProjectIds = new HashSet<>(projectRepository.findExistingProjectIds(projectIds));
         Set<Long> missing = new HashSet<>(projectIds);

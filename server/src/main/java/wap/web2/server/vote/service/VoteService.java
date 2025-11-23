@@ -74,6 +74,8 @@ public class VoteService {
 
     @Transactional(readOnly = true)
     public List<VoteResultResponse> getVoteResults(String semester) {
+        validateResultVisibility(semester);
+
         List<ProjectVoteCount> voteCounts = ballotRepository.countVotesByProject(semester);
         long totalVotes = calculateTotalVotes(voteCounts);
 
@@ -83,7 +85,7 @@ public class VoteService {
     @Transactional(readOnly = true)
     public List<VoteResultResponse> getMostRecentResults() {
         String currentSemester = generateSemester();
-        List<ProjectVoteCount> latestVotes = ballotRepository.findLatestBallots(currentSemester);
+        List<ProjectVoteCount> latestVotes = ballotRepository.findPublicLatestBallots(currentSemester);
 
         if (latestVotes.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 현재까지 투표가 진행된 적이 없습니다.");
@@ -127,6 +129,13 @@ public class VoteService {
             throw new IllegalArgumentException(
                     "[ERROR] 투표에 참여하지 않는 프로젝트가 포함되어 있습니다. invalidProjectIds=" + invalidIds
             );
+        }
+    }
+
+    private void validateResultVisibility(String semester) {
+        boolean isPublic = voteMetaRepository.isResultPublic(semester);
+        if (!isPublic) {
+            throw new IllegalArgumentException("[ERROR] 해당 투표 결과는 비공개입니다.");
         }
     }
 

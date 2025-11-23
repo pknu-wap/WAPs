@@ -49,4 +49,12 @@ public class AdminVoteController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/result")
+    @Operation(summary = "투표 결과 공개 여부 결정", description = "투표 결과를 공개하거나 비공개하는 요청입니다.")
+    public ResponseEntity<?> changeVoteResultStatus(@RequestParam("semester") @Semester String semester,
+                                                    @RequestParam("status") Boolean status) {
+        adminVoteService.changeResultStatus(semester, status);
+        return ResponseEntity.ok().build();
+    }
+
 }
