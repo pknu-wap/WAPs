@@ -7,13 +7,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.security.core.CurrentUser;
 import wap.web2.server.security.core.UserPrincipal;
+import wap.web2.server.util.Semester;
 import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteRequest;
@@ -62,10 +63,15 @@ public class VoteController {
     }
 
     @GetMapping("/result")
-    public ResponseEntity<?> getVoteResults(@RequestParam(value = "projectYear", required = false) Integer year,
-                                            @RequestParam(value = "semester", required = false) Integer semester) {
+    public ResponseEntity<?> getMostRecentResults() {
+        List<VoteResultResponse> voteResults = voteService.getMostRecentResults();
+        return ResponseEntity.ok().body(voteResults);
+    }
+
+    @GetMapping("/result/{semester}")
+    public ResponseEntity<?> getVoteResults(@PathVariable("semester") @Semester String semester) {
         try {
-            List<VoteResultResponse> voteResults = voteService.getVoteResults(year, semester);
+            List<VoteResultResponse> voteResults = voteService.getVoteResults(semester);
             return ResponseEntity.ok().body(voteResults);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("[ERROR] 조회 실패");
