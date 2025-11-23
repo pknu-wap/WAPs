@@ -63,12 +63,14 @@ public class VoteController {
     }
 
     @GetMapping("/result")
+    @Operation(summary = "최신 투표 결과 확인", description = "가장 최신의 투표 결과를 반환한다. 현재 학기 투표 결과가 없다면 이전 학기 중 가장 가까운 학기의 결과를 가져온다.")
     public ResponseEntity<?> getMostRecentResults() {
         List<VoteResultResponse> voteResults = voteService.getMostRecentResults();
         return ResponseEntity.ok().body(voteResults);
     }
 
     @GetMapping("/result/{semester}")
+    @Operation(summary = "특정 학기 투표 결과 확인", description = "특정 학기의 투표 결과를 가져온다.")
     public ResponseEntity<?> getVoteResults(@PathVariable("semester") @Semester String semester) {
         try {
             List<VoteResultResponse> voteResults = voteService.getVoteResults(semester);
