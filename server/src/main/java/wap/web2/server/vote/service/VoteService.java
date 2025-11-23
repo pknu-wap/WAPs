@@ -74,10 +74,6 @@ public class VoteService {
 
     @Transactional(readOnly = true)
     public List<VoteResultResponse> getVoteResults(String semester) {
-        if (semester == null || semester.isBlank()) {
-            throw new IllegalArgumentException("[ERROR] 학기를 입력해야합니다.");
-        }
-
         List<ProjectVoteCount> voteCounts = ballotRepository.countVotesByProject(semester);
         long totalVotes = calculateTotalVotes(voteCounts);
 
