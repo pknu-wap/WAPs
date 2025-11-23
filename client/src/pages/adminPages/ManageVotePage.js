@@ -5,7 +5,7 @@ import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
 
 const ManageVotePage = () => {
-    const [voteStatus, setVoteStatus] = useState("ENDED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
+    const [voteStatus, setVoteStatus] = useState(""); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
     const [semester, setSemester] = useState(null); // 현재 학기
     const [isProcessing, setIsProcessing] = useState(false); // 열기,닫기 버튼 누를 때 로딩 상태
 
@@ -21,25 +21,27 @@ const ManageVotePage = () => {
         setSemester(getCurrentSemester());
     }, []);
 
-    // // 투표 상태 조회
-    // useEffect(() => {
-    //     const fetchVoteStart = async () => {
-    //         try {
-    //             const response = await apiClient.get("/admin/vote/status", {
-    //                 params: {
-    //                     semester: semester
-    //                 }
-    //             });
-    //             setVoteStatus(response.data.status);
+    // 투표 상태 조회
+    useEffect(() => {
+        if (!semester) return;
 
-    //         } catch (e) {
-    //             setError("투표 상태 조회 실패");
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //     };
-    //     fetchVoteStart();
-    // }, [semester]);
+        const fetchVoteStart = async () => {
+            try {
+                const response = await apiClient.get("/admin/vote/status", {
+                    params: {
+                        semester: semester
+                    }
+                });
+                setVoteStatus(response.data.status);
+            } catch (e) {
+                setError("투표 상태 조회 실패");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchVoteStart();
+    }, [semester]);
+
 
     // 프로젝트 목록 불러오기
     useEffect(() => {
@@ -137,7 +139,7 @@ const ManageVotePage = () => {
 
         const fetchVoteResult = async () => {
             try {
-                const response = await apiClient.get("vote/result");
+                const response = await apiClient.get("/vote/result");
                 setVoteResult(response.data); // 투표 결과 저장
             } catch (e) {
                 setError("투표 결과 조회 실패");
@@ -146,22 +148,45 @@ const ManageVotePage = () => {
         fetchVoteResult();
     }, [voteStatus, semester]);
 
+    // 투표 결과 공개 여부 핸들러
+    const handleSetPublicStatus = async (isPublic) => {
+        if (voteStatus !== "ENDED") return;
+        try {
+            await apiClient.post(
+                "/admin/vote/result",
+                {},
+                {
+                    params: {
+                        semester: semester,
+                        status: isPublic
+                    }
+                }
+            );
+        } catch {
+            setError("투표 공개 상태 변경 실패");
+        }
+    };
+
+
     // 컴포넌트들
     const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
+        const isOpenButton = voteStatus === "NOT_CREATED";
+        const isCloseButton = voteStatus === "VOTING";
+
         return (
             <div className={styles.upperBox}>
                 <div className={styles.upperLeft}>
                     <div className={styles.voteSemester}>{semester}</div>
                     <button
-                        disabled={isProcessing}
+                        disabled={isProcessing || (!isOpenButton && !isCloseButton)}
                         onClick={onClick}
-                        className={voteStatus === "NOT_CREATED" ? styles.openBtn : styles.closeBtn}
+                        className={isOpenButton ? styles.openBtn : styles.closeBtn}
                     >
                         {isProcessing
-                            ? voteStatus === "NOT_CREATED"
+                            ? isOpenButton
                                 ? "Opening..."
                                 : "Closing..."
-                            : voteStatus === "NOT_CREATED"
+                            : isOpenButton
                                 ? "OPEN"
                                 : "CLOSE"}
                     </button>
@@ -169,6 +194,7 @@ const ManageVotePage = () => {
             </div>
         );
     };
+
 
     const NotCreatedView = ({
         semester,
@@ -253,8 +279,8 @@ const ManageVotePage = () => {
                     </div>
 
                     <div className={styles.publicBtns}>
-                        <button className={styles.publicBtn}>공개</button>
-                        <button className={styles.publicBtn}>비공개</button>
+                        <button className={styles.publicBtn} onClick={() => handleSetPublicStatus(true)}>공개</button>
+                        <button className={styles.publicBtn} onClick={() => handleSetPublicStatus(false)}>비공개</button>
                     </div>
                 </div>
             </div>
@@ -262,8 +288,8 @@ const ManageVotePage = () => {
     };
 
 
-    // if (isLoading) return <div>Loading...</div>;
-    // if (error) return <div>{error}</div>;
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
         <div className={styles.container}>
