@@ -33,11 +33,11 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
             SELECT new wap.web2.server.vote.dto.ProjectVoteCount(b.projectId, COUNT(b))
             FROM Ballot b
             WHERE b.semester = (
-                SELECT MAX(b2.semester)
-                FROM Ballot b2
-                WHERE b2.semester <= :currentSemester
+                SELECT MAX(v.semester)
+                FROM VoteMeta v
+                WHERE v.semester <= :currentSemester and v.isResultPublic = true
             )
             GROUP BY b.projectId
             """)
-    List<ProjectVoteCount> findLatestBallots(@Param("currentSemester") String currentSemester);
+    List<ProjectVoteCount> findPublicLatestBallots(@Param("currentSemester") String currentSemester);
 }

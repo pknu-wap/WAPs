@@ -25,4 +25,7 @@ public interface VoteMetaRepository extends JpaRepository<VoteMeta, Long> {
     )
     Set<Long> findParticipantsByVoteMetaId(@Param("voteMetaId") Long voteMetaId);
 
+    @Query("SELECT v.isResultPublic FROM VoteMeta v WHERE v.semester = :semester")
+    boolean isResultPublic(@Param("semester") String semester);
+
 }
