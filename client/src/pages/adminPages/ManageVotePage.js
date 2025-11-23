@@ -6,7 +6,7 @@ import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
 
 const ManageVotePage = () => {
-    const [voteStatus, setVoteStatus] = useState("VOTING"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
+    const [voteStatus, setVoteStatus] = useState("NOT_CREATED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
     const [semester, setSemester] = useState(null); // 현재 학기
     const [isProcessing, setIsProcessing] = useState(false); // 열기,닫기 버튼 누를 때 로딩 상태
 
@@ -165,7 +165,7 @@ const ManageVotePage = () => {
     }) => {
         return (
             <>
-                <div className={styles.upperRight}>프로젝트를 선택해주세요!</div>
+                <div className={styles.upperRight}>투표에 참여할 프로젝트를 선택해주세요!</div>
                 <div className={styles.cardGrid}>
                     {projects.map((p) => (
                         <div

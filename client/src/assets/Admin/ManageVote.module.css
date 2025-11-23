@@ -38,6 +38,7 @@
   white-space: nowrap;
   align-self: flex-end;
   font-size: 20px;
+  margin-bottom: 10px;
 }
 
 .voteSemester {
