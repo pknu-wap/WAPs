@@ -60,16 +60,26 @@
   color: black;
   cursor: pointer;
   user-select: none;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .openBtn {
   background: var(--primary);
 }
 
+.openBtn:hover,
+.openBtn:active {
+  background: #8db7e0;
+}
+
 .closeBtn {
   background: var(--active);
 }
 
+.closeBtn:hover,
+.closeBtn:active {
+  background: #c4c4c4;
+}
 .closeBtn:disabled {
   cursor: not-allowed;
 }
@@ -193,6 +203,13 @@
   font-size: 30px;
   font-weight: 700;
   cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.publicBtn:hover,
+.publicBtn:active {
+  border: 2px solid var(--primary);
+  background-color: var(--primary);
 }
 
 .publicBtnDisable {
