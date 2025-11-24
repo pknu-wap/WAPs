@@ -270,7 +270,7 @@ const ManageVotePage = () => {
                                                 <td>{idx + 1}</td>
                                                 <td>{result.projectName}</td>
                                                 <td>{result.voteCount}</td>
-                                                <td>{(result.voteRate * 100).toFixed(1)}%</td>
+                                                <td>{result.voteRate}%</td>
                                             </tr>
                                         ))
                                 )}
