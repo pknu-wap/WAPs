@@ -2,9 +2,7 @@ package wap.web2.server.vote.service;
 
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +14,9 @@ import wap.web2.server.admin.repository.VoteMetaRepository;
 import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.security.core.UserPrincipal;
-import wap.web2.server.vote.dto.VoteCount;
+import wap.web2.server.vote.dto.ProjectVoteCount;
 import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
@@ -76,16 +73,16 @@ public class VoteService {
     public List<VoteResultResponse> getVoteResults(String semester) {
         validateResultVisibility(semester);
 
-        List<VoteCount> voteCounts = ballotRepository.countVotesByProject(semester);
-        long totalVotes = calculateTotalVotes(voteCounts);
+        List<ProjectVoteCount> projectVoteCounts = ballotRepository.countVotesByProject(semester);
+        long totalVotes = calculateTotalVotes(projectVoteCounts);
 
-        return assembleVoteResults(voteCounts, totalVotes);
+        return projectVoteCounts.stream().map(pvc -> VoteResultResponse.of(pvc, totalVotes)).toList();
     }
 
     @Transactional(readOnly = true)
     public List<VoteResultResponse> getMostRecentResults() {
         String currentSemester = generateSemester();
-        List<VoteCount> latestVotes = ballotRepository.findPublicLatestBallots(currentSemester,
+        List<ProjectVoteCount> latestVotes = ballotRepository.findPublicLatestBallots(currentSemester,
                 VoteStatus.ENDED);
 
         if (latestVotes.isEmpty()) {
@@ -94,21 +91,13 @@ public class VoteService {
 
         long totalVotes = calculateTotalVotes(latestVotes);
 
-        return assembleVoteResults(latestVotes, totalVotes);
+        return latestVotes.stream().map(lv -> VoteResultResponse.of(lv, totalVotes)).toList();
     }
 
-    private List<VoteResultResponse> assembleVoteResults(List<VoteCount> voteCounts, long totalVotes) {
-        Map<Long, Project> projects = loadProjects(voteCounts);
 
-        return voteCounts.stream()
-                .map(voteCount -> mapToResponse(voteCount, projects.get(voteCount.getProjectId()), totalVotes))
-                .sorted(Comparator.comparing(VoteResultResponse::voteCount).reversed())
-                .toList();
-    }
-
-    private long calculateTotalVotes(List<VoteCount> voteCounts) {
-        return voteCounts.stream()
-                .mapToLong(VoteCount::getVoteCount)
+    private long calculateTotalVotes(List<ProjectVoteCount> projectVoteCounts) {
+        return projectVoteCounts.stream()
+                .mapToLong(ProjectVoteCount::getVoteCount)
                 .sum();
     }
 
@@ -138,28 +127,6 @@ public class VoteService {
         if (!isPublic) {
             throw new IllegalArgumentException("[ERROR] 해당 투표 결과는 비공개입니다.");
         }
-    }
-
-    private Map<Long, Project> loadProjects(List<VoteCount> voteCounts) {
-        List<Long> projectIds = voteCounts.stream()
-                .map(VoteCount::getProjectId)
-                .toList();
-
-        return projectRepository.findAllById(projectIds)
-                .stream()
-                .collect(Collectors.toMap(Project::getProjectId, p -> p));
-    }
-
-    private VoteResultResponse mapToResponse(VoteCount voteCount, Project project, long totalVotes) {
-        double rate = (totalVotes == 0) ? 0 : (voteCount.getVoteCount() * 100.0) / totalVotes;
-
-        return VoteResultResponse.builder()
-                .projectName(project.getTitle())
-                .projectSummary(project.getSummary())
-                .thumbnail(project.getThumbnail())
-                .voteCount(voteCount.getVoteCount())
-                .voteRate(Math.round(rate * 10) / 10.0)  // 소수점 1자리
-                .build();
     }
 
 }

@@ -1,11 +1,8 @@
 package wap.web2.server.admin.service;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +13,8 @@ import wap.web2.server.admin.entity.VoteMeta;
 import wap.web2.server.admin.entity.VoteStatus;
 import wap.web2.server.admin.repository.VoteMetaRepository;
 import wap.web2.server.exception.ResourceNotFoundException;
-import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
-import wap.web2.server.vote.dto.VoteCount;
+import wap.web2.server.vote.dto.ProjectVoteCount;
 import wap.web2.server.vote.repository.BallotRepository;
 
 @Service
@@ -70,45 +66,16 @@ public class AdminVoteService {
 
     @Transactional
     public List<AdminVoteResultResponse> getVoteResult(String semester) {
-        List<VoteCount> voteCounts = ballotRepository.countVotesByProject(semester);
-        long totalVotes = calculateTotalVotes(voteCounts);
+        List<ProjectVoteCount> projectVoteCounts = ballotRepository.countVotesByProject(semester);
+        long totalVotes = calculateTotalVotes(projectVoteCounts);
 
-        return assembleVoteResults(voteCounts, totalVotes);
+        return projectVoteCounts.stream().map(pvc -> AdminVoteResultResponse.of(pvc, totalVotes)).toList();
     }
 
-    private long calculateTotalVotes(List<VoteCount> voteCounts) {
-        return voteCounts.stream()
-                .mapToLong(VoteCount::getVoteCount)
+    private long calculateTotalVotes(List<ProjectVoteCount> projectVoteCounts) {
+        return projectVoteCounts.stream()
+                .mapToLong(ProjectVoteCount::getVoteCount)
                 .sum();
-    }
-
-    private List<AdminVoteResultResponse> assembleVoteResults(List<VoteCount> voteCounts, long totalVotes) {
-        Map<Long, Project> projects = loadProjects(voteCounts);
-
-        return voteCounts.stream()
-                .map(voteCount -> mapToResponse(voteCount, projects.get(voteCount.getProjectId()), totalVotes))
-                .sorted(Comparator.comparing(AdminVoteResultResponse::voteCount).reversed())
-                .toList();
-    }
-
-    private Map<Long, Project> loadProjects(List<VoteCount> voteCounts) {
-        List<Long> projectIds = voteCounts.stream()
-                .map(VoteCount::getProjectId)
-                .toList();
-
-        return projectRepository.findAllById(projectIds)
-                .stream()
-                .collect(Collectors.toMap(Project::getProjectId, p -> p));
-    }
-
-    private AdminVoteResultResponse mapToResponse(VoteCount voteCount, Project project, long totalVotes) {
-        double rate = (totalVotes == 0) ? 0 : (voteCount.getVoteCount() * 100.0) / totalVotes;
-
-        return AdminVoteResultResponse.builder()
-                .projectName(project.getTitle())
-                .voteCount(voteCount.getVoteCount())
-                .voteRate(Math.round(rate * 10) / 10.0)  // 소수점 1자리
-                .build();
     }
 
     private void validateProjectIds(Set<Long> projectIds) {
