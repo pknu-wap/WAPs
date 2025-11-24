@@ -56,6 +56,9 @@ dependencies {
 
     // csv
     implementation 'org.apache.commons:commons-csv:1.11.0'
+
+    // Monitor
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
 
 test {

@@ -47,12 +47,19 @@
 }
 
 /* 선택한 프로젝트  */
-.selectedTitle {
-  margin-top: 20px;
-  font-weight: 700;
-  color: var(--primary);
-}
 
+.selectedProjects {
+  display: flex;
+  margin-top: 20px;
+  gap: 5px;
+}
+.selectedTitle {
+  color: var(--primary);
+  font-weight: 700;
+}
+.selectedNumber {
+  color: red;
+}
 /* 헤더 */
 
 /* 하단 버튼 */

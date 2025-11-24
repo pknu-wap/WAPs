@@ -20,6 +20,7 @@ import wap.web2.server.auth.payload.LoginRequest;
 import wap.web2.server.auth.payload.SignUpRequest;
 import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.member.entity.AuthProvider;
+import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.security.jwt.TokenProvider;
@@ -61,6 +62,7 @@ public class AuthController {
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(signUpRequest.getPassword());
         user.setProvider(AuthProvider.local);
+        user.setRole(Role.ROLE_USER);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
