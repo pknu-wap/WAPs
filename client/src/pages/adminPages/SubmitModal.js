@@ -25,7 +25,11 @@ const SubmitModal = ({ selectedProjects, projects, onConfirm, onCancel }) => {
                 </div>
 
                 {/* 선택된 프로젝트 목록 */}
-                <div className={styles.selectedTitle}>선택한 프로젝트</div>
+                <div className={styles.selectedProjects}>
+                    <div className={styles.selectedTitle}>선택한 프로젝트 </div>
+                    <div className={styles.selectedNumber}>({selectedList.length}개)</div>
+                </div>
+
                 <ul>
                     {selectedList.map(p => (
                         <li key={p.projectId}>{p.title}</li>
