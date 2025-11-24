@@ -1,6 +1,9 @@
-/* =========================
-   Menu.css (개선된 디자인)
-   ========================= */
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
 
 /* 메뉴가 열렸을 때만 헤더를 최상단으로 */
 body:has(nav.menu) .App-header {
@@ -50,18 +53,19 @@ body:has(nav.menu) .App-header {
   padding: 20px;
   box-sizing: border-box;
   overflow: hidden;
+  font-family: 'Pretendard-Regular';
 }
 
 /* ===== 메뉴 컨텐츠 ===== */
 .menu-content {
   padding: 60px 10px 0;
+  font-family: 'Pretendard-Regular';
 }
 
 .welcome-message {
   color: #fff;
   font-size: 16px;
   font-weight: 500;
-  font-family: "Inter", sans-serif;
   margin-top: 20px;
   margin-bottom: 1px;
  text-align: center;
@@ -71,7 +75,6 @@ body:has(nav.menu) .App-header {
   font-size: 36px;
   font-weight: 700;
   text-align: center;
-  font-family: "Inter", sans-serif;
   color: #fff;
   margin: 0 0 40px 0;
   letter-spacing: 0.5px;
@@ -85,7 +88,6 @@ body:has(nav.menu) .App-header {
 .section-title {
   font-size: 14px;
   font-weight: 700;
-  font-family: "Inter", sans-serif;
   color: #fff;
   margin: 0 0 12px 0;
   letter-spacing: 0.5px;
@@ -110,7 +112,6 @@ body:has(nav.menu) .App-header {
   color: #fff;
   font-size: 15px;
   font-weight: 500;
-  font-family: "Inter", sans-serif;
   text-align: left;
   cursor: pointer;
   transition: background 0.2s;
@@ -150,7 +151,6 @@ body:has(nav.menu) .App-header {
   color: #fff;
   font-size: 15px;
   font-weight: 500;
-  font-family: "Inter", sans-serif;
   text-align: left;
   cursor: pointer;
   transition: opacity 0.2s;
