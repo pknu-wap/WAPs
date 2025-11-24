@@ -155,7 +155,6 @@ const ManagePermissionPage = () => {
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
                                         <th>NAME</th>
                                         <th>EMAIL</th>
                                         <th>ROLE</th>
@@ -171,8 +170,7 @@ const ManagePermissionPage = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
 
-                                                <td style={{ textAlign: "right" }}>{user.id}</td>
-                                                <td>{user.name}</td>
+                                                <td style={{ textAlign: "right" }}>{user.name}</td>
                                                 <td>{user.email}</td>
                                                 <td>{user.role}</td>
                                             </tr>
