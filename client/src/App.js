@@ -45,6 +45,7 @@ function App() {
           <Route path="/project/create" element={<ProjectCreatePage />} />
           <Route path="/vote" element={<VotePage />} />
           <Route path="/vote/result" element={<VoteResultPage />} />
+          <Route path="/vote/result/:semesterParam" element={<VoteResultPage />} />
           <Route path="/ProjectPage" element={<ProjectPage />} />
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
           <Route path="/project/edit/:projectId" element={<ProjectCreatePage />} />

@@ -10,6 +10,7 @@
   --primary: rgb(163, 175, 249);
 }
 
+/* vote페이지 헤더배경 */
 .bg_zone {
   width: 100%;
   margin-top: -50px; 
@@ -40,6 +41,7 @@
   pointer-events: none;
 }
 
+/* result 페이지 헤더 배경 */
 .header_bg_zone {
   width: 100%;
   margin-top: -50px; 
@@ -48,6 +50,7 @@
   position: relative;
   z-index: 0;
   background: linear-gradient(90deg, #a0aeffd2 0%, #b4edfec0 100%);
+  height: 190px;
 }
 
 .header_bg_zone::after {

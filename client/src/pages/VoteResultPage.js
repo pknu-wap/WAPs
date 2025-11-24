@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import styles from "../assets/ProjectVote.module.css";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import FloatingButton from "../components/FloatingButton";
-import Cookies from "js-cookie"; 
-
+import Cookies from "js-cookie";
 
 // D 모양 아이콘 SVG 컴포넌트
 const VoteIcon = ({ size = 20, color = "#b8ecff", className = "", ...props }) => (
@@ -24,15 +23,46 @@ const VoteIcon = ({ size = 20, color = "#b8ecff", className = "", ...props }) =>
 
 const VoteResultPage = () => {
   const navigate = useNavigate();
+  const { semesterParam } = useParams(); // URL에서 yyyy-s 형태로 받음
   const currentYear = new Date().getFullYear();
 
-  // 두 API URL
-  const voteUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/result?semester=1&projectYear=${currentYear}`;
-  const listUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=1&projectYear=${currentYear}`;
+  const [yearAccordionOpen, setYearAccordionOpen] = useState(false);
+  const [semesterFilter, setSemesterFilter] = useState({
+    year: currentYear,
+    semester: 1,
+  });
 
-  const [projects, setProjects] = useState([]); // /vote/result 결과(득표수·비율 포함)
-  const [idByName, setIdByName] = useState({}); // 프로젝트명→ID 매핑
-  const [selectedProjects, setSelectedProjects] = useState([]); // 유지(상위 1개)
+  // URL 파라미터 파싱 (2025-01 형식)
+  useEffect(() => {
+    if (semesterParam) {
+      const match = semesterParam.match(/^(\d{4})-(\d{2})$/);
+      if (match) {
+        setSemesterFilter({
+          year: parseInt(match[1]),
+          semester: parseInt(match[2]),
+        });
+      }
+    } else {
+      // 기본 화면일 때 현재 년도/학기로 설정
+      setSemesterFilter({
+        year: currentYear,
+        semester: 1,
+      });
+    }
+  }, [semesterParam, currentYear]);
+
+  // API URL 생성
+  const voteUrl = semesterParam
+    ? `${process.env.REACT_APP_API_BASE_URL}/vote/result/${semesterParam}`
+    : `${process.env.REACT_APP_API_BASE_URL}/vote/result`;
+
+  const listUrl = semesterParam
+    ? `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=${semesterFilter.semester}&projectYear=${semesterFilter.year}`
+    : `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=1&projectYear=${currentYear}`;
+
+  const [projects, setProjects] = useState([]);
+  const [idByName, setIdByName] = useState({});
+  const [selectedProjects, setSelectedProjects] = useState([]);
 
   // 순위 계산용
   let displayedRank = 1;
@@ -45,6 +75,7 @@ const VoteResultPage = () => {
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
   // 인증 검사
   useEffect(() => {
     const token = Cookies.get("authToken");
@@ -55,7 +86,6 @@ const VoteResultPage = () => {
         return;
       }
       try {
-        // 토큰 유효성 검사
         await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -65,25 +95,38 @@ const VoteResultPage = () => {
       }
     };
     validateAuth();
-  }, [navigate]); // navigate만 의존성에 포함 (token은 useEffect 내부에서 가져옴)
+  }, [navigate]);
 
   // 데이터 fetch 로직
   useEffect(() => {
+    let isMounted = true; // cleanup을 위한 플래그
+    
     const fetchAll = async () => {
       try {
-        const [voteRes, listRes] = await Promise.all([
-          axios.get(voteUrl),
-          axios.get(listUrl),
-        ]);
-
-        // 1) 투표 결과 정렬
+        // 투표 결과 먼저 확인
+        const voteRes = await axios.get(voteUrl);
+        
+        if (!isMounted) return; // 컴포넌트가 언마운트되면 중단
+        
         const voteItems = Array.isArray(voteRes.data)
           ? voteRes.data
           : voteRes.data?.projectsResponse || [];
+        
+        // 데이터가 비어있으면 공개되지 않은 것으로 간주
+        if (!voteItems || voteItems.length === 0) {
+          alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
+          navigate("/vote/result", { replace: true });
+          return;
+        }
+
         const sorted = [...voteItems].sort((a, b) => b.voteCount - a.voteCount);
         setProjects(sorted);
 
-        // 2) 프로젝트 리스트에서 이름→ID 매핑
+        // 프로젝트 리스트 가져오기
+        const listRes = await axios.get(listUrl);
+        
+        if (!isMounted) return;
+        
         const listItemsRaw = Array.isArray(listRes.data)
           ? listRes.data
           : listRes.data?.projectsResponse || [];
@@ -95,36 +138,57 @@ const VoteResultPage = () => {
         });
         setIdByName(map);
 
-        // 3) 상위 1개 선택(유지)
         const top1 = sorted
           .slice(0, 1)
           .map((p) => map[norm(p.projectName || p.title)])
           .filter(Boolean);
         setSelectedProjects(top1);
       } catch (e) {
-        alert("투표 결과 또는 프로젝트 목록을 가져오는데 실패했다.");
-        console.log(e);
+        if (!isMounted) return;
+        
+        console.error("Error details:", e.response);
+        // 400번대, 404, 500 에러인 경우 모두 "공개되지 않음"으로 처리
+        if (e.response && (e.response.status === 400 || e.response.status === 404 || e.response.status === 500)) {
+          alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
+          navigate("/vote/result", { replace: true });
+          return;
+        } else {
+          alert("투표 결과 또는 프로젝트 목록을 가져오는데 실패했습니다.");
+        }
       }
     };
+    
     fetchAll();
-  }, [voteUrl, listUrl]);
+    
+    return () => {
+      isMounted = false; // cleanup
+    };
+  }, [voteUrl, listUrl, navigate]);
 
-  // 버튼 클릭 핸들러 (기존 유지)
   const handleProjectClick = (project) => {
     const name = project?.projectName || project?.title;
     const pid = idByName[norm(name)];
     if (!pid) {
-      alert(`projectId를 찾을 수 없다.\n(이름 매칭 실패) name="${name}"`);
+      alert(`projectId를 찾을 수 없습니다.\n(이름 매칭 실패) name="${name}"`);
       return;
     }
     navigate(`/project/${pid}`);
   };
 
+  const toggleYearAccordion = () => setYearAccordionOpen(!yearAccordionOpen);
+
+  const handleSemesterChange = (year, semester) => {
+    // API 명세에 맞게 0패딩 추가 (2025-01 형식)
+    const semesterPath = `${year}-${String(semester).padStart(2, '0')}`;
+    navigate(`/vote/result/${semesterPath}`);
+    setYearAccordionOpen(false);
+  };
+
   return (
     <div className="container">
       <Header toggleMenu={toggleMenu} />
-
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      
       <main>
         <div className={`${styles.project_vote_form} ${styles.mount1}`}>
           <div className={styles.header_bg_zone}>
@@ -148,6 +212,37 @@ const VoteResultPage = () => {
               >
                 투표결과를 확인해보세요
               </div>
+
+              {/* 드롭다운 추가 */}
+              <div className="filter-container" style={{ marginTop: "20px", justifyContent: "flex-end", paddingRight: "20px" }}>
+                <div className="filter-dropdown">
+                  <button onClick={toggleYearAccordion} className="dropdown-button">
+                    {yearAccordionOpen
+                      ? "년도/학기 ▲"
+                      : `${("0" + (semesterFilter.year - 2000)).slice(-2)}년 ${semesterFilter.semester}학기 ▼`}
+                  </button>
+                  {yearAccordionOpen && (
+                    <div className="dropdown-content">
+                      {Array.from(
+                        { length: currentYear - 2025 + 1 },
+                        (_, i) => currentYear - i
+                      ).map((year) => {
+                        const twoDigitYear = ("0" + (year - 2000)).slice(-2);
+                        return (
+                          <div key={year}>
+                            <button onClick={() => handleSemesterChange(year, 2)}>
+                              {twoDigitYear}-2
+                            </button>
+                            <button onClick={() => handleSemesterChange(year, 1)}>
+                              {twoDigitYear}-1
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -169,7 +264,6 @@ const VoteResultPage = () => {
                     }`}
                     key={(project.projectId ?? project.projectName ?? index) + "-vote"}
                   >
-                    {/* 상단: 썸네일(좌) + 오른쪽 컬럼(우) */}
                     <div className={styles.inform_box}>
                       {project.thumbnail && (
                         <div className={styles.thumbnail_wrap}>
@@ -185,7 +279,6 @@ const VoteResultPage = () => {
                         </div>
                       )}
 
-                      {/* 오른쪽 컬럼: 제목/요약 + 하단바(득표/버튼) */}
                       <div className={styles.right_col}>
                         <div className={styles.project_title_form}>
                           <h2 className={styles.title}>
@@ -198,7 +291,6 @@ const VoteResultPage = () => {
 
                         <div className={styles.bottom_row}>
                           <div className={styles.project_result_inline}>
-                            {/* 아이콘 + 득표수 */}
                             <div
                               className={`${styles.project_vote_count} ${opacityClass}`}
                             >
@@ -231,6 +323,7 @@ const VoteResultPage = () => {
           </div>
         </div>
       </main>
+      
       <FloatingButton />
     </div>
   );
