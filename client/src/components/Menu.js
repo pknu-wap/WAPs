@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { FaChevronRight } from "react-icons/fa";
@@ -10,6 +10,28 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const [canNavigate, setCanNavigate] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!Cookies.get("authToken"));
   const [userRole, setUserRole] = useState(Cookies.get("userRole") || null);
+
+  // ✅ 메뉴 열릴 때 배경 스크롤만 막고, 화면 밀림(shift) 방지
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    // 스크롤바 사라지면서 화면이 밀리는 현상 방지
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    };
+  }, [menuOpen]);
 
   const handleNavigationWithAuth = (path) => {
     const token = Cookies.get("authToken");
@@ -29,7 +51,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     if (!token) {
       alert("해당 페이지는 로그인을 해야 접속 가능합니다.");
       navigate("/login");
-    } else if (role !== "ROLE_ADMIN") { // ADMIN 권한만 허용
+    } else if (role !== "ROLE_ADMIN") {
       alert("관리자 권한이 없습니다.");
     } else {
       Cookies.set("previousPage", window.location.pathname, { expires: 1 });
@@ -51,20 +73,14 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
       setCanNavigate(true);
     } else {
       const timeUntilAllowed = allowedDate - now;
-      setTimeout(() => {
-        setCanNavigate(true);
-      }, timeUntilAllowed);
+      setTimeout(() => setCanNavigate(true), timeUntilAllowed);
     }
   }, []);
 
   const handleVotePageNavigate = () => {
-    if (canNavigate) {
-      handleNavigationWithAuth("/vote");
-    } else {
-      alert("투표는 로그인 이후에 가능합니다.");
-    }
+    if (canNavigate) handleNavigationWithAuth("/vote");
+    else alert("투표는 로그인 이후에 가능합니다.");
   };
-
 
   const handleLogout = () => {
     Cookies.remove("authToken");
@@ -76,7 +92,6 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     toggleMenu();
     navigate("/");
   };
-
 
   return (
     <div className="menuContainer">
@@ -104,6 +119,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   <span>프로젝트 Projects</span>
                   <span className="arrow"><FaChevronRight /></span>
                 </button>
+
                 <button
                   className="menu-item"
                   onClick={() => handleNavigationWithAuth("/project/create")}
@@ -140,6 +156,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   <span>팀빌딩 Team Building</span>
                   <span className="arrow"><FaChevronRight /></span>
                 </button>
+
                 <button
                   className="menu-item"
                   onClick={() => navigate("/team-build/result")}
@@ -150,7 +167,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
               </div>
             </div>
 
-            {(userRole === "ROLE_ADMIN") &&
+            {userRole === "ROLE_ADMIN" && (
               <div className="menu-section">
                 <h3 className="section-title">ADMINISTRATOR</h3>
                 <div className="menu-items">
@@ -163,7 +180,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   </button>
                 </div>
               </div>
-            }
+            )}
 
             <div className="menu-section">
               <h3 className="section-title">VOTE</h3>
@@ -181,9 +198,8 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
             <button
               className="logout-button"
               onClick={() => {
-                if (isLoggedIn) {
-                  handleLogout();
-                } else {
+                if (isLoggedIn) handleLogout();
+                else {
                   toggleMenu();
                   navigate("/login");
                 }
