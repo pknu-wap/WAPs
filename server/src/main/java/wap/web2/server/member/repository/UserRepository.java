@@ -28,7 +28,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             SELECT u
             FROM User u
             WHERE (:role IS NULL OR u.role = :role)
-            ORDER BY u.id
+            ORDER BY u.name
             LIMIT :limit OFFSET :offset
             """)
     List<User> findUserByOffset(@Param("limit") Integer limit,

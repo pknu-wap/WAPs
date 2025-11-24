@@ -1,6 +1,5 @@
 package wap.web2.server.admin.service;
 
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,15 +35,12 @@ public class UserRoleService {
     public UserRolePageResponse getUsersForAdmin(int size, int page, Role role) {
         int fetchSize = size + 1; // 다음 페이지 유무를 확인하기 위해 size보다 크게 가져옴
         int offset = page * size;
+
         List<User> users = userRepository.findUserByOffset(fetchSize, offset, role);
 
         boolean hasNext = false;
-        List<UserRoleResponse> content = users.stream()
-                .map(UserRoleResponse::from)
-                .sorted(Comparator
-                        .comparing(UserRoleResponse::role) // Role에 정의된 순서(ADMIN -> MEMBER -> USER -> GUEST)
-                        .thenComparing(UserRoleResponse::name))
-                .toList();
+        List<UserRoleResponse> content = users.stream().map(UserRoleResponse::from).toList();
+
         if (users.size() > size) {
             hasNext = true;
             content = content.subList(0, size);
