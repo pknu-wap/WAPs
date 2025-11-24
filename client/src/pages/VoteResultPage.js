@@ -99,34 +99,19 @@ const VoteResultPage = () => {
 
   // 데이터 fetch 로직
   useEffect(() => {
-    let isMounted = true; // cleanup을 위한 플래그
-    
     const fetchAll = async () => {
       try {
-        // 투표 결과 먼저 확인
-        const voteRes = await axios.get(voteUrl);
-        
-        if (!isMounted) return; // 컴포넌트가 언마운트되면 중단
-        
+        const [voteRes, listRes] = await Promise.all([
+          axios.get(voteUrl),
+          axios.get(listUrl),
+        ]);
+
         const voteItems = Array.isArray(voteRes.data)
           ? voteRes.data
           : voteRes.data?.projectsResponse || [];
-        
-        // 데이터가 비어있으면 공개되지 않은 것으로 간주
-        if (!voteItems || voteItems.length === 0) {
-          alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
-          navigate("/vote/result", { replace: true });
-          return;
-        }
-
         const sorted = [...voteItems].sort((a, b) => b.voteCount - a.voteCount);
         setProjects(sorted);
 
-        // 프로젝트 리스트 가져오기
-        const listRes = await axios.get(listUrl);
-        
-        if (!isMounted) return;
-        
         const listItemsRaw = Array.isArray(listRes.data)
           ? listRes.data
           : listRes.data?.projectsResponse || [];
@@ -144,25 +129,17 @@ const VoteResultPage = () => {
           .filter(Boolean);
         setSelectedProjects(top1);
       } catch (e) {
-        if (!isMounted) return;
-        
-        console.error("Error details:", e.response);
-        // 400번대, 404, 500 에러인 경우 모두 "공개되지 않음"으로 처리
-        if (e.response && (e.response.status === 400 || e.response.status === 404 || e.response.status === 500)) {
+        // 400번 에러이거나 데이터가 없는 경우
+        if (e.response && e.response.status === 400) {
           alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
-          navigate("/vote/result", { replace: true });
-          return;
+          navigate("/vote/result");
         } else {
           alert("투표 결과 또는 프로젝트 목록을 가져오는데 실패했습니다.");
         }
+        console.log(e);
       }
     };
-    
     fetchAll();
-    
-    return () => {
-      isMounted = false; // cleanup
-    };
   }, [voteUrl, listUrl, navigate]);
 
   const handleProjectClick = (project) => {
@@ -178,7 +155,6 @@ const VoteResultPage = () => {
   const toggleYearAccordion = () => setYearAccordionOpen(!yearAccordionOpen);
 
   const handleSemesterChange = (year, semester) => {
-    // API 명세에 맞게 0패딩 추가 (2025-01 형식)
     const semesterPath = `${year}-${String(semester).padStart(2, '0')}`;
     navigate(`/vote/result/${semesterPath}`);
     setYearAccordionOpen(false);
@@ -208,13 +184,13 @@ const VoteResultPage = () => {
               </div>
               <div
                 className={styles.title}
-                style={{ fontSize: "12px", marginTop: "4px", color: "#ffffffad" }}
+                style={{ fontSize: "15px", marginTop: "4px", color: "#ffffff", fontWeight: "regular" }}
               >
                 투표결과를 확인해보세요
-              </div>
+              </div> 
 
-              {/* 드롭다운 추가 */}
-              <div className="filter-container" style={{ marginTop: "20px", justifyContent: "flex-end", paddingRight: "20px" }}>
+              {/* 드롭다운 */}
+              <div className="filter-container" style={{ marginTop: "20px", justifyContent: "flex-end", paddingRight: "30px" }}>
                 <div className="filter-dropdown">
                   <button onClick={toggleYearAccordion} className="dropdown-button">
                     {yearAccordionOpen
