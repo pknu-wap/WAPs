@@ -162,7 +162,7 @@
   width: 90%;
   border-radius: 10px;
   margin: 0 auto;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   padding: 5px;
   padding-left: 15px;
   padding-right: 15px;
@@ -182,7 +182,7 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  padding: 0px;     /* ← 좌우 간격은 여기서 관리 */
+  padding: 0px;     /* 좌우 간격은 여기서 관리 */
   overflow: hidden;
   min-height: var(--thumb-h);   /* 썸네일 높이와 동기화 */
   max-height: var(--thumb-h);   /* 썸네일 높이와 동기화 */
