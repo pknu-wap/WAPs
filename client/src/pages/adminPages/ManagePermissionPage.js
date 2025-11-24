@@ -20,8 +20,7 @@ const ManagePermissionPage = () => {
     const [newRole, setNewRole] = useState(""); // 선택된 새 권한;
     const [isUpdating, setIsUpdating] = useState(false); // 적용 버튼 로딩 상태
     const [updateError, setUpdateError] = useState(null); // 적용 시 에러 상태
-    const [roleFilter, setRoleFilter] = useState(""); // only member 버튼을 위한 상태
-    const [toggleRoleFilter, setToggleRoleFilter] = useState(false);
+    const [roleFilter, setRoleFilter] = useState(""); // 역할 필터를 위한 상태
 
     // 사용자 권한 목록 가져오기
     const fetchUserRoles = useCallback(async (currentPage, currentSize, selectedRole) => {
@@ -121,15 +120,10 @@ const ManagePermissionPage = () => {
         }
     };
 
-    // 멤버만 보기 버튼 핸들러
-    const handleOnlyMember = async () => {
-        if (!toggleRoleFilter) {
-            setToggleRoleFilter(true);
-            setRoleFilter(ROLES[1]);
-        } else {
-            setToggleRoleFilter(false);
-            setRoleFilter("");
-        }
+    // 필터 변경 핸들러
+    const handleRoleFilterChange = (e) => {
+        setRoleFilter(e.target.value);
+        setPage(0); // 중요: 필터가 바뀌면 반드시 1페이지(index 0)로 돌아가야 함
     };
 
     return (
@@ -140,7 +134,18 @@ const ManagePermissionPage = () => {
                 <div className={styles.header}>
                     <span>목록</span>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <button className={styles.onlyBtn} onClick={handleOnlyMember}>ONLY MEMBER</button>
+                        <select
+                            className={styles.filterSelect}
+                            value={roleFilter}
+                            onChange={handleRoleFilterChange}
+                        >
+                            <option value="">ALL</option>
+                            {ROLES.map((role) => (
+                                <option key={role} value={role}>
+                                    {role.replace("ROLE_", "")}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 
@@ -177,7 +182,7 @@ const ManagePermissionPage = () => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="4">불러올 데이터가 없습니다.</td>
+                                            <td colSpan="3">불러올 데이터가 없습니다.</td>
                                         </tr>
                                     )}
                                 </tbody>

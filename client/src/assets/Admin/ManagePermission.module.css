@@ -89,20 +89,25 @@ td:last-child {
 }
 
 /* 유저 목록 박스 */
-.onlyBtn {
-  width: 131px;
-  height: 30px;
-  border-style: solid;
-  border-radius: 68px;
-  border-width: 1px;
-  border-color: #626262;
-  font-size: 15px;
-  color: #626262;
-  cursor: pointer;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.filterSelect {
+  width: 140px;
+  height: 32px;
+  border: 1px solid #626262;
+  border-radius: 68px;
+  background-color: #bcbcbc;
+  color: black;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 10px;
+  cursor: pointer;
+  outline: none;
+  text-align: center;
+}
+
+.filterSelect option {
+  background-color: #bcbcbc;
+  border: none;
 }
 
 .userContent {
@@ -172,6 +177,7 @@ td:last-child {
   max-width: 200px;
   text-align: center;
   font-weight: 700;
+  outline: none;
 }
 
 .changeList {
