@@ -192,6 +192,16 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   <span>투표 Vote</span>
                   <span className="arrow"><FaChevronRight /></span>
                 </button>
+                <button
+                  className="menu-item"
+                  onClick={() => {
+                    navigate("/vote/result");
+                    toggleMenu();
+                  }}
+                >
+                  <span>투표 결과 Vote Result</span>
+                  <span className="arrow"><FaChevronRight /></span>
+                </button>
               </div>
             </div>
 
