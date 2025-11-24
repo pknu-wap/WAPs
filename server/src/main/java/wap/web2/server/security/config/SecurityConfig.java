@@ -5,6 +5,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -83,10 +84,14 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
                                 "/swagger-resources/**", "/swagger-resources", "/webjars/**").permitAll()
 
+                        // actuator
+                        .requestMatchers("/actuator/**").permitAll()
+
                         // admin
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        .requestMatchers("/vote/result", "/project/**", "/techStack/**", "/calendar/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/project/list", "/project/*").permitAll()
+                        .requestMatchers("/vote/result/**", "/techStack/**", "/calendar/**").permitAll()
                         .requestMatchers("/team-build", "team-build/results").permitAll()
                         .requestMatchers("/auth/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()

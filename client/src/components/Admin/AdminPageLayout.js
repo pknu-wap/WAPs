@@ -8,6 +8,8 @@ import Cookies from "js-cookie";
 const AdminPageLayout = () => {
     // 유저 이름 저장
     const [userName, setUserName] = useState(Cookies.get("userName") || null);
+    // 모바일 사이드바 열림 상태 관리
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     // 유저 이름 가져오기
     useEffect(() => {
@@ -25,13 +27,29 @@ const AdminPageLayout = () => {
         navigate(previousPage);
     };
 
+    // 모바일 메뉴 토글
+    const toggleMobileMenu = () => {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+    };
+
+    // 모바일 메뉴 닫기
+    const closeMobileMenu = () => {
+        setIsMobileMenuOpen(false);
+    };
 
     return (
         <div className={styles.container}>
             {/* 헤더 */}
             <div className={styles.header}>
-
-                <span className={styles.logo} onClick={handleExit}>WAPs</span>
+                <div className={styles.headerLeft}>
+                    {/* 햄버거 아이콘 (CSS에서 1024px 이하일 때만 보임) */}
+                    <div className={styles.hamburger} onClick={toggleMobileMenu}>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span className={styles.logo} onClick={handleExit}>WAPs</span>
+                </div>
 
                 <div className={styles.headerRight}>
                     <div className={styles.adminUser}>
@@ -43,8 +61,23 @@ const AdminPageLayout = () => {
 
             {/* 메인 */}
             <div className={styles.main}>
-                <SideBar />
-                <div className={styles.contentsBox} >
+                {/* 데스크탑용 사이드바 (CSS에서 화면 작아지면 숨김) */}
+                <div className={styles.sidebarWrapper}>
+                    <SideBar />
+                </div>
+
+                {/* 모바일용 사이드바 (상태값에 따라 렌더링) */}
+                {isMobileMenuOpen && (
+                    <>
+                        {/* 배경 클릭 시 닫기 위한 오버레이 */}
+                        <div className={styles.mobileSidebarOverlay} onClick={closeMobileMenu} />
+                        <div className={styles.mobileSidebarContent}>
+                            <SideBar />
+                        </div>
+                    </>
+                )}
+
+                <div className={styles.contentsBox}>
                     <Outlet />
                 </div>
             </div>

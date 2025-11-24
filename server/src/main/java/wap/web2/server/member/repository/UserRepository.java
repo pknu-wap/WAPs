@@ -24,7 +24,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
             """)
     int updateRoleByIds(@Param("role") Role role, @Param("ids") List<Long> ids);
 
-    @Query("SELECT u FROM User u ORDER BY u.id LIMIT :limit OFFSET :offset")
-    List<User> findUserByOffset(@Param("limit") Integer limit, @Param("offset") Integer offset);
+    @Query("""
+            SELECT u
+            FROM User u
+            WHERE (:role IS NULL OR u.role = :role)
+            ORDER BY u.name
+            LIMIT :limit OFFSET :offset
+            """)
+    List<User> findUserByOffset(@Param("limit") Integer limit,
+                                @Param("offset") Integer offset,
+                                @Param("role") Role role);
 
 }

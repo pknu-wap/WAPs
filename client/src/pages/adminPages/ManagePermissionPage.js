@@ -20,9 +20,10 @@ const ManagePermissionPage = () => {
     const [newRole, setNewRole] = useState(""); // 선택된 새 권한;
     const [isUpdating, setIsUpdating] = useState(false); // 적용 버튼 로딩 상태
     const [updateError, setUpdateError] = useState(null); // 적용 시 에러 상태
+    const [roleFilter, setRoleFilter] = useState(""); // 역할 필터를 위한 상태
 
     // 사용자 권한 목록 가져오기
-    const fetchUserRoles = useCallback(async (currentPage, currentSize) => {
+    const fetchUserRoles = useCallback(async (currentPage, currentSize, selectedRole) => {
         setIsLoading(true);
         setError(null);
         try {
@@ -30,8 +31,10 @@ const ManagePermissionPage = () => {
                 params: {
                     page: currentPage,
                     size: currentSize,
-                },
+                    ...(selectedRole ? { role: selectedRole } : {})
+                }
             });
+
             setUsers(response.data.content || []); // 유저 목록 저장
             setHasNext(response.data.hasNext || false); // 다음 페이지 여부 저장
         } catch (err) {
@@ -44,8 +47,8 @@ const ManagePermissionPage = () => {
     }, []);
 
     useEffect(() => {
-        fetchUserRoles(page, size);
-    }, [fetchUserRoles, page, size]); // fetchUserRoles, page, size가 변경될 때 호출
+        fetchUserRoles(page, size, roleFilter);
+    }, [fetchUserRoles, page, size, roleFilter]); // fetchUserRoles, page, size가 변경될 때 호출
 
     // 이전 페이지 버튼 핸들러
     const handlePrevPage = () => {
@@ -117,6 +120,12 @@ const ManagePermissionPage = () => {
         }
     };
 
+    // 필터 변경 핸들러
+    const handleRoleFilterChange = (e) => {
+        setRoleFilter(e.target.value);
+        setPage(0); // 중요: 필터가 바뀌면 반드시 1페이지(index 0)로 돌아가야 함
+    };
+
     return (
         <div className={styles.container}>
             {/* 사용자 목록 박스 */}
@@ -125,7 +134,18 @@ const ManagePermissionPage = () => {
                 <div className={styles.header}>
                     <span>목록</span>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <button className={styles.onlyBtn}>ONLY MEMBER</button>
+                        <select
+                            className={styles.filterSelect}
+                            value={roleFilter}
+                            onChange={handleRoleFilterChange}
+                        >
+                            <option value="">ALL</option>
+                            {ROLES.map((role) => (
+                                <option key={role} value={role}>
+                                    {role.replace("ROLE_", "")}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 
@@ -140,7 +160,6 @@ const ManagePermissionPage = () => {
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
                                         <th>NAME</th>
                                         <th>EMAIL</th>
                                         <th>ROLE</th>
@@ -156,15 +175,14 @@ const ManagePermissionPage = () => {
                                                 style={{ cursor: 'pointer' }}
                                             >
 
-                                                <td style={{ textAlign: "right" }}>{user.id}</td>
-                                                <td>{user.name}</td>
+                                                <td style={{ textAlign: "right" }}>{user.name}</td>
                                                 <td>{user.email}</td>
                                                 <td>{user.role}</td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="4">불러올 데이터가 없습니다.</td>
+                                            <td colSpan="3">불러올 데이터가 없습니다.</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -195,7 +213,7 @@ const ManagePermissionPage = () => {
                 <div className={styles.changeContent}>
                     {/* 권한 선택 및 적용 버튼 UI */}
                     <div className={styles.controler}>
-                        <span style={{ fontSize: "18px", fontWeight: "700" }}>
+                        <span style={{ fontSize: "18px", fontWeight: "700", minWidth: "77px" }}>
                             다음으로 권한 변경:
                         </span>
 

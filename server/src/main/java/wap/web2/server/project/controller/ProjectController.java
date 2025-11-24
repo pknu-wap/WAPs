@@ -95,7 +95,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<?> getProject(@PathVariable Long projectId,
+    public ResponseEntity<?> getProject(@PathVariable("projectId") Long projectId,
                                         @CurrentUser UserPrincipal userPrincipal) {
         try {
             ProjectDetailsResponse projectDetails = projectService.getProjectDetails(projectId, userPrincipal);
@@ -106,7 +106,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/update")
-    public ResponseEntity<?> getProjectDetailsForUpdate(@PathVariable Long projectId,
+    public ResponseEntity<?> getProjectDetailsForUpdate(@PathVariable("projectId") Long projectId,
                                                         @CurrentUser UserPrincipal userPrincipal) {
         try {
             // 프로젝트 상세 정보를 가져오는 서비스 호출
@@ -119,7 +119,7 @@ public class ProjectController {
     }
 
     @PutMapping("{projectId}")
-    public ResponseEntity<?> updateProject(@PathVariable Long projectId,
+    public ResponseEntity<?> updateProject(@PathVariable("projectId") Long projectId,
                                            @CurrentUser UserPrincipal userPrincipal,
                                            @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
                                            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
@@ -141,7 +141,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("{projectId}")
-    public ResponseEntity<?> deleteProject(@PathVariable Long projectId, @CurrentUser UserPrincipal user) {
+    public ResponseEntity<?> deleteProject(@PathVariable("projectId") Long projectId, @CurrentUser UserPrincipal user) {
         try {
             projectService.delete(projectId, user);
             return ResponseEntity.noContent().build();
