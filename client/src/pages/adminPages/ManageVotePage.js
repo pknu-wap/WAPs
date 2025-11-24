@@ -5,7 +5,7 @@ import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
 
 const ManageVotePage = () => {
-    const [voteStatus, setVoteStatus] = useState("ENDED"); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
+    const [voteStatus, setVoteStatus] = useState(""); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
     const [semester, setSemester] = useState(null); // 현재 학기
     const [isProcessing, setIsProcessing] = useState(false); // 열기,닫기 버튼 누를 때 로딩 상태
 
@@ -21,25 +21,26 @@ const ManageVotePage = () => {
         setSemester(getCurrentSemester());
     }, []);
 
-    // // 투표 상태 조회
-    // useEffect(() => {
-    //     const fetchVoteStart = async () => {
-    //         try {
-    //             const response = await apiClient.get("/admin/vote/status", {
-    //                 params: {
-    //                     semester: semester
-    //                 }
-    //             });
-    //             setVoteStatus(response.data.status);
+    // 투표 상태 조회
+    useEffect(() => {
+        if (!semester) return;
+        const fetchVoteStart = async () => {
+            try {
+                const response = await apiClient.get("/admin/vote/status", {
+                    params: {
+                        semester: semester
+                    }
+                });
+                setVoteStatus(response.data.status);
 
-    //         } catch (e) {
-    //             setError("투표 상태 조회 실패");
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //     };
-    //     fetchVoteStart();
-    // }, [semester]);
+            } catch (e) {
+                setError("투표 상태 조회 실패");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchVoteStart();
+    }, [semester]);
 
     // 프로젝트 목록 불러오기
     useEffect(() => {
@@ -262,8 +263,8 @@ const ManageVotePage = () => {
     };
 
 
-    // if (isLoading) return <div>Loading...</div>;
-    // if (error) return <div>{error}</div>;
+    if (isLoading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
         <div className={styles.container}>
