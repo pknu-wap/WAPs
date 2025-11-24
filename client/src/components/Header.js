@@ -46,7 +46,7 @@ const Header = () => {
                 alt="WAPs"
                 className="waplogo"
                 onClick={() => navigate("/ProjectPage")}
-                style={{ cursor: "pointer", height: "18px" }} // 크기 조절
+                style={{ cursor: "pointer", height: "15px" }} // 크기 조절
               />
             </p>
           </div> 
