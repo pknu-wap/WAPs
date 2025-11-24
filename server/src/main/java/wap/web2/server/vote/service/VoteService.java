@@ -19,7 +19,7 @@ import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.security.core.UserPrincipal;
-import wap.web2.server.vote.dto.ProjectVoteCount;
+import wap.web2.server.vote.dto.VoteCount;
 import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
@@ -76,7 +76,7 @@ public class VoteService {
     public List<VoteResultResponse> getVoteResults(String semester) {
         validateResultVisibility(semester);
 
-        List<ProjectVoteCount> voteCounts = ballotRepository.countVotesByProject(semester);
+        List<VoteCount> voteCounts = ballotRepository.countVotesByProject(semester);
         long totalVotes = calculateTotalVotes(voteCounts);
 
         return assembleVoteResults(voteCounts, totalVotes);
@@ -85,7 +85,7 @@ public class VoteService {
     @Transactional(readOnly = true)
     public List<VoteResultResponse> getMostRecentResults() {
         String currentSemester = generateSemester();
-        List<ProjectVoteCount> latestVotes = ballotRepository.findPublicLatestBallots(currentSemester,
+        List<VoteCount> latestVotes = ballotRepository.findPublicLatestBallots(currentSemester,
                 VoteStatus.ENDED);
 
         if (latestVotes.isEmpty()) {
@@ -97,18 +97,18 @@ public class VoteService {
         return assembleVoteResults(latestVotes, totalVotes);
     }
 
-    private List<VoteResultResponse> assembleVoteResults(List<ProjectVoteCount> voteCounts, long totalVotes) {
+    private List<VoteResultResponse> assembleVoteResults(List<VoteCount> voteCounts, long totalVotes) {
         Map<Long, Project> projects = loadProjects(voteCounts);
 
         return voteCounts.stream()
-                .map(voteCount -> mapToResponse(voteCount, projects.get(voteCount.projectId()), totalVotes))
+                .map(voteCount -> mapToResponse(voteCount, projects.get(voteCount.getProjectId()), totalVotes))
                 .sorted(Comparator.comparing(VoteResultResponse::voteCount).reversed())
                 .toList();
     }
 
-    private long calculateTotalVotes(List<ProjectVoteCount> voteCounts) {
+    private long calculateTotalVotes(List<VoteCount> voteCounts) {
         return voteCounts.stream()
-                .mapToLong(ProjectVoteCount::voteCount)
+                .mapToLong(VoteCount::getVoteCount)
                 .sum();
     }
 
@@ -140,9 +140,9 @@ public class VoteService {
         }
     }
 
-    private Map<Long, Project> loadProjects(List<ProjectVoteCount> voteCounts) {
+    private Map<Long, Project> loadProjects(List<VoteCount> voteCounts) {
         List<Long> projectIds = voteCounts.stream()
-                .map(ProjectVoteCount::projectId)
+                .map(VoteCount::getProjectId)
                 .toList();
 
         return projectRepository.findAllById(projectIds)
@@ -150,14 +150,14 @@ public class VoteService {
                 .collect(Collectors.toMap(Project::getProjectId, p -> p));
     }
 
-    private VoteResultResponse mapToResponse(ProjectVoteCount voteCount, Project project, long totalVotes) {
-        double rate = (totalVotes == 0) ? 0 : (voteCount.voteCount() * 100.0) / totalVotes;
+    private VoteResultResponse mapToResponse(VoteCount voteCount, Project project, long totalVotes) {
+        double rate = (totalVotes == 0) ? 0 : (voteCount.getVoteCount() * 100.0) / totalVotes;
 
         return VoteResultResponse.builder()
                 .projectName(project.getTitle())
                 .projectSummary(project.getSummary())
                 .thumbnail(project.getThumbnail())
-                .voteCount(voteCount.voteCount())
+                .voteCount(voteCount.getVoteCount())
                 .voteRate(Math.round(rate * 10) / 10.0)  // 소수점 1자리
                 .build();
     }

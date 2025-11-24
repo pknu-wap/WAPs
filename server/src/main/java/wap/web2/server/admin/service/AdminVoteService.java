@@ -18,7 +18,7 @@ import wap.web2.server.admin.repository.VoteMetaRepository;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
-import wap.web2.server.vote.dto.ProjectVoteCount;
+import wap.web2.server.vote.dto.VoteCount;
 import wap.web2.server.vote.repository.BallotRepository;
 
 @Service
@@ -70,30 +70,30 @@ public class AdminVoteService {
 
     @Transactional
     public List<AdminVoteResultResponse> getVoteResult(String semester) {
-        List<ProjectVoteCount> voteCounts = ballotRepository.countVotesByProject(semester);
+        List<VoteCount> voteCounts = ballotRepository.countVotesByProject(semester);
         long totalVotes = calculateTotalVotes(voteCounts);
 
         return assembleVoteResults(voteCounts, totalVotes);
     }
 
-    private long calculateTotalVotes(List<ProjectVoteCount> voteCounts) {
+    private long calculateTotalVotes(List<VoteCount> voteCounts) {
         return voteCounts.stream()
-                .mapToLong(ProjectVoteCount::voteCount)
+                .mapToLong(VoteCount::getVoteCount)
                 .sum();
     }
 
-    private List<AdminVoteResultResponse> assembleVoteResults(List<ProjectVoteCount> voteCounts, long totalVotes) {
+    private List<AdminVoteResultResponse> assembleVoteResults(List<VoteCount> voteCounts, long totalVotes) {
         Map<Long, Project> projects = loadProjects(voteCounts);
 
         return voteCounts.stream()
-                .map(voteCount -> mapToResponse(voteCount, projects.get(voteCount.projectId()), totalVotes))
+                .map(voteCount -> mapToResponse(voteCount, projects.get(voteCount.getProjectId()), totalVotes))
                 .sorted(Comparator.comparing(AdminVoteResultResponse::voteCount).reversed())
                 .toList();
     }
 
-    private Map<Long, Project> loadProjects(List<ProjectVoteCount> voteCounts) {
+    private Map<Long, Project> loadProjects(List<VoteCount> voteCounts) {
         List<Long> projectIds = voteCounts.stream()
-                .map(ProjectVoteCount::projectId)
+                .map(VoteCount::getProjectId)
                 .toList();
 
         return projectRepository.findAllById(projectIds)
@@ -101,12 +101,12 @@ public class AdminVoteService {
                 .collect(Collectors.toMap(Project::getProjectId, p -> p));
     }
 
-    private AdminVoteResultResponse mapToResponse(ProjectVoteCount voteCount, Project project, long totalVotes) {
-        double rate = (totalVotes == 0) ? 0 : (voteCount.voteCount() * 100.0) / totalVotes;
+    private AdminVoteResultResponse mapToResponse(VoteCount voteCount, Project project, long totalVotes) {
+        double rate = (totalVotes == 0) ? 0 : (voteCount.getVoteCount() * 100.0) / totalVotes;
 
         return AdminVoteResultResponse.builder()
                 .projectName(project.getTitle())
-                .voteCount(voteCount.voteCount())
+                .voteCount(voteCount.getVoteCount())
                 .voteRate(Math.round(rate * 10) / 10.0)  // 소수점 1자리
                 .build();
     }
