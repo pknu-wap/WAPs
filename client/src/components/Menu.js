@@ -65,7 +65,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     }
   };
 
-
+  
   const handleLogout = () => {
     Cookies.remove("authToken");
     Cookies.remove("userName");
@@ -173,6 +173,16 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   onClick={handleVotePageNavigate}
                 >
                   <span>투표 Vote</span>
+                  <span className="arrow"><FaChevronRight /></span>
+                </button>
+                <button
+                  className="menu-item"
+                  onClick={() => {
+                    navigate("/vote/result");
+                    toggleMenu();
+                  }}
+                >
+                  <span>투표 결과 Vote Result</span>
                   <span className="arrow"><FaChevronRight /></span>
                 </button>
               </div>
