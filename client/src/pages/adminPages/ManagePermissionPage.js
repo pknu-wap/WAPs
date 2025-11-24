@@ -20,9 +20,11 @@ const ManagePermissionPage = () => {
     const [newRole, setNewRole] = useState(""); // 선택된 새 권한;
     const [isUpdating, setIsUpdating] = useState(false); // 적용 버튼 로딩 상태
     const [updateError, setUpdateError] = useState(null); // 적용 시 에러 상태
+    const [roleFilter, setRoleFilter] = useState(""); // only member 버튼을 위한 상태
+    const [toggleRoleFilter, setToggleRoleFilter] = useState(false);
 
     // 사용자 권한 목록 가져오기
-    const fetchUserRoles = useCallback(async (currentPage, currentSize) => {
+    const fetchUserRoles = useCallback(async (currentPage, currentSize, selectedRole) => {
         setIsLoading(true);
         setError(null);
         try {
@@ -30,8 +32,10 @@ const ManagePermissionPage = () => {
                 params: {
                     page: currentPage,
                     size: currentSize,
-                },
+                    ...(selectedRole ? { role: selectedRole } : {})
+                }
             });
+
             setUsers(response.data.content || []); // 유저 목록 저장
             setHasNext(response.data.hasNext || false); // 다음 페이지 여부 저장
         } catch (err) {
@@ -44,8 +48,8 @@ const ManagePermissionPage = () => {
     }, []);
 
     useEffect(() => {
-        fetchUserRoles(page, size);
-    }, [fetchUserRoles, page, size]); // fetchUserRoles, page, size가 변경될 때 호출
+        fetchUserRoles(page, size, roleFilter);
+    }, [fetchUserRoles, page, size, roleFilter]); // fetchUserRoles, page, size가 변경될 때 호출
 
     // 이전 페이지 버튼 핸들러
     const handlePrevPage = () => {
@@ -117,6 +121,17 @@ const ManagePermissionPage = () => {
         }
     };
 
+    // 멤버만 보기 버튼 핸들러
+    const handleOnlyMember = async () => {
+        if (!toggleRoleFilter) {
+            setToggleRoleFilter(true);
+            setRoleFilter(ROLES[1]);
+        } else {
+            setToggleRoleFilter(false);
+            setRoleFilter("");
+        }
+    };
+
     return (
         <div className={styles.container}>
             {/* 사용자 목록 박스 */}
@@ -125,7 +140,7 @@ const ManagePermissionPage = () => {
                 <div className={styles.header}>
                     <span>목록</span>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <button className={styles.onlyBtn}>ONLY MEMBER</button>
+                        <button className={styles.onlyBtn} onClick={handleOnlyMember}>ONLY MEMBER</button>
                     </div>
                 </div>
 
