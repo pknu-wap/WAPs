@@ -195,7 +195,7 @@ const ManagePermissionPage = () => {
                 <div className={styles.changeContent}>
                     {/* 권한 선택 및 적용 버튼 UI */}
                     <div className={styles.controler}>
-                        <span style={{ fontSize: "18px", fontWeight: "700" }}>
+                        <span style={{ fontSize: "18px", fontWeight: "700", minWidth: "77px" }}>
                             다음으로 권한 변경:
                         </span>
 

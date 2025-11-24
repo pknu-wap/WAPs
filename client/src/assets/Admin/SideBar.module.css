@@ -14,12 +14,14 @@
   display: flex;
   flex-direction: column;
   gap: 73px;
+  width: 100%;
 }
 
 .title {
-  width: 351px;
+  width: 100%;
   text-align: left;
   margin-top: 16px;
+  white-space: nowrap;
 }
 
 .eng {
@@ -35,10 +37,12 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
 }
 
 .pageBtn button {
-  width: 292px;
+  width: 100%;
+  max-width: 292px;
   height: 66px;
 
   font-size: 20px;
@@ -57,6 +61,7 @@
   justify-content: flex-start;
   padding-left: 35px;
   gap: 20px;
+  box-sizing: border-box;
 }
 
 .pageBtn button svg {
@@ -71,4 +76,15 @@
 .active {
   background: var(--primary) !important;
   color: black !important;
+}
+
+@media (max-width: 1024px) {
+  .eng {
+    font-size: 25px;
+    font-weight: 600;
+  }
+
+  .kr {
+    font-size: 20px;
+  }
 }

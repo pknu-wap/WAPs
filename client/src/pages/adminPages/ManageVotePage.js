@@ -24,6 +24,7 @@ const ManageVotePage = () => {
     // 투표 상태 조회
     useEffect(() => {
         if (!semester) return;
+
         const fetchVoteStart = async () => {
             try {
                 const response = await apiClient.get("/admin/vote/status", {
@@ -32,7 +33,6 @@ const ManageVotePage = () => {
                     }
                 });
                 setVoteStatus(response.data.status);
-
             } catch (e) {
                 setError("투표 상태 조회 실패");
             } finally {
@@ -41,6 +41,7 @@ const ManageVotePage = () => {
         };
         fetchVoteStart();
     }, [semester]);
+
 
     // 프로젝트 목록 불러오기
     useEffect(() => {
@@ -138,7 +139,7 @@ const ManageVotePage = () => {
 
         const fetchVoteResult = async () => {
             try {
-                const response = await apiClient.get("vote/result");
+                const response = await apiClient.get("/vote/result");
                 setVoteResult(response.data); // 투표 결과 저장
             } catch (e) {
                 setError("투표 결과 조회 실패");
@@ -147,22 +148,45 @@ const ManageVotePage = () => {
         fetchVoteResult();
     }, [voteStatus, semester]);
 
+    // 투표 결과 공개 여부 핸들러
+    const handleSetPublicStatus = async (isPublic) => {
+        if (voteStatus !== "ENDED") return;
+        try {
+            await apiClient.post(
+                "/admin/vote/result",
+                {},
+                {
+                    params: {
+                        semester: semester,
+                        status: isPublic
+                    }
+                }
+            );
+        } catch {
+            setError("투표 공개 상태 변경 실패");
+        }
+    };
+
+
     // 컴포넌트들
     const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
+        const isOpenButton = voteStatus === "NOT_CREATED";
+        const isCloseButton = voteStatus === "VOTING";
+
         return (
             <div className={styles.upperBox}>
                 <div className={styles.upperLeft}>
                     <div className={styles.voteSemester}>{semester}</div>
                     <button
-                        disabled={isProcessing}
+                        disabled={isProcessing || (!isOpenButton && !isCloseButton)}
                         onClick={onClick}
-                        className={voteStatus === "NOT_CREATED" ? styles.openBtn : styles.closeBtn}
+                        className={isOpenButton ? styles.openBtn : styles.closeBtn}
                     >
                         {isProcessing
-                            ? voteStatus === "NOT_CREATED"
+                            ? isOpenButton
                                 ? "Opening..."
                                 : "Closing..."
-                            : voteStatus === "NOT_CREATED"
+                            : isOpenButton
                                 ? "OPEN"
                                 : "CLOSE"}
                     </button>
@@ -170,6 +194,7 @@ const ManageVotePage = () => {
             </div>
         );
     };
+
 
     const NotCreatedView = ({
         semester,
@@ -180,7 +205,7 @@ const ManageVotePage = () => {
     }) => {
         return (
             <>
-                <div className={styles.upperRight}>프로젝트를 선택해주세요!</div>
+                <div className={styles.upperRight}>투표에 참여할 프로젝트를 선택해주세요!</div>
                 <div className={styles.cardGrid}>
                     {projects.map((p) => (
                         <div
@@ -254,8 +279,8 @@ const ManageVotePage = () => {
                     </div>
 
                     <div className={styles.publicBtns}>
-                        <button className={styles.publicBtn}>공개</button>
-                        <button className={styles.publicBtn}>비공개</button>
+                        <button className={styles.publicBtn} onClick={() => handleSetPublicStatus(true)}>공개</button>
+                        <button className={styles.publicBtn} onClick={() => handleSetPublicStatus(false)}>비공개</button>
                     </div>
                 </div>
             </div>
