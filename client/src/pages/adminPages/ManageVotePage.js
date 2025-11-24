@@ -139,7 +139,7 @@ const ManageVotePage = () => {
 
         const fetchVoteResult = async () => {
             try {
-                const response = await apiClient.get("/vote/result");
+                const response = await apiClient.get(`/admin/vote/${semester}/results`);
                 setVoteResult(response.data); // 투표 결과 저장
             } catch (e) {
                 setError("투표 결과 조회 실패");
