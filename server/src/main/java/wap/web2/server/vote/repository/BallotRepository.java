@@ -15,15 +15,17 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
     long countBallotsBySemesterAndUserId(String semester, Long userId);
 
     @Query("""
-                SELECT b.projectId as projectId,
-                       COUNT(b) as voteCount,
-                       p.title as projectName,
-                       p.summary as projectSummary,
-                       p.thumbnail as thumbnail
-                FROM Ballot b
-                JOIN Project p ON b.projectId = p.projectId
-                WHERE b.semester = :semester
-                GROUP BY b.projectId
+            SELECT p.projectId as projectId,
+                   COUNT(b) as voteCount,
+                   p.title as projectName,
+                   p.summary as projectSummary,
+                   p.thumbnail as thumbnail
+            FROM VoteMeta vm
+            JOIN vm.participants participantId
+            JOIN Project p ON p.projectId = participantId
+            LEFT JOIN Ballot b ON b.projectId = p.projectId AND b.semester = vm.semester
+            WHERE vm.semester = :semester
+            GROUP BY p.projectId
             """)
     List<ProjectVoteCount> countVotesByProject(@Param("semester") String semester);
 
@@ -36,19 +38,21 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
     List<Long> findProjectIdsByUserIdAndSemester(@Param("userId") Long userId, @Param("semester") String semester);
 
     @Query("""
-            SELECT b.projectId as projectId,
+            SELECT p.projectId as projectId,
                    COUNT(b) as voteCount,
                    p.title as projectName,
                    p.summary as projectSummary,
                    p.thumbnail as thumbnail
-            FROM Ballot b
-            JOIN Project p ON b.projectId = p.projectId
-            WHERE b.semester = (
+            FROM VoteMeta vm
+            JOIN vm.participants participantId
+            JOIN Project p ON p.projectId = participantId
+            LEFT JOIN Ballot b ON b.projectId = p.projectId AND b.semester = vm.semester
+            WHERE vm.semester = (
                 SELECT MAX(v.semester)
                 FROM VoteMeta v
                 WHERE v.semester <= :currentSemester and v.status = :ended and v.isResultPublic = true
             )
-            GROUP BY b.projectId
+            GROUP BY p.projectId, p.title, p.summary, p.thumbnail
             """)
     List<ProjectVoteCount> findPublicLatestBallots(@Param("currentSemester") String currentSemester,
                                                    @Param("ended") VoteStatus ended);
