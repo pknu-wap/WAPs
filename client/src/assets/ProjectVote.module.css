@@ -240,7 +240,7 @@
 /* 실제 이미지를 담는 클립 박스 (대각선 컷) */
 .project_thumbnail {
   aspect-ratio: 359 / 269;  
-  width: 120px;    /* 필요하면 변수로 */
+  width: 120px;
   overflow: hidden;
   position: relative;
   display: flex;
@@ -295,6 +295,7 @@
   width: 70%;
   text-align: left;
   margin-top: 5px;
+  margin-left: 10px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;    /* 위쪽 정렬로 고정 */
@@ -343,7 +344,7 @@
 
 .summary {
   color: #ffffffb1;
-  font-size: 10px;
+  font-size: 11px;
   margin: 0;
   flex-grow: 0;
   display: -webkit-box;           /* 여러 줄 말줄임 */
