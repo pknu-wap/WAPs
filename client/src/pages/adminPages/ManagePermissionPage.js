@@ -153,7 +153,9 @@ const ManagePermissionPage = () => {
                 <div className={styles.userContent}>
                     <div className={styles.userList}>
                         {isLoading ? (
-                            ""
+                            <table>
+                                <thead></thead>
+                            </table>
                         ) : error ? (
                             <p>{error}</p>
                         ) : (

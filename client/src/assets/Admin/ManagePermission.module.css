@@ -38,6 +38,7 @@
 
 /* 테이블 관련 */
 table {
+  min-width: 386px;
   width: 100%;
   border-collapse: collapse;
   border-left: none;
