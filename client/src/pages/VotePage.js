@@ -12,7 +12,7 @@ import Cookies from "js-cookie";
 const VotePage = () => {
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
   // 분기를 결정하는 api 임.
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now?semester=1&projectYear=${currentYear}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now`;
 
   // 토큰 받아오기
   const token = Cookies.get("authToken");
@@ -54,8 +54,8 @@ const VotePage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        setIsOpen(response.data.open);
-        setIsVotedUser(response.data.votedUser);
+        setIsOpen(response.data.isOpen);
+        setIsVotedUser(response.data.isvotedUser);
       } catch (error) {
         alert("투표 기간인지 확인할 수 없습니다.");
       }
