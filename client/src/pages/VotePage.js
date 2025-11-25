@@ -22,7 +22,7 @@ const VotePage = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   // 투표했는지 여부의 초기값은 일단 false
-  const [isvotedUser, setIsVotedUser] = useState(false);
+  const [isVotedUser, setIsVotedUser] = useState(false);
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -55,7 +55,7 @@ const VotePage = () => {
         });
 
         setIsOpen(response.data.isOpen);
-        setIsVotedUser(response.data.isvotedUser);
+        setIsVotedUser(response.data.isVotedUser);
       } catch (error) {
         alert("투표 기간인지 확인할 수 없습니다.");
       }
@@ -70,8 +70,8 @@ const VotePage = () => {
 
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
-        {/* <VoteForm isVotedUser={isvotedUser} /> */}
-        {isOpen ? <VoteForm isVotedUser={isvotedUser} /> : navigate("/vote/result")}
+        {/* <VoteForm isVotedUser={isVotedUser} /> */}
+        {isOpen ? <VoteForm isVotedUser={isVotedUser} /> : navigate("/vote/result")}
       </main>
       <FloatingButton />
     </div>
