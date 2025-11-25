@@ -1,0 +1,38 @@
+.loadingpage{
+  margin: 0 auto;
+  max-width: 400px;
+  height: 100vh;
+  display: flex; 
+  flex-direction: column;
+  justify-content: space-between; /* 상하 여백 균등 분배 */
+  isolation: isolate;
+  position: relative;
+  background: linear-gradient(180deg, #A0AFFF 0%, #B4EDFE 100%);
+  overflow: visible;
+}
+
+.loadingpage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
+  z-index: -1; /* 배경 뒤로 보냄 */
+}
+
+.waplogo{
+    display: block;           /* 이미지 블록화 */
+    margin: auto;             /* 수평 가운데 정렬 */
+    align-self: center;       /* 수직 방향에서도 가운데 정렬 */ 
+    padding-top: 45vh;  
+}
+
+.text{
+    text-align: center;      /* 가로 가운데 정렬 */
+    margin-bottom: 70px;     /* 아래 여백 (선택사항) */
+    width: 100%;             /* 전체 너비 사용 */
+    position: absolute;
+    bottom: 0;               /* 화면 맨 아래로 붙이기 */
+    left: 50%;               
+    transform: translateX(-50%); /* 정확한 가로 중앙 정렬 */
+    font-size: 16px;
+}
