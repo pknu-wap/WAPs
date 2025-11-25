@@ -131,7 +131,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
             </div>
 
             <div className="menu-section">
-              <h3 className="section-title">CALENDAR</h3>
+              <h3 className="section-title">Calendar</h3>
               <div className="menu-items">
                 <button
                   className="menu-item"
