@@ -1,7 +1,11 @@
+import styles from '../../assets/Admin/ManageTeamBuild.module.css';
+
 const ManageTeamBuildPage = () => {
     return (
-        <div>
-            팀빌딩 관리
+        <div className={styles.centerContainer}>
+            <div className={styles.soonText}>
+                <div>Coming Soon</div>
+            </div>
         </div>
     );
 }
