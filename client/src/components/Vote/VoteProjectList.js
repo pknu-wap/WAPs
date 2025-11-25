@@ -11,7 +11,7 @@ const VoteProjectList = ({
   const [projects, setProjects] = useState([]);
   const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
   // 날짜 체크 : 음....... 이거 월 설정을 어떻게 하면 좋을까납..?
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=1&projectYear=${currentYear}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=2&projectYear=${currentYear}`;
 
   const handleProjectSelect = (projectId, isVotedUser) => {
     // console.log("클릭됨", projectId);
