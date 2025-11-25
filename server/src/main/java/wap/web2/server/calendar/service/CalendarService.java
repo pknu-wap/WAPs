@@ -1,5 +1,6 @@
 package wap.web2.server.calendar.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,8 @@ public class CalendarService {
 
     @Transactional(readOnly = true)
     public List<CalendarEventResponse> getActiveEvents() {
-        List<CalendarEvent> calendarEvents = calendarEventRepository.findAllByIsExpiredFalseOrderByDateAsc();
+        LocalDateTime now = LocalDateTime.now();
+        List<CalendarEvent> calendarEvents = calendarEventRepository.findByDateAfterOrderByDateAsc(now);
 
         return calendarEvents.stream()
                 .map(CalendarEventResponse::from)

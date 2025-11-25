@@ -37,6 +37,7 @@ public class CalendarEvent {
     @Column
     private LocalDateTime date;
 
+    @Deprecated
     @Column
     private boolean isExpired;
 
