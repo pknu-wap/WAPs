@@ -32,7 +32,7 @@ public class CalendarEvent {
     @Column
     private String title;
 
-    @Column
+    @Column(length = 2000)
     private String content;
 
     @Column
