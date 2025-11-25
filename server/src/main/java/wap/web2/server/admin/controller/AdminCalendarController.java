@@ -1,6 +1,7 @@
 package wap.web2.server.admin.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class AdminCalendarController {
 
     @PostMapping("/event")
     @Operation(summary = "일정 등록하기", description = "왑에서 진행될 일정을 등록합니다.")
-    public ResponseEntity<?> postCalendarEvent(@RequestBody CalendarEventPostingRequest request) {
+    public ResponseEntity<?> postCalendarEvent(@RequestBody @Valid CalendarEventPostingRequest request) {
         try {
             adminCalendarService.postCalendarEvent(request);
             return ResponseEntity.ok().body("[INFO ] 성공적으로 일정을 등록하였습니다.");
