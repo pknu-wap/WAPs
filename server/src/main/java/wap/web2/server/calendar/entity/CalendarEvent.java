@@ -5,7 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(indexes = {
+        @Index(name = "idx_calendar_event_date", columnList = "date")
+})
 public class CalendarEvent {
 
     @Id
@@ -37,18 +41,10 @@ public class CalendarEvent {
     @Column
     private LocalDateTime date;
 
-    @Column
-    private boolean isExpired;
-
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-    @PrePersist
-    public void checkExpired() {
-        this.isExpired = date.isBefore(LocalDateTime.now());
-    }
 
 }
