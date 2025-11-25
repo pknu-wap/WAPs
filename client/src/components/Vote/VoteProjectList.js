@@ -72,7 +72,7 @@ const VoteProjectList = ({
               }
             >
               <div className={styles.inform_box}>
-                <div style={{ fontSize: 18, position: "absolute"}}>{index + 1}</div>
+                <div style={{ fontSize: 18, position: "absolute", zIndex: 2}}>{index + 1}</div>
                 {project.thumbnail && (
                   <div className={styles.project_thumbnail}>
                     <img

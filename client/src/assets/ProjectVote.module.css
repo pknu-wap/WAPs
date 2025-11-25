@@ -239,8 +239,8 @@
 
 /* 실제 이미지를 담는 클립 박스 (대각선 컷) */
 .project_thumbnail {
-  width: 100%;
-  height: 100%;
+  aspect-ratio: 359 / 269;  
+  width: 120px;    /* 필요하면 변수로 */
   overflow: hidden;
   position: relative;
   display: flex;
