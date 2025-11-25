@@ -153,7 +153,9 @@ const ManagePermissionPage = () => {
                 <div className={styles.userContent}>
                     <div className={styles.userList}>
                         {isLoading ? (
-                            <p>로딩 중...</p>
+                            <table>
+                                <thead></thead>
+                            </table>
                         ) : error ? (
                             <p>{error}</p>
                         ) : (
@@ -253,8 +255,7 @@ const ManagePermissionPage = () => {
                                     {/* Map에 저장된 user 객체들을 순회하며 행 생성 */}
                                     {Array.from(selectedUserMap.values()).map(user => (
                                         <tr key={user.id} onClick={() => handleUserRowClick(user)} style={{ cursor: 'pointer' }}>
-                                            <td style={{ textAlign: "right" }}>{user.id}</td>
-                                            <td>{user.name}</td>
+                                            <td style={{ textAlign: "right" }}>{user.name}</td>
                                             <td>{user.email}</td>
                                             <td>{user.role}</td>
                                         </tr>
