@@ -154,6 +154,7 @@ public class VoteService {
         double rate = (totalVotes == 0) ? 0 : (voteCount.voteCount() * 100.0) / totalVotes;
 
         return VoteResultResponse.builder()
+                .projectId(project.getProjectId())
                 .projectName(project.getTitle())
                 .projectSummary(project.getSummary())
                 .thumbnail(project.getThumbnail())
