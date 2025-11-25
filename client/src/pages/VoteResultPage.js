@@ -67,24 +67,35 @@ const VoteResultPage = () => {
   useEffect(() => {
     let isMounted = true; // cleanup을 위한 플래그
 
-  const fetchVoteResults = async () => {
-    try {
-      const voteRes = await axios.get(voteUrl);
+    const fetchVoteResults = async () => {
+      try {
+        const voteRes = await axios.get(voteUrl);
         if (!isMounted) return; // 컴포넌트가 언마운트되면 중단
 
-      const voteItems = Array.isArray(voteRes.data)
-        ? voteRes.data
-        : voteRes.data?.projectsResponse || [];
+        const apiSemester = voteRes.data?.semester; // "2025-02"
+        const voteItems = voteRes.data?.results || [];
 
         // 데이터가 비어있으면 공개되지 않은 것으로 간주
-      if (!voteItems || voteItems.length === 0) {
-        alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
-        navigate("/vote/result", { replace: true });
-        return;
-      }
+        if (!voteItems || voteItems.length === 0) {
+          alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
+          navigate("/vote/result", { replace: true });
+          return;
+        }
 
-      const sorted = [...voteItems].sort((a, b) => b.voteCount - a.voteCount);
-      setProjects(sorted);
+        // result의 semester 값으로 dropdown 상태 재설정
+        if (apiSemester) {
+          const m = apiSemester.match(/^(\d{4})-(\d{2})$/);
+          if (m) {
+            setSemesterFilter({
+              year: parseInt(m[1]),
+              semester: parseInt(m[2]),
+              open: false,
+            });
+          }
+        }
+
+        const sorted = [...voteItems].sort((a, b) => b.voteCount - a.voteCount);
+        setProjects(sorted);
       } catch (e) {
         if (!isMounted) return;
 
@@ -95,10 +106,10 @@ const VoteResultPage = () => {
         } else {
           alert("투표 결과를 가져오는데 실패했습니다.");
         }
-    }
-  };
+      }
+    };
 
-  fetchVoteResults();
+    fetchVoteResults();
     return () => {
       isMounted = false; // cleanup
     };
