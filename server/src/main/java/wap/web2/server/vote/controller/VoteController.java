@@ -72,12 +72,8 @@ public class VoteController {
     @GetMapping("/result/{semester}")
     @Operation(summary = "특정 학기 투표 결과 확인", description = "특정 학기의 투표 결과를 가져온다.")
     public ResponseEntity<?> getVoteResults(@PathVariable("semester") @Semester String semester) {
-        try {
-            List<VoteResultResponse> voteResults = voteService.getVoteResults(semester);
-            return ResponseEntity.ok().body(voteResults);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 조회 실패");
-        }
+        List<VoteResultResponse> voteResults = voteService.getVoteResults(semester);
+        return ResponseEntity.ok().body(voteResults);
     }
 
 }

@@ -15,8 +15,13 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
     long countBallotsBySemesterAndUserId(String semester, Long userId);
 
     @Query("""
-                SELECT new wap.web2.server.vote.dto.ProjectVoteCount(b.projectId, COUNT(b))
+                SELECT b.projectId as projectId,
+                       COUNT(b) as voteCount,
+                       p.title as projectName,
+                       p.summary as projectSummary,
+                       p.thumbnail as thumbnail
                 FROM Ballot b
+                JOIN Project p ON b.projectId = p.projectId
                 WHERE b.semester = :semester
                 GROUP BY b.projectId
             """)
@@ -31,8 +36,13 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
     List<Long> findProjectIdsByUserIdAndSemester(@Param("userId") Long userId, @Param("semester") String semester);
 
     @Query("""
-            SELECT new wap.web2.server.vote.dto.ProjectVoteCount(b.projectId, COUNT(b))
+            SELECT b.projectId as projectId,
+                   COUNT(b) as voteCount,
+                   p.title as projectName,
+                   p.summary as projectSummary,
+                   p.thumbnail as thumbnail
             FROM Ballot b
+            JOIN Project p ON b.projectId = p.projectId
             WHERE b.semester = (
                 SELECT MAX(v.semester)
                 FROM VoteMeta v
