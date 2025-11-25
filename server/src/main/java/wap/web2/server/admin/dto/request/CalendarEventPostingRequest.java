@@ -7,16 +7,16 @@ import java.time.LocalDateTime;
 
 public record CalendarEventPostingRequest(
         @NotBlank
-        @Size(max = 20)
+        @Size(max = 30)
         String title,
         @NotBlank
-        @Size(max = 500)
+        @Size(max = 2000)
         String content,
         @NotBlank
-        @Size(max = 20)
+        @Size(max = 30)
         String target,
         @NotBlank
-        @Size(max = 20)
+        @Size(max = 30)
         String location,
         @NotNull
         LocalDateTime dateTime
