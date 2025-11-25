@@ -5,6 +5,7 @@ import wap.web2.server.vote.dto.ProjectVoteCount;
 
 @Builder
 public record AdminVoteResultResponse(
+        long projectId,
         String projectName,
         long voteCount,
         double voteRate
@@ -15,6 +16,7 @@ public record AdminVoteResultResponse(
         double roundedRate = Math.round(rate * 10) / 10.0;
 
         return AdminVoteResultResponse.builder()
+                .projectId(projectVoteCount.getProjectId())
                 .projectName(projectVoteCount.getProjectName())
                 .voteCount(projectVoteCount.getVoteCount())
                 .voteRate(roundedRate)

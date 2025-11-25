@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record VoteResultResponse(
+        long projectId,
         String projectName,
         String projectSummary,
         String thumbnail,
@@ -16,6 +17,7 @@ public record VoteResultResponse(
         double roundedRate = Math.round(rate * 10) / 10.0;
 
         return VoteResultResponse.builder()
+                .projectId(projectVoteCount.getProjectId())
                 .projectName(projectVoteCount.getProjectName())
                 .projectSummary(projectVoteCount.getProjectSummary())
                 .thumbnail(projectVoteCount.getThumbnail())
