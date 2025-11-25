@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record VoteResultResponse(
+        long projectId,
         String projectName,
         String projectSummary,
         String thumbnail,

@@ -105,6 +105,7 @@ public class AdminVoteService {
         double rate = (totalVotes == 0) ? 0 : (voteCount.voteCount() * 100.0) / totalVotes;
 
         return AdminVoteResultResponse.builder()
+                .projctId(project.getProjectId())
                 .projectName(project.getTitle())
                 .voteCount(voteCount.voteCount())
                 .voteRate(Math.round(rate * 10) / 10.0)  // 소수점 1자리
