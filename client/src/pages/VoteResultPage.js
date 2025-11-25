@@ -76,27 +76,6 @@ const VoteResultPage = () => {
     setMenuOpen(!menuOpen);
   };
 
-  // 인증 검사
-  useEffect(() => {
-    const token = Cookies.get("authToken");
-    const validateAuth = async () => {
-      if (!token) {
-        alert("로그인이 필요합니다.");
-        navigate("/login");
-        return;
-      }
-      try {
-        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } catch (error) {
-        alert("로그인 유효기간이 만료되었습니다. 재로그인 해주세요.");
-        navigate("/login");
-      }
-    };
-    validateAuth();
-  }, [navigate]);
-
   // 데이터 fetch 로직
   useEffect(() => {
     let isMounted = true; // cleanup을 위한 플래그
