@@ -12,10 +12,12 @@ const ManageVotePage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(""); // 투표 결과
 
-    const [voteResult, setVoteResult] = useState([]);
+    const [voteResult, setVoteResult] = useState([]); // 투표 결과
+    const [isResultPublic, setIsResultPublic] = useState(false) // 투표 결과 공개 여부
     const [projects, setProjects] = useState([]); // 프로젝트 목록 상태
     const [selectedProjects, setSelectedProjects] = useState([]); // 선택된 프로젝트 ID 목록
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false); // 모달창 열림 여부
+
 
     useEffect(() => {
         setSemester(getCurrentSemester());
@@ -101,14 +103,32 @@ const ManageVotePage = () => {
 
         try {
             setIsProcessing(true);
+
+            // 투표 종료 요청
             await apiClient.post(
                 "/admin/vote/closed",
                 {},
                 { params: { semester } }
             );
+
+            // 투표 종료 후, 결과를 자동으로 비공개 상태로 설정 요청
+            await apiClient.post(
+                "/admin/vote/result",
+                {},
+                {
+                    params: {
+                        semester: semester,
+                        status: false
+                    }
+                }
+            );
+
+            // 로컬 상태 업데이트
             setVoteStatus("ENDED");
+            setIsResultPublic(false);
+
         } catch (e) {
-            setError("투표 종료에 실패했습니다.");
+            setError("투표 종료에 실패했습니다. ");
         } finally {
             setIsProcessing(false);
         }
@@ -140,7 +160,7 @@ const ManageVotePage = () => {
         const fetchVoteResult = async () => {
             try {
                 const response = await apiClient.get(`/admin/vote/${semester}/results`);
-                setVoteResult(response.data); // 투표 결과 저장
+                setVoteResult(response.data || []); // 투표 결과 저장
             } catch (e) {
                 setError("투표 결과 조회 실패");
             }
@@ -162,6 +182,7 @@ const ManageVotePage = () => {
                     }
                 }
             );
+            setIsResultPublic(isPublic);
         } catch {
             setError("투표 공개 상태 변경 실패");
         }
@@ -239,7 +260,8 @@ const ManageVotePage = () => {
         );
     };
 
-    const EndedView = () => {
+    const EndedView = ({ isResultPublic, handleSetPublicStatus }) => {
+
         return (
             <div className={styles.underBox}>
                 <div className={styles.resultTitle}>투표 결과</div>
@@ -279,8 +301,20 @@ const ManageVotePage = () => {
                     </div>
 
                     <div className={styles.publicBtns}>
-                        <button className={styles.publicBtn} onClick={() => handleSetPublicStatus(true)}>공개</button>
-                        <button className={styles.publicBtn} onClick={() => handleSetPublicStatus(false)}>비공개</button>
+                        <button
+                            className={isResultPublic ? styles.publicBtnDisable : styles.publicBtn}
+                            onClick={() => handleSetPublicStatus(true)}
+                            disabled={isResultPublic}
+                        >
+                            공개
+                        </button>
+                        <button
+                            className={isResultPublic ? styles.publicBtn : styles.publicBtnDisable}
+                            onClick={() => handleSetPublicStatus(false)}
+                            disabled={!isResultPublic}
+                        >
+                            비공개
+                        </button>
                     </div>
                 </div>
             </div>
@@ -319,7 +353,12 @@ const ManageVotePage = () => {
 
             {voteStatus === "VOTING" && <VotingView />}
 
-            {voteStatus === "ENDED" && <EndedView />}
+            {voteStatus === "ENDED" && (
+                <EndedView
+                    isResultPublic={isResultPublic}
+                    handleSetPublicStatus={handleSetPublicStatus}
+                />
+            )}
 
             {isModalOpen && (
                 <SubmitModal
