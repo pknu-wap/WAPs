@@ -260,7 +260,7 @@ const VoteResultPage = () => {
                 return (
                   <div
                     className={`${styles.project_list_box} ${
-                      isTop3 ? styles.selected : ""
+                      isTop3 ? styles.selected_result : ""
                     }`}
                     key={(project.projectId ?? project.projectName ?? index) + "-vote"}
                   >
