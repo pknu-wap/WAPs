@@ -22,6 +22,7 @@ import wap.web2.server.vote.dto.VoteParticipants;
 import wap.web2.server.vote.dto.VoteParticipantsResponse;
 import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
+import wap.web2.server.vote.dto.VoteResultsResponse;
 import wap.web2.server.vote.entity.Ballot;
 import wap.web2.server.vote.repository.BallotRepository;
 
@@ -72,20 +73,24 @@ public class VoteService {
     }
 
     @Transactional(readOnly = true)
-    public List<VoteResultResponse> getVoteResults(String semester) {
+    public VoteResultsResponse getVoteResults(String semester) {
         validateResultVisibility(semester);
 
         List<ProjectVoteCount> projectVoteCounts = ballotRepository.countVotesByProject(semester);
         long totalVotes = calculateTotalVotes(projectVoteCounts);
 
-        return projectVoteCounts.stream().map(pvc -> VoteResultResponse.of(pvc, totalVotes)).toList();
+        List<VoteResultResponse> results = projectVoteCounts.stream()
+                .map(pvc -> VoteResultResponse.of(pvc, totalVotes))
+                .toList();
+
+        return VoteResultsResponse.of(semester, results);
     }
 
     @Transactional(readOnly = true)
-    public List<VoteResultResponse> getMostRecentResults() {
+    public VoteResultsResponse getMostRecentResults() {
         String currentSemester = generateSemester();
-        List<ProjectVoteCount> latestVotes = ballotRepository.findPublicLatestBallots(currentSemester,
-                VoteStatus.ENDED);
+        String latestSemester = ballotRepository.findPublicLatestSemester(currentSemester, VoteStatus.ENDED);
+        List<ProjectVoteCount> latestVotes = ballotRepository.findPublicLatestBallots(latestSemester);
 
         if (latestVotes.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 현재까지 투표가 진행된 적이 없습니다.");
@@ -93,7 +98,11 @@ public class VoteService {
 
         long totalVotes = calculateTotalVotes(latestVotes);
 
-        return latestVotes.stream().map(lv -> VoteResultResponse.of(lv, totalVotes)).toList();
+        List<VoteResultResponse> results = latestVotes.stream()
+                .map(lv -> VoteResultResponse.of(lv, totalVotes))
+                .toList();
+
+        return VoteResultsResponse.of(latestSemester, results);
     }
 
     @Transactional(readOnly = true)
