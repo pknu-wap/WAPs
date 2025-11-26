@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "../../assets/ProjectVote.module.css";
+import { getCurrentSemester } from "../../utils/dateUtils";
 
 const VoteProjectList = ({
   // handleProjectSelect,
@@ -9,9 +10,12 @@ const VoteProjectList = ({
   isVotedUser,
 }) => {
   const [projects, setProjects] = useState([]);
-  const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
-  // 날짜 체크 : 음....... 이거 월 설정을 어떻게 하면 좋을까납..?
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=1&projectYear=${currentYear}`;
+  const semesterInfo = getCurrentSemester();
+  const [yearStr, semesterStr] = semesterInfo.split('-');
+
+  const currentYear = parseInt(yearStr, 10);
+  const currentSemester = parseInt(semesterStr, 10);
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=${currentSemester}&projectYear=${currentYear}`;
 
   const handleProjectSelect = (projectId, isVotedUser) => {
     // console.log("클릭됨", projectId);
@@ -24,11 +28,11 @@ const VoteProjectList = ({
       // 이미 선택된 프로젝트는 해제
       setSelectedProjects(selectedProjects.filter((id) => id !== projectId));
     } else {
-      // 선택된 프로젝트가 3개 미만일 때만 추가
+      // 선택된 프로젝트가 3개일 때만 추가
       if (selectedProjects.length < 3) {
         setSelectedProjects([...selectedProjects, projectId]);
       } else {
-        alert("최대 3개의 프로젝트만 선택할 수 있습니다."); // 사용자에게 알림
+        alert("3개의 프로젝트만 선택할 수 있습니다."); // 사용자에게 알림
       }
     }
   };
@@ -49,12 +53,12 @@ const VoteProjectList = ({
           // );
         }
       } catch (error) {
-        // console.error("데이터 가져오는 중 오류 발생:", error);
+        console.error("데이터 가져오는 중 오류 발생:", error);
       }
     };
 
     fetchData();
-  }, [currentYear]);
+  }, [currentYear, currentSemester, apiUrl]);
 
   return (
     <div className={styles.project_list_form}>
@@ -72,7 +76,7 @@ const VoteProjectList = ({
               }
             >
               <div className={styles.inform_box}>
-                <div style={{ marginTop: 10, fontSize: 18 }}>{index + 1}</div>
+                <div style={{ fontSize: 15, position: "absolute", zIndex: 2 }}>{index + 1}</div>
                 {project.thumbnail && (
                   <div className={styles.project_thumbnail}>
                     <img

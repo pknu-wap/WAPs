@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import wap.web2.server.admin.entity.VoteStatus;
 import wap.web2.server.vote.dto.ProjectVoteCount;
 import wap.web2.server.vote.entity.Ballot;
 
@@ -14,8 +15,13 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
     long countBallotsBySemesterAndUserId(String semester, Long userId);
 
     @Query("""
-                SELECT new wap.web2.server.vote.dto.ProjectVoteCount(b.projectId, COUNT(b))
+                SELECT b.projectId as projectId,
+                       COUNT(b) as voteCount,
+                       p.title as projectName,
+                       p.summary as projectSummary,
+                       p.thumbnail as thumbnail
                 FROM Ballot b
+                JOIN Project p ON b.projectId = p.projectId
                 WHERE b.semester = :semester
                 GROUP BY b.projectId
             """)
@@ -30,14 +36,20 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
     List<Long> findProjectIdsByUserIdAndSemester(@Param("userId") Long userId, @Param("semester") String semester);
 
     @Query("""
-            SELECT new wap.web2.server.vote.dto.ProjectVoteCount(b.projectId, COUNT(b))
+            SELECT b.projectId as projectId,
+                   COUNT(b) as voteCount,
+                   p.title as projectName,
+                   p.summary as projectSummary,
+                   p.thumbnail as thumbnail
             FROM Ballot b
+            JOIN Project p ON b.projectId = p.projectId
             WHERE b.semester = (
-                SELECT MAX(b2.semester)
-                FROM Ballot b2
-                WHERE b2.semester <= :currentSemester
+                SELECT MAX(v.semester)
+                FROM VoteMeta v
+                WHERE v.semester <= :currentSemester and v.status = :ended and v.isResultPublic = true
             )
             GROUP BY b.projectId
             """)
-    List<ProjectVoteCount> findLatestBallots(@Param("currentSemester") String currentSemester);
+    List<ProjectVoteCount> findPublicLatestBallots(@Param("currentSemester") String currentSemester,
+                                                   @Param("ended") VoteStatus ended);
 }

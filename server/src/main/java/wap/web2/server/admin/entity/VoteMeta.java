@@ -62,7 +62,9 @@ public class VoteMeta {
     @Column
     private LocalDateTime closedAt;
 
-    // DB: unique index (vote_meta_id, project_ids) & index (vote_meta_id) 존재
+    @Column(nullable = false)
+    private boolean isResultPublic = true;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "vote_meta_participants",

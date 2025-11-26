@@ -10,14 +10,47 @@
   --primary: rgb(163, 175, 249);
 }
 
-.header_bg_zone {
+/* vote페이지 헤더배경 */
+.bg_zone {
   width: 100%;
-  margin-top: -50px; 
-  padding-top: 30px; 
+  margin-top: -50px;
+  padding-top: 30px;
   padding-bottom: 100px;
   position: relative;
   z-index: 0;
   background: linear-gradient(90deg, #a0aeffd2 0%, #b4edfec0 100%);
+  height: 150px;
+}
+
+.bg_zone::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.1) 20%,
+    rgba(0, 0, 0, 0.3) 40%,
+    rgba(0, 0, 0, 0.6) 70%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* result 페이지 헤더 배경 */
+.header_bg_zone {
+  width: 100%;
+  margin-top: -50px;
+  padding-top: 30px;
+  padding-bottom: 100px;
+  position: relative;
+  z-index: 0;
+  background: linear-gradient(90deg, #a0aeffd2 0%, #b4edfec0 100%);
+  height: 190px;
 }
 
 .header_bg_zone::after {
@@ -28,7 +61,7 @@
   width: 100%;
   height: 180px;
   background: linear-gradient(
-    to bottom, 
+    to bottom,
     rgba(0, 0, 0, 0) 0%,
     rgba(0, 0, 0, 0.1) 20%,
     rgba(0, 0, 0, 0.3) 40%,
@@ -56,18 +89,45 @@
 }
 
 @keyframes loadEffect1 {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .title_form {
   margin: 0 auto;
   width: 100%;
-  padding-top:1px;
-  padding-bottom:9px;
+  padding-top: 1px;
+  padding-bottom: 9px;
   text-align: center;
-  margin-top: 20px;
+  margin-top: 30px;
   margin-bottom: 20px;
+}
+
+.vote_title {
+  color: #ffffff;
+  margin-top: 50px;
+  margin-left: 30px;
+  font-weight: bold;
+  text-align: left;
+  font-size: 20px;
+}
+
+.vote_title p {
+  margin: 2px 0;
+  line-height: 1.2;
+}
+
+.title_eng {
+  margin-top: 10px;
+  margin-left: 30px;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: left;
 }
 
 .title {
@@ -87,7 +147,7 @@
   position: relative;
   z-index: 0;
   overflow: visible;
-  margin-top: -90px; /* 헤더와 자연스럽게 연결 */
+  margin-top: -20px; /* 헤더와 자연스럽게 연결 */
 }
 
 .project_list_gradient {
@@ -105,16 +165,11 @@
   width: 90%;
   border-radius: 10px;
   margin: 0 auto;
-  margin-bottom: 0px;
+  margin-bottom: 5px;
   padding: 5px;
   padding-left: 15px;
   padding-right: 15px;
   cursor: default;
-}
-
-/* 1~3등 박스에 걸린 .selected 테두리 제거 */
-.project_list_form .project_list_box:nth-child(-n+3).selected {
-  border: none !important;
 }
 
 .selected {
@@ -130,10 +185,10 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  padding: 0px;     /* ← 좌우 간격은 여기서 관리 */
+  padding: 0px; /* 좌우 간격은 여기서 관리 */
   overflow: hidden;
-  min-height: var(--thumb-h);   /* ★ EDIT: 썸네일 높이와 동기화 */
-  max-height: var(--thumb-h);   /* ★ EDIT: 썸네일 높이와 동기화 */
+  min-height: var(--thumb-h); /* 썸네일 높이와 동기화 */
+  max-height: var(--thumb-h); /* 썸네일 높이와 동기화 */
 }
 
 /* 순위 번호 레이아웃(좌측 별도 숫자) – 사용 안 함 */
@@ -151,14 +206,16 @@
 /* 랩퍼: 잘린 ‘바깥’ 삼각형 영역에 숫자를 얹기 위한 기준 */
 .thumbnail_wrap {
   position: relative;
-  --thumb-w: 120px;                          /* ← 기본 너비. 필요 시 숫자만 바꾸면 됨 */
-  --thumb-h: calc(var(--thumb-w) * 287 / 385); /* ★ EDIT: 비율 유지용 높이 계산(385:287) */
+  --thumb-w: 120px; /* ← 기본 너비. 필요 시 숫자만 바꾸면 됨 */
+  --thumb-h: calc(
+    var(--thumb-w) * 287 / 385
+  ); /* 비율 유지용 높이 계산(385:287) */
   width: var(--thumb-w);
-  height: var(--thumb-h);                    /* ★ EDIT: 계산된 높이 적용 */
+  height: var(--thumb-h); /* 계산된 높이 적용 */
   aspect-ratio: 385 / 287;
   margin: 5px;
   background: transparent;
-  border-radius: 10px; 
+  border-radius: 10px;
 }
 
 /* 잘린 ‘바깥’ 삼각형 영역에 놓일 순위 숫자 */
@@ -181,14 +238,14 @@
   color: #808080 !important;
 }
 
-.project_list_form .project_list_box:nth-child(-n+3) .rank_badge_out {
-  color: #B3ECFD !important;
+.project_list_form .project_list_box:nth-child(-n + 3) .rank_badge_out {
+  color: #b3ecfd !important;
 }
 
 /* 실제 이미지를 담는 클립 박스 (대각선 컷) */
 .project_thumbnail {
-  width: 100%;
-  height: 100%;
+  aspect-ratio: 359 / 269;
+  width: 120px;
   overflow: hidden;
   position: relative;
   display: flex;
@@ -196,22 +253,32 @@
   align-items: center;
   background-color: #00000000;
   border-radius: 10px;
-  --cut: 30px;  
-  clip-path: polygon(
-    var(--cut) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cut)
-  );
-  -webkit-mask-image: radial-gradient(circle 12px at top left, transparent 10px, black 10px),
-                      radial-gradient(circle 12px at bottom right, transparent 10px, black 10px),
-                      linear-gradient(135deg, transparent 30px, black 30px);
+  --cut: 30px;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cut));
+  -webkit-mask-image: radial-gradient(
+      circle 12px at top left,
+      transparent 10px,
+      black 10px
+    ),
+    radial-gradient(circle 12px at bottom right, transparent 10px, black 10px),
+    linear-gradient(135deg, transparent 30px, black 30px);
+  mask-image: radial-gradient(
+      circle 12px at top left,
+      transparent 10px,
+      black 10px
+    ),
+    radial-gradient(circle 12px at bottom right, transparent 10px, black 10px),
+    linear-gradient(135deg, transparent 30px, black 30px);
   -webkit-mask-composite: source-over;
   mask-composite: add;
+  flex-shrink: 0;
 }
 
-/* (참고) 굳이 필요하진 않지만 기존 코드 유지 – 배경 투명 */
 .project_thumbnail::before {
   content: "";
   position: absolute;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: calc(var(--cut) * 2);
   height: calc(var(--cut) * 2);
   background: #00000000;
@@ -226,28 +293,28 @@
   object-position: center;
 }
 
-/* ========================================= */
-
 .inform_box {
   width: 100%;
   gap: 0px;
   display: flex;
   flex-direction: row;
-  align-items: stretch;           /* ★ EDIT: 좌/우 높이 동일하게 맞춤 */
+  align-items: stretch; /* 좌/우 높이 동일하게 맞춤 */
   justify-content: space-between;
 }
 
 .project_title_form {
-  margin: 5px ;
+  margin: 5px;
   width: 70%;
   text-align: left;
   margin-top: 5px;
+  margin-left: 10px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;    /* ★ EDIT: 위쪽 정렬로 고정 */
-  gap: 4px;                       /* ★ EDIT: 제목-내용 간 고정 간격 */
+  justify-content: flex-start; /* 위쪽 정렬로 고정 */
+  gap: 4px; /* 제목-내용 간 고정 간격 */
   height: 50px;
-  padding-bottom: 2px;           /* ★ EDIT: 내부 말줄임 동작을 위해 숨김 */
+  padding-bottom: 2px; /* 내부 말줄임 동작을 위해 숨김 */
+  min-width: 0;
 }
 
 .project_result_form {
@@ -262,7 +329,7 @@
 }
 
 .project_vote_count {
-  color: #B3ECFD;
+  color: #b3ecfd;
   font-size: 13px;
   flex-grow: 0;
 }
@@ -278,10 +345,10 @@
   font-weight: 700;
   margin: 0;
   flex-grow: 0;
-  white-space: nowrap;            /* ★ EDIT: 제목 1줄 고정 */
-  overflow: hidden;               /* ★ EDIT: 넘치면 숨김 */
-  text-overflow: ellipsis;        /* ★ EDIT: … 처리 */
-  line-height: 1.2;               /* ★ EDIT: 라인 박스 안정화 */
+  white-space: nowrap; /* 제목 1줄 고정 */
+  overflow: hidden; /* 넘치면 숨김 */
+  text-overflow: ellipsis; /* … 처리 */
+  line-height: 1.2; /* 라인 박스 안정화 */
 }
 
 .selected_title {
@@ -290,32 +357,33 @@
 
 .summary {
   color: #ffffffb1;
-  font-size: 10px;
+  font-size: 11px;
   margin: 0;
   flex-grow: 0;
-  display: -webkit-box;           /* ★ EDIT: 여러 줄 말줄임 */
-  -webkit-line-clamp: 3;          /* ★ EDIT: 최대 3줄로 제한(원하면 조절) */
-  -webkit-box-orient: vertical;   /* ★ EDIT: 세로 방향 */
-  overflow: hidden;               /* ★ EDIT: 넘치는 내용 숨김 */
-  line-height: 1.2;              /* ★ EDIT: 시작 높이 일관성 */
+  display: -webkit-box; /* 여러 줄 말줄임 */
+  -webkit-line-clamp: 3; /* 최대 3줄로 제한(원하면 조절) */
+  line-clamp: 3;
+  -webkit-box-orient: vertical; /* 세로 방향 */
+  overflow: hidden; /* 넘치는 내용 숨김 */
+  line-height: 1.2; /* 시작 높이 일관성 */
 }
 
 .view_button {
-  margin: 0;                      /* ★ EDIT: 위치 흔들림 방지(aut o/left 제거) */
+  margin: 0; /* 위치 흔들림 방지 */
   padding: 7px 13px;
   border-radius: 9999px;
-  border: 1px solid #ABD4FD;
+  border: 1px solid #abd4fd;
   background: transparent;
-  color: #ABD4FD;
+  color: #abd4fd;
   font-family: "Pretendard-Regular";
   font-size: 10px;
   cursor: pointer;
-  transition: transform .08s ease, background .2s ease, color .2s ease;
+  transition: transform 0.08s ease, background 0.2s ease, color 0.2s ease;
   display: inline-block;
 }
 
 .view_button:hover {
-  background: #ABD4FD;
+  background: #abd4fd;
   color: #0b0b0b;
   transform: translateY(-1px);
 }
@@ -324,16 +392,16 @@
 .bottom_row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;    /* 하단 라인 맞춤 */
+  align-items: flex-end; /* 하단 라인 맞춤 */
   gap: 19px;
   padding: 0 8px 12px;
-  margin-top: auto;         /* ★ EDIT: 항상 우측 컬럼의 맨 아래로 고정 */
+  margin-top: auto; /* 항상 우측 컬럼의 맨 아래로 고정 */
 }
 
 /* 득표 영역을 가로 배치 */
 .project_result_inline {
   display: inline-flex;
-  align-items: flex-end;    /* 텍스트 하단 정렬 */
+  align-items: flex-end; /* 텍스트 하단 정렬 */
   gap: 7px;
   line-height: 1;
 }
