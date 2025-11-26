@@ -4,6 +4,7 @@ import "../assets/Login.css";
 import img from "../assets/img/pngwing.com.png";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import wapsLogo from "../assets/img/waps_logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,6 +38,15 @@ const Login = () => {
       <button className="close-button" onClick={() => navigate("/ProjectPage")}>
         &times;
       </button>
+      <div>
+        <img
+          src={wapsLogo}
+          alt="WAPs"
+          className="waplogo"
+          onClick={() => navigate("/ProjectPage")}
+          style={{ cursor: "pointer", height: "75px" }} // 크기 조절
+        />
+      </div>
       <div className="login-caption">
         <p>WAP에서의</p>
         <p>프로젝트를 만나보세요</p>

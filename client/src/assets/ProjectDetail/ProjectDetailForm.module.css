@@ -14,6 +14,7 @@
     color: #FFFFFF;
     padding-bottom: 20px;
     font-family: 'Pretendard-Regular';
+    margin-top: 80px;
 }
 
 .mount1{ animation: 0.7s ease-in-out loadEffect1; }

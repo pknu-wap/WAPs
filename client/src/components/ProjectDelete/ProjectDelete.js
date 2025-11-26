@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
+import LoadingPage from "../LoadingPage";
 
 const ProjectDelete = () => {
   const { projectId } = useParams(); // URL에서 projectId 가져오기
@@ -65,7 +66,7 @@ const ProjectDelete = () => {
 
   // 프로젝트 로딩 상태 처리
   if (!project) {
-    return <p>프로젝트 정보를 불러오는 중입니다...</p>;
+    return <LoadingPage />;
   }
 
   return (

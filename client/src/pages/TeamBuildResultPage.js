@@ -5,7 +5,7 @@ import Menu from "../components/Menu";
 import FloatingButton from "../components/FloatingButton";
 import apiClient from "../utils/api";
 import styles from "../assets/TeamBuildResult.module.css";
-import LoadingImage from "../assets/img/WAP_white_NoBG.png";
+import LoadingPage from "../components/LoadingPage";
 
 const TeamBuildResultPage = () => {
   // 기존 헤더, 인터페이스 관련 함수들. 이후 s디자인에 따라 삭제 유무 정하기
@@ -110,8 +110,7 @@ const TeamBuildResultPage = () => {
   // 렌더링 
   const renderContent = () => {
     if (isLoading) {
-      return <div className={styles.loadingContainer}><img src={LoadingImage} alt="Loading..." className={styles.loadingImage} /></div>;
-    }
+      return <LoadingPage />;}
     if (error) {
       return <div className={styles.empty}>{error}</div>;
     }
