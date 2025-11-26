@@ -19,7 +19,6 @@ import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.dto.VoteInfoResponse;
 import wap.web2.server.vote.dto.VoteParticipantsResponse;
 import wap.web2.server.vote.dto.VoteRequest;
-import wap.web2.server.vote.dto.VoteResultResponse;
 import wap.web2.server.vote.dto.VoteResultsResponse;
 import wap.web2.server.vote.service.VoteService;
 
@@ -78,7 +77,7 @@ public class VoteController {
     @GetMapping("/result/{semester}")
     @Operation(summary = "특정 학기 투표 결과 확인", description = "특정 학기의 투표 결과를 가져온다.")
     public ResponseEntity<?> getVoteResults(@PathVariable("semester") @Semester String semester) {
-        List<VoteResultResponse> voteResults = voteService.getVoteResults(semester);
+        VoteResultsResponse voteResults = voteService.getVoteResults(semester);
         return ResponseEntity.ok().body(voteResults);
     }
 
