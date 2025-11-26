@@ -140,7 +140,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                     toggleMenu();
                   }}
                 >
-                  <span>캘린더 CALENDAR</span>
+                  <span>캘린더 Calendar</span>
                   <span className="arrow"><FaChevronRight /></span>
                 </button>
               </div>
