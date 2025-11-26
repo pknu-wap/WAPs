@@ -2,9 +2,7 @@ package wap.web2.server.vote.service;
 
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +14,15 @@ import wap.web2.server.admin.repository.VoteMetaRepository;
 import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.vote.dto.ProjectVoteCount;
 import wap.web2.server.vote.dto.VoteInfoResponse;
+import wap.web2.server.vote.dto.VoteParticipants;
+import wap.web2.server.vote.dto.VoteParticipantsResponse;
 import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
+import wap.web2.server.vote.dto.VoteResultsResponse;
 import wap.web2.server.vote.entity.Ballot;
 import wap.web2.server.vote.repository.BallotRepository;
 
@@ -73,20 +73,24 @@ public class VoteService {
     }
 
     @Transactional(readOnly = true)
-    public List<VoteResultResponse> getVoteResults(String semester) {
+    public VoteResultsResponse getVoteResults(String semester) {
         validateResultVisibility(semester);
 
-        List<ProjectVoteCount> voteCounts = ballotRepository.countVotesByProject(semester);
-        long totalVotes = calculateTotalVotes(voteCounts);
+        List<ProjectVoteCount> projectVoteCounts = ballotRepository.countVotesByProject(semester);
+        long totalVotes = calculateTotalVotes(projectVoteCounts);
 
-        return assembleVoteResults(voteCounts, totalVotes);
+        List<VoteResultResponse> results = projectVoteCounts.stream()
+                .map(pvc -> VoteResultResponse.of(pvc, totalVotes))
+                .toList();
+
+        return VoteResultsResponse.of(semester, results);
     }
 
     @Transactional(readOnly = true)
-    public List<VoteResultResponse> getMostRecentResults() {
+    public VoteResultsResponse getMostRecentResults() {
         String currentSemester = generateSemester();
-        List<ProjectVoteCount> latestVotes = ballotRepository.findPublicLatestBallots(currentSemester,
-                VoteStatus.ENDED);
+        String latestSemester = ballotRepository.findPublicLatestSemester(currentSemester, VoteStatus.ENDED);
+        List<ProjectVoteCount> latestVotes = ballotRepository.findPublicLatestBallots(latestSemester);
 
         if (latestVotes.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 현재까지 투표가 진행된 적이 없습니다.");
@@ -94,21 +98,25 @@ public class VoteService {
 
         long totalVotes = calculateTotalVotes(latestVotes);
 
-        return assembleVoteResults(latestVotes, totalVotes);
-    }
-
-    private List<VoteResultResponse> assembleVoteResults(List<ProjectVoteCount> voteCounts, long totalVotes) {
-        Map<Long, Project> projects = loadProjects(voteCounts);
-
-        return voteCounts.stream()
-                .map(voteCount -> mapToResponse(voteCount, projects.get(voteCount.projectId()), totalVotes))
-                .sorted(Comparator.comparing(VoteResultResponse::voteCount).reversed())
+        List<VoteResultResponse> results = latestVotes.stream()
+                .map(lv -> VoteResultResponse.of(lv, totalVotes))
                 .toList();
+
+        return VoteResultsResponse.of(latestSemester, results);
     }
 
-    private long calculateTotalVotes(List<ProjectVoteCount> voteCounts) {
-        return voteCounts.stream()
-                .mapToLong(ProjectVoteCount::voteCount)
+    @Transactional(readOnly = true)
+    public List<VoteParticipantsResponse> getParticipants(String semester) {
+        List<VoteParticipants> participants
+                = voteMetaRepository.findParticipantsProjectBySemester(semester);
+
+        return participants.stream().map(VoteParticipantsResponse::from).toList();
+    }
+
+
+    private long calculateTotalVotes(List<ProjectVoteCount> projectVoteCounts) {
+        return projectVoteCounts.stream()
+                .mapToLong(ProjectVoteCount::getVoteCount)
                 .sum();
     }
 
@@ -138,29 +146,6 @@ public class VoteService {
         if (!isPublic) {
             throw new IllegalArgumentException("[ERROR] 해당 투표 결과는 비공개입니다.");
         }
-    }
-
-    private Map<Long, Project> loadProjects(List<ProjectVoteCount> voteCounts) {
-        List<Long> projectIds = voteCounts.stream()
-                .map(ProjectVoteCount::projectId)
-                .toList();
-
-        return projectRepository.findAllById(projectIds)
-                .stream()
-                .collect(Collectors.toMap(Project::getProjectId, p -> p));
-    }
-
-    private VoteResultResponse mapToResponse(ProjectVoteCount voteCount, Project project, long totalVotes) {
-        double rate = (totalVotes == 0) ? 0 : (voteCount.voteCount() * 100.0) / totalVotes;
-
-        return VoteResultResponse.builder()
-                .projectId(project.getProjectId())
-                .projectName(project.getTitle())
-                .projectSummary(project.getSummary())
-                .thumbnail(project.getThumbnail())
-                .voteCount(voteCount.voteCount())
-                .voteRate(Math.round(rate * 10) / 10.0)  // 소수점 1자리
-                .build();
     }
 
 }

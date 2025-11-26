@@ -10,9 +10,7 @@ import Cookies from "js-cookie";
 // 분기를 결정함.
 // 현재 투표 기간인지에 따라 분기 구별함.
 const VotePage = () => {
-  const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
-  // 분기를 결정하는 api 임.
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now?semester=1&projectYear=${currentYear}`;
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now`;
 
   // 토큰 받아오기
   const token = Cookies.get("authToken");
@@ -22,12 +20,10 @@ const VotePage = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   // 투표했는지 여부의 초기값은 일단 false
-  const [isvotedUser, setIsVotedUser] = useState(false);
+  const [isVotedUser, setIsVotedUser] = useState(false);
   const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
   useEffect(() => {
     const validate = async () => {
@@ -54,8 +50,14 @@ const VotePage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        setIsOpen(response.data.open);
-        setIsVotedUser(response.data.votedUser);
+        setIsOpen(response.data.isOpen);
+        setIsVotedUser(response.data.isVotedUser);
+
+        // 투표 기간이 아닌 경우 즉시 안내 후 이동
+        if (!response.data.isOpen) {
+          alert("투표 기간이 아닙니다.\n투표 결과 페이지로 이동합니다.");
+          navigate("/vote/result");
+        }
       } catch (error) {
         alert("투표 기간인지 확인할 수 없습니다.");
       }
@@ -70,8 +72,9 @@ const VotePage = () => {
 
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       <main>
-        {/* <VoteForm isVotedUser={isvotedUser} /> */}
-        {isOpen ? <VoteForm isVotedUser={isvotedUser} /> : navigate("/vote/result")}
+        {/* <VoteForm isVotedUser={isVotedUser} /> */}
+        {/* 투표 기간일 때만 렌더링 */}
+        {isOpen && <VoteForm isVotedUser={isVotedUser} />}
       </main>
       <FloatingButton />
     </div>
