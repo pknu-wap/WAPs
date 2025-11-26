@@ -9,13 +9,15 @@ const ManageVotePage = () => {
     const [semester, setSemester] = useState(null); // 현재 학기
     const [isProcessing, setIsProcessing] = useState(false); // 열기,닫기 버튼 누를 때 로딩 상태
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(""); // 투표 결과
+    const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+    const [error, setError] = useState(""); // 에러 상태
 
-    const [voteResult, setVoteResult] = useState([]);
+    const [voteResult, setVoteResult] = useState([]); // 투표 결과
+    const [isResultPublic, setIsResultPublic] = useState(false) // 투표 결과 공개 여부
     const [projects, setProjects] = useState([]); // 프로젝트 목록 상태
     const [selectedProjects, setSelectedProjects] = useState([]); // 선택된 프로젝트 ID 목록
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false); // 모달창 열림 여부
+
 
     useEffect(() => {
         setSemester(getCurrentSemester());
@@ -101,14 +103,32 @@ const ManageVotePage = () => {
 
         try {
             setIsProcessing(true);
+
+            // 투표 종료 요청
             await apiClient.post(
                 "/admin/vote/closed",
                 {},
                 { params: { semester } }
             );
+
+            // 투표 종료 후, 결과를 자동으로 비공개 상태로 설정 요청
+            await apiClient.post(
+                "/admin/vote/result",
+                {},
+                {
+                    params: {
+                        semester: semester,
+                        status: false
+                    }
+                }
+            );
+
+            // 로컬 상태 업데이트
             setVoteStatus("ENDED");
+            setIsResultPublic(false);
+
         } catch (e) {
-            setError("투표 종료에 실패했습니다.");
+            setError("투표 종료에 실패했습니다. ");
         } finally {
             setIsProcessing(false);
         }
@@ -132,6 +152,16 @@ const ManageVotePage = () => {
         setIsModalOpen(true);
     };
 
+    // 투표 결과 공개 여부 조회 함수
+    const fetchResultVisibility = async () => {
+        if (!semester) return;
+        try {
+            const response = await apiClient.get(`/admin/vote/${semester}/results/visibility`);
+            setIsResultPublic(response.data.isPublic || false);
+        } catch (e) {
+            setError("투표 공개 상태 조회 실패");
+        }
+    }
 
     // ENDED 상태일 때 투표 결과 요청하기
     useEffect(() => {
@@ -140,13 +170,15 @@ const ManageVotePage = () => {
         const fetchVoteResult = async () => {
             try {
                 const response = await apiClient.get(`/admin/vote/${semester}/results`);
-                setVoteResult(response.data); // 투표 결과 저장
+                setVoteResult(response.data || []); // 투표 결과 저장
             } catch (e) {
                 setError("투표 결과 조회 실패");
             }
         };
+        fetchResultVisibility();
         fetchVoteResult();
     }, [voteStatus, semester]);
+
 
     // 투표 결과 공개 여부 핸들러
     const handleSetPublicStatus = async (isPublic) => {
@@ -162,6 +194,8 @@ const ManageVotePage = () => {
                     }
                 }
             );
+            // 서버 요청 성공 후 로컬 상태 업데이
+            setIsResultPublic(isPublic);
         } catch {
             setError("투표 공개 상태 변경 실패");
         }
@@ -239,7 +273,11 @@ const ManageVotePage = () => {
         );
     };
 
-    const EndedView = () => {
+    const EndedView = ({ isResultPublic, handleSetPublicStatus }) => {
+
+        const publicBtnClass = isResultPublic ? styles.publicBtnActive : styles.publicBtn;
+        const privateBtnClass = isResultPublic ? styles.publicBtn : styles.publicBtnActive;
+
         return (
             <div className={styles.underBox}>
                 <div className={styles.resultTitle}>투표 결과</div>
@@ -279,8 +317,20 @@ const ManageVotePage = () => {
                     </div>
 
                     <div className={styles.publicBtns}>
-                        <button className={styles.publicBtn} onClick={() => handleSetPublicStatus(true)}>공개</button>
-                        <button className={styles.publicBtn} onClick={() => handleSetPublicStatus(false)}>비공개</button>
+                        <button
+                            className={publicBtnClass}
+                            onClick={() => handleSetPublicStatus(true)}
+                            disabled={isResultPublic}
+                        >
+                            공개
+                        </button>
+                        <button
+                            className={privateBtnClass}
+                            onClick={() => handleSetPublicStatus(false)}
+                            disabled={!isResultPublic}
+                        >
+                            비공개
+                        </button>
                     </div>
                 </div>
             </div>
@@ -319,7 +369,12 @@ const ManageVotePage = () => {
 
             {voteStatus === "VOTING" && <VotingView />}
 
-            {voteStatus === "ENDED" && <EndedView />}
+            {voteStatus === "ENDED" && (
+                <EndedView
+                    isResultPublic={isResultPublic}
+                    handleSetPublicStatus={handleSetPublicStatus}
+                />
+            )}
 
             {isModalOpen && (
                 <SubmitModal

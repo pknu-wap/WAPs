@@ -186,12 +186,21 @@
 
 .publicBtns {
   flex-grow: 1;
+  min-width: 100px;
   display: flex;
   flex-direction: column;
-  align-items: end;
-  justify-content: flex-start;
+  align-items: stretch;
+  justify-content: flex-end;
   gap: 10px;
-  justify-content: end;
+}
+
+.publicBtn,
+.publicBtn:hover,
+.publicBtn:active,
+.publicBtnDisable,
+.publicBtnActive {
+  width: auto;
+  height: 80px;
 }
 
 .publicBtn {
@@ -204,12 +213,15 @@
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  background: transparent;
+  color: white;
 }
 
 .publicBtn:hover,
 .publicBtn:active {
   border: 2px solid var(--primary);
   background-color: var(--primary);
+  color: black;
 }
 
 .publicBtnDisable {
@@ -222,6 +234,25 @@
   font-weight: 700;
   color: #797979;
   background: #404040;
+}
+
+.publicBtnActive {
+  background-color: var(--primary);
+  color: black;
+  border: 2px solid var(--primary);
+  cursor: not-allowed;
+  border-radius: 51px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.publicBtns button:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 1;
 }
 
 /* 테이블 */
