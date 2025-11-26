@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import apiClient from "../../utils/api.js";
 import styles from "../../assets/ProjectVote.module.css";
+import { getCurrentSemester } from "../../utils/dateUtils";
 
 const VoteProjectList = ({
   // handleProjectSelect,
@@ -9,9 +10,11 @@ const VoteProjectList = ({
   isVotedUser,
 }) => {
   const [projects, setProjects] = useState([]);
-  const currentYear = new Date().getFullYear(); // 현재 연도 가져오기
-  // 날짜 체크 : 음....... 이거 월 설정을 어떻게 하면 좋을까납..?
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=2&projectYear=${currentYear}`;
+  const semesterInfo = getCurrentSemester();
+  const [yearStr, semesterStr] = semesterInfo.split('-');
+
+  const currentYear = parseInt(yearStr, 10);
+  const currentSemester = parseInt(semesterStr, 10);
 
   const handleProjectSelect = (projectId, isVotedUser) => {
     // console.log("클릭됨", projectId);
@@ -36,7 +39,9 @@ const VoteProjectList = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(apiUrl);
+        const response = await apiClient.get(
+          `/project/list?semester=${currentSemester}&projectYear=${currentYear}`
+        );
 
         // console.log("API 응답 데이터:", response.data);
 
@@ -54,7 +59,7 @@ const VoteProjectList = ({
     };
 
     fetchData();
-  }, [currentYear]);
+  }, [currentYear, currentSemester]);
 
   return (
     <div className={styles.project_list_form}>
@@ -72,7 +77,7 @@ const VoteProjectList = ({
               }
             >
               <div className={styles.inform_box}>
-                <div style={{ fontSize: 15, position: "absolute", zIndex: 2}}>{index + 1}</div>
+                <div style={{ fontSize: 15, position: "absolute", zIndex: 2 }}>{index + 1}</div>
                 {project.thumbnail && (
                   <div className={styles.project_thumbnail}>
                     <img
