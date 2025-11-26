@@ -275,6 +275,9 @@ const ManageVotePage = () => {
 
     const EndedView = ({ isResultPublic, handleSetPublicStatus }) => {
 
+        const publicBtnClass = isResultPublic ? styles.publicBtnActive : styles.publicBtn;
+        const privateBtnClass = isResultPublic ? styles.publicBtn : styles.publicBtnActive;
+
         return (
             <div className={styles.underBox}>
                 <div className={styles.resultTitle}>투표 결과</div>
@@ -315,14 +318,14 @@ const ManageVotePage = () => {
 
                     <div className={styles.publicBtns}>
                         <button
-                            className={isResultPublic ? styles.publicBtnDisable : styles.publicBtn}
+                            className={publicBtnClass}
                             onClick={() => handleSetPublicStatus(true)}
                             disabled={isResultPublic}
                         >
                             공개
                         </button>
                         <button
-                            className={isResultPublic ? styles.publicBtn : styles.publicBtnDisable}
+                            className={privateBtnClass}
                             onClick={() => handleSetPublicStatus(false)}
                             disabled={!isResultPublic}
                         >
