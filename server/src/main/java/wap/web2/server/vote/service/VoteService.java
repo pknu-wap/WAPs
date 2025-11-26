@@ -18,6 +18,8 @@ import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.vote.dto.ProjectVoteCount;
 import wap.web2.server.vote.dto.VoteInfoResponse;
+import wap.web2.server.vote.dto.VoteParticipants;
+import wap.web2.server.vote.dto.VoteParticipantsResponse;
 import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
 import wap.web2.server.vote.entity.Ballot;
@@ -92,6 +94,14 @@ public class VoteService {
         long totalVotes = calculateTotalVotes(latestVotes);
 
         return latestVotes.stream().map(lv -> VoteResultResponse.of(lv, totalVotes)).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<VoteParticipantsResponse> getParticipants(String semester) {
+        List<VoteParticipants> participants
+                = voteMetaRepository.findParticipantsProjectBySemester(semester);
+
+        return participants.stream().map(VoteParticipantsResponse::from).toList();
     }
 
 

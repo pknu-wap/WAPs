@@ -17,6 +17,7 @@ import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.util.Semester;
 import wap.web2.server.util.SemesterGenerator;
 import wap.web2.server.vote.dto.VoteInfoResponse;
+import wap.web2.server.vote.dto.VoteParticipantsResponse;
 import wap.web2.server.vote.dto.VoteRequest;
 import wap.web2.server.vote.dto.VoteResultResponse;
 import wap.web2.server.vote.service.VoteService;
@@ -27,8 +28,6 @@ import wap.web2.server.vote.service.VoteService;
 public class VoteController {
 
     private final VoteService voteService;
-
-    // TODO: Vote자체를 생성하는 api 개발 필요
 
     @PostMapping
     public ResponseEntity<?> voteProjects(@CurrentUser UserPrincipal userPrincipal,
@@ -48,6 +47,12 @@ public class VoteController {
         }
     }
 
+    @GetMapping("/{semester}/projects")
+    @Operation(summary = "투표에 참여하는 프로젝트 리스트", description = "특정 학기 투표에 참여하는 프로젝트 리스트를 가져옵니다.")
+    public ResponseEntity<?> getVoteParticipants(@PathVariable("semester") @Semester String semester) {
+        List<VoteParticipantsResponse> participants = voteService.getParticipants(semester);
+        return ResponseEntity.ok(participants);
+    }
 
     @GetMapping("/now")
     @Operation(summary = "현재 학기 투표 상태 보기", description = "현재 학기에 '열린 투표'인지, '내가 투표했는지', '닫힌 투표인지'를 반환한다")
