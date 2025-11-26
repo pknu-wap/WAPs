@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../App.css";
 import "../assets/Contentbox.css";
-import LoadingImage from "../assets/img/WAP_white_NoBG.png";
+import LoadingPage from "./LoadingPage";
 
 /* 알약 버튼 목록 (UI 전용) */
 const TYPE_OPTIONS = [
@@ -62,6 +62,7 @@ const ContentBox = () => {
 
     const fetchData = async () => {
       try {
+
         const response = await axios.get(apiUrl, {
           params: {
             semester: semesterFilter.semester,
@@ -114,19 +115,7 @@ const ContentBox = () => {
   };
 
   if (isLoading) {
-    return (
-      <img
-        src={LoadingImage}
-        alt="Loading"
-        style={{
-          width: "150px",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-    );
+    return <LoadingPage />; // ✅ 완전 교체
   }
 
   return (

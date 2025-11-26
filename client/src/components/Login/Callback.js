@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import LoadingPage from "../../components/LoadingPage";
 
 const Callback = () => {
   const navigate = useNavigate();
@@ -75,12 +76,7 @@ const Callback = () => {
     }
   }, [navigate]);
 
-  return (
-    <div>
-      <h2>로그인 처리 중...</h2>
-      <p>잠시만 기다려주세요.</p>
-    </div>
-  );
+  return <LoadingPage />;
 };
 
 export default Callback;

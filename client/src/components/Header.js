@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Menu from "./Menu";
+import wapsLogo from "../assets/img/waps_logo.png";
 
 const Header = () => {
   const [userName, setUserName] = useState(Cookies.get("userName") || null);
@@ -40,9 +41,15 @@ const Header = () => {
               onClick={() => navigate("/ProjectPage")}
               style={{ cursor: "pointer" }}
             >
-              WAPs
+              <img
+                src={wapsLogo}
+                alt="WAPs"
+                className="waplogo"
+                onClick={() => navigate("/ProjectPage")}
+                style={{ cursor: "pointer", height: "15px" }} // 크기 조절
+              />
             </p>
-          </div>
+          </div> 
 
           {/* 아이콘은 CSS에서 absolute로 오른쪽 고정 */}
           <div className="menu-icon" onClick={toggleMenu}>

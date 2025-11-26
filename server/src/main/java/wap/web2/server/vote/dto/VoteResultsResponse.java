@@ -10,4 +10,5 @@ public record VoteResultsResponse(
     public static VoteResultsResponse of(String semester, List<VoteResultResponse> results) {
         return new VoteResultsResponse(semester, results);
     }
+
 }

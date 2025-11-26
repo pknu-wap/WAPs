@@ -29,7 +29,6 @@ import wap.web2.server.member.entity.Role;
 public class Ballot {
 
     @Id
-    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
