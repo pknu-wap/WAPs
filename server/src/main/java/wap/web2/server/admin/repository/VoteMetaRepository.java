@@ -50,4 +50,6 @@ public interface VoteMetaRepository extends JpaRepository<VoteMeta, Long> {
     @Query("UPDATE VoteMeta v SET v.isResultPublic = :isPublic where v.semester = :semester")
     void updateResultVisibility(@Param("isPublic") boolean isPublic, @Param("semester") String semester);
 
+    @Query("SELECT v.isResultPublic FROM VoteMeta v WHERE v.semester = :semester")
+    Optional<Boolean> findIsResultPublicBySemester(String semester);
 }
