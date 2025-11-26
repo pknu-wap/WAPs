@@ -9,8 +9,8 @@ const ManageVotePage = () => {
     const [semester, setSemester] = useState(null); // 현재 학기
     const [isProcessing, setIsProcessing] = useState(false); // 열기,닫기 버튼 누를 때 로딩 상태
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(""); // 투표 결과
+    const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+    const [error, setError] = useState(""); // 에러 상태
 
     const [voteResult, setVoteResult] = useState([]); // 투표 결과
     const [isResultPublic, setIsResultPublic] = useState(false) // 투표 결과 공개 여부
@@ -152,6 +152,16 @@ const ManageVotePage = () => {
         setIsModalOpen(true);
     };
 
+    // 투표 결과 공개 여부 조회 함수
+    const fetchResultVisibility = async () => {
+        if (!semester) return;
+        try {
+            const response = await apiClient.get(`/admin/vote/${semester}/results/visibility`);
+            setIsResultPublic(response.data.isPublic || false);
+        } catch (e) {
+            setError("투표 공개 상태 조회 실패");
+        }
+    }
 
     // ENDED 상태일 때 투표 결과 요청하기
     useEffect(() => {
@@ -165,8 +175,10 @@ const ManageVotePage = () => {
                 setError("투표 결과 조회 실패");
             }
         };
+        fetchResultVisibility();
         fetchVoteResult();
     }, [voteStatus, semester]);
+
 
     // 투표 결과 공개 여부 핸들러
     const handleSetPublicStatus = async (isPublic) => {
@@ -182,6 +194,7 @@ const ManageVotePage = () => {
                     }
                 }
             );
+            // 서버 요청 성공 후 로컬 상태 업데이
             setIsResultPublic(isPublic);
         } catch {
             setError("투표 공개 상태 변경 실패");
