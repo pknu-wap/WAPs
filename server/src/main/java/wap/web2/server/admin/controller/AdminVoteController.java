@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.admin.dto.request.VoteParticipants;
 import wap.web2.server.admin.dto.response.AdminVoteResultResponse;
+import wap.web2.server.admin.dto.response.VoteResultsVisibility;
 import wap.web2.server.admin.dto.response.VoteStatusResponse;
 import wap.web2.server.admin.service.AdminVoteService;
 import wap.web2.server.security.core.CurrentUser;
@@ -64,6 +65,13 @@ public class AdminVoteController {
     @Operation(summary = "실시간 투표 결과 확인", description = "진행 중인 투표의 실시간 현황을 확인합니다.")
     public ResponseEntity<?> getRealTimeVoteResult(@PathVariable("semester") @Semester String semester) {
         List<AdminVoteResultResponse> response = adminVoteService.getVoteResult(semester);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{semester}/results/visibility")
+    @Operation(summary = "투표 결과 공개여부 확인", description = "투표 결과가 공개인지 비공개인지 반환합니다.")
+    public ResponseEntity<?> getVoteResultVisibility(@PathVariable("semester") @Semester String semester) {
+        VoteResultsVisibility response = adminVoteService.getVisibility(semester);
         return ResponseEntity.ok(response);
     }
 

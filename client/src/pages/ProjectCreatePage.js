@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import Menu from "../components/Menu";
 import ProjectFormNew from "../components/ProjectCreation/ProjectFormNew";
 import FloatingButton from "../components/FloatingButton";
+import LoadingPage from "../components/LoadingPage";
 // 프로젝트 생성 및 수정 페이지 (조건분 렌더링)
 
 const ProjectPage = () => {
@@ -98,7 +99,7 @@ const ProjectPage = () => {
     }
   };
 
-  if (isEditMode && isLoading) return <div>로딩 중...</div>;
+  if (isEditMode && isLoading) return <LoadingPage/>;
 
   return (
     <div>
