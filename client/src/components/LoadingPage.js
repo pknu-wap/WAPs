@@ -9,8 +9,7 @@ function LoadingPage() {
         <img
           src={wapsLogo}
           alt="WAPs"
-          className="waplogo"
-          onClick={() => navigate("/ProjectPage")}
+          className="loadinglogo"
           style={{ cursor: "pointer", height: "50px" }} // 크기 조절
         />
       </div>

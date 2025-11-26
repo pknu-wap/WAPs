@@ -8,7 +8,7 @@ import dogImage from "../../assets/img/dog.png";
 import EditButton from "./EditButton";
 import Comments from "./Comments/Comments";
 import CommentsList from "./Comments/CommentsList";
-import LoadingImage from "../../assets/img/WAP_white_NoBG.png";
+import LoadingPage from "../../components/LoadingPage";
 
 const ProjectDetailForm = () => {
   const { projectId } = useParams();
@@ -89,17 +89,7 @@ const ProjectDetailForm = () => {
 
   if (!projectData || !isDataLoaded) {
     return (
-      <img
-        src={LoadingImage}
-        style={{
-          width: "150px",
-          //페이지 정중앙에 위치
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
+      <LoadingPage />
     );
   }
 

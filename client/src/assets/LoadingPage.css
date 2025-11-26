@@ -1,14 +1,14 @@
-.loadingpage{
-  margin: 0 auto;
-  max-width: 400px;
-  height: 100vh;
-  display: flex; 
+.loadingpage {
+  width: 400px;            
+  height: 100vh;           
+  display: flex;
   flex-direction: column;
-  justify-content: space-between; /* 상하 여백 균등 분배 */
-  isolation: isolate;
-  position: relative;
+  position: fixed;
+  top: 0;
   background: linear-gradient(180deg, #A0AFFF 0%, #B4EDFE 100%);
-  overflow: visible;
+  z-index: 9999;
+  left: 50%;                      /* 화면 중앙에서 시작 */
+  transform: translateX(-50%);  
 }
 
 .loadingpage::after {
@@ -19,7 +19,7 @@
   z-index: -1; /* 배경 뒤로 보냄 */
 }
 
-.waplogo{
+.loadinglogo{
     display: block;           /* 이미지 블록화 */
     margin: auto;             /* 수평 가운데 정렬 */
     align-self: center;       /* 수직 방향에서도 가운데 정렬 */ 
