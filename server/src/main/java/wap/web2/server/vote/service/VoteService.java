@@ -84,8 +84,8 @@ public class VoteService {
     @Transactional(readOnly = true)
     public List<VoteResultResponse> getMostRecentResults() {
         String currentSemester = generateSemester();
-        List<ProjectVoteCount> latestVotes = ballotRepository.findPublicLatestBallots(currentSemester,
-                VoteStatus.ENDED);
+        List<ProjectVoteCount> latestVotes
+                = ballotRepository.findPublicLatestBallots(currentSemester, VoteStatus.ENDED);
 
         if (latestVotes.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 현재까지 투표가 진행된 적이 없습니다.");
@@ -93,7 +93,9 @@ public class VoteService {
 
         long totalVotes = calculateTotalVotes(latestVotes);
 
-        return latestVotes.stream().map(lv -> VoteResultResponse.of(lv, totalVotes)).toList();
+        return latestVotes.stream()
+                .map(lv -> VoteResultResponse.of(lv, totalVotes))
+                .toList();
     }
 
     @Transactional(readOnly = true)
