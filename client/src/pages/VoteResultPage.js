@@ -28,17 +28,29 @@ const VoteResultPage = () => {
   // semesterParam 즉시 파싱 -> 초기값으로 사용
   const defaultFilter = (() => {
     if (!semesterParam) {
-      return { year: currentYear, semester: 1 };
+      return { year: currentYear, semester: 1, open: false };
     }
     const match = semesterParam.match(/^(\d{4})-(\d{2})$/);
     return match
-      ? { year: parseInt(match[1]), semester: parseInt(match[2]) }
-      : { year: currentYear, semester: 1 };
+      ? { year: parseInt(match[1]), semester: parseInt(match[2]), open: false }
+      : { year: currentYear, semester: 1, open: false };
   })();
 
   const [semesterFilter, setSemesterFilter] = useState(defaultFilter);
 
-  // API URL 생성
+  // URL 변경될 때 드롭다운 갱신
+  useEffect(() => {
+    if (!semesterParam) return;
+    const match = semesterParam.match(/^(\d{4})-(\d{2})$/);
+    if (match) {
+      setSemesterFilter({
+        year: parseInt(match[1]),
+        semester: parseInt(match[2]),
+        open: false, // 드롭다운 닫힘
+      });
+    }
+  }, [semesterParam]);
+
   const voteUrl = semesterParam
     ? `${process.env.REACT_APP_API_BASE_URL}/vote/result/${semesterParam}`
     : `${process.env.REACT_APP_API_BASE_URL}/vote/result`;
@@ -60,15 +72,26 @@ const VoteResultPage = () => {
         const voteRes = await axios.get(voteUrl);
         if (!isMounted) return; // 컴포넌트가 언마운트되면 중단
 
-        const voteItems = Array.isArray(voteRes.data)
-          ? voteRes.data
-          : voteRes.data?.projectsResponse || [];
+        const apiSemester = voteRes.data?.semester; // "2025-02"
+        const voteItems = voteRes.data?.results || [];
 
         // 데이터가 비어있으면 공개되지 않은 것으로 간주
         if (!voteItems || voteItems.length === 0) {
           alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
           navigate("/vote/result", { replace: true });
           return;
+        }
+
+        // result의 semester 값으로 dropdown 상태 재설정
+        if (apiSemester) {
+          const m = apiSemester.match(/^(\d{4})-(\d{2})$/);
+          if (m) {
+            setSemesterFilter({
+              year: parseInt(m[1]),
+              semester: parseInt(m[2]),
+              open: false,
+            });
+          }
         }
 
         const sorted = [...voteItems].sort((a, b) => b.voteCount - a.voteCount);
@@ -106,6 +129,7 @@ const VoteResultPage = () => {
 
   const handleSemesterChange = (year, semester) => {
     const formatted = `${year}-${String(semester).padStart(2, "0")}`;
+    setSemesterFilter((prev) => ({ ...prev, open: false }));
     navigate(`/vote/result/${formatted}`);
   };
 
@@ -153,14 +177,14 @@ const VoteResultPage = () => {
               >
                 <div className="filter-dropdown">
                   <button onClick={toggleYearAccordion} className="dropdown-button">
-                    {semesterFilter?.open
+                    {semesterFilter.open
                       ? "년도/학기 ▲"
                       : `${("0" + (semesterFilter.year - 2000)).slice(-2)}년 ${
                           semesterFilter.semester
                         }학기 ▼`}
                   </button>
 
-                  {semesterFilter?.open && (
+                  {semesterFilter.open && (
                     <div className="dropdown-content">
                       {Array.from(
                         { length: currentYear - 2025 + 1 },
@@ -207,7 +231,9 @@ const VoteResultPage = () => {
                     <div className={styles.inform_box}>
                       {project.thumbnail && (
                         <div className={styles.thumbnail_wrap}>
-                          <span className={styles.rank_badge_out}>{displayedRank}</span>
+                          <span className={styles.rank_badge_out}>
+                            {displayedRank}
+                          </span>
                           <div className={styles.project_thumbnail}>
                             <img
                               className={styles.thumbnail_image}
