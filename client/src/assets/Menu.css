@@ -1,6 +1,7 @@
 @font-face {
-  font-family: 'Pretendard-Regular';
-  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
   font-weight: 400;
   font-style: normal;
 }
@@ -30,28 +31,17 @@ body:has(nav.menu) .App-header {
 .menu {
   position: fixed;
   top: 0;
-  left: 50%;
 
-  width: 100vw;              /* 전체 너비 */
-  height: 100vh;    
-   background:
-    linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 20%,
-      #000 42%
-    ),
-    linear-gradient(
-      135deg,
-      #a0aeffcf 0%,
-      #b4edfed1 40%
-    );
-
+  width: 100%; /* 전체 너비 */
+  height: 100vh;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 20%, #000 42%),
+    linear-gradient(135deg, #a0aeffcf 0%, #b4edfed1 40%);
 
   color: #fff;
   z-index: 103;
   padding: 20px;
   box-sizing: border-box;
-  font-family: 'Pretendard-Regular';
+  font-family: "Pretendard-Regular";
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -59,7 +49,7 @@ body:has(nav.menu) .App-header {
 /* ===== 메뉴 컨텐츠 ===== */
 .menu-content {
   padding: 60px 10px 0;
-  font-family: 'Pretendard-Regular';
+  font-family: "Pretendard-Regular";
 }
 
 .welcome-message {
@@ -68,7 +58,7 @@ body:has(nav.menu) .App-header {
   font-weight: 500;
   margin-top: 20px;
   margin-bottom: 1px;
- text-align: center;
+  text-align: center;
 }
 
 .menu-title {
@@ -125,7 +115,6 @@ body:has(nav.menu) .App-header {
   background: rgba(255, 255, 255, 0.1);
 }
 
-
 .menu-item .arrow {
   width: 100px;
   height: 30px;
@@ -134,7 +123,7 @@ body:has(nav.menu) .App-header {
   margin-right: 10px;
   display: inline-flex;
   align-items: center;
-  justify-content: flex-end;  /* 화살표를 오른쪽 정렬 */
+  justify-content: flex-end; /* 화살표를 오른쪽 정렬 */
 }
 
 .menu-item .arrow svg {
