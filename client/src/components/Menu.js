@@ -11,7 +11,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!Cookies.get("authToken"));
   const [userRole, setUserRole] = useState(Cookies.get("userRole") || null);
 
-  // 메뉴 열릴 때 배경 스크롤만 막고, 화면 밀림(shift) 방지
+  // ✅ 메뉴 열릴 때 배경 스크롤만 막고, 화면 밀림(shift) 방지
   useEffect(() => {
     if (!menuOpen) return;
 
@@ -131,7 +131,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
             </div>
 
             <div className="menu-section">
-              <h3 className="section-title">Calendar</h3>
+              <h3 className="section-title">CALENDAR</h3>
               <div className="menu-items">
                 <button
                   className="menu-item"
