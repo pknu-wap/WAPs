@@ -63,7 +63,7 @@ public class VoteMeta {
     private LocalDateTime closedAt;
 
     @Column(nullable = false)
-    private boolean isResultPublic = true;
+    private boolean isResultPublic = false;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(

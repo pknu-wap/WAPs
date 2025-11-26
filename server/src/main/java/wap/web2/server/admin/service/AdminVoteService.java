@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.dto.request.VoteParticipants;
 import wap.web2.server.admin.dto.response.AdminVoteResultResponse;
+import wap.web2.server.admin.dto.response.VoteResultsVisibility;
 import wap.web2.server.admin.dto.response.VoteStatusResponse;
 import wap.web2.server.admin.entity.VoteMeta;
 import wap.web2.server.admin.entity.VoteStatus;
@@ -70,6 +71,13 @@ public class AdminVoteService {
         long totalVotes = calculateTotalVotes(projectVoteCounts);
 
         return projectVoteCounts.stream().map(pvc -> AdminVoteResultResponse.of(pvc, totalVotes)).toList();
+    }
+
+    @Transactional
+    public VoteResultsVisibility getVisibility(String semester) {
+        Boolean isPublic = voteMetaRepository.findIsResultPublicBySemester(semester)
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 투표가 생성되지 않았습니다."));
+        return new VoteResultsVisibility(isPublic);
     }
 
     private long calculateTotalVotes(List<ProjectVoteCount> projectVoteCounts) {
