@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import apiClient from "../../utils/api.js";
+import axios from "axios";
 import styles from "../../assets/ProjectVote.module.css";
 import { getCurrentSemester } from "../../utils/dateUtils";
 
@@ -15,6 +15,7 @@ const VoteProjectList = ({
 
   const currentYear = parseInt(yearStr, 10);
   const currentSemester = parseInt(semesterStr, 10);
+  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=${currentSemester}&projectYear=${currentYear}`;
 
   const handleProjectSelect = (projectId, isVotedUser) => {
     // console.log("클릭됨", projectId);
@@ -39,9 +40,7 @@ const VoteProjectList = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await apiClient.get(
-          `/project/list?semester=${currentSemester}&projectYear=${currentYear}`
-        );
+        const response = await axios.get(apiUrl);
 
         // console.log("API 응답 데이터:", response.data);
 
@@ -59,7 +58,7 @@ const VoteProjectList = ({
     };
 
     fetchData();
-  }, [currentYear, currentSemester]);
+  }, [currentYear, currentSemester, apiUrl]);
 
   return (
     <div className={styles.project_list_form}>
