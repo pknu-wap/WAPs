@@ -83,7 +83,7 @@ management:
     enabled-by-default: false
     web:
       exposure:
-        include: info, health, prometheus
+        include: info, health, prometheus, metrics
     jmx:
       exposure:
         exclude: "*"
@@ -93,4 +93,6 @@ management:
     health:
       enabled: true
     prometheus:
+      enabled: true
+    metrics:
       enabled: true
