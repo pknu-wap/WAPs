@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProjectPage from "./pages/ProjectPage";
 import Login from "./pages/Login";
@@ -29,6 +29,17 @@ import FullScreenLayout from "./components/FullScreenLayout";
 import "./App.css";
 
 function App() {
+  useEffect(() => {
+    const setScreenSize = () => {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    };
+
+    setScreenSize();
+    window.addEventListener("resize", setScreenSize);
+
+    return () => window.removeEventListener("resize", setScreenSize);
+  }, []);
   return (
     <Router>
       <ScrollToTop /> {/* 페이지 전환 시 스크롤 위치 초기화 */}
