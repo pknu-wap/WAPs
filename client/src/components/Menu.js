@@ -15,16 +15,8 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   useEffect(() => {
     if (!menuOpen) return;
 
-    // const scrollbarWidth =
-    //   window.innerWidth - document.documentElement.clientWidth;
-
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
-
-    // // 스크롤바 사라지면서 화면이 밀리는 현상 방지
-    // if (scrollbarWidth > 0) {
-    //   document.body.style.paddingRight = `${scrollbarWidth}px`;
-    // }
 
     return () => {
       document.documentElement.style.overflow = "";
