@@ -74,6 +74,8 @@ ul {
   margin-left: auto;
   margin-right: auto;
   border: 2px;
+  min-height: 100dvh;
+  box-sizing: border-box;
 }
 
 /* 콘텐츠 박스 */
