@@ -45,7 +45,7 @@ body:has(nav.menu) .App-header {
 
   color: #fff;
   z-index: 103;
-  padding: 20px;
+  padding: 20px 20px 100px 20px;
   box-sizing: border-box;
   font-family: "Pretendard-Regular";
   overflow-y: auto;
