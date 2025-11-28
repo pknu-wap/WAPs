@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "../../assets/ProjectVote.module.css";
 import { getCurrentSemester } from "../../utils/dateUtils";
+import apiClient from "../../utils/api";
 
 const VoteProjectList = ({
   // handleProjectSelect,
@@ -15,22 +16,21 @@ const VoteProjectList = ({
 
   const currentYear = parseInt(yearStr, 10);
   const currentSemester = parseInt(semesterStr, 10);
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list?semester=${currentSemester}&projectYear=${currentYear}`;
 
-  const handleProjectSelect = (projectId, isVotedUser) => {
-    // console.log("클릭됨", projectId);
+  const handleProjectSelect = (participants, isVotedUser) => {
+    // console.log("클릭됨", participants);
 
     if (isVotedUser) {
       alert("투표는 변경하실 수 없습니다.");
       return;
     }
-    if (selectedProjects.includes(projectId)) {
+    if (selectedProjects.includes(participants)) {
       // 이미 선택된 프로젝트는 해제
-      setSelectedProjects(selectedProjects.filter((id) => id !== projectId));
+      setSelectedProjects(selectedProjects.filter((id) => id !== participants));
     } else {
       // 선택된 프로젝트가 3개일 때만 추가
       if (selectedProjects.length < 3) {
-        setSelectedProjects([...selectedProjects, projectId]);
+        setSelectedProjects([...selectedProjects, participants]);
       } else {
         alert("3개의 프로젝트만 선택할 수 있습니다."); // 사용자에게 알림
       }
@@ -40,12 +40,12 @@ const VoteProjectList = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(apiUrl);
+        const response = await apiClient.get("/vote/2025-02/projects");
 
         // console.log("API 응답 데이터:", response.data);
 
-        if (Array.isArray(response.data.projectsResponse)) {
-          setProjects(response.data.projectsResponse);
+        if (Array.isArray(response.data)) {
+          setProjects(response.data);
         } else {
           // console.error(
           //   "API 응답의 projectsResponse가 배열이 아닙니다:",
@@ -58,21 +58,21 @@ const VoteProjectList = ({
     };
 
     fetchData();
-  }, [currentYear, currentSemester, apiUrl]);
+  }, [currentYear, currentSemester]);
 
   return (
     <div className={styles.project_list_form}>
       {Array.isArray(projects) && projects.length > 0 ? (
         projects.map((project, index) => {
-          const isSelected = selectedProjects.includes(project.projectId);
+          const isSelected = selectedProjects.includes(project.participants);
 
           return (
             <div
-              key={project.projectId}
+              key={project.participants}
               className={`${styles.project_list_box} ${isSelected ? styles.selected : ""
                 }`}
               onClick={() =>
-                handleProjectSelect(project.projectId, isVotedUser)
+                handleProjectSelect(project.participants, isVotedUser)
               }
             >
               <div className={styles.inform_box}>
