@@ -81,14 +81,18 @@ project:
 management:
   endpoints:
     enabled-by-default: false
+    web:
+      exposure:
+        include: info, health, prometheus, metrics
     jmx:
       exposure:
         exclude: "*"
-    web:
-      exposure:
-        include: info, health
   endpoint:
     info:
       enabled: true
     health:
+      enabled: true
+    prometheus:
+      enabled: true
+    metrics:
       enabled: true

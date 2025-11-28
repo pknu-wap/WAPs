@@ -26,7 +26,7 @@
   margin: 0 auto;
   height: 100%;
   display: flex;
-  justify-content: space-between; /* 로고 ↔ 아이콘 */
+  justify-content: space-between;
   align-items: center;
   padding: 8px 20px 0;
   color: white;
@@ -69,61 +69,13 @@ ul {
 
 /* 본문 컨테이너 */
 .container {
-  background-color: #000; /* 페이지 배경 검정 */
+  background-color: #000;
   max-width: var(--container-max);
   margin-left: auto;
   margin-right: auto;
   border: 2px;
-}
-
-/* ===== 메뉴 래퍼: 위치 지정 제거(전폭 영향 X) ===== */
-.menuContainer {
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* ===== 사이드 메뉴: 화면 고정, 헤더 아래 레이어 ===== */
-.menu {
-  position: fixed;
-  top: 50%; /* 최상단부터 */
-  left: 50%;
-  transform: translate(-50%, -50%); /* 오른쪽에서 열려면 right:0; left:auto */
-  width: 400px;
-  height: 100vh; /* 전체 높이 */
-  background-color: #000;
-  color: white;
-  padding: 10px;
-  z-index: 100; /* 헤더(101)보다 아래 */
-}
-
-.menu-content {
-  margin: 10px;
-}
-
-/* 구분선 */
-.startLine {
-  border: none;
-  border-top: 3px solid #fff;
-}
-.line {
-  border: none;
-  border-top: 0.7px solid #fff;
-}
-
-/* 메뉴 리스트 */
-.menu ul {
-  padding: 0;
-  margin: 0;
-}
-.menu li {
-  margin-right: 40px;
-  color: white;
-  padding: 10px;
-  font-size: x-large;
-  font-weight: 700;
-  font-family: "Inter", sans-serif;
-  cursor: pointer;
-  margin-bottom: 17px;
+  min-height: calc(var(--vh, 1vh) * 100);
+  box-sizing: border-box;
 }
 
 /* 콘텐츠 박스 */

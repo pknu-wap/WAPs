@@ -2,6 +2,9 @@
   font-family: "Pretendard-Regular";
   src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
     format("woff");
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
   font-weight: 400;
   font-style: normal;
 }
@@ -31,22 +34,42 @@ body:has(nav.menu) .App-header {
 .menu {
   position: fixed;
   top: 0;
+  left: 50%;
+  transform: translateX(-50%); /* 정확히 중앙 정렬 */
 
-  width: 100%; /* 전체 너비 */
-  height: 100vh;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 20%, #000 42%),
-    linear-gradient(135deg, #a0aeffcf 0%, #b4edfed1 40%);
+  width: 100%;
+  max-width: var(--container-max, 400px); /* App.css 변수 사용, 없으면 400px */
+  height: calc(var(--vh, 1vh) * 100);
+
+  /* 배경 투명도 제거 및 기본 검정 배경 추가 */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 10%, #000 42%),
+    linear-gradient(135deg, #a0aeff 0%, #b4edfe 40%);
+  background-color: #000;
 
   color: #fff;
   z-index: 103;
-  padding: 20px;
+  padding: 20px 20px 100px 20px;
   box-sizing: border-box;
   font-family: "Pretendard-Regular";
   overflow-y: auto;
   overflow-x: hidden;
+
+  /* 스크롤바 숨기기 */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* ===== 메뉴 컨텐츠 ===== */
+.menu::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== 메뉴 컨테이너 ===== */
+.menuContainer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ===== 메뉴 내부 컨텐츠 ===== */
 .menu-content {
   padding: 60px 10px 0;
   font-family: "Pretendard-Regular";
@@ -70,7 +93,7 @@ body:has(nav.menu) .App-header {
   letter-spacing: 0.5px;
 }
 
-/* ===== 메뉴 섹션 ===== */
+/* ===== 메뉴 섹션 및 아이템 ===== */
 .menu-section {
   margin-bottom: 30px;
 }
@@ -105,6 +128,7 @@ body:has(nav.menu) .App-header {
   text-align: left;
   cursor: pointer;
   transition: background 0.2s;
+  font-family: "Pretendard-Regular";
 }
 
 .menu-item:last-child {
@@ -123,7 +147,7 @@ body:has(nav.menu) .App-header {
   margin-right: 10px;
   display: inline-flex;
   align-items: center;
-  justify-content: flex-end; /* 화살표를 오른쪽 정렬 */
+  justify-content: flex-end;
 }
 
 .menu-item .arrow svg {
@@ -143,6 +167,7 @@ body:has(nav.menu) .App-header {
   text-align: left;
   cursor: pointer;
   transition: opacity 0.2s;
+  font-family: "Pretendard-Regular";
 }
 
 .logout-button:hover {
