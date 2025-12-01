@@ -20,6 +20,7 @@ public class AppProperties {
     public static class Auth {
         private String tokenSecret;
         private long tokenExpirationMsec;
+        private long refreshTokenExpirationMsec;
 
     }
 

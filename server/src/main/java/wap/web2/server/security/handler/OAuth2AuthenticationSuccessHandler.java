@@ -13,7 +13,12 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.member.entity.RefreshToken;
+import wap.web2.server.member.entity.User;
+import wap.web2.server.member.repository.RefreshTokenRepository;
+import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.security.config.AppProperties;
+import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.security.jwt.TokenProvider;
 import wap.web2.server.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import wap.web2.server.util.CookieUtils;
@@ -25,11 +30,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final TokenProvider tokenProvider;
     private final AppProperties appProperties;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         String targetUrl = determineTargetUrl(request, response, authentication);
+        String urlWithToken = addTokenCookiesTo(targetUrl, response, authentication);
 
         if (response.isCommitted()) {
             logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
@@ -37,7 +45,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
 
         clearAuthenticationAttributes(request, response);
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        getRedirectStrategy().sendRedirect(request, response, urlWithToken);
     }
 
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response,
@@ -51,9 +59,22 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                     "Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication");
         }
 
-        String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
+        return redirectUri.orElse(getDefaultTargetUrl());
+    }
 
+    protected String addTokenCookiesTo(String targetUrl, HttpServletResponse response, Authentication authentication) {
         String token = tokenProvider.createToken(authentication);
+        String refreshToken = tokenProvider.createRefreshToken(authentication);
+
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new BadRequestException("User not found"));
+
+        long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpirationMsec();
+        int cookieMaxAge = (int) refreshTokenExpiry / 1000;
+
+        CookieUtils.addCookie(response, "refresh_token", refreshToken, cookieMaxAge);
+        saveNewRefreshToken(user, refreshToken, refreshTokenExpiry);
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)
@@ -65,13 +86,22 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
     }
 
+    private void saveNewRefreshToken(User user, String refreshToken, long refreshTokenExpiry) {
+        RefreshToken newRefreshToken = refreshTokenRepository.findByUser(user)
+                .map(t -> t.update(refreshToken, refreshTokenExpiry))
+                .orElse(RefreshToken.of(user, refreshToken, refreshTokenExpiry));
+
+        refreshTokenRepository.save(newRefreshToken);
+    }
+
     private boolean isAuthorizedRedirectUri(String uri) {
         URI clientRedirectUri = URI.create(uri);
 
         return appProperties.getOauth2().getAuthorizedRedirectUris()
                 .stream()
                 .anyMatch(authorizedRedirectUri -> {
-                    // Only validate host and port. Let the clients use different paths if they want to
+                    // Only validate host and port. Let the clients use different paths if they want
+                    // to
                     URI authorizedURI = URI.create(authorizedRedirectUri);
                     return authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
                             && authorizedURI.getPort() == clientRedirectUri.getPort();
