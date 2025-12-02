@@ -37,11 +37,11 @@ public class AuthService {
         String newAccessToken = tokenProvider.createToken(authentication);
         String newRefreshToken = tokenProvider.createRefreshToken(authentication);
 
-        saveNewRefreshToken(refreshToken, newRefreshToken, authentication);
+        saveNewRefreshToken(refreshToken, newRefreshToken);
         return new Tokens(newAccessToken, newRefreshToken);
     }
 
-    private void saveNewRefreshToken(RefreshToken token, String newRefreshToken, Authentication authentication) {
+    private void saveNewRefreshToken(RefreshToken token, String newRefreshToken) {
         long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpirationMsec();
         token.update(newRefreshToken, refreshTokenExpiry);
         refreshTokenRepository.save(token);
