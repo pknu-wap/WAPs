@@ -11,9 +11,9 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.aws.AwsUtils;
@@ -28,16 +28,12 @@ import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ImageRepository;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.security.core.UserPrincipal;
-import wap.web2.server.security.jwt.TokenProvider;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
-
-    // TODO: Slf4j 때문에 이거 필요없지 않나?
-    private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
@@ -49,8 +45,7 @@ public class ProjectService {
 
     // TODO: 비밀번호 체크 로직이 각 메서드 마다 있음
     // TODO: "비밀번호가 틀렸습니다." 를 반환하면 컨트롤러에서 401 에러를 내보내는데, 유연하지 못하다고 생각됩니다.
-    // TODO: 프로젝트가 먼저 생성되고 Vote랑 연결되는 것이 자연스럽지 않은가?
-    //  현재는 Vote가 먼저 생성되어있어야 project 생성이 가능함
+    @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public String save(ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
@@ -81,22 +76,28 @@ public class ProjectService {
         project.getTeamMembers().forEach(teamMember -> teamMember.updateTeamMember(project));
         project.getImages().forEach(image -> image.updateImage(project));
 
-        logger.info("[INFO ] 프로젝트 등록 시도 : {}", userPrincipal.getName());
-        logger.info("[INFO ] 프로젝트 등록 정보 : {}", request);
+        log.info("[INFO ] 프로젝트 등록 시도 : {}", userPrincipal.getName());
+        log.info("[INFO ] 프로젝트 등록 정보 : {}", request);
         projectRepository.save(project);
-        logger.info("[INFO ] 프로젝트 등록 완료 : {}", userPrincipal.getName());
+        log.info("[INFO ] 프로젝트 등록 완료 : {}", userPrincipal.getName());
 
         return "등록되었습니다.";
     }
 
+    @Cacheable(value = "projectList", key = "#year + '-' + #semester")
+    @Transactional(readOnly = true)
     public List<ProjectInfoResponse> getProjects(Integer year, Integer semester) {
         return projectRepository.findProjectsByYearAndSemesterOrderByProjectIdDesc(year, semester)
-                .stream().map(ProjectInfoResponse::from).toList();
+                .stream()
+                .map(ProjectInfoResponse::from)
+                .toList();
     }
 
     public List<ProjectTemplate> getCurrentProjectRecruits() {
         return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue())
-                .stream().map(ProjectTemplate::from).toList();
+                .stream()
+                .map(ProjectTemplate::from)
+                .toList();
     }
 
     public ProjectDetailsResponse getProjectDetails(Long projectId, UserPrincipal userPrincipal) {
@@ -119,6 +120,7 @@ public class ProjectService {
         return projectDetailsResponse;
     }
 
+    @CacheEvict(value = "projectList", allEntries = true)
     public ProjectDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
         if (userPrincipal == null) {
             throw new IllegalArgumentException();
@@ -137,6 +139,7 @@ public class ProjectService {
         return ProjectDetailsResponse.from(project);
     }
 
+    @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public String update(Long projectId, ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
@@ -180,6 +183,7 @@ public class ProjectService {
         return "수정되었습니다.";
     }
 
+    @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public void delete(Long projectId, UserPrincipal userPrincipal) {
         User user = userRepository.findById(userPrincipal.getId())
@@ -199,7 +203,8 @@ public class ProjectService {
 
         // 이번 학기 모든 프로젝트를 찾아서 내가 주인인 프로젝트가 하나라도 있으면 true
         return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue())
-                .stream().anyMatch(project -> project.isOwner(user));
+                .stream()
+                .anyMatch(project -> project.isOwner(user));
     }
 
 }
