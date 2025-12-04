@@ -11,8 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -29,16 +27,12 @@ import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ImageRepository;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.security.core.UserPrincipal;
-import wap.web2.server.security.jwt.TokenProvider;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
-
-    // TODO: Slf4j 때문에 이거 필요없지 않나?
-    private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
@@ -82,10 +76,10 @@ public class ProjectService {
         project.getTeamMembers().forEach(teamMember -> teamMember.updateTeamMember(project));
         project.getImages().forEach(image -> image.updateImage(project));
 
-        logger.info("[INFO ] 프로젝트 등록 시도 : {}", userPrincipal.getName());
-        logger.info("[INFO ] 프로젝트 등록 정보 : {}", request);
+        log.info("[INFO ] 프로젝트 등록 시도 : {}", userPrincipal.getName());
+        log.info("[INFO ] 프로젝트 등록 정보 : {}", request);
         projectRepository.save(project);
-        logger.info("[INFO ] 프로젝트 등록 완료 : {}", userPrincipal.getName());
+        log.info("[INFO ] 프로젝트 등록 완료 : {}", userPrincipal.getName());
 
         return "등록되었습니다.";
     }
@@ -94,12 +88,16 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public List<ProjectInfoResponse> getProjects(Integer year, Integer semester) {
         return projectRepository.findProjectsByYearAndSemesterOrderByProjectIdDesc(year, semester)
-                .stream().map(ProjectInfoResponse::from).toList();
+                .stream()
+                .map(ProjectInfoResponse::from)
+                .toList();
     }
 
     public List<ProjectTemplate> getCurrentProjectRecruits() {
         return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue())
-                .stream().map(ProjectTemplate::from).toList();
+                .stream()
+                .map(ProjectTemplate::from)
+                .toList();
     }
 
     public ProjectDetailsResponse getProjectDetails(Long projectId, UserPrincipal userPrincipal) {
@@ -202,7 +200,8 @@ public class ProjectService {
 
         // 이번 학기 모든 프로젝트를 찾아서 내가 주인인 프로젝트가 하나라도 있으면 true
         return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue())
-                .stream().anyMatch(project -> project.isOwner(user));
+                .stream()
+                .anyMatch(project -> project.isOwner(user));
     }
 
 }
