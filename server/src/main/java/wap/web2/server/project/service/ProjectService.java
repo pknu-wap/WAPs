@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.aws.AwsUtils;
@@ -89,6 +90,8 @@ public class ProjectService {
         return "등록되었습니다.";
     }
 
+    @Cacheable(value = "projectList", key = "#year + '-' + #semester")
+    @Transactional(readOnly = true)
     public List<ProjectInfoResponse> getProjects(Integer year, Integer semester) {
         return projectRepository.findProjectsByYearAndSemesterOrderByProjectIdDesc(year, semester)
                 .stream().map(ProjectInfoResponse::from).toList();
