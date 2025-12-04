@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.entity.VoteMeta;
@@ -14,7 +15,6 @@ import wap.web2.server.admin.repository.VoteMetaRepository;
 import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.vote.dto.ProjectVoteCount;
 import wap.web2.server.vote.dto.VoteInfoResponse;
@@ -32,7 +32,6 @@ public class VoteService {
 
     private final UserRepository userRepository;
     private final BallotRepository ballotRepository;
-    private final ProjectRepository projectRepository;
     private final VoteMetaRepository voteMetaRepository;
 
     @Transactional
@@ -72,6 +71,7 @@ public class VoteService {
                 .build();
     }
 
+    @Cacheable(value = "voteResults", key = "#semester")
     @Transactional(readOnly = true)
     public VoteResultsResponse getVoteResults(String semester) {
         validateResultVisibility(semester);
@@ -86,6 +86,7 @@ public class VoteService {
         return VoteResultsResponse.of(semester, results);
     }
 
+    @Cacheable(value = "voteResults")
     @Transactional(readOnly = true)
     public VoteResultsResponse getMostRecentResults() {
         String currentSemester = generateSemester();
