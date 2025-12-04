@@ -12,6 +12,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +45,7 @@ public class ProjectService {
 
     // TODO: 비밀번호 체크 로직이 각 메서드 마다 있음
     // TODO: "비밀번호가 틀렸습니다." 를 반환하면 컨트롤러에서 401 에러를 내보내는데, 유연하지 못하다고 생각됩니다.
-    // TODO: 프로젝트가 먼저 생성되고 Vote랑 연결되는 것이 자연스럽지 않은가?
-    //  현재는 Vote가 먼저 생성되어있어야 project 생성이 가능함
+    @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public String save(ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
@@ -120,6 +120,7 @@ public class ProjectService {
         return projectDetailsResponse;
     }
 
+    @CacheEvict(value = "projectList", allEntries = true)
     public ProjectDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
         if (userPrincipal == null) {
             throw new IllegalArgumentException();
@@ -138,6 +139,7 @@ public class ProjectService {
         return ProjectDetailsResponse.from(project);
     }
 
+    @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public String update(Long projectId, ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
@@ -181,6 +183,7 @@ public class ProjectService {
         return "수정되었습니다.";
     }
 
+    @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public void delete(Long projectId, UserPrincipal userPrincipal) {
         User user = userRepository.findById(userPrincipal.getId())
