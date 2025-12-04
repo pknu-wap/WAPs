@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.dto.request.VoteParticipants;
@@ -51,15 +52,16 @@ public class AdminVoteService {
         voteMetaRepository.save(newMeta);
     }
 
+    @CacheEvict(value = "voteResults", allEntries = true)
     @Transactional
     public void closeVote(String semester, Long userId) {
         VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
-                .orElseThrow(
-                        () -> new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 존재하지 않습니다.", semester)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("[ERROR] 현재 학기의 투표가 존재하지 않습니다.")));
 
         voteMeta.close(userId);
     }
 
+    @CacheEvict(value = "voteResults", allEntries = true)
     @Transactional
     public void changeResultStatus(String semester, Boolean status) {
         voteMetaRepository.updateResultVisibility(status, semester);

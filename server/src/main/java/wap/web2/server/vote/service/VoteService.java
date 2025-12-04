@@ -86,7 +86,7 @@ public class VoteService {
         return VoteResultsResponse.of(semester, results);
     }
 
-    @Cacheable(value = "voteResults")
+    @Cacheable(value = "voteResults", key = "'latest'")
     @Transactional(readOnly = true)
     public VoteResultsResponse getMostRecentResults() {
         String currentSemester = generateSemester();
