@@ -47,6 +47,7 @@ app:
   auth:
     tokenSecret: ${JWT_SECKET_KEY}
     tokenExpirationMsec: 86400000
+    refreshTokenExpirationMsec: 1209600000
   #  cors:
   #    allowedOrigins:
   #      - https://wap-projects.netlify.app
