@@ -56,7 +56,7 @@ public class AdminVoteService {
     @Transactional
     public void closeVote(String semester, Long userId) {
         VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("[ERROR] 현재 학기의 투표가 존재하지 않습니다.")));
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 투표가 존재하지 않습니다."));
 
         voteMeta.close(userId);
     }
