@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wap.web2.server.auth.CurrentUser;
 import wap.web2.server.auth.domain.UserPrincipal;
 import wap.web2.server.comment.dto.request.CommentCreateRequest;
 import wap.web2.server.comment.service.CommentService;
+import wap.web2.server.global.security.CurrentUser;
 
 @RestController
 @RequestMapping("/comment")

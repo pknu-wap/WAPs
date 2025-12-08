@@ -1,4 +1,4 @@
-package wap.web2.server.auth.infra.jwt;
+package wap.web2.server.global.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import wap.web2.server.auth.domain.UserPrincipal;
-import wap.web2.server.auth.infra.config.AppProperties;
+import wap.web2.server.global.security.config.AppProperties;
 
 @Service
 public class TokenProvider {

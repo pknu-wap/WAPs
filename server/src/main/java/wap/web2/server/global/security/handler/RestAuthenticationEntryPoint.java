@@ -1,4 +1,4 @@
-package wap.web2.server.auth.infra.handler;
+package wap.web2.server.global.security.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

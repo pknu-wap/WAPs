@@ -1,4 +1,4 @@
-package wap.web2.server.auth.infra.handler;
+package wap.web2.server.global.security.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -13,10 +13,10 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 import wap.web2.server.auth.domain.UserPrincipal;
-import wap.web2.server.auth.infra.config.AppProperties;
-import wap.web2.server.auth.infra.jwt.TokenProvider;
-import wap.web2.server.auth.infra.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.global.security.config.AppProperties;
+import wap.web2.server.global.security.jwt.TokenProvider;
+import wap.web2.server.global.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import wap.web2.server.member.entity.RefreshToken;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.RefreshTokenRepository;

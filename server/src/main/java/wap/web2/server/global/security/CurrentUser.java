@@ -1,4 +1,4 @@
-package wap.web2.server.auth;
+package wap.web2.server.global.security;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -1,4 +1,4 @@
-package wap.web2.server.auth.infra;
+package wap.web2.server.global.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
