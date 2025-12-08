@@ -16,7 +16,7 @@ import wap.web2.server.admin.dto.response.AdminVoteResultResponse;
 import wap.web2.server.admin.dto.response.VoteResultsVisibility;
 import wap.web2.server.admin.dto.response.VoteStatusResponse;
 import wap.web2.server.admin.service.AdminVoteService;
-import wap.web2.server.auth.domain.UserPrincipal;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.global.security.CurrentUser;
 import wap.web2.server.util.Semester;
 

@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.entity.VoteMeta;
 import wap.web2.server.admin.entity.VoteStatus;
 import wap.web2.server.admin.repository.VoteMetaRepository;
-import wap.web2.server.auth.domain.UserPrincipal;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;

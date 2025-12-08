@@ -16,7 +16,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wap.web2.server.auth.domain.UserPrincipal;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.aws.AwsUtils;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.member.entity.User;

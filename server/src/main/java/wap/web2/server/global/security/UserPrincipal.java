@@ -1,4 +1,4 @@
-package wap.web2.server.auth.domain;
+package wap.web2.server.global.security;
 
 import java.util.Collection;
 import java.util.Collections;

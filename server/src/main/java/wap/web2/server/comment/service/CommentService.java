@@ -3,7 +3,7 @@ package wap.web2.server.comment.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wap.web2.server.auth.domain.UserPrincipal;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.comment.dto.request.CommentCreateRequest;
 import wap.web2.server.comment.entity.Comment;
 import wap.web2.server.comment.repository.CommentRepository;
