@@ -6,14 +6,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.auth.domain.RefreshToken;
 import wap.web2.server.auth.domain.Tokens;
-import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.global.security.config.AppProperties;
 import wap.web2.server.global.security.jwt.TokenProvider;
-import wap.web2.server.member.entity.RefreshToken;
 import wap.web2.server.member.entity.User;
-import wap.web2.server.member.repository.RefreshTokenRepository;
+import wap.web2.server.member.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +21,7 @@ public class AuthService {
 
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserRepository userRepository;
     private final AppProperties appProperties;
 
     @Transactional
@@ -29,8 +30,12 @@ public class AuthService {
             throw new BadRequestException("Invalid Refresh Token");
         }
 
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new BadRequestException("Refresh Token not found"));
+        RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElse(null);
+
+        if (refreshToken == null) {
+            handleTokenTheft(token);
+            throw new BadRequestException("Refresh Token reuse detected");
+        }
 
         validateToken(refreshToken);
         Authentication authentication = createAuthentication(refreshToken);
@@ -40,6 +45,14 @@ public class AuthService {
 
         saveNewRefreshToken(refreshToken, newRefreshToken);
         return new Tokens(newAccessToken, newRefreshToken);
+    }
+
+    private void handleTokenTheft(String token) {
+        Long userId = tokenProvider.getUserIdFromToken(token);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("User not found"));
+
+        refreshTokenRepository.deleteByUser(user);
     }
 
     private void saveNewRefreshToken(RefreshToken token, String newRefreshToken) {

@@ -12,14 +12,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
-import wap.web2.server.global.security.UserPrincipal;
+import wap.web2.server.auth.RefreshTokenRepository;
+import wap.web2.server.auth.domain.RefreshToken;
 import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.global.security.config.AppProperties;
 import wap.web2.server.global.security.jwt.TokenProvider;
 import wap.web2.server.global.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
-import wap.web2.server.member.entity.RefreshToken;
 import wap.web2.server.member.entity.User;
-import wap.web2.server.member.repository.RefreshTokenRepository;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.util.CookieUtils;
 
