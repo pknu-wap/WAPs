@@ -1,4 +1,4 @@
-package wap.web2.server.security.oauth2;
+package wap.web2.server.global.security.oauth2;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -10,14 +10,14 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.exception.OAuth2AuthenticationProcessingException;
+import wap.web2.server.global.security.oauth2.info.OAuth2UserInfo;
+import wap.web2.server.global.security.oauth2.info.OAuth2UserInfoFactory;
 import wap.web2.server.member.entity.AuthProvider;
 import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.security.core.UserPrincipal;
-import wap.web2.server.security.oauth2.attributes.OAuth2UserInfo;
-import wap.web2.server.security.oauth2.attributes.OAuth2UserInfoFactory;
 
 @Service
 @RequiredArgsConstructor

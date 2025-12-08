@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import wap.web2.server.global.security.UserPrincipal;
+import wap.web2.server.global.security.CurrentUser;
 import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
 import wap.web2.server.project.dto.response.ProjectsResponse;
 import wap.web2.server.project.service.ProjectService;
-import wap.web2.server.security.core.CurrentUser;
-import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.teambuild.service.ApplyService;
 
 @RestController

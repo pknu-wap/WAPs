@@ -1,4 +1,4 @@
-package wap.web2.server.auth.payload;
+package wap.web2.server.auth.dto;
 
 import lombok.Getter;
 import lombok.Setter;

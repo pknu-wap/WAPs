@@ -1,4 +1,4 @@
-package wap.web2.server.security.oauth2.attributes;
+package wap.web2.server.global.security.oauth2.info;
 
 import java.util.Map;
 

@@ -16,6 +16,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.aws.AwsUtils;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.member.entity.User;
@@ -27,7 +28,6 @@ import wap.web2.server.project.entity.Image;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ImageRepository;
 import wap.web2.server.project.repository.ProjectRepository;
-import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 
 @Slf4j

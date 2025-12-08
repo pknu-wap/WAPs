@@ -1,4 +1,4 @@
-package wap.web2.server.security.jwt;
+package wap.web2.server.global.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import wap.web2.server.security.core.CustomUserDetailsService;
+import wap.web2.server.global.security.CustomUserDetailsService;
 
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
