@@ -1,4 +1,4 @@
-package wap.web2.server.auth.payload;
+package wap.web2.server.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -8,13 +8,9 @@ import lombok.Setter;
 /**
  * Created by rajeevkumarsingh on 02/08/17.
  */
-
 @Getter
 @Setter
-public class SignUpRequest {
-
-    @NotBlank
-    private String name;
+public class LoginRequest {
 
     @Email
     @NotBlank

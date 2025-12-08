@@ -6,13 +6,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wap.web2.server.auth.domain.Tokens;
+import wap.web2.server.auth.domain.UserPrincipal;
+import wap.web2.server.auth.infra.config.AppProperties;
+import wap.web2.server.auth.infra.jwt.TokenProvider;
 import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.member.entity.RefreshToken;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.RefreshTokenRepository;
-import wap.web2.server.security.config.AppProperties;
-import wap.web2.server.security.core.UserPrincipal;
-import wap.web2.server.security.jwt.TokenProvider;
 
 @Service
 @RequiredArgsConstructor

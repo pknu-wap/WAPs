@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wap.web2.server.auth.CurrentUser;
+import wap.web2.server.auth.domain.UserPrincipal;
 import wap.web2.server.member.dto.UserResponse;
 import wap.web2.server.member.dto.UserRoleResponse;
 import wap.web2.server.member.dto.UserVoteResponse;
 import wap.web2.server.member.service.UserService;
-import wap.web2.server.security.core.CurrentUser;
-import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.util.Semester;
 
 @RestController

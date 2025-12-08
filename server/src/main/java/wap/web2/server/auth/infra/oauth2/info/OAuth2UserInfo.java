@@ -1,4 +1,4 @@
-package wap.web2.server.security.oauth2.attributes;
+package wap.web2.server.auth.infra.oauth2.info;
 
 import java.util.Map;
 import lombok.Getter;

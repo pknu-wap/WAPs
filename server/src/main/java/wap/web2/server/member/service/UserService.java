@@ -3,6 +3,7 @@ package wap.web2.server.member.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import wap.web2.server.auth.domain.UserPrincipal;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.member.dto.UserResponse;
 import wap.web2.server.member.dto.UserRoleResponse;
@@ -10,7 +11,6 @@ import wap.web2.server.member.dto.UserVoteResponse;
 import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
-import wap.web2.server.security.core.UserPrincipal;
 import wap.web2.server.vote.repository.BallotRepository;
 
 @Service

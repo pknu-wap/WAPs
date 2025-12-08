@@ -1,4 +1,4 @@
-package wap.web2.server.security.config;
+package wap.web2.server.auth.infra.config;
 
 import java.util.ArrayList;
 import java.util.List;

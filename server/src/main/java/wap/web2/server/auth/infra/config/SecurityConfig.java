@@ -1,4 +1,4 @@
-package wap.web2.server.security.config;
+package wap.web2.server.auth.infra.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -21,13 +21,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import wap.web2.server.security.core.CustomUserDetailsService;
-import wap.web2.server.security.handler.OAuth2AuthenticationFailureHandler;
-import wap.web2.server.security.handler.OAuth2AuthenticationSuccessHandler;
-import wap.web2.server.security.handler.RestAuthenticationEntryPoint;
-import wap.web2.server.security.jwt.TokenAuthenticationFilter;
-import wap.web2.server.security.oauth2.CustomOAuth2UserService;
-import wap.web2.server.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import wap.web2.server.auth.infra.CustomUserDetailsService;
+import wap.web2.server.auth.infra.handler.OAuth2AuthenticationFailureHandler;
+import wap.web2.server.auth.infra.handler.OAuth2AuthenticationSuccessHandler;
+import wap.web2.server.auth.infra.handler.RestAuthenticationEntryPoint;
+import wap.web2.server.auth.infra.jwt.TokenAuthenticationFilter;
+import wap.web2.server.auth.infra.oauth2.CustomOAuth2UserService;
+import wap.web2.server.auth.infra.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 
 @Configuration
 @EnableWebSecurity
