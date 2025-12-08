@@ -62,7 +62,8 @@ public class AuthService {
     }
 
     private Authentication createAuthentication(RefreshToken token) {
-        User user = token.getUser();
+        User user = userRepository.findById(token.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         UserPrincipal userPrincipal = UserPrincipal.create(user);
         return new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
     }
