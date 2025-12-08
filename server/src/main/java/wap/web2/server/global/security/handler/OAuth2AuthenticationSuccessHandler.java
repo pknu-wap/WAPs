@@ -19,6 +19,7 @@ import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.global.security.config.AppProperties;
 import wap.web2.server.global.security.jwt.TokenProvider;
 import wap.web2.server.global.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.util.CookieUtils;
 
@@ -66,17 +67,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String refreshToken = tokenProvider.createRefreshToken(authentication);
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
-        Long userId = userPrincipal.getId();
-        if (!userRepository.existsById(userId)) {
-            throw new BadRequestException("User not found");
-        }
+        User user = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new BadRequestException("User not found"));
 
         long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpirationMsec();
         int cookieMaxAge = (int) refreshTokenExpiry / 1000;
 
         CookieUtils.addCookie(response, "refresh_token", refreshToken, cookieMaxAge);
-        saveNewRefreshToken(userId, refreshToken, refreshTokenExpiry);
+        saveNewRefreshToken(user, refreshToken, refreshTokenExpiry);
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)
@@ -88,10 +86,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
     }
 
-    private void saveNewRefreshToken(Long userId, String refreshToken, long refreshTokenExpiry) {
-        RefreshToken newRefreshToken = refreshTokenRepository.findByUserId(userId)
+    private void saveNewRefreshToken(User user, String refreshToken, long refreshTokenExpiry) {
+        RefreshToken newRefreshToken = refreshTokenRepository.findByUser(user)
                 .map(t -> t.update(refreshToken, refreshTokenExpiry))
-                .orElse(RefreshToken.of(userId, refreshToken, refreshTokenExpiry));
+                .orElse(RefreshToken.of(user, refreshToken, refreshTokenExpiry));
 
         refreshTokenRepository.save(newRefreshToken);
     }
