@@ -1,4 +1,4 @@
-package wap.web2.server.member.entity;
+package wap.web2.server.auth.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +13,7 @@ import java.time.Instant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import wap.web2.server.member.entity.User;
 
 @Getter
 @Setter
