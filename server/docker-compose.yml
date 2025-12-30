@@ -15,7 +15,7 @@ services:
       DB_USER: ${DB_USER:-waps}
       DB_PASSWORD: ${DB_PASSWORD:-waps1234}
       # JWT
-      JWT_SECKET_KEY: ${JWT_SECKET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       # OAuth2
       KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY}
       SERVER_URL: ${SERVER_URL:-http://localhost:8080}
@@ -46,7 +46,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5
