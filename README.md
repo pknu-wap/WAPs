@@ -41,7 +41,7 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
 https://waps.im
 
 
-## 👤 2025-2 참여 인원
+## 👤 참여 인원 (now.)
 <table>
   <tr>
     <td align="center">
@@ -55,6 +55,11 @@ https://waps.im
         <a href="https://github.com/g0rnn" title="Code"><b>g0rnn</b></a>
     </td>
     <td align="center">
+       <img src="https://github.com/squareCaaat.png" width="120px;"/>   
+        <br />
+        <a href="https://github.com/squareCaaat" title="Code"><b>squareCaaat</b></a>
+    </td>
+    <td align="center">
        <img src="https://github.com/daimlee.png" width="120px;"/>   
         <br />
         <a href="https://github.com/daimlee" title="Code"><b>daimlee</b></a>
@@ -65,11 +70,6 @@ https://waps.im
         <a href="https://github.com/SH-MooDy" title="Code"><b>SH-MooDy</b></a>
     </td>
     <td align="center">
-       <img src="https://github.com/2siyeon.png" width="120px;"/>   
-        <br />
-        <a href="https://github.com/2siyeon" title="Code"><b>2siyeon</b></a>
-    </td>
-    <td align="center">
         <img src="https://github.com/rlaexram.png" width="120px;"/> 
         <br />
         <a href="https://github.com/rlaexram" title="Code"><b>rlaexram</b></a>
@@ -78,17 +78,42 @@ https://waps.im
   <tr>
     <td align="center"><b>조강래</b></td>
     <td align="center"><b>김균호</b></td>
+    <td align="center"><b>윤회성</b></td>
     <td align="center"><b>이수빈</b></td>
     <td align="center"><b>이승훈</b></td>
-    <td align="center"><b>이시연</b></td>
     <td align="center"><b>김예람</b></td>
   </tr>
   <tr>
     <td align="center"><b>BE</b></td>
     <td align="center"><b>BE</b></td>
-    <td align="center"><b>FE</b></td>
+    <td align="center"><b>BE</b></td>
     <td align="center"><b>FE</b></td>
     <td align="center"><b>FE</b></td>
     <td align="center"><b>DE</b></td>
   </tr>
 </table>
+
+### 👤 참여인원 (prev.)
+<table>
+  <tr>
+    <td align="center">
+       <img src="https://github.com/2siyeon.png" width="120px;"/>   
+        <br />
+        <a href="https://github.com/2siyeon" title="Code"><b>2siyeon</b></a>
+    </td>
+    <td align="center">
+       <img src="https://github.com/seizethedayunhui.png" width="120px;"/>   
+        <br />
+        <a href="https://github.com/seizethedayunhui" title="Code"><b>seizethedayunhui</b></a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><b>이시연</b></td>
+    <td align="center"><b>김윤희</b></td>
+  </tr>
+  <tr>
+    <td align="center"><b>FE</b></td>
+    <td align="center"><b>FE</b></td>
+  </tr>
+</table>
+ 
