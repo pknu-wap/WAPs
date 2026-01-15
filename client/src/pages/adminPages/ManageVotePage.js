@@ -57,7 +57,7 @@ const ManageVotePage = () => {
                         semester: semester.split("-")[1]
                     }
                 });
-                setProjects(response.data.projectsResponse);
+                setProjects(response.data.projectsResponse || []);
             } catch (e) {
                 setError("프로젝트 목록 조회 실패");
             }
@@ -67,7 +67,7 @@ const ManageVotePage = () => {
 
     // 프젝목록을 모두 저장
     useEffect(() => {
-        if (projects.length > 0) {
+        if (projects && projects.length > 0) {
             setSelectedProjects(projects.map(p => p.projectId));
         }
     }, [projects]);
