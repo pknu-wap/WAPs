@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ProjectPage from "./pages/ProjectPage";
 import Login from "./pages/Login";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
@@ -76,6 +76,7 @@ function App() {
             element={<AdminRoute requireRole="ROLE_ADMIN" />}
           >
             <Route element={<AdminPageLayout />}>
+              <Route index element={<Navigate to="vote" replace />}></Route>
               <Route path="vote" element={<ManageVotePage />} />
               <Route path="teambuild" element={<ManageTeamBuildPage />} />
               <Route path="permission" element={<ManagePermissionPage />} />
@@ -85,7 +86,7 @@ function App() {
 
         </Route>
       </Routes>
-    </Router >
+    </Router>
   );
 }
 
