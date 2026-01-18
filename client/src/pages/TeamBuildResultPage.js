@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import FloatingButton from "../components/FloatingButton";
-import apiClient from "../utils/api";
+import apiClient from "../api/client";
 import styles from "../assets/TeamBuildResult.module.css";
 import LoadingPage from "../components/LoadingPage";
 

@@ -4,7 +4,7 @@ import styles from "../../assets/ProjectVote.module.css";
 import sub_styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import VoteProjectList from "./VoteProjectList";
 import { getCurrentSemester } from "../../utils/dateUtils";
-import apiClient from "../../utils/api";
+import apiClient from "../../api/client";
 
 const VoteForm = ({ isVotedUser }) => {
   const navigate = useNavigate();

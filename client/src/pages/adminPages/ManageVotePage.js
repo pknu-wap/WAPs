@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "../../assets/Admin/ManageVote.module.css";
-import apiClient from "../../utils/api";
+import apiClient from "../../api/client";
 import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
 
