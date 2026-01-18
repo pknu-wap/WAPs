@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import styles from "../../assets/Admin/ManageVote.module.css";
-import apiClient from "../../api/client";
+import { adminVoteApi } from "../../api/admin/vote";
+import { projectApi } from "../../api/public/project";
 import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
-
 const ManageVotePage = () => {
     const [voteStatus, setVoteStatus] = useState(""); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
     const [semester, setSemester] = useState(null); // 현재 학기
@@ -29,12 +29,8 @@ const ManageVotePage = () => {
 
         const fetchVoteStart = async () => {
             try {
-                const response = await apiClient.get("/admin/vote/status", {
-                    params: {
-                        semester: semester
-                    }
-                });
-                setVoteStatus(response.data.status);
+                const data = await adminVoteApi.getStatus(semester);
+                setVoteStatus(data.status);
             } catch (e) {
                 setError("투표 상태 조회 실패");
             } finally {
@@ -51,13 +47,8 @@ const ManageVotePage = () => {
 
         const fetchProjects = async () => {
             try {
-                const response = await apiClient.get("/project/list", {
-                    params: {
-                        projectYear: semester.split("-")[0],
-                        semester: semester.split("-")[1]
-                    }
-                });
-                setProjects(response.data.projectsResponse || []);
+                const data = await projectApi.getProjectList(semester.split("-")[0], semester.split("-")[1]);
+                setProjects(data.projectsResponse || []);
             } catch (e) {
                 setError("프로젝트 목록 조회 실패");
             }
@@ -78,16 +69,7 @@ const ManageVotePage = () => {
 
         try {
             setIsProcessing(true);
-
-            await apiClient.post("/admin/vote/open",
-                {
-                    projectIds: selectedProjects
-                },
-                {
-                    params: { semester: semester }
-                }
-            );
-
+            await adminVoteApi.open(selectedProjects, semester);
             setVoteStatus("VOTING");
             setIsModalOpen(false);
         } catch (e) {
@@ -105,23 +87,10 @@ const ManageVotePage = () => {
             setIsProcessing(true);
 
             // 투표 종료 요청
-            await apiClient.post(
-                "/admin/vote/closed",
-                {},
-                { params: { semester } }
-            );
+            await adminVoteApi.close(semester);
 
-            // 투표 종료 후, 결과를 자동으로 비공개 상태로 설정 요청
-            await apiClient.post(
-                "/admin/vote/result",
-                {},
-                {
-                    params: {
-                        semester: semester,
-                        status: false
-                    }
-                }
-            );
+            // 투표 종료 후, 결과를 비공개 상태로 설정 
+            await adminVoteApi.setPublicStatus(semester, false);
 
             // 로컬 상태 업데이트
             setVoteStatus("ENDED");
@@ -156,8 +125,8 @@ const ManageVotePage = () => {
     const fetchResultVisibility = async () => {
         if (!semester) return;
         try {
-            const response = await apiClient.get(`/admin/vote/${semester}/results/visibility`);
-            setIsResultPublic(response.data.isPublic || false);
+            const data = await adminVoteApi.getIsVoteOpen(semester);
+            setIsResultPublic(data.isPublic || false);
         } catch (e) {
             setError("투표 공개 상태 조회 실패");
         }
@@ -169,8 +138,8 @@ const ManageVotePage = () => {
 
         const fetchVoteResult = async () => {
             try {
-                const response = await apiClient.get(`/admin/vote/${semester}/results`);
-                setVoteResult(response.data || []); // 투표 결과 저장
+                const data = await adminVoteApi.getResults(semester);
+                setVoteResult(data || []); // 투표 결과 저장
             } catch (e) {
                 setError("투표 결과 조회 실패");
             }
@@ -184,16 +153,8 @@ const ManageVotePage = () => {
     const handleSetPublicStatus = async (isPublic) => {
         if (voteStatus !== "ENDED") return;
         try {
-            await apiClient.post(
-                "/admin/vote/result",
-                {},
-                {
-                    params: {
-                        semester: semester,
-                        status: isPublic
-                    }
-                }
-            );
+            await adminVoteApi.setPublicStatus(semester, isPublic);
+
             // 서버 요청 성공 후 로컬 상태 업데이
             setIsResultPublic(isPublic);
         } catch {
