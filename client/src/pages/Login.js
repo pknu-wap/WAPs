@@ -1,10 +1,9 @@
-// pages/menu/Login.js
-import React from "react";
 import "../assets/Login.css";
+import wapsLogo from "../assets/img/waps_logo.png";
 import img from "../assets/img/pngwing.com.png";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import wapsLogo from "../assets/img/waps_logo.png";
+import { authApi } from "../api/auth";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,7 +14,7 @@ const Login = () => {
       const redirectUri = encodeURIComponent(
         `${window.location.origin}/oauth/callback`
       );
-      const kakaoLoginUrl = `${process.env.REACT_APP_API_BASE_URL}/oauth2/authorization/kakao?redirect_uri=${redirectUri}`;
+      const kakaoLoginUrl = authApi.getKakaoLoginUrl(redirectUri);
       window.location.href = kakaoLoginUrl;
     } catch (error) {
       console.error("Error during Kakao login redirect:", error);
