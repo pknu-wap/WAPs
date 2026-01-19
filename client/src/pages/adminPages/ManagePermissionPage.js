@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import styles from "../../assets/Admin/ManagePermission.module.css";
-import { adminPermissonApi } from "../../api/admin/permission";
+import { adminPermissonApi } from "../../api/admin";
 
 const ROLES = ["ROLE_ADMIN", "ROLE_MEMBER", "ROLE_USER", "ROLE_GUEST"];
 

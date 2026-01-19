@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "../../assets/Admin/ManageVote.module.css";
-import { adminVoteApi } from "../../api/admin/vote";
+import { adminVoteApi } from "../../api/admin";
 import { projectApi } from "../../api/project";
 import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
