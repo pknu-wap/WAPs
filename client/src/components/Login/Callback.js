@@ -26,7 +26,6 @@ const Callback = () => {
         // 로그인 성공 후 이동한 위치 기억용 쿠키 저장
         Cookies.set("lastPage", "/", { expires: 7 }); // 필요하면 "/" 대신 원하는 경로로 수정
 
-        console.log("사용자 정보:", data);
         alert("로그인에 성공했습니다!"); // alert창 없애기
         // navigate("/"); // 또는 "/mystudy", 등 원하는 경로
 

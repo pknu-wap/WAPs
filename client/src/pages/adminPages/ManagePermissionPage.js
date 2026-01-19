@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import styles from "../../assets/Admin/ManagePermission.module.css";
-import apiClient from "../../api/client";
+import { adminPermissonApi } from "../../api/admin/permission";
 
 const ROLES = ["ROLE_ADMIN", "ROLE_MEMBER", "ROLE_USER", "ROLE_GUEST"];
 
@@ -27,16 +27,10 @@ const ManagePermissionPage = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await apiClient.get("/admin/role", {
-                params: {
-                    page: currentPage,
-                    size: currentSize,
-                    ...(selectedRole ? { role: selectedRole } : {})
-                }
-            });
 
-            setUsers(response.data.content || []); // 유저 목록 저장
-            setHasNext(response.data.hasNext || false); // 다음 페이지 여부 저장
+            const data = await adminPermissonApi.getUserRoleList(currentPage, currentSize, selectedRole);
+            setUsers(data.content || []); // 유저 목록 저장
+            setHasNext(data.hasNext || false); // 다음 페이지 여부 저장
         } catch (err) {
             console.error("사용자 권한 목록 불러오기 실패:", err);
             setError("사용자 권한 목록을 불러오는 데 실패했습니다.");
@@ -97,12 +91,9 @@ const ManagePermissionPage = () => {
 
         try {
             // 맵의 키 목록을 array로 변환하여 API 호출
-            const response = await apiClient.patch("/admin/role/user", {
-                newRole: newRole,
-                userIds: Array.from(selectedUserMap.keys())
-            })
+            const data = await adminPermissonApi.updateUserRole(newRole, selectedUserMap);
 
-            alert(`${response.data.updatedUserCount}명의 사용자가 ${response.data.changeTo} 권한으로 변경되었습니다.`);
+            alert(`${data.updatedUserCount}명의 사용자가 ${data.changeTo} 권한으로 변경되었습니다.`);
 
             // 상태 초기화
             setSelectedUserMap(new Map()); // 오른쪽 박스의 목록 초기화

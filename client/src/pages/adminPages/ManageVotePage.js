@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "../../assets/Admin/ManageVote.module.css";
 import { adminVoteApi } from "../../api/admin/vote";
-import { projectApi } from "../../api/public/project";
+import { projectApi } from "../../api/project";
 import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
 const ManageVotePage = () => {

@@ -1,4 +1,4 @@
-import apiClient from "../client";
+import apiClient from "./client";
 
 // 프로젝트 관련 API
 export const projectApi = {
