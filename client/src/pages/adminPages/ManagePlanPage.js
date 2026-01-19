@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "../../assets/Admin/ManagePlan.module.css";
-import apiClient from "../../api/client";
+import { adminPermissonApi, adminPlanApi } from "../../api/admin";
 
 const ManagePlanPage = () => {
   const [title, setTitle] = useState("");
@@ -56,7 +56,7 @@ const ManagePlanPage = () => {
     };
 
     try {
-      await apiClient.post("/admin/calendar/event", requestBody);
+      await adminPlanApi.createEvent(requestBody);
       alert("일정이 성공적으로 발행되었습니다!");
 
       // 입력 초기화

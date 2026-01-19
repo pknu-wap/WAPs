@@ -1,6 +1,6 @@
 import apiClient from "./client";
 
-// 투표 관리 페이지 API
+// 투표 관리 API
 export const adminVoteApi = {
     // 투표 상태 조회
     getStatus: (semester) =>
@@ -27,7 +27,7 @@ export const adminVoteApi = {
         apiClient.post("/admin/vote/result", {}, { params: { semester, status } })
 };
 
-// 권한 관리 관련 API
+// 권한 관리 API
 export const adminPermissonApi = {
     // 사용자 권한 변경
     updateUserRole: (newRole, selectedUserMap) =>
@@ -42,3 +42,9 @@ export const adminPermissonApi = {
         }),
 }
 
+// 일정 관리 API
+export const adminPlanApi = {
+    // 캘린더 이벤트 등록
+    createEvent: (eventBody) =>
+        apiClient.post("/admin/calendar/event", eventBody),
+}
