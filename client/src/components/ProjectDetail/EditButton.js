@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import axios from "axios";
+import { projectApi } from "../../api/project";
 import styles from "../../assets/ProjectDetail/EditButton.module.css";
 
 const EditButton = ({ projectId }) => {
@@ -19,23 +19,12 @@ const EditButton = ({ projectId }) => {
 
     try {
       // 서버에 수정 권한을 확인하는 요청 보내기
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/project/${projectId}/update`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        // 권한이 있는 경우 수정 페이지로 이동
-        navigate(`/project/edit/${projectId}`);
-      }
+      await projectApi.getprojectUpdatePage(projectId);
+      // 권한이 있는 경우 수정 페이지로 이동
+      navigate(`/project/edit/${projectId}`);
     } catch (error) {
       if (error.response && error.response.status === 403) {
         alert("수정 권한이 없습니다.");
-        navigate(); // 수정 권한이 없다면 그대로 유지
       } else {
         alert("서버 오류가 발생했습니다.");
       }

@@ -17,4 +17,9 @@ export const projectApi = {
     // 프로젝트 수정
     updateProject: (projectId, projectData) =>
         apiClient.put(`/project/${projectId}`, projectData),
+
+    // 프로젝트 삭제
+    deleteProject: (projectId) =>
+        apiClient.delete(`/project/${projectId}`),
+
 };
