@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { voteApi } from "../api/vote";
+import { userApi } from "../api/user";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -10,7 +11,7 @@ import Cookies from "js-cookie";
 // 분기를 결정함.
 // 현재 투표 기간인지에 따라 분기 구별함.
 const VotePage = () => {
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/vote/now`;
+  // apiUrl 제거, voteApi 사용
 
   // 토큰 받아오기
   const token = Cookies.get("authToken");
@@ -35,9 +36,7 @@ const VotePage = () => {
       }
       // 토큰 만료 여부 확인
       try {
-        await axios.get(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await userApi.getMe();
       } catch (error) {
         alert("로그인 유효기간이 만료되었습니다. 재로그인 해주세요.");
         navigate("/login");
@@ -46,25 +45,21 @@ const VotePage = () => {
 
       // 토큰이 유효하면 그다음 투표 기간 확인
       try {
-        const response = await axios.get(apiUrl, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setIsOpen(response.data.isOpen);
-        setIsVotedUser(response.data.isVotedUser);
+        const response = await voteApi.getVoteNow();
+        setIsOpen(response.isOpen);
+        setIsVotedUser(response.isVotedUser);
 
         // 투표 기간이 아닌 경우 즉시 안내 후 이동
-        if (!response.data.isOpen) {
+        if (!response.isOpen) {
           alert("투표 기간이 아닙니다.\n투표 결과 페이지로 이동합니다.");
           navigate("/vote/result");
         }
       } catch (error) {
-        alert("투표 기간인지 확인할 수 없습니다.");
+        alert("투표가 존재하지 않습니다.");
       }
     };
-
     validate();
-  }, [navigate, apiUrl, token]);
+  }, [navigate, token]);
 
   return (
     <div className="container">

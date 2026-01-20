@@ -7,5 +7,7 @@ export const userApi = {
         const url = role === "member" ? "/user/role/member" : "/user/role/guest";
         return apiClient.post(url, {});
     },
+    // 내 정보 조회
+    getMe: () => apiClient.get("/user/me"),
 
 }
