@@ -1,19 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import FloatingButton from "../components/FloatingButton";
-import apiClient from "../api/client";
+import { teamBuildApi } from "../api/team-build";
 import styles from "../assets/TeamBuildResult.module.css";
 import LoadingPage from "../components/LoadingPage";
 
 const TeamBuildResultPage = () => {
-  // 기존 헤더, 인터페이스 관련 함수들. 이후 s디자인에 따라 삭제 유무 정하기
-  // const [menuOpen, setMenuOpen] = useState(false);
-  // const toggleMenu = () => {
-  //   setMenuOpen(!menuOpen);
-  // };
-  const navigate = useNavigate();
   // 상태 관리
   const [teams, setTeams] = useState([]); // 팀 상태
   const [unassigned, setUnassigned] = useState([]); // 미배정자 상태
@@ -35,10 +28,9 @@ const TeamBuildResultPage = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await apiClient.get("/team-build/results");
-
-        setTeams(response.data.results || []);
-        setUnassigned(response.data.unassigned || []);
+        const response = await teamBuildApi.getTeamBuildResults();
+        setTeams(response.results || []);
+        setUnassigned(response.unassigned || []);
       } catch (err) {
         console.error("Failed to fetch team build result:", err);
         setError("데이터를 불러오는데 실패하였습니다. 해당 학기에 결과가 없을 수 있습니다.");
@@ -94,11 +86,6 @@ const TeamBuildResultPage = () => {
   };
 
 
-  // 돌아가기 버튼을 위한 함수
-  const goBack = () => {
-    navigate('/ProjectPage');
-  }
-
   // 미배정자 이동 헨들러
   const handleMoveUnassigned = () => {
     document.getElementById('scrollTarget')?.scrollIntoView({ behavior: 'smooth' })
@@ -110,7 +97,8 @@ const TeamBuildResultPage = () => {
   // 렌더링 
   const renderContent = () => {
     if (isLoading) {
-      return <LoadingPage />;}
+      return <LoadingPage />;
+    }
     if (error) {
       return <div className={styles.empty}>{error}</div>;
     }
@@ -118,7 +106,7 @@ const TeamBuildResultPage = () => {
       <>
         {/* 팀 카드 그리드 */}
         {filteredAndSortedTeams.length === 0 && searchQuery === "" ? (
-          <div className={styles.empty}>해당 학기의 팀 빌딩 결과가 없습니다.</div>
+          <div className={styles.empty}>이번 학기의 팀 빌딩 결과가 없습니다.</div>
         ) : filteredAndSortedTeams.length === 0 && searchQuery !== "" ? (
           <div className={styles.empty}>검색 결과가 없습니다.</div>
         ) : (
@@ -164,9 +152,9 @@ const TeamBuildResultPage = () => {
                     <button className={styles.copy} onClick={() => handleCopyRoster(team)}>명단복사</button>
                   </div>
                 </div>
-              </div >
+              </div>
             ))}
-          </div >
+          </div>
         )}
 
         {/* 미배정 지원자 그리드 */}
