@@ -6,6 +6,10 @@ export const projectApi = {
     getProjectList: (projectYear, semester) =>
         apiClient.get("/project/list", { params: { projectYear, semester } }),
 
+    // 프로젝트 상세
+    getProjectDetail: (projectId) =>
+        apiClient.get(`/project/${projectId}`),
+
     // 프로젝트 수정 페이지 이동
     getprojectUpdatePage: (projectId) =>
         apiClient.get(`/project/${projectId}/update`),

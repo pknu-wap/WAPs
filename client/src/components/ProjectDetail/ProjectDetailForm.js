@@ -21,7 +21,7 @@ const ProjectDetailForm = () => {
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
-        const data = await projectApi.getprojectUpdatePage(projectId);
+        const data = await projectApi.getProjectDetail(projectId);
         setProjectData(data);
         console.log("API 응답 데이터:", data);
 
