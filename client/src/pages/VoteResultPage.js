@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { voteApi } from "../api/vote";
 import styles from "../assets/ProjectVote.module.css";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -51,10 +51,6 @@ const VoteResultPage = () => {
     }
   }, [semesterParam]);
 
-  const voteUrl = semesterParam
-    ? `${process.env.REACT_APP_API_BASE_URL}/vote/result/${semesterParam}`
-    : `${process.env.REACT_APP_API_BASE_URL}/vote/result`;
-
   const [projects, setProjects] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -69,11 +65,11 @@ const VoteResultPage = () => {
 
     const fetchVoteResults = async () => {
       try {
-        const voteRes = await axios.get(voteUrl);
+        const voteRes = await voteApi.getVoteResult(semesterParam);
         if (!isMounted) return; // 컴포넌트가 언마운트되면 중단
 
-        const apiSemester = voteRes.data?.semester; // "2025-02"
-        const voteItems = voteRes.data?.results || [];
+        const apiSemester = voteRes?.semester; // "2025-02"
+        const voteItems = voteRes?.results || [];
 
         // 데이터가 비어있으면 공개되지 않은 것으로 간주
         if (!voteItems || voteItems.length === 0) {
@@ -113,7 +109,7 @@ const VoteResultPage = () => {
     return () => {
       isMounted = false; // cleanup
     };
-  }, [voteUrl, navigate]);
+  }, [semesterParam, navigate]);
 
   const handleProjectClick = (project) => {
     const pid = project.projectId;
@@ -179,9 +175,8 @@ const VoteResultPage = () => {
                   <button onClick={toggleYearAccordion} className="dropdown-button">
                     {semesterFilter.open
                       ? "년도/학기 ▲"
-                      : `${("0" + (semesterFilter.year - 2000)).slice(-2)}년 ${
-                          semesterFilter.semester
-                        }학기 ▼`}
+                      : `${("0" + (semesterFilter.year - 2000)).slice(-2)}년 ${semesterFilter.semester
+                      }학기 ▼`}
                   </button>
 
                   {semesterFilter.open && (
@@ -223,9 +218,8 @@ const VoteResultPage = () => {
 
                 return (
                   <div
-                    className={`${styles.project_list_box} ${
-                      isTop3 ? styles.selected_result : ""
-                    }`}
+                    className={`${styles.project_list_box} ${isTop3 ? styles.selected_result : ""
+                      }`}
                     key={`${project.projectId}-${index}`}
                   >
                     <div className={styles.inform_box}>
