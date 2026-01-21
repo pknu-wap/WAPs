@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { userApi } from "../../api/user";
 import Cookies from "js-cookie";
 
 const ProtectedPage = () => {
@@ -15,17 +15,10 @@ const ProtectedPage = () => {
       }
 
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/user/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const data = await userApi.getMe();
 
-        setUserInfo(response.data);
-        console.log("User info received:", response.data);
+        setUserInfo(data);
+        console.log("User info received:", data);
       } catch (error) {
         console.error("Failed to fetch user info:", error);
         window.location.href = "/login";
