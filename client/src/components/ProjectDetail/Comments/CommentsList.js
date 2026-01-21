@@ -1,6 +1,5 @@
 import React from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { commentApi } from "../../../api/comment";
 import userImage from "../../../assets/img/WAP_white_NoBG.png";
 import styles from "../../../assets/ProjectDetail/Comments/CommentsList.module.css";
 
@@ -12,21 +11,12 @@ const CommentsList = ({ comments }) => {
     //   "댓글 작성 시 입력한 비밀번호를 입력해주세요."
     // );
 
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/comment/${commentId}`;
-
     try {
-      const token = Cookies.get("authToken");
-      const response = await axios.delete(apiUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await commentApi.deleteComment(commentId);
       alert("댓글이 삭제되었습니다.");
-      console.log(response);
       window.location.reload();
     } catch (error) {
       alert("내가 작성한 댓글이 아닙니다.");
-      // console.error("댓글 삭제 오류:", error);
     }
   };
   return (

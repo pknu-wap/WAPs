@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { projectApi } from "../api/project";
 import "../App.css";
 import "../assets/Contentbox.css";
 import LoadingPage from "./LoadingPage";
+import useSemester from "../hooks/useSemester";
 
 /* 알약 버튼 목록 (UI 전용) */
 const TYPE_OPTIONS = [
@@ -40,9 +41,13 @@ const ContentBox = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // URL에서 값을 읽어와 초기 상태 설정
-  const initialYear = searchParams.get("projectYear") || currentYear;
-  const initialSemester = searchParams.get("semester") || 2;
+  // useSemester 훅을 사용하여 초기 학기/년도 상태 설정
+  const semesterString = useSemester();
+  const [defaultYear, defaultSemester] = semesterString.split("-");
+
+  // URL에서 값을 읽어와 초기 상태 설정, 없으면 useSemester 값 사용
+  const initialYear = searchParams.get("projectYear") || defaultYear;
+  const initialSemester = searchParams.get("semester") || defaultSemester;
 
   const [semesterFilter, setSemesterFilter] = useState({
     year: parseInt(initialYear),
@@ -55,26 +60,22 @@ const ContentBox = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/list`;
 
   useEffect(() => {
     const timeoutId = setTimeout(() => setIsMounted(true), 700);
 
     const fetchData = async () => {
       try {
+        const response = await projectApi.getProjectList(
+          semesterFilter.year,
+          semesterFilter.semester
+        );
 
-        const response = await axios.get(apiUrl, {
-          params: {
-            semester: semesterFilter.semester,
-            projectYear: semesterFilter.year,
-          },
-        });
-
-        if (Array.isArray(response.data.projectsResponse)) {
-          setData(response.data.projectsResponse);
-          setFilteredData(response.data.projectsResponse);
+        if (Array.isArray(response.projectsResponse)) {
+          setData(response.projectsResponse);
+          setFilteredData(response.projectsResponse);
         } else {
-          console.error("API 응답의 projectsResponse가 배열이 아닙니다:", response.data);
+          console.error("API 응답의 projectsResponse가 배열이 아닙니다:", response);
         }
         setIsLoading(false);
       } catch (error) {
@@ -115,7 +116,7 @@ const ContentBox = () => {
   };
 
   if (isLoading) {
-    return <LoadingPage />; // ✅ 완전 교체
+    return <LoadingPage />; // 완전 교체
   }
 
   return (
@@ -168,8 +169,8 @@ const ContentBox = () => {
             {/* 연도 + 학기 필터 드롭다운 */}
             <div className="filter-dropdown">
               <button onClick={toggleYearAccordion} className="dropdown-button">
-                {yearAccordionOpen ? "년도/학기 ▲" 
-                : `${('0' + (semesterFilter.year - 2000)).slice(-2)}년 ${semesterFilter.semester}학기 ▼`}
+                {yearAccordionOpen ? "년도/학기 ▲"
+                  : `${('0' + (semesterFilter.year - 2000)).slice(-2)}년 ${semesterFilter.semester}학기 ▼`}
               </button>
               {yearAccordionOpen && (
                 <div className="dropdown-content">
