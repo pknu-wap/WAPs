@@ -4,6 +4,7 @@ import { projectApi } from "../api/project";
 import "../App.css";
 import "../assets/Contentbox.css";
 import LoadingPage from "./LoadingPage";
+import useSemester from "../hooks/useSemester";
 
 /* 알약 버튼 목록 (UI 전용) */
 const TYPE_OPTIONS = [
@@ -40,9 +41,13 @@ const ContentBox = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // URL에서 값을 읽어와 초기 상태 설정
-  const initialYear = searchParams.get("projectYear") || currentYear;
-  const initialSemester = searchParams.get("semester") || 2;
+  // useSemester 훅을 사용하여 초기 학기/년도 상태 설정
+  const semesterString = useSemester();
+  const [defaultYear, defaultSemester] = semesterString.split("-");
+
+  // URL에서 값을 읽어와 초기 상태 설정, 없으면 useSemester 값 사용
+  const initialYear = searchParams.get("projectYear") || defaultYear;
+  const initialSemester = searchParams.get("semester") || defaultSemester;
 
   const [semesterFilter, setSemesterFilter] = useState({
     year: parseInt(initialYear),
