@@ -1,63 +1,59 @@
-.year-selector{
+.year-selector {
   width: 90%;
   height: 135px;
   padding-top: 15px;
-  background-color: #2A2A2A;
-  color: #7E7E7E;
+  background-color: #2a2a2a;
+  color: #7e7e7e;
   border-radius: 10px;
-  margin: 0 auto; 
+  margin: 0 auto;
   text-align: left;
- 
 }
 
-.year-label{
+.year-label {
   text-align: left;
   margin-left: 33px;
   margin-bottom: 3px;
   font-size: 12px;
-  color: #EBEBEB;
+  color: #ebebeb;
 }
 
-  
 .scroll-container {
-    width: 80%; /* 스크롤 영역 너비 */
-    height: 85px; /* 스크롤 영역 높이 */
-    overflow-y: scroll;
-    overflow-x: hidden;
-    margin: 0 auto;
-    margin-top: 10px;
-    color: #7E7E7E;
-    background-color: #2A2A2A;
-  }
+  width: 80%; /* 스크롤 영역 너비 */
+  height: 85px; /* 스크롤 영역 높이 */
+  overflow-y: scroll;
+  overflow-x: hidden;
+  margin: 0 auto;
+  margin-top: 10px;
+  color: #7e7e7e;
+  background-color: #2a2a2a;
+}
 
-  .scroll-container::-webkit-scrollbar {
-    width: 10px; /* 스크롤바의 너비 */
-    
-  }
-  
-  .scroll-container::-webkit-scrollbar-track {
-    background: #656565; /* 트랙의 배경색 */
-    width: 4px; /* 트랙의 너비 */
-    border-radius: 10px; /* 트랙의 모서리를 둥글게 */
-  }
-  
-  /* 스크롤바랑 스크롤바 배경 크기 다르게가 안된다고 해서 일단 보류. */
-  .scroll-container::-webkit-scrollbar-thumb {
-    background-color: #02FF2E; /* 썸의 배경색 */
-    border-radius: 10px; /* 썸의 모서리를 둥글게 */
-    height: 19px;
-  }
-  
-  .year-item {
-    height: 10px; /* 각 아이템의 높이 */
-    padding: 2px 0;
-    text-align: left;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  .year-item.selected {
-    color: #FFFFFF; /* 선택된 아이템 스타일 */
-    font-weight: bold;
-  }
-  
+.scroll-container::-webkit-scrollbar {
+  width: 10px; /* 스크롤바의 너비 */
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: #656565; /* 트랙의 배경색 */
+  width: 4px; /* 트랙의 너비 */
+  border-radius: 10px; /* 트랙의 모서리를 둥글게 */
+}
+
+/* 스크롤바랑 스크롤바 배경 크기 다르게가 안된다고 해서 일단 보류. */
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #b4edfe; /* 썸의 배경색 */
+  border-radius: 10px; /* 썸의 모서리를 둥글게 */
+  height: 19px;
+}
+
+.year-item {
+  height: 10px; /* 각 아이템의 높이 */
+  padding: 2px 0;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.year-item.selected {
+  color: #ffffff; /* 선택된 아이템 스타일 */
+  font-weight: bold;
+}

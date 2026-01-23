@@ -1,26 +1,28 @@
 @font-face {
-    font-family: 'Pretendard-Bold';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
-    font-weight: 700;
-    font-display: swap;
+  font-family: "Pretendard-Bold";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-display: swap;
 }
 
 @font-face {
-    font-family: "Pretendard-Regular";
-    src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
-    font-weight: 400;
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
 }
 
 /* 전체 컨테이너 */
 .container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 29px;
-    padding: 30px;
-    box-sizing: border-box;
-    font-family: "Pretendard-Regular";
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 29px;
+  padding: 30px;
+  box-sizing: border-box;
+  font-family: "Pretendard-Regular";
 }
 
 /* 페이지 타이틀 */
@@ -37,14 +39,19 @@
   gap: 30px;
   flex-grow: 1;
   margin-top: 40px;
+  flex-wrap: wrap;
+  align-items: stretch;
 }
 
 /* 입력 섹션 (왼쪽) */
 .inputSection {
-  flex: 0 0 45%;
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 /* 그리드 정렬 */
@@ -53,6 +60,8 @@
   grid-template-columns: 120px 1fr;
   gap: 10px;
   align-items: start;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* 라벨 스타일 */
@@ -60,7 +69,7 @@
   font-size: 35px;
   font-weight: 600;
   color: #ffffff;
-  margin: 0; 
+  margin: 0;
   display: flex;
   align-items: center;
   white-space: nowrap;
@@ -80,6 +89,7 @@
   outline: none;
   box-sizing: border-box;
   width: 100%;
+  min-width: 0;
   overflow: auto;
 }
 
@@ -88,6 +98,7 @@
 .targetInput,
 .dateInput {
   height: 70px;
+  min-width: 0;
 }
 
 /* 제목 입력 상세 */
@@ -102,6 +113,7 @@
   resize: none;
   font-family: "Pretendard-Regular";
   padding-top: 14px;
+  min-width: 0;
 }
 
 .targetBox {
@@ -109,6 +121,7 @@
   gap: 10px;
   align-items: center;
   margin-top: 10px;
+  flex-wrap: wrap;
 }
 
 .targetLabel {
@@ -128,14 +141,17 @@
   border: none;
   outline: none;
   box-sizing: border-box;
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 /* 미리보기 섹션 (오른쪽) */
 .previewSection {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 /* 미리보기 제목 */
@@ -149,7 +165,7 @@
 
 /* 미리보기 내부 컨텐츠(기본 박스) */
 .previewContent {
- margin: 20px;
+  margin: 20px;
 }
 
 /* 미리보기 내용 없을 때 */
@@ -225,8 +241,8 @@
 .publishButton {
   align-self: flex-end;
   background-color: transparent;
-  color: #A2A2A2;
-  border: 1px solid #A2A2A2;
+  color: #a2a2a2;
+  border: 1px solid #a2a2a2;
   padding: 10px 30px;
   font-size: 25px;
   border-radius: 25px;
@@ -241,25 +257,92 @@
 }
 
 /* 반응형 */
+@media (max-width: 1100px) {
+  .pageContent {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .inputSection,
+  .previewSection {
+    flex: 1 1 100%;
+    min-width: 0;
+    width: 100%;
+  }
+  .inputRow {
+    grid-template-columns: 100px 1fr;
+  }
+  .title {
+    font-size: 36px;
+  }
+}
+
 @media (max-width: 800px) {
   .pageContent {
     flex-direction: column;
+    gap: 16px;
   }
-
-  .inputSection {
-    flex: 1 1 auto;
-  }
-
+  .inputSection,
   .previewSection {
-    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    flex-basis: auto;
   }
+}
 
-  .inputRow,
-  .target {
-    grid-template-columns: 100px 1fr;
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
   }
-
+  .inputSection {
+    min-width: 0;
+  }
   .title {
-    font-size: 36px;
+    font-size: 26px;
+    padding: 0 2px;
+  }
+  .previewTitle,
+  .label,
+  .targetLabel {
+    font-size: 20px;
+  }
+  .inputRow {
+    grid-template-columns: 80px 1fr;
+    gap: 6px;
+  }
+  .titleInput,
+  .dateInput,
+  .targetInput {
+    height: 44px;
+    font-size: 15px;
+    padding: 8px 8px;
+  }
+  .contentInput {
+    min-height: 100px;
+    font-size: 15px;
+    padding: 8px 8px;
+  }
+  .previewFixedHeight {
+    min-height: 180px;
+    height: 220px;
+  }
+  .publishButton {
+    font-size: 16px;
+    padding: 7px 16px;
+    border-radius: 16px;
+    margin-top: 10px;
+  }
+  .miniTarget {
+    font-size: 13px;
+    padding-top: 5px;
+  }
+  .scheduleTitle {
+    font-size: 15px;
+  }
+  .scheduleContent {
+    font-size: 13px;
+    margin-top: 8px;
+  }
+  .scheduleDate {
+    font-size: 12px;
   }
 }
