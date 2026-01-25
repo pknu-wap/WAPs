@@ -50,7 +50,7 @@ export const adminPlanApi = {
 }
 
 // 팀빌딩 관리 API
-export const adminTeamBuild = {
+export const adminTeamBuildApi = {
     // 지원 현황 반환
     getApplies: () =>
         apiClient.get("/admin/team/applies/export"),
