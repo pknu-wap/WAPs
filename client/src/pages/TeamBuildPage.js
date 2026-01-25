@@ -2,10 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { teamBuildApi } from "../api/team-build";
+import { POSITIONS } from "../constants/positions";
 import wapsLogo from "../assets/img/waps_logo.png";
 import styles from "../assets/TeamBuildRecruit.module.css";
-
-const POSITIONS = ["FRONTEND", "BACKEND", "DESIGN", "AI", "APP", "EMBEDDED", "GAME"];
 
 const createEmptyRankMap = () =>
   POSITIONS.reduce((acc, pos) => {
