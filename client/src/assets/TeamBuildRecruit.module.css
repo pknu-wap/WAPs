@@ -131,10 +131,9 @@
 }
 
 .projectRow {
-  display: grid;
-  grid-template-columns: minmax(120px, 160px) 1fr 120px;
-  gap: 12px;
+  display: flex;
   align-items: center;
+  gap: 10px;
   margin-bottom: 18px;
 }
 
@@ -689,11 +688,8 @@
   }
 
   .projectRow {
-    grid-template-columns: 1fr auto;
-  }
-
-  .projectRow .labelText {
-    grid-column: 1 / -1;
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .sectionHeader {

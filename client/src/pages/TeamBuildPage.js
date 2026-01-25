@@ -329,7 +329,6 @@ function TeamBuildPage() {
         <div className={styles.topBar}>
           <div className={styles.brand}>
             <img src={wapsLogo} alt="WAPs" className={styles.brandLogo} />
-            <span className={styles.brandText}>WAPS</span>
           </div>
           <div className={styles.topActions}>
             {userName && <span className={styles.userName}>{userName} 님</span>}
@@ -349,7 +348,6 @@ function TeamBuildPage() {
           <div className={styles.sectionCaption}>본인이 등록한 프로젝트의 ID를 입력하세요.</div>
 
           <div className={styles.projectRow}>
-            <div className={styles.labelText}>프로젝트 ID</div>
             <input
               className={`${styles.inputField} ${styles.projectIdInput}`}
               type="number"
