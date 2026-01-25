@@ -201,8 +201,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
+  margin-left: auto;
+  align-self: flex-end;
 }
 
 .filterLabel {
@@ -217,47 +219,81 @@
 .filterButton {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(0, 0, 0, 0.35);
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 140px;
+  padding: 7px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(24, 24, 24, 0.9);
   color: #fff;
   font-size: 12px;
   cursor: pointer;
+}
+
+.filterButtonContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterArrow {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.filterAllText {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .filterMenu {
   position: absolute;
   right: 0;
-  top: calc(100% + 8px);
-  background: #202020;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  padding: 10px;
-  min-width: 180px;
+  top: calc(100% + 10px);
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px;
+  padding: 6px 0;
+  min-width: 210px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  z-index: 10;
+  gap: 0;
+  z-index: 30;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+}
+
+.filterButton .positionBadge {
+  padding: 4px 12px;
+  font-size: 11px;
+}
+
+.filterMenu .positionBadge {
+  padding: 6px 16px;
+  font-size: 12px;
 }
 
 .filterItem {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  background: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
   color: #fff;
   font-size: 12px;
   cursor: pointer;
 }
 
+.filterItem:last-child {
+  border-bottom: none;
+}
+
 .filterItemActive {
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .tableWrap {
@@ -541,31 +577,31 @@
 }
 
 .positionBadgeFRONTEND {
-  background: #ff7b54;
+  background: #f08a6a;
 }
 
 .positionBadgeBACKEND {
-  background: #6fb2ff;
+  background: #c8a46b;
 }
 
 .positionBadgeAI {
-  background: #a79bff;
+  background: #7fb7e2;
 }
 
 .positionBadgeDESIGN {
-  background: #ff9bd7;
+  background: #8fae91;
 }
 
 .positionBadgeAPP {
-  background: #8be28b;
+  background: #9b95d6;
 }
 
 .positionBadgeEMBEDDED {
-  background: #ffc77a;
+  background: #e5a5ad;
 }
 
 .positionBadgeGAME {
-  background: #ff9b9b;
+  background: #b9a27a;
 }
 
 .tagMuted {
@@ -608,6 +644,12 @@
   .sectionHeader {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .filterWrap {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
   }
 
   .tableWrap {

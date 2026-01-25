@@ -5,7 +5,7 @@ import { teamBuildApi } from "../api/team-build";
 import wapsLogo from "../assets/img/waps_logo.png";
 import styles from "../assets/TeamBuildRecruit.module.css";
 
-const POSITIONS = ["FRONTEND", "BACKEND", "AI", "DESIGN", "APP", "EMBEDDED", "GAME"];
+const POSITIONS = ["FRONTEND", "BACKEND", "DESIGN", "AI", "APP", "EMBEDDED", "GAME"];
 
 const createEmptyRankMap = () =>
   POSITIONS.reduce((acc, pos) => {
@@ -382,8 +382,14 @@ function TeamBuildPage() {
                   className={styles.filterButton}
                   onClick={() => setFilterOpen((prev) => !prev)}
                 >
-                  {currentFilter ? renderPositionBadge(currentFilter) : renderPositionBadge("")}
-                  <span>▼</span>
+                  <span className={styles.filterButtonContent}>
+                    {currentFilter ? (
+                      renderPositionBadge(currentFilter)
+                    ) : (
+                      <span className={styles.filterAllText}>전체보기</span>
+                    )}
+                  </span>
+                  <span className={styles.filterArrow}>▼</span>
                 </button>
                 {filterOpen && (
                   <div className={styles.filterMenu}>
@@ -395,8 +401,7 @@ function TeamBuildPage() {
                         setFilterOpen(false);
                       }}
                     >
-                      <span>전체보기</span>
-                      {renderPositionBadge("")}
+                      <span className={styles.filterAllText}>전체보기</span>
                     </button>
                     {POSITIONS.map((pos) => (
                       <button
@@ -410,18 +415,12 @@ function TeamBuildPage() {
                           setFilterOpen(false);
                         }}
                       >
-                        <span>{pos}</span>
                         {renderPositionBadge(pos)}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
-              {currentFilter && (
-                <span className={styles.muted}>
-                  {currentFilter} 분야: {filteredApplies.length}명
-                </span>
-              )}
             </div>
           </div>
 
