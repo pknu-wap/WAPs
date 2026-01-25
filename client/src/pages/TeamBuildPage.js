@@ -94,6 +94,10 @@ function TeamBuildPage() {
     return currentFilter ? applies.filter((a) => a.position === currentFilter) : applies;
   }, [applies, currentFilter]);
 
+  const visiblePositions = useMemo(() => {
+    return POSITIONS.filter((pos) => (countsByPosition[pos] || 0) > 0);
+  }, [countsByPosition]);
+
   const availableByPosition = useMemo(() => {
     const result = POSITIONS.reduce((acc, pos) => {
       acc[pos] = [];
@@ -492,101 +496,105 @@ function TeamBuildPage() {
           </div>
 
           <div className={styles.positions}>
-            {POSITIONS.map((pos) => {
-              const ranked = rankedByPosition[pos] || [];
-              const available = availableByPosition[pos] || [];
-              const cap = Number(capacityByPosition[pos] || 0);
-              const rankedDragOver = dragOver.position === pos && dragOver.zone === "ranked";
-              const availableDragOver = dragOver.position === pos && dragOver.zone === "available";
+            {visiblePositions.length === 0 ? (
+              <div className={styles.muted}>지원자가 없습니다.</div>
+            ) : (
+              visiblePositions.map((pos) => {
+                const ranked = rankedByPosition[pos] || [];
+                const available = availableByPosition[pos] || [];
+                const cap = Number(capacityByPosition[pos] || 0);
+                const rankedDragOver = dragOver.position === pos && dragOver.zone === "ranked";
+                const availableDragOver = dragOver.position === pos && dragOver.zone === "available";
 
-              return (
-                <div key={pos} className={styles.positionRow}>
-                  <div className={styles.positionName}>{pos}</div>
-                  <div className={styles.capacityBox}>
-                    <input
-                      className={styles.capacityInput}
-                      type="number"
-                      min="0"
-                      value={cap}
-                      onChange={(event) => handleCapacityChange(pos, event.target.value)}
-                    />
-                    <span className={styles.capacityLabel}>Capacity</span>
-                  </div>
-                  <div className={styles.rankArea}>
-                    <div className={styles.rankLabel}>선택된 지원자(우선 순위)</div>
-                    <div
-                      className={`${styles.dropZone} ${rankedDragOver ? styles.dragOver : ""} ${
-                        cap === 0 ? styles.locked : ""
-                      }`}
-                      onDragOver={handleDragOverZone(pos, "ranked")}
-                      onDragEnter={handleDragOverZone(pos, "ranked")}
-                      onDragLeave={handleDragLeaveZone}
-                      onDrop={handleRankedDrop(pos)}
-                    >
-                      {ranked.length === 0 ? (
-                        <span className={styles.emptyText}>여기에 지원자를 드래그해 넣으세요.</span>
-                      ) : (
-                        ranked.map((candidate, index) => (
-                          <span
-                            key={candidate.applicantId}
-                            className={`${styles.pill} ${styles.pillRanked} ${
-                              draggingId === candidate.applicantId ? styles.pillDragging : ""
-                            } ${
-                              dragOver.position === pos &&
-                              dragOver.zone === "ranked" &&
-                              dragOver.index === index
-                                ? styles.pillDragOver
-                                : ""
-                            }`}
-                            data-priority={index + 1}
-                            draggable
-                            onDragStart={handleDragStart(candidate, "ranked", index)}
-                            onDragEnd={handleDragEnd}
-                            onDragOver={handleDragOverZone(pos, "ranked", index)}
-                            onDragEnter={handleDragOverZone(pos, "ranked", index)}
-                            onDragLeave={handleDragLeaveZone}
-                            onDrop={handleRankedDrop(pos, index)}
-                            onMouseEnter={() => setHighlightedApplicantId(candidate.applicantId)}
-                            onMouseLeave={() => setHighlightedApplicantId(null)}
-                          >
-                            {candidate.applicantName}
-                          </span>
-                        ))
-                      )}
+                return (
+                  <div key={pos} className={styles.positionRow}>
+                    <div className={styles.positionName}>{pos}</div>
+                    <div className={styles.capacityBox}>
+                      <input
+                        className={styles.capacityInput}
+                        type="number"
+                        min="0"
+                        value={cap}
+                        onChange={(event) => handleCapacityChange(pos, event.target.value)}
+                      />
+                      <span className={styles.capacityLabel}>Capacity</span>
                     </div>
+                    <div className={styles.rankArea}>
+                      <div className={styles.rankLabel}>선택된 지원자(우선 순위)</div>
+                      <div
+                        className={`${styles.dropZone} ${rankedDragOver ? styles.dragOver : ""} ${
+                          cap === 0 ? styles.locked : ""
+                        }`}
+                        onDragOver={handleDragOverZone(pos, "ranked")}
+                        onDragEnter={handleDragOverZone(pos, "ranked")}
+                        onDragLeave={handleDragLeaveZone}
+                        onDrop={handleRankedDrop(pos)}
+                      >
+                        {ranked.length === 0 ? (
+                          <span className={styles.emptyText}>여기에 지원자를 드래그해 넣으세요.</span>
+                        ) : (
+                          ranked.map((candidate, index) => (
+                            <span
+                              key={candidate.applicantId}
+                              className={`${styles.pill} ${styles.pillRanked} ${
+                                draggingId === candidate.applicantId ? styles.pillDragging : ""
+                              } ${
+                                dragOver.position === pos &&
+                                dragOver.zone === "ranked" &&
+                                dragOver.index === index
+                                  ? styles.pillDragOver
+                                  : ""
+                              }`}
+                              data-priority={index + 1}
+                              draggable
+                              onDragStart={handleDragStart(candidate, "ranked", index)}
+                              onDragEnd={handleDragEnd}
+                              onDragOver={handleDragOverZone(pos, "ranked", index)}
+                              onDragEnter={handleDragOverZone(pos, "ranked", index)}
+                              onDragLeave={handleDragLeaveZone}
+                              onDrop={handleRankedDrop(pos, index)}
+                              onMouseEnter={() => setHighlightedApplicantId(candidate.applicantId)}
+                              onMouseLeave={() => setHighlightedApplicantId(null)}
+                            >
+                              {candidate.applicantName}
+                            </span>
+                          ))
+                        )}
+                      </div>
 
-                    <div className={styles.rankLabel}>사용 가능한 지원자</div>
-                    <div
-                      className={`${styles.dropZone} ${availableDragOver ? styles.dragOver : ""}`}
-                      onDragOver={handleDragOverZone(pos, "available")}
-                      onDragEnter={handleDragOverZone(pos, "available")}
-                      onDragLeave={handleDragLeaveZone}
-                      onDrop={handleAvailableDrop(pos)}
-                    >
-                      {available.length === 0 ? (
-                        <span className={styles.emptyText}>신청자 없음</span>
-                      ) : (
-                        available.map((candidate) => (
-                          <span
-                            key={candidate.applicantId}
-                            className={`${styles.pill} ${
-                              draggingId === candidate.applicantId ? styles.pillDragging : ""
-                            }`}
-                            draggable
-                            onDragStart={handleDragStart(candidate, "available", -1)}
-                            onDragEnd={handleDragEnd}
-                            onMouseEnter={() => setHighlightedApplicantId(candidate.applicantId)}
-                            onMouseLeave={() => setHighlightedApplicantId(null)}
-                          >
-                            {candidate.applicantName}
-                          </span>
-                        ))
-                      )}
+                      <div className={styles.rankLabel}>사용 가능한 지원자</div>
+                      <div
+                        className={`${styles.dropZone} ${availableDragOver ? styles.dragOver : ""}`}
+                        onDragOver={handleDragOverZone(pos, "available")}
+                        onDragEnter={handleDragOverZone(pos, "available")}
+                        onDragLeave={handleDragLeaveZone}
+                        onDrop={handleAvailableDrop(pos)}
+                      >
+                        {available.length === 0 ? (
+                          <span className={styles.emptyText}>신청자 없음</span>
+                        ) : (
+                          available.map((candidate) => (
+                            <span
+                              key={candidate.applicantId}
+                              className={`${styles.pill} ${
+                                draggingId === candidate.applicantId ? styles.pillDragging : ""
+                              }`}
+                              draggable
+                              onDragStart={handleDragStart(candidate, "available", -1)}
+                              onDragEnd={handleDragEnd}
+                              onMouseEnter={() => setHighlightedApplicantId(candidate.applicantId)}
+                              onMouseLeave={() => setHighlightedApplicantId(null)}
+                            >
+                              {candidate.applicantName}
+                            </span>
+                          ))
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
 
           <div className={styles.submitRow}>
