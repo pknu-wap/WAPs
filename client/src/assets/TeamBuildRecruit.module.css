@@ -377,10 +377,18 @@
 
 .positionRow {
   display: grid;
-  grid-template-columns: 120px 90px 1fr;
-  gap: 16px;
+  grid-template-columns: 140px 1fr;
+  gap: 18px;
   padding-top: 18px;
   border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  --rank-zone-min: 48px;
+  --rank-zone-pad: 10px;
+}
+
+.positionMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .positionName {
@@ -395,15 +403,37 @@
   justify-items: start;
 }
 
-.capacityInput {
-  width: 70px;
-  padding: 6px 10px;
+.capacityPill {
+  width: 88px;
+  height: calc(var(--rank-zone-min) + (var(--rank-zone-pad) * 2));
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.capacityInput {
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0;
+  border-radius: 999px;
+  background: transparent;
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 600;
   text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.capacityInput::-webkit-outer-spin-button,
+.capacityInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .capacityLabel {
@@ -422,8 +452,8 @@
 }
 
 .dropZone {
-  min-height: 48px;
-  padding: 10px;
+  min-height: var(--rank-zone-min);
+  padding: var(--rank-zone-pad);
   border-radius: 12px;
   border: 1px dashed rgba(255, 255, 255, 0.2);
   background: rgba(0, 0, 0, 0.35);
@@ -662,6 +692,12 @@
 
   .positionRow {
     grid-template-columns: 1fr;
+  }
+
+  .positionMeta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .submitRow {

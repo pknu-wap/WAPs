@@ -506,19 +506,23 @@ function TeamBuildPage() {
                 const availableDragOver = dragOver.position === pos && dragOver.zone === "available";
 
                 return (
-                  <div key={pos} className={styles.positionRow}>
+                <div key={pos} className={styles.positionRow}>
+                  <div className={styles.positionMeta}>
                     <div className={styles.positionName}>{pos}</div>
                     <div className={styles.capacityBox}>
-                      <input
-                        className={styles.capacityInput}
-                        type="number"
-                        min="0"
-                        value={cap}
-                        onChange={(event) => handleCapacityChange(pos, event.target.value)}
-                      />
+                      <div className={styles.capacityPill}>
+                        <input
+                          className={styles.capacityInput}
+                          type="number"
+                          min="0"
+                          value={cap}
+                          onChange={(event) => handleCapacityChange(pos, event.target.value)}
+                        />
+                      </div>
                       <span className={styles.capacityLabel}>Capacity</span>
                     </div>
-                    <div className={styles.rankArea}>
+                  </div>
+                  <div className={styles.rankArea}>
                       <div className={styles.rankLabel}>선택된 지원자(우선 순위)</div>
                       <div
                         className={`${styles.dropZone} ${rankedDragOver ? styles.dragOver : ""} ${
