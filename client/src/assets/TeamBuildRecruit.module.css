@@ -155,6 +155,10 @@
   outline: none;
 }
 
+.projectIdInput {
+  max-width: 140px;
+}
+
 .inputField::placeholder {
   color: rgba(255, 255, 255, 0.4);
 }

@@ -347,7 +347,7 @@ function TeamBuildPage() {
           <div className={styles.projectRow}>
             <div className={styles.labelText}>프로젝트 ID</div>
             <input
-              className={styles.inputField}
+              className={`${styles.inputField} ${styles.projectIdInput}`}
               type="number"
               min="1"
               placeholder="예) 1"
