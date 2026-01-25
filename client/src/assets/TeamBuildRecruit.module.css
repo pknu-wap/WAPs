@@ -1,0 +1,637 @@
+.page {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  min-height: 100vh;
+  color: #f5f5f5;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(140, 176, 205, 0.6), transparent 60%),
+    linear-gradient(180deg, #8baeca 0%, #4c6474 22%, #1b242b 48%, #070708 100%);
+  overflow-x: hidden;
+}
+
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(500px 300px at 10% 20%, rgba(255, 255, 255, 0.07), transparent 60%),
+    radial-gradient(420px 240px at 90% 10%, rgba(255, 255, 255, 0.05), transparent 60%);
+  pointer-events: none;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 18px 80px;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brandLogo {
+  height: 14px;
+  opacity: 0.85;
+}
+
+.brandText {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userName {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.closeButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.closeButton:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: scale(1.02);
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 28px;
+  animation: fadeUp 0.6s ease;
+  animation-fill-mode: both;
+}
+
+.heroTitle {
+  font-size: 28px;
+  letter-spacing: 0.1em;
+  font-weight: 800;
+  margin: 0;
+}
+
+.heroSubtitle {
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(41, 41, 41, 0.95) 0%, rgba(22, 22, 22, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 26px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  animation: fadeUp 0.6s ease;
+  animation-delay: 0.08s;
+  animation-fill-mode: both;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.sectionCaption {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 12px;
+}
+
+.projectRow {
+  display: grid;
+  grid-template-columns: minmax(120px, 160px) 1fr 120px;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.labelText {
+  font-weight: 600;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.inputField {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 12px;
+  outline: none;
+}
+
+.inputField::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.primaryButton {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #4e4e4e 0%, #2c2c2c 100%);
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.muted {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.filterWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.filterLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.filterDropdown {
+  position: relative;
+}
+
+.filterButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.filterMenu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: #202020;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 10px;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.filterItemActive {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.tableWrap {
+  margin-top: 12px;
+  background: rgba(10, 10, 10, 0.6);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+}
+
+.table th {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.table td {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.commentCell {
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.rowHighlight td {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mobileList {
+  display: none;
+  margin-top: 12px;
+  gap: 10px;
+}
+
+.applicantCard {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 6px;
+}
+
+.cardHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cardName {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cardComment {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.positions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.positionRow {
+  display: grid;
+  grid-template-columns: 120px 90px 1fr;
+  gap: 16px;
+  padding-top: 18px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.positionName {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.capacityBox {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+}
+
+.capacityInput {
+  width: 70px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+}
+
+.capacityLabel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.rankArea {
+  display: grid;
+  gap: 8px;
+}
+
+.rankLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dropZone {
+  min-height: 48px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  transition: 0.2s ease;
+  position: relative;
+}
+
+.dragOver {
+  border-color: rgba(130, 186, 255, 0.8);
+  box-shadow: 0 0 0 2px rgba(130, 186, 255, 0.15);
+  background: rgba(19, 28, 38, 0.7);
+}
+
+.locked {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.locked::after {
+  content: "capacity를 먼저 조절해주세요.";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  color: #ff8b8b;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.emptyText {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 11px;
+  cursor: grab;
+  user-select: none;
+  transition: 0.2s ease;
+}
+
+.pillRanked {
+  background: linear-gradient(135deg, #cfe5ff 0%, #9fbef9 100%);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #0f2342;
+  font-weight: 700;
+}
+
+.pillRanked::after {
+  content: "#" attr(data-priority);
+  font-size: 9px;
+  font-weight: 800;
+  background: #0f2342;
+  color: #fff;
+  padding: 2px 5px;
+  border-radius: 6px;
+}
+
+.pillDragging {
+  opacity: 0.6;
+  cursor: grabbing;
+}
+
+.pillDragOver {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+.instructionBox {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.instructionList {
+  margin: 8px 0 0;
+  padding-left: 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  display: grid;
+  gap: 6px;
+}
+
+.submitRow {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.submitButton {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #5b5b5b 0%, #2d2d2d 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.submitButton:hover {
+  transform: translateY(-1px);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.statusOk {
+  color: #7bffb2;
+  font-size: 12px;
+}
+
+.statusErr {
+  color: #ff8b8b;
+  font-size: 12px;
+}
+
+.positionBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #111;
+}
+
+.positionBadgeFRONTEND {
+  background: #ff7b54;
+}
+
+.positionBadgeBACKEND {
+  background: #6fb2ff;
+}
+
+.positionBadgeAI {
+  background: #a79bff;
+}
+
+.positionBadgeDESIGN {
+  background: #ff9bd7;
+}
+
+.positionBadgeAPP {
+  background: #8be28b;
+}
+
+.positionBadgeEMBEDDED {
+  background: #ffc77a;
+}
+
+.positionBadgeGAME {
+  background: #ff9b9b;
+}
+
+.tagMuted {
+  background: #d9d9d9;
+  color: #222;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 960px) {
+  .shell {
+    padding: 20px 16px 70px;
+  }
+
+  .heroTitle {
+    font-size: 24px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .projectRow {
+    grid-template-columns: 1fr auto;
+  }
+
+  .projectRow .labelText {
+    grid-column: 1 / -1;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tableWrap {
+    display: none;
+  }
+
+  .mobileList {
+    display: grid;
+  }
+
+  .positionRow {
+    grid-template-columns: 1fr;
+  }
+
+  .submitRow {
+    justify-content: center;
+  }
+}
+
+@media (min-width: 961px) {
+  .hero {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .card {
+    animation: none;
+  }
+}
