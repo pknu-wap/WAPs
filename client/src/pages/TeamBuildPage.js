@@ -1,30 +1,619 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { teamBuildApi } from "../api/team-build";
+import { POSITIONS } from "../constants/positions";
+import wapsLogo from "../assets/img/waps_logo.png";
+import styles from "../assets/TeamBuildRecruit.module.css";
+
+const createEmptyRankMap = () =>
+  POSITIONS.reduce((acc, pos) => {
+    acc[pos] = [];
+    return acc;
+  }, {});
+
+const createEmptyCapacityMap = () =>
+  POSITIONS.reduce((acc, pos) => {
+    acc[pos] = 0;
+    return acc;
+  }, {});
+
+const normalizeApplies = (applies) =>
+  (applies || []).map((item) => ({
+    applicantId: item.applicantId ?? item.applicant_id ?? item.id,
+    applicantName: item.applicantName ?? item.name ?? "",
+    position: item.position ?? "",
+    comment: item.comment ?? "",
+  }));
+
+const formatApiError = (err, fallback) => {
+  if (typeof err === "string") return err;
+  if (err?.response?.data) {
+    const data = err.response.data;
+    if (typeof data === "string") return data;
+    return data.message || data.error || fallback;
+  }
+  return err?.message || fallback;
+};
 
 function TeamBuildPage() {
   const navigate = useNavigate();
-  const [msg, setMsg] = useState("팀빌딩 페이지로 이동 준비 중...");
+  const [projectIdInput, setProjectIdInput] = useState("");
+  const [currentProjectId, setCurrentProjectId] = useState(null);
+  const [projectTitle, setProjectTitle] = useState("");
+  const [applies, setApplies] = useState([]);
+  const [rankedByPosition, setRankedByPosition] = useState(createEmptyRankMap);
+  const [capacityByPosition, setCapacityByPosition] = useState(createEmptyCapacityMap);
+  const [currentFilter, setCurrentFilter] = useState("");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMsg, setSubmitMsg] = useState("");
+  const [submitStatus, setSubmitStatus] = useState("");
+  const [highlightedApplicantId, setHighlightedApplicantId] = useState(null);
+  const [draggingId, setDraggingId] = useState(null);
+  const [dragOver, setDragOver] = useState({ position: null, zone: null, index: null });
+  const filterRef = useRef(null);
+  const dragStateRef = useRef({ candidate: null, source: null, index: -1, position: null });
+
+  const userName = Cookies.get("userName") || "";
 
   useEffect(() => {
-    const token =
-      Cookies.get("authToken") ||
-      window.localStorage.getItem("authToken") ||
-      "";
-
+    const token = Cookies.get("authToken") || window.localStorage.getItem("authToken") || "";
     if (!token) {
-      alert("로그인이 필요합니다. (토큰 없음)");
+      alert("로그인이 필요합니다.");
       navigate("/login");
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setFilterOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  const countsByPosition = useMemo(() => {
+    const counts = POSITIONS.reduce((acc, pos) => {
+      acc[pos] = 0;
+      return acc;
+    }, {});
+    for (const apply of applies) {
+      if (counts[apply.position] !== undefined) {
+        counts[apply.position] += 1;
+      }
+    }
+    return counts;
+  }, [applies]);
+
+  const filteredApplies = useMemo(() => {
+    return currentFilter ? applies.filter((a) => a.position === currentFilter) : applies;
+  }, [applies, currentFilter]);
+
+  const visiblePositions = useMemo(() => {
+    return POSITIONS.filter((pos) => (countsByPosition[pos] || 0) > 0);
+  }, [countsByPosition]);
+
+  const availableByPosition = useMemo(() => {
+    const result = POSITIONS.reduce((acc, pos) => {
+      acc[pos] = [];
+      return acc;
+    }, {});
+    const rankedIds = POSITIONS.reduce((acc, pos) => {
+      acc[pos] = new Set((rankedByPosition[pos] || []).map((c) => c.applicantId));
+      return acc;
+    }, {});
+    for (const apply of applies) {
+      if (!result[apply.position]) continue;
+      if (!rankedIds[apply.position].has(apply.applicantId)) {
+        result[apply.position].push(apply);
+      }
+    }
+    return result;
+  }, [applies, rankedByPosition]);
+
+  const totalApplicantsOf = (pos) => countsByPosition[pos] || 0;
+
+  const handleLoad = async () => {
+    const projectId = Number(projectIdInput);
+    if (!projectId) {
+      alert("프로젝트 ID를 입력하세요.");
       return;
     }
 
-    alert("현재 팀빌딩이 열려 있지 않습니다!");
-    navigate("/ProjectPage");
-  }, [navigate]);
+    setIsLoading(true);
+    setSubmitMsg("");
+    setSubmitStatus("");
+    try {
+      const response = await teamBuildApi.getRecruitApplies(projectId);
+      if (response?.success === false) {
+        throw new Error(response.message || "불러오기 실패");
+      }
+
+      const normalized = normalizeApplies(response?.applies || response?.data?.applies || []);
+      const rawTitle = response?.projectTitle;
+      const safeTitle = rawTitle && rawTitle !== "null" ? rawTitle : "";
+      setCurrentProjectId(projectId);
+      setProjectTitle(safeTitle);
+      setApplies(normalized);
+      setRankedByPosition(createEmptyRankMap());
+      setCapacityByPosition(createEmptyCapacityMap());
+      setCurrentFilter("");
+      setFilterOpen(false);
+    } catch (err) {
+      setCurrentProjectId(null);
+      setProjectTitle("");
+      setApplies([]);
+      setRankedByPosition(createEmptyRankMap());
+      setCapacityByPosition(createEmptyCapacityMap());
+      setCurrentFilter("");
+      alert(formatApiError(err, "불러오기 실패"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCapacityChange = (pos, value) => {
+    const total = totalApplicantsOf(pos);
+    let next = Number(value);
+    if (Number.isNaN(next)) next = 0;
+    if (next < 0) next = 0;
+    if (next > total) next = total;
+    setCapacityByPosition((prev) => ({ ...prev, [pos]: next }));
+  };
+
+  const handleDragStart = (candidate, source, index) => (event) => {
+    dragStateRef.current = { candidate, source, index, position: candidate.position };
+    setDraggingId(candidate.applicantId);
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", String(candidate.applicantId));
+  };
+
+  const handleDragEnd = () => {
+    dragStateRef.current = { candidate: null, source: null, index: -1, position: null };
+    setDraggingId(null);
+    setDragOver({ position: null, zone: null, index: null });
+  };
+
+  const handleRankedDrop = (position, targetIndex = null) => (event) => {
+    event.preventDefault();
+    if (targetIndex !== null) {
+      event.stopPropagation();
+    }
+    setDragOver({ position: null, zone: null, index: null });
+
+    const dragState = dragStateRef.current;
+    if (!dragState.candidate || dragState.position !== position) return;
+
+    const cap = capacityByPosition[position] || 0;
+    if (cap === 0) {
+      alert("capacity=0 상태에서는 해당 포지션에 우선순위를 설정할 수 없습니다.");
+      return;
+    }
+
+    setRankedByPosition((prev) => {
+      const list = [...(prev[position] || [])];
+      const existingIndex = list.findIndex((c) => c.applicantId === dragState.candidate.applicantId);
+
+      if (existingIndex !== -1) {
+        const [moved] = list.splice(existingIndex, 1);
+        let insertIndex = targetIndex === null ? list.length : targetIndex;
+        if (targetIndex !== null && targetIndex > existingIndex) {
+          insertIndex -= 1;
+        }
+        list.splice(insertIndex, 0, moved);
+      } else {
+        const insertIndex = targetIndex === null ? list.length : targetIndex;
+        list.splice(insertIndex, 0, dragState.candidate);
+      }
+
+      return { ...prev, [position]: list };
+    });
+  };
+
+  const handleAvailableDrop = (position) => (event) => {
+    event.preventDefault();
+    setDragOver({ position: null, zone: null, index: null });
+
+    const dragState = dragStateRef.current;
+    if (!dragState.candidate || dragState.position !== position) return;
+
+    setRankedByPosition((prev) => {
+      const list = [...(prev[position] || [])];
+      const existingIndex = list.findIndex((c) => c.applicantId === dragState.candidate.applicantId);
+      if (existingIndex === -1) return prev;
+      list.splice(existingIndex, 1);
+      return { ...prev, [position]: list };
+    });
+  };
+
+  const handleDragOverZone = (position, zone, index = null) => (event) => {
+    const dragState = dragStateRef.current;
+    if (!dragState.candidate || dragState.position !== position) return;
+    if (zone === "ranked" && (capacityByPosition[position] || 0) === 0) return;
+    event.preventDefault();
+    setDragOver({ position, zone, index });
+  };
+
+  const handleDragLeaveZone = (event) => {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      setDragOver({ position: null, zone: null, index: null });
+    }
+  };
+
+  const validatePriorityBeforeSubmit = () => {
+    const missing = [];
+    for (const pos of POSITIONS) {
+      const cap = Number(capacityByPosition[pos] || 0);
+      if (cap <= 0) continue;
+      const total = totalApplicantsOf(pos);
+      const ranked = (rankedByPosition[pos] || []).length;
+      if (total > 0 && ranked !== total) {
+        missing.push({ pos, total, ranked });
+      }
+    }
+    return missing;
+  };
+
+  const handleSubmit = async () => {
+    if (!currentProjectId) {
+      alert("먼저 프로젝트를 불러오세요.");
+      return;
+    }
+
+    const incomplete = validatePriorityBeforeSubmit();
+    if (incomplete.length > 0) {
+      const msgLines = incomplete.map(
+        (g) => `• ${g.pos}: 전체 ${g.total}명 중 ${g.ranked}명만 우선순위 설정됨`
+      );
+      alert(
+        "모집(capacity > 0) 포지션의 모든 지원자에게 우선순위를 설정해야 제출할 수 있습니다.\n\n" +
+          msgLines.join("\n")
+      );
+      return;
+    }
+
+    const roasters = POSITIONS.map((pos) => {
+      const ranked = rankedByPosition[pos] || [];
+      let cap = Number(capacityByPosition[pos] || 0);
+      const maxCap = ranked.length;
+      if (cap < 0) cap = 0;
+      if (cap > maxCap) cap = maxCap;
+
+      const applicantIds = cap === 0 ? [] : ranked.map((c) => c.applicantId);
+      return { position: pos, capacity: cap, applicantIds };
+    });
+
+    setIsSubmitting(true);
+    setSubmitMsg("");
+    setSubmitStatus("");
+    try {
+      const response = await teamBuildApi.submitRecruitPreference({
+        projectId: currentProjectId,
+        roasters,
+      });
+      const message =
+        typeof response === "string"
+          ? response
+          : response?.message || `[성공] 팀 구성이 완료되었습니다. projectId=${currentProjectId}`;
+      setSubmitMsg(message);
+      setSubmitStatus("ok");
+      setTimeout(() => navigate(-1), 800);
+    } catch (err) {
+      setSubmitMsg(`[실패] ${formatApiError(err, "등록 실패")}`);
+      setSubmitStatus("err");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderPositionBadge = (pos) => {
+    const colorClass = pos ? styles[`positionBadge${pos}`] : "";
+    const className = colorClass || styles.tagMuted;
+    return <span className={`${styles.positionBadge} ${className}`}>{pos || "전체"}</span>;
+  };
+
+  const emptyApplyMessage = currentProjectId
+    ? currentFilter
+      ? `${currentFilter} 분야에 신청자가 없습니다.`
+      : "신청자가 없습니다."
+    : "프로젝트를 불러오세요. 신청자 목록이 나타납니다.";
 
   return (
-    <div style={{ padding: 24 }}>
-      <p>{msg}</p>
+    <div className={styles.page}>
+      <div className={styles.shell}>
+        <div className={styles.topBar}>
+          <div className={styles.brand}>
+            <img src={wapsLogo} alt="WAPs" className={styles.brandLogo} />
+          </div>
+          <div className={styles.topActions}>
+            {userName && <span className={styles.userName}>{userName} 님</span>}
+            <button type="button" className={styles.closeButton} onClick={() => navigate(-1)}>
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <div className={styles.hero}>
+          <h1 className={styles.heroTitle}>RECRUITMENT PAGE</h1>
+          <div className={styles.heroSubtitle}>모집하기 페이지</div>
+        </div>
+
+        <div className={styles.card}>
+          <div className={styles.sectionTitle}>프로젝트 ID</div>
+          <div className={styles.sectionCaption}>본인이 등록한 프로젝트의 ID를 입력하세요.</div>
+
+          <div className={styles.projectRow}>
+            <input
+              className={`${styles.inputField} ${styles.projectIdInput}`}
+              type="number"
+              min="1"
+              placeholder="예) 1"
+              value={projectIdInput}
+              onChange={(event) => setProjectIdInput(event.target.value)}
+            />
+            <button
+              type="button"
+              className={styles.primaryButton}
+              onClick={handleLoad}
+              disabled={isLoading}
+            >
+              {isLoading ? "불러오는 중" : "불러오기"}
+            </button>
+          </div>
+          {projectTitle && <div className={styles.muted}>· {projectTitle}</div>}
+
+          <div className={styles.sectionHeader}>
+            <div>
+              <div className={styles.sectionTitle}>신청자 목록</div>
+              <div className={styles.sectionCaption}>본인의 팀에 지원한 신청자들의 목록입니다.</div>
+            </div>
+            <div className={styles.filterWrap} ref={filterRef}>
+              <span className={styles.filterLabel}>분야별 필터</span>
+              <div className={styles.filterDropdown}>
+                <button
+                  type="button"
+                  className={styles.filterButton}
+                  onClick={() => setFilterOpen((prev) => !prev)}
+                >
+                  <span className={styles.filterButtonContent}>
+                    {currentFilter ? (
+                      renderPositionBadge(currentFilter)
+                    ) : (
+                      <span className={styles.filterAllText}>전체보기</span>
+                    )}
+                  </span>
+                  <span className={styles.filterArrow}>▼</span>
+                </button>
+                {filterOpen && (
+                  <div className={styles.filterMenu}>
+                    <button
+                      type="button"
+                      className={`${styles.filterItem} ${!currentFilter ? styles.filterItemActive : ""}`}
+                      onClick={() => {
+                        setCurrentFilter("");
+                        setFilterOpen(false);
+                      }}
+                    >
+                      <span className={styles.filterAllText}>전체보기</span>
+                    </button>
+                    {POSITIONS.map((pos) => (
+                      <button
+                        key={pos}
+                        type="button"
+                        className={`${styles.filterItem} ${
+                          currentFilter === pos ? styles.filterItemActive : ""
+                        }`}
+                        onClick={() => {
+                          setCurrentFilter(pos);
+                          setFilterOpen(false);
+                        }}
+                      >
+                        {renderPositionBadge(pos)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>이름</th>
+                  <th>분야</th>
+                  <th>코멘트</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredApplies.length === 0 ? (
+                  <tr>
+                    <td colSpan="3" className={styles.muted}>
+                      {emptyApplyMessage}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredApplies.map((apply) => (
+                    <tr
+                      key={apply.applicantId}
+                      className={
+                        highlightedApplicantId === apply.applicantId ? styles.rowHighlight : ""
+                      }
+                    >
+                      <td>{apply.applicantName || "-"}</td>
+                      <td>{renderPositionBadge(apply.position)}</td>
+                      <td className={styles.commentCell}>{apply.comment || "-"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className={styles.mobileList}>
+            {filteredApplies.length === 0 ? (
+              <div className={styles.muted}>
+                {emptyApplyMessage}
+              </div>
+            ) : (
+              filteredApplies.map((apply) => (
+                <div
+                  key={apply.applicantId}
+                  className={styles.applicantCard}
+                  onMouseEnter={() => setHighlightedApplicantId(apply.applicantId)}
+                  onMouseLeave={() => setHighlightedApplicantId(null)}
+                >
+                  <div className={styles.cardHeaderRow}>
+                    <span className={styles.cardName}>{apply.applicantName || "-"}</span>
+                    {renderPositionBadge(apply.position)}
+                  </div>
+                  <div className={styles.cardComment}>{apply.comment || "-"}</div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className={styles.instructionBox}>
+            <div className={styles.sectionTitle}>선발입력</div>
+            <div className={styles.sectionCaption}>
+              드래그 앤 드롭으로 지원자를 선택하고 우선순위를 변경하세요.
+            </div>
+            <ul className={styles.instructionList}>
+              <li>모집을 희망하는 분야에 원하는 인원만큼 capacity를 입력하세요.</li>
+              <li>지원자를 드래그하여 우선순위를 정해주세요. (1순위부터 마지막 순위까지)</li>
+              <li>capacity가 0이면 우선순위를 설정할 수 없습니다.</li>
+              <li>모든 지원자에게 우선순위를 지정해야 제출이 가능합니다.</li>
+            </ul>
+          </div>
+
+          <div className={styles.positions}>
+            {visiblePositions.length === 0 ? (
+              <div className={styles.muted}>지원자가 없습니다.</div>
+            ) : (
+              visiblePositions.map((pos) => {
+                const ranked = rankedByPosition[pos] || [];
+                const available = availableByPosition[pos] || [];
+                const cap = Number(capacityByPosition[pos] || 0);
+                const rankedDragOver = dragOver.position === pos && dragOver.zone === "ranked";
+                const availableDragOver = dragOver.position === pos && dragOver.zone === "available";
+
+                return (
+                <div key={pos} className={styles.positionRow}>
+                  <div className={styles.positionMeta}>
+                    <div className={styles.positionName}>{pos}</div>
+                    <div className={styles.capacityBox}>
+                      <div className={styles.capacityPill}>
+                        <input
+                          className={styles.capacityInput}
+                          type="number"
+                          min="0"
+                          value={cap}
+                          onChange={(event) => handleCapacityChange(pos, event.target.value)}
+                        />
+                      </div>
+                      <span className={styles.capacityLabel}>Capacity</span>
+                    </div>
+                  </div>
+                  <div className={styles.rankArea}>
+                      <div className={styles.rankLabel}>선택된 지원자(우선 순위)</div>
+                      <div
+                        className={`${styles.dropZone} ${rankedDragOver ? styles.dragOver : ""} ${
+                          cap === 0 ? styles.locked : ""
+                        }`}
+                        onDragOver={handleDragOverZone(pos, "ranked")}
+                        onDragEnter={handleDragOverZone(pos, "ranked")}
+                        onDragLeave={handleDragLeaveZone}
+                        onDrop={handleRankedDrop(pos)}
+                      >
+                        {ranked.length === 0 ? (
+                          <span className={styles.emptyText}>여기에 지원자를 드래그해 넣으세요.</span>
+                        ) : (
+                          ranked.map((candidate, index) => (
+                            <span
+                              key={candidate.applicantId}
+                              className={`${styles.pill} ${styles.pillRanked} ${
+                                draggingId === candidate.applicantId ? styles.pillDragging : ""
+                              } ${
+                                dragOver.position === pos &&
+                                dragOver.zone === "ranked" &&
+                                dragOver.index === index
+                                  ? styles.pillDragOver
+                                  : ""
+                              }`}
+                              data-priority={index + 1}
+                              draggable
+                              onDragStart={handleDragStart(candidate, "ranked", index)}
+                              onDragEnd={handleDragEnd}
+                              onDragOver={handleDragOverZone(pos, "ranked", index)}
+                              onDragEnter={handleDragOverZone(pos, "ranked", index)}
+                              onDragLeave={handleDragLeaveZone}
+                              onDrop={handleRankedDrop(pos, index)}
+                              onMouseEnter={() => setHighlightedApplicantId(candidate.applicantId)}
+                              onMouseLeave={() => setHighlightedApplicantId(null)}
+                            >
+                              {candidate.applicantName}
+                            </span>
+                          ))
+                        )}
+                      </div>
+
+                      <div className={styles.rankLabel}>사용 가능한 지원자</div>
+                      <div
+                        className={`${styles.dropZone} ${availableDragOver ? styles.dragOver : ""}`}
+                        onDragOver={handleDragOverZone(pos, "available")}
+                        onDragEnter={handleDragOverZone(pos, "available")}
+                        onDragLeave={handleDragLeaveZone}
+                        onDrop={handleAvailableDrop(pos)}
+                      >
+                        {available.length === 0 ? (
+                          <span className={styles.emptyText}>신청자 없음</span>
+                        ) : (
+                          available.map((candidate) => (
+                            <span
+                              key={candidate.applicantId}
+                              className={`${styles.pill} ${
+                                draggingId === candidate.applicantId ? styles.pillDragging : ""
+                              }`}
+                              draggable
+                              onDragStart={handleDragStart(candidate, "available", -1)}
+                              onDragEnd={handleDragEnd}
+                              onMouseEnter={() => setHighlightedApplicantId(candidate.applicantId)}
+                              onMouseLeave={() => setHighlightedApplicantId(null)}
+                            >
+                              {candidate.applicantName}
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          <div className={styles.submitRow}>
+            <button
+              type="button"
+              className={styles.submitButton}
+              onClick={handleSubmit}
+              disabled={isSubmitting || !currentProjectId}
+            >
+              {isSubmitting ? "제출 중..." : "희망 팀 제출하기"}
+            </button>
+            {submitMsg && (
+              <span className={submitStatus === "ok" ? styles.statusOk : styles.statusErr}>
+                {submitMsg}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
