@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import LoadingPage from "../../components/LoadingPage";
 
 const Callback = () => {
   const navigate = useNavigate();
+  const hasHandled = useRef(false);
 
   const fetchUserInfo = (token) => {
     fetch(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
@@ -64,6 +65,9 @@ const Callback = () => {
   };
 
   useEffect(() => {
+    if (hasHandled.current) return;
+    hasHandled.current = true;
+
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
 

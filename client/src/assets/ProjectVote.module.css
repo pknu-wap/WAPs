@@ -48,7 +48,7 @@
   padding-top: 30px;
   padding-bottom: 100px;
   position: relative;
-  z-index: 0;
+  z-index: 5;
   background: linear-gradient(90deg, #a0aeffd2 0%, #b4edfec0 100%);
   height: 190px;
 }
@@ -82,6 +82,21 @@
   color: #ffffff;
   padding-bottom: 20px;
   font-family: "Pretendard-Regular";
+}
+
+.voteFilter {
+  position: relative;
+  z-index: 20;
+}
+
+.voteFilter :global(.filter-dropdown) {
+  position: relative;
+  z-index: 21;
+}
+
+.voteFilter :global(.dropdown-content) {
+  z-index: 2000;
+  pointer-events: auto;
 }
 
 .mount1 {
@@ -145,9 +160,36 @@
   width: 100%;
   text-align: center;
   position: relative;
-  z-index: 0;
+  z-index: 1;
   overflow: visible;
-  margin-top: -20px; /* 헤더와 자연스럽게 연결 */
+  margin-top: 0;
+  padding-top: 12px;
+}
+
+.empty_state {
+  width: 90%;
+  margin: 24px auto 12px;
+  padding: 22px 18px 26px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  text-align: center;
+  color: #f5f5f5;
+}
+
+.empty_state_title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.empty_state_subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.title_form {
+  position: relative;
+  z-index: 6;
 }
 
 .project_list_gradient {
