@@ -31,7 +31,7 @@ const CalendarPage = () => {
       <p className="calendar-desc">WAP의 일정들을 보기 쉽게 확인하세요</p>
 
       {/* 일정 리스트 영역 */}
-      <div className="calendar-list">
+      <div className={`calendar-list ${events.length === 0 ? "empty" : ""}`}>
         {events.length > 0 ? (
           events.map((event, index) => (
             <div key={index} className="schedule-wrapper">
