@@ -164,7 +164,7 @@ const VoteResultPage = () => {
 
               {/* 드롭다운 */}
               <div
-                className="filter-container"
+                className={`${styles.voteFilter} filter-container`}
                 style={{
                   marginTop: "20px",
                   justifyContent: "flex-end",
