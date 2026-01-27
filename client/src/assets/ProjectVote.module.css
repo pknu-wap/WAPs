@@ -165,6 +165,27 @@
   margin-top: -20px; /* 헤더와 자연스럽게 연결 */
 }
 
+.empty_state {
+  width: 90%;
+  margin: 24px auto 12px;
+  padding: 22px 18px 26px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  text-align: center;
+  color: #f5f5f5;
+}
+
+.empty_state_title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.empty_state_subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .title_form {
   position: relative;
   z-index: 6;

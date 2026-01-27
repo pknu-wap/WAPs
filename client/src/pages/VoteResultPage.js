@@ -52,6 +52,7 @@ const VoteResultPage = () => {
   }, [semesterParam]);
 
   const [projects, setProjects] = useState([]);
+  const [emptyMessage, setEmptyMessage] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   // 순위 계산용
@@ -73,8 +74,8 @@ const VoteResultPage = () => {
 
         // 데이터가 비어있으면 공개되지 않은 것으로 간주
         if (!voteItems || voteItems.length === 0) {
-          alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
-          navigate("/vote/result", { replace: true });
+          setProjects([]);
+          setEmptyMessage("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
           return;
         }
 
@@ -92,15 +93,17 @@ const VoteResultPage = () => {
 
         const sorted = [...voteItems].sort((a, b) => b.voteCount - a.voteCount);
         setProjects(sorted);
+        setEmptyMessage("");
       } catch (e) {
         if (!isMounted) return;
 
         const status = e?.response?.status;
         if (status === 400 || status === 404 || status === 500) {
-          alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
-          navigate("/vote/result", { replace: true });
+          setProjects([]);
+          setEmptyMessage("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
         } else {
-          alert("투표 결과를 가져오는데 실패했습니다.");
+          setProjects([]);
+          setEmptyMessage("투표 결과를 가져오는데 실패했습니다.");
         }
       }
     };
@@ -274,6 +277,13 @@ const VoteResultPage = () => {
                   </div>
                 );
               })
+            ) : emptyMessage ? (
+              <div className={styles.empty_state}>
+                <div className={styles.empty_state_title}>{emptyMessage}</div>
+                <div className={styles.empty_state_subtitle}>
+                  다른 학기를 선택해보거나 나중에 다시 확인해주세요.
+                </div>
+              </div>
             ) : (
               <p>프로젝트 데이터를 불러오는 중입니다...</p>
             )}
