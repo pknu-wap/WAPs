@@ -76,10 +76,14 @@ const ContentBox = () => {
           setFilteredData(response.projectsResponse);
         } else {
           console.error("API 응답의 projectsResponse가 배열이 아닙니다:", response);
+          setData([]);
+          setFilteredData([]);
         }
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch project data:", error);
+        setData([]);
+        setFilteredData([]);
         setIsLoading(false);
       }
     };
@@ -118,6 +122,10 @@ const ContentBox = () => {
   if (isLoading) {
     return <LoadingPage />; // 완전 교체
   }
+
+  const isBaseEmpty =
+    data.length === 0 && filter === "All" && searchTerm.trim() === "";
+  const isFilteredEmpty = !isBaseEmpty && filteredData.length === 0;
 
   return (
     <div>
@@ -198,33 +206,55 @@ const ContentBox = () => {
       </div>
 
       <div className="content-box mount1">
-        {filteredData.map((item, index) => (
-          <div
-            key={index}
-            className="box"
-            onClick={() => navigate(`/project/${item.projectId}`)}
-          >
-            <div className="image">
-              {item.thumbnail && (
-                <img
-                  className="project-image"
-                  alt={item.title}
-                  src={item.thumbnail}
-                />
-              )}
+        {isBaseEmpty && (
+          <div className="empty-state">
+            <div className="empty-state__title">
+              아직 이번 학기 프로젝트가 등록되지 않았어요
             </div>
-
-            <div className="titlebox">
-              <div className="title-row">
-                <h2>{item.title}</h2>
-                <span className={`project-type-tag tag--${typeKey(item.projectType)}`}>
-                  {getTypeLabel(item.projectType)}
-                </span>
-              </div>
-              <p>{item.summary}</p>
+            <div className="empty-state__subtitle">
+              새로운 프로젝트가 등록되면 이곳에서 확인할 수 있어요.
             </div>
           </div>
-        ))}
+        )}
+
+        {isFilteredEmpty && (
+          <div className="empty-state">
+            <div className="empty-state__title">조건에 맞는 프로젝트가 없어요</div>
+            <div className="empty-state__subtitle">
+              필터를 변경하거나 검색어를 지워보세요.
+            </div>
+          </div>
+        )}
+
+        {!isBaseEmpty &&
+          !isFilteredEmpty &&
+          filteredData.map((item, index) => (
+            <div
+              key={index}
+              className="box"
+              onClick={() => navigate(`/project/${item.projectId}`)}
+            >
+              <div className="image">
+                {item.thumbnail && (
+                  <img
+                    className="project-image"
+                    alt={item.title}
+                    src={item.thumbnail}
+                  />
+                )}
+              </div>
+
+              <div className="titlebox">
+                <div className="title-row">
+                  <h2>{item.title}</h2>
+                  <span className={`project-type-tag tag--${typeKey(item.projectType)}`}>
+                    {getTypeLabel(item.projectType)}
+                  </span>
+                </div>
+                <p>{item.summary}</p>
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { voteApi } from "../api/vote";
 import { userApi } from "../api/user";
 import { useNavigate } from "react-router-dom";
@@ -23,10 +23,14 @@ const VotePage = () => {
   // 투표했는지 여부의 초기값은 일단 false
   const [isVotedUser, setIsVotedUser] = useState(false);
   const navigate = useNavigate();
+  const hasValidated = useRef(false);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
   useEffect(() => {
+    if (hasValidated.current) return;
+    hasValidated.current = true;
+
     const validate = async () => {
       // 토큰 여부 확인
       if (!token) {
@@ -56,6 +60,7 @@ const VotePage = () => {
         }
       } catch (error) {
         alert("투표가 존재하지 않습니다.");
+        navigate("/ProjectPage");
       }
     };
     validate();
