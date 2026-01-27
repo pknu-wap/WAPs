@@ -9,7 +9,7 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
   // 현재까지의 연도/학기를 배열로 생성
   const generateSemesters = () => {
     const today = new Date();
-    const startYear = 2000;
+    const startYear = 2024;
     const endYear = today.getFullYear();
     const semesters = [];
 
