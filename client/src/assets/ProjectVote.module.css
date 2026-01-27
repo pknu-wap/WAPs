@@ -162,7 +162,8 @@
   position: relative;
   z-index: 1;
   overflow: visible;
-  margin-top: -20px; /* 헤더와 자연스럽게 연결 */
+  margin-top: 0;
+  padding-top: 12px;
 }
 
 .empty_state {
