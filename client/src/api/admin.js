@@ -63,9 +63,13 @@ export const adminTeamBuildApi = {
     runTeamBuilding: () =>
         apiClient.post("/admin/team/building/run"),
 
+    // 팀 빌딩 상태 조회
+    getTeamBuildStatus: (semester) =>
+        apiClient.get("/admin/team/building/status", { params: { semester } }),
+
     // 팀 빌딩 상태 변경
-    updateTeamBuildStatus: () =>
-        apiClient.patch("/admin/team/building/status"),
+    updateTeamBuildStatus: (semester) =>
+        apiClient.patch("/admin/team/building/status", {}, { params: { semester } }),
 
     // 현재 학기 팀빌딩 기능 생성
     createTeamBuild: () =>
