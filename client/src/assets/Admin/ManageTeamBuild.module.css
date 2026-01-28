@@ -70,14 +70,35 @@
   align-items: center;
   justify-content: center;
   font-size: 22px;
+  transition: background-color 0.2s ease;
+  position: relative;
+  z-index: 2;
 }
 
-.circle IconCheck {
-  display: flex;
+.circle SVG {
+  width: 35px;
+  height: 26px;
 }
+
 .active .circle {
   background: var(--primary);
   color: black;
+  transition-delay: 0.8s;
+}
+
+.active .circle svg {
+  animation: popIn 0.4s 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .line {
@@ -85,6 +106,50 @@
   height: 5px;
   background: var(--progress);
   margin-bottom: 46px;
+  position: relative;
+  z-index: 1;
+}
+
+.line::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--primary);
+  transition: width 0.8s ease-in-out;
+  z-index: 2;
+}
+
+.line::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--progress) 100%);
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  z-index: 1;
+}
+
+.completedLine {
+  background: var(--progress);
+}
+
+.completedLine::after {
+  width: 100%;
+}
+
+.gradientLine {
+  background: var(--progress);
+}
+
+.gradientLine::before {
+  opacity: 1;
+  transition-delay: 0.8s;
 }
 
 .nextBtn {

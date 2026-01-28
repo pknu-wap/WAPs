@@ -1,13 +1,13 @@
-const IconWrapper = ({ children, color = 'currentColor', size = '24' }) => {
+const IconWrapper = ({ children, color = 'currentColor', size = '24', ...props }) => {
     return (
         <svg
             width={size}
             height={size}
-
-            fill={color} // 
+            fill={color}
             xmlns="http://www.w3.org/2000/svg"
             preserveAspectRatio="xMidYMid meet"
-            style={{ transition: 'fill 0.2s' }}
+            style={{ transition: 'fill 0.2s', display: 'block' }}
+            {...props}
         >
             {children}
         </svg>
@@ -53,9 +53,8 @@ export const IconPlan = (props) => (
 // 5. 체크 표시 아이콘
 
 export const IconCheck = (props) => (
-    <IconWrapper {...props} viewBox="0 0 36 26">
+    <IconWrapper {...props} viewBox="0 0 35 26">
         <path
-            style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
             d="M12.2393 26L0 13.6757L3.05982 10.5946L12.2393 19.8378L31.9402 0L35 3.08108L12.2393 26Z"
         />
     </IconWrapper>

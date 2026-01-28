@@ -22,8 +22,8 @@ const ManageTeamBuildPage = () => {
 
     // 상태 조회 (최초) - 실제 API 나오면 연결
     useEffect(() => {
-        // 임시: unavailable → open → START → APPLY → RECRUIT → END
-        setStatus('APPLY');
+        // 임시: unavailable > open > START > APPLY > RECRUIT > END
+        setStatus("RECRUIT");
     }, [semester]);
 
     // 팀빌딩 시작 (open)
@@ -125,13 +125,22 @@ const ManageTeamBuildPage = () => {
                                 {statusSteps.map((step, idx) => {
                                     const currentIdx = statusSteps.findIndex(s => s.key === status);
                                     const isActive = idx <= currentIdx;
+
+                                    let lineClass = styles.line;
+                                    if (idx < currentIdx) {
+                                        // 현재 단계보다 이전 라인: 완료됨 (파란색)
+                                        lineClass = `${styles.line} ${styles.completedLine}`;
+                                    } else if (idx === currentIdx) {
+                                        // 현재 단계에서 뻗어나가는 라인: 그라데이션 (파란색 -> 회색)
+                                        lineClass = `${styles.line} ${styles.gradientLine}`;
+                                    }
                                     return (
                                         <>
                                             <div key={step.key} className={`${styles.step} ${isActive ? styles.active : ''}`}>
                                                 <span>{step.label}</span>
                                                 <div className={styles.circle}>{isActive ? <IconCheck color={'#000'} size="1" /> : ''}</div>
                                             </div>
-                                            {idx < statusSteps.length - 1 && <div className={styles.line} />}
+                                            {idx < statusSteps.length - 1 && <div className={lineClass} />}
                                         </>
                                     );
                                 })}
