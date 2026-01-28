@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import styles from '../../assets/Admin/ManageTeamBuild.module.css';
 import { adminTeamBuildApi } from '../../api/admin';
 import useSemester from '../../hooks/useSemester';
+import { IconCheck } from '../../components/Admin/icons';
 
 const ManageTeamBuildPage = () => {
     const [loading, setLoading] = useState(false); // 로딩 중 여부
@@ -22,7 +23,7 @@ const ManageTeamBuildPage = () => {
     // 상태 조회 (최초) - 실제 API 나오면 연결
     useEffect(() => {
         // 임시: unavailable → open → START → APPLY → RECRUIT → END
-        setStatus('unavailable');
+        setStatus('APPLY');
     }, [semester]);
 
     // 팀빌딩 시작 (open)
@@ -102,8 +103,8 @@ const ManageTeamBuildPage = () => {
                                 {statusSteps.map((step, idx) => (
                                     <>
                                         <div key={step.key} className={styles.step}>
-                                            <div className={styles.circle}></div>
                                             <span>{step.label}</span>
+                                            <div className={styles.circle}></div>
                                         </div>
                                         {idx < statusSteps.length - 1 && <div className={styles.line} />}
                                     </>
@@ -127,8 +128,8 @@ const ManageTeamBuildPage = () => {
                                     return (
                                         <>
                                             <div key={step.key} className={`${styles.step} ${isActive ? styles.active : ''}`}>
-                                                <div className={styles.circle}>{isActive ? '✓' : ''}</div>
                                                 <span>{step.label}</span>
+                                                <div className={styles.circle}>{isActive ? <IconCheck color={'#000'} size="1" /> : ''}</div>
                                             </div>
                                             {idx < statusSteps.length - 1 && <div className={styles.line} />}
                                         </>
@@ -138,7 +139,7 @@ const ManageTeamBuildPage = () => {
                                     className={styles.nextBtn}
                                     onClick={handleChangeStatus}
                                     disabled={statusChanging || status === 'END' || statusLoading}
-                                    style={{ background: (statusChanging || status === 'END' || statusLoading) ? '#888' : undefined }}
+                                    style={{ background: (statusChanging || status === 'END' || statusLoading) ? '#888' : undefined, fontSize: 33 }}
                                 >
                                     →
                                 </button>
