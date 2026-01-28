@@ -1,5 +1,17 @@
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+:root {
+  --primary: #abd4fd;
+  --progress: #5e5e5e;
+}
+
 .container {
-  padding: 20px;
   width: 100%;
   height: 100%;
   display: flex;
@@ -10,15 +22,15 @@
 
 .upperBox {
   width: 100%;
-  flex: 1;
+  flex: 6;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .stepCard {
-  width: 90%;
-  height: 200px;
+  width: 100%;
+  height: 90%;
   background: #353535;
   border-radius: 36px;
   display: flex;
@@ -37,7 +49,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #aaa;
+  color: var(--progress);
   font-size: 18px;
 }
 
@@ -49,7 +61,7 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #666;
+  background: var(--progress);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,48 +69,51 @@
 }
 
 .active .circle {
-  background: #abd4fd;
+  background: var(--primary);
   color: black;
 }
 
 .line {
   flex: 1;
   height: 2px;
-  background: #666;
+  background: var(--progress);
 }
 
 .nextBtn {
   margin-left: auto;
-  width: 70px;
-  height: 50px;
-  border-radius: 30px;
-  background: #555;
+  width: 168px;
+  height: 66px;
+  border: 1.5px solid #a2a2a2;
+  border-radius: 63px;
+  background: #535353;
   color: white;
-  font-size: 24px;
-  border: none;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
   cursor: pointer;
 }
 
 /* ================= 하단 ================= */
 
 .underBox {
-  flex: 1;
-  padding-left: 80px;
+  flex: 4;
   display: flex;
   align-items: flex-start;
 }
 
-.csvArea {
+.btnArea {
+  margin-top: 50px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 13px;
 }
 
 .csvRow {
+  padding-left: 14px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 40px;
-  font-size: 28px;
+  font-size: 30px;
   color: white;
 }
 
@@ -109,18 +124,34 @@
   border: 2px solid white;
   background: transparent;
   color: white;
-  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition:
+    0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.exportBtn:hover,
+.exportBtn:active {
+  color: white;
+  border: 2px solid var(--primary);
+  background-color: var(--primary);
 }
 
 .teamBuildBtn {
-  margin-top: 40px;
-  width: 360px;
+  margin-top: 30px;
+  width: 355px;
   height: 70px;
-  border-radius: 80px;
-  background: #abd4fd;
-  font-size: 30px;
+  border-radius: 74px;
+  background: var(--primary);
+  font-size: 35px;
   font-weight: 700;
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

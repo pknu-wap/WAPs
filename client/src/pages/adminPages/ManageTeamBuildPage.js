@@ -4,11 +4,11 @@ import { adminTeamBuildApi } from '../../api/admin';
 import useSemester from '../../hooks/useSemester';
 
 const ManageTeamBuildPage = () => {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false); // 로딩 중 여부
     // 상태: unavailable | open | 진행단계(START/APPLY/RECRUIT/END)
-    const [status, setStatus] = useState('unavailable');
-    const [statusLoading, setStatusLoading] = useState(false); // 조회 API 생기면 true로
-    const [statusChanging, setStatusChanging] = useState(false);
+    const [status, setStatus] = useState('unavailable'); // 현재 팀빌딩 상태
+    const [statusLoading, setStatusLoading] = useState(false); // 상태 조회 중 여부(조회 API 생기면 true로)
+    const [statusChanging, setStatusChanging] = useState(false); // 상태 변경 중 여부(버튼 중복 클릭 방지)
     const semester = useSemester();
 
     // 상태별 단계 정보
@@ -29,7 +29,7 @@ const ManageTeamBuildPage = () => {
     const handleOpenTeamBuild = async () => {
         setStatusChanging(true);
         try {
-            await adminTeamBuildApi.createTeamBuild();
+            await adminTeamBuildApi.createTeamBuild(); // 팀빌딩 시작
             setStatus('START');
         } catch (e) {
             alert('팀빌딩 시작에 실패했습니다.');
@@ -42,8 +42,8 @@ const ManageTeamBuildPage = () => {
         if (status === 'END') return;
         setStatusChanging(true);
         try {
-            const res = await adminTeamBuildApi.updateTeamBuildStatus(semester);
-            setStatus(res?.status || status); // 응답에 새 상태가 있으면 반영
+            const res = await adminTeamBuildApi.updateTeamBuildStatus(semester); // 상태 변경
+            setStatus(res?.status || status); // 응답에 새 상태가 있으면 반영, 없으면 기존 상태 유지
         } catch (e) {
             alert('상태 변경에 실패했습니다.');
         }
@@ -52,7 +52,7 @@ const ManageTeamBuildPage = () => {
 
     // 팀 빌딩 알고리즘 실행 (END 상태에서만)
     const handleRunTeamBuilding = async () => {
-        if (!canRunAlgorithm) return;
+        if (!canRunAlgorithm) return;  // 실행 가능 상태가 아니면 아무것도 하지 않음
         if (!window.confirm('정말 팀 빌딩 알고리즘을 실행하시겠습니까?')) return;
         setLoading(true);
         try {
@@ -150,7 +150,7 @@ const ManageTeamBuildPage = () => {
 
             {/* 하단 영역 */}
             <div className={styles.underBox}>
-                <div className={styles.csvArea}>
+                <div className={styles.btnArea}>
                     <div className={styles.csvRow}>
                         <span>지원 CSV</span>
                         <button
