@@ -6,24 +6,35 @@ import { IconCheck } from '../../components/Admin/icons';
 
 const ManageTeamBuildPage = () => {
     const [loading, setLoading] = useState(false); // 로딩 중 여부
-    // 상태: unavailable | open | 진행단계(START/APPLY/RECRUIT/END)
-    const [status, setStatus] = useState('unavailable'); // 현재 팀빌딩 상태
-    const [statusLoading, setStatusLoading] = useState(false); // 상태 조회 중 여부(조회 API 생기면 true로)
+    const [status, setStatus] = useState('OPEN'); // 현재 팀빌딩 상태
+    const [statusLoading, setStatusLoading] = useState(true); // 팀빌딩 상태 로드 여부 (api 배포 이후엔 true로 변경하기!!!)
     const [statusChanging, setStatusChanging] = useState(false); // 상태 변경 중 여부(버튼 중복 클릭 방지)
     const semester = useSemester();
 
     // 상태별 단계 정보
     const statusSteps = [
-        { key: 'START', label: '시작' },
+        { key: 'OPEN', label: '시작' },
         { key: 'APPLY', label: '지원' },
         { key: 'RECRUIT', label: '모집' },
-        { key: 'END', label: '끝' },
+        { key: 'CLOSED', label: '끝' },
     ];
 
-    // 상태 조회 (최초) - 실제 API 나오면 연결
+    const fetchStatus = async () => {
+        try {
+            const res = await adminTeamBuildApi.getTeamBuildStatus();
+            setStatus(res.status);
+            setStatusLoading(false);
+        } catch (e) {
+            alert('팀빌딩 상태 조회에 실패했습니다.');
+            setStatus('unavailable');
+        } finally {
+            setStatusLoading(false);
+        }
+    }
+
+    // 상태 조회 (최초)
     useEffect(() => {
-        // 임시: unavailable > open > START > APPLY > RECRUIT > END
-        setStatus("RECRUIT");
+        fetchStatus();
     }, [semester]);
 
     // 팀빌딩 시작 (open)
@@ -31,7 +42,7 @@ const ManageTeamBuildPage = () => {
         setStatusChanging(true);
         try {
             await adminTeamBuildApi.createTeamBuild(); // 팀빌딩 시작
-            setStatus('START');
+            setStatus('OPEN');
         } catch (e) {
             alert('팀빌딩 시작에 실패했습니다.');
         }
@@ -40,18 +51,34 @@ const ManageTeamBuildPage = () => {
 
     // 상태 변경 (다음 단계로)
     const handleChangeStatus = async () => {
-        if (status === 'END') return;
+        if (status === 'CLOSED') return;
         setStatusChanging(true);
         try {
-            const res = await adminTeamBuildApi.updateTeamBuildStatus(semester); // 상태 변경
-            setStatus(res?.status || status); // 응답에 새 상태가 있으면 반영, 없으면 기존 상태 유지
+            // 현재 상태의 인덱스를 찾음
+            const currentIdx = statusSteps.findIndex(s => s.key === status);
+            // 다음 단계의 키를 가져옴 
+            const nextStatus = statusSteps[currentIdx + 1]?.key;
+
+            if (!nextStatus) {
+                alert('더 이상 변경할 상태가 없습니다.');
+                return;
+            }
+
+            await adminTeamBuildApi.updateTeamBuildStatus(semester, nextStatus); // 상태 변경
+            setStatus(nextStatus); // 성공 시 상태 업데이트
+            await fetchStatus();
         } catch (e) {
+            console.error(e);
             alert('상태 변경에 실패했습니다.');
+        } finally {
+            setStatusChanging(false);
         }
-        setStatusChanging(false);
     };
 
-    // 팀 빌딩 알고리즘 실행 (END 상태에서만)
+    // 상태가 END일 때만 알고리즘 실행 가능
+    const canRunAlgorithm = status === 'CLOSED';
+
+    // 팀 빌딩 알고리즘 실행 (CLOSED 상태에서만)
     const handleRunTeamBuilding = async () => {
         if (!canRunAlgorithm) return;  // 실행 가능 상태가 아니면 아무것도 하지 않음
         if (!window.confirm('정말 팀 빌딩 알고리즘을 실행하시겠습니까?')) return;
@@ -64,8 +91,6 @@ const ManageTeamBuildPage = () => {
         }
         setLoading(false);
     };
-    // 알고리즘 실행 가능 조건: 상태가 END일 때만 가능
-    const canRunAlgorithm = status === 'END';
 
     // CSV 다운로드 함수
     const handleDownload = async (type) => {
@@ -77,7 +102,7 @@ const ManageTeamBuildPage = () => {
             } else {
                 res = await adminTeamBuildApi.getRecruits();
             }
-            // 파일 다운로드 처리 (blob)
+            // 파일 다운로드 처리 
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -120,7 +145,7 @@ const ManageTeamBuildPage = () => {
                             </>
                         )}
                         {/* 팀빌딩 진행 상태 */}
-                        {status !== 'unavailable' && status !== 'open' && (
+                        {status !== 'unavailable' && (
                             <>
                                 {statusSteps.map((step, idx) => {
                                     const currentIdx = statusSteps.findIndex(s => s.key === status);
@@ -147,8 +172,8 @@ const ManageTeamBuildPage = () => {
                                 <button
                                     className={styles.nextBtn}
                                     onClick={handleChangeStatus}
-                                    disabled={statusChanging || status === 'END' || statusLoading}
-                                    style={{ background: (statusChanging || status === 'END' || statusLoading) ? '#888' : undefined, fontSize: 33 }}
+                                    disabled={statusChanging || status === 'CLOSED' || statusLoading}
+                                    style={{ background: (statusChanging || status === 'CLOSED' || statusLoading) ? '#888' : undefined, fontSize: 33 }}
                                 >
                                     →
                                 </button>
@@ -193,7 +218,7 @@ const ManageTeamBuildPage = () => {
                     >
                         팀 빌딩 알고리즘 실행
                     </button>
-                    {(loading || statusLoading) && <div style={{ color: 'white', marginTop: 20 }}>처리 중...</div>}
+                    {(loading || statusLoading) && <div>처리 중...</div>}
                 </div>
             </div>
         </div>
