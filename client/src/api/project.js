@@ -16,11 +16,15 @@ export const projectApi = {
 
     // 프로젝트 생성
     createProject: (projectData) =>
-        apiClient.post("/project", projectData),
+        apiClient.post("/project", projectData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        }),
 
     // 프로젝트 수정
     updateProject: (projectId, projectData) =>
-        apiClient.put(`/project/${projectId}`, projectData),
+        apiClient.put(`/project/${projectId}`, projectData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        }),
 
     // 프로젝트 삭제
     deleteProject: (projectId) =>

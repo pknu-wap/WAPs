@@ -6,6 +6,7 @@
   font-style: normal;
 }
 .container {
+  --primary: #abd4fd;
   padding: 30px 45px;
   gap: 29px;
   width: 100%;
