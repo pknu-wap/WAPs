@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.admin.dto.request.TeamBuildingStatusRequest;
+import wap.web2.server.admin.dto.response.TeamBuildingMetaStatusResponse;
 import wap.web2.server.admin.entity.TeamBuildingStatus;
 import wap.web2.server.admin.service.AdminTeamBuildingService;
 import wap.web2.server.admin.service.TeamBuildingExportService;
@@ -44,7 +45,7 @@ public class AdminTeamBuildingController {
     public ResponseEntity<?> getStatus() {
         try {
             TeamBuildingStatus status = adminTeamBuildingService.getStatus();
-            return ResponseEntity.ok().body(status);
+            return ResponseEntity.ok().body(TeamBuildingMetaStatusResponse.of(status));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("[ERROR] 확인 실패" + e.getMessage());
         }
