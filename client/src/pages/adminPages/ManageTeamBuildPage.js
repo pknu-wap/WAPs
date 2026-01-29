@@ -102,15 +102,21 @@ const ManageTeamBuildPage = () => {
             } else {
                 res = await adminTeamBuildApi.getRecruits();
             }
+
+            const data = res.data || res;
+            const blob = new Blob(['\uFEFF', data], { type: 'text/csv;charset=utf-8;' });
+
             // 파일 다운로드 처리 
-            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', type === 'applies' ? '지원현황.csv' : '모집현황.csv');
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
         } catch (e) {
+            console.error(e);
             alert('CSV 다운로드에 실패했습니다.');
         }
         setLoading(false);

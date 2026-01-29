@@ -53,11 +53,11 @@ export const adminPlanApi = {
 export const adminTeamBuildApi = {
     // 지원 현황 반환
     getApplies: () =>
-        apiClient.get("/admin/team/applies/export"),
+        apiClient.get("/admin/team/applies/export", { responseType: 'blob' }),
 
     // 모집 현황 반환
     getRecruits: () =>
-        apiClient.get("/admin/team/recruits/export"),
+        apiClient.get("/admin/team/recruits/export", { responseType: 'blob' }),
 
     // 팀빌딩 알고리즘 실행
     runTeamBuilding: () =>
