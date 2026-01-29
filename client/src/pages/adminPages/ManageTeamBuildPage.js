@@ -6,7 +6,7 @@ import { IconCheck } from '../../components/Admin/icons';
 
 const ManageTeamBuildPage = () => {
     const [loading, setLoading] = useState(false); // 로딩 중 여부
-    const [status, setStatus] = useState('OPEN'); // 현재 팀빌딩 상태
+    const [status, setStatus] = useState('unavailable'); // 현재 팀빌딩 상태
     const [statusLoading, setStatusLoading] = useState(true); // 팀빌딩 상태 로드 여부 (api 배포 이후엔 true로 변경하기!!!)
     const [statusChanging, setStatusChanging] = useState(false); // 상태 변경 중 여부(버튼 중복 클릭 방지)
     const semester = useSemester();

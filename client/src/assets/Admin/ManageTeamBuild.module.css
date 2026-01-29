@@ -11,11 +11,19 @@
   --progress: #5e5e5e;
 }
 
+/* 박스 사이징 초기화 (반응형 필수 설정) */
+* {
+  box-sizing: border-box;
+}
+
 .container {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
+  /* 작은 화면에서 내용이 잘리지 않도록 스크롤 허용 */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* ================= 상단 ================= */
@@ -26,17 +34,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* 상하 여백을 조금 주어 화면이 작아져도 답답하지 않게 함 */
+  padding: 20px 0;
 }
 
 .stepCard {
   width: 100%;
+  /* 최대 너비 제한을 두어 너무 늘어지는 것 방지 (선택 사항, 원본 느낌 유지하려면 제거 가능) */
+  max-width: 1400px;
   height: 442px;
   background: #353535;
   border-radius: 36px;
   display: flex;
   align-items: start;
+  /* 원본 유지: 패딩 160px */
   padding: 0 160px;
   position: relative;
+  transition: all 0.3s ease; /* 부드러운 리사이징 효과 */
 }
 
 .stepper {
@@ -44,6 +58,7 @@
   width: 100%;
   display: flex;
   align-items: flex-end;
+  transition: margin-top 0.3s ease;
 }
 
 .step {
@@ -52,6 +67,7 @@
   align-items: center;
   color: var(--progress);
   font-size: 18px;
+  position: relative;
 }
 
 .step span {
@@ -59,6 +75,8 @@
   font-size: 30px;
   font-weight: 700;
   color: white;
+  white-space: nowrap; /* 글자 줄바꿈 방지 */
+  transition: font-size 0.3s ease;
 }
 
 .circle {
@@ -70,14 +88,16 @@
   align-items: center;
   justify-content: center;
   font-size: 22px;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
   position: relative;
   z-index: 2;
+  flex-shrink: 0; /* 화면이 줄어도 원이 찌그러지지 않게 함 */
 }
 
 .circle SVG {
   width: 35px;
   height: 26px;
+  transition: all 0.3s ease;
 }
 
 .active .circle {
@@ -108,6 +128,8 @@
   margin-bottom: 46px;
   position: relative;
   z-index: 1;
+  min-width: 20px;
+  transition: margin-bottom 0.3s ease;
 }
 
 .line::after {
@@ -138,15 +160,12 @@
 .completedLine {
   background: var(--progress);
 }
-
 .completedLine::after {
   width: 100%;
 }
-
 .gradientLine {
   background: var(--progress);
 }
-
 .gradientLine::before {
   opacity: 1;
   transition-delay: 0.8s;
@@ -166,6 +185,7 @@
   position: absolute;
   bottom: 36px;
   right: 51px;
+  transition: all 0.3s ease;
 }
 
 /* ================= 하단 ================= */
@@ -177,10 +197,13 @@
 }
 
 .btnArea {
-  margin-top: 50px;
+  margin-top: 25px;
   display: flex;
   flex-direction: column;
   gap: 13px;
+  align-items: flex-start;
+  padding-left: 0;
+  width: 100%;
 }
 
 .csvRow {
@@ -190,6 +213,8 @@
   align-items: center;
   font-size: 30px;
   color: white;
+  width: 355px;
+  max-width: 90%;
 }
 
 .exportBtn {
@@ -207,6 +232,7 @@
     0.15s ease,
     border-color 0.15s ease,
     color 0.15s ease;
+  font-size: 18px;
 }
 
 .exportBtn:hover,
@@ -217,8 +243,9 @@
 }
 
 .teamBuildBtn {
-  margin-top: 30px;
+  margin-top: 25px;
   width: 355px;
+  max-width: 90%;
   height: 70px;
   border-radius: 74px;
   background: var(--primary);
@@ -229,4 +256,132 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: font-size 0.3s ease;
+}
+
+/* =========================================
+   반응형 미디어 쿼리
+   (데스크탑 기준에서 화면이 작아질 때만 적용)
+   ========================================= */
+
+/* 1. 노트북/태블릿 가로 (약 1200px 이하) */
+@media screen and (max-width: 1200px) {
+  .stepCard {
+    padding: 0 80px;
+  }
+}
+
+/* 2. 태블릿/작은 노트북 (약 992px 이하) */
+@media screen and (max-width: 992px) {
+  .stepCard {
+    /* 패딩 더 축소 */
+    padding: 0 40px;
+    height: 400px; /* 카드 높이 약간 축소 */
+  }
+
+  /* 원 크기 약간 축소: 93px -> 70px */
+  .circle {
+    width: 70px;
+    height: 70px;
+  }
+  .circle SVG {
+    width: 28px;
+    height: 21px;
+  }
+
+  /* 라인 위치 조정: (70/2) = 35px - 라인높이보정 */
+  .line {
+    margin-bottom: 35px;
+  }
+
+  /* 폰트 사이즈 조정 */
+  .step span {
+    font-size: 24px;
+  }
+
+  /* 다음 버튼 크기 조정 */
+  .nextBtn {
+    width: 140px;
+    height: 60px;
+    font-size: 20px;
+    right: 30px;
+    bottom: 30px;
+  }
+}
+
+/* 3. 모바일 (768px 이하) */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 0 20px; /* 전체 컨테이너 좌우 여백 */
+  }
+
+  .stepCard {
+    padding: 20px;
+    height: auto; /* 고정 높이 해제하여 유연하게 */
+    min-height: 350px;
+    flex-direction: column; /* 필요시 세로 배치 고려, 지금은 유지 */
+    justify-content: center;
+  }
+
+  .stepper {
+    margin-top: 60px; /* 상단 여백 축소 */
+    margin-bottom: 80px; /* 버튼 공간 확보 */
+  }
+
+  /* 원 크기 대폭 축소: 70px -> 50px */
+  .circle {
+    width: 50px;
+    height: 50px;
+    font-size: 16px;
+  }
+  .circle SVG {
+    width: 20px;
+    height: 15px;
+  }
+
+  /* 라인 위치 조정: (50/2) = 25px */
+  .line {
+    margin-bottom: 25px;
+    height: 3px;
+  }
+
+  .step span {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  /* 다음 버튼: 위치 및 크기 최적화 */
+  .nextBtn {
+    width: 120px;
+    height: 50px;
+    font-size: 18px;
+    right: 20px;
+    bottom: 20px;
+  }
+
+  /* 하단 버튼 영역 */
+  .btnArea {
+    margin-top: 30px;
+    width: 100%;
+  }
+
+  .csvRow {
+    width: 100%;
+    max-width: 355px;
+    font-size: 20px; /* 글자 크기 축소 */
+  }
+
+  .exportBtn {
+    width: 120px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .teamBuildBtn {
+    width: 100%;
+    max-width: 355px;
+    height: 60px;
+    font-size: 24px;
+    margin-top: 20px;
+  }
 }
