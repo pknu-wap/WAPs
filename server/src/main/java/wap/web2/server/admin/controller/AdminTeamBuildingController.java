@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.admin.dto.request.TeamBuildingStatusRequest;
+import wap.web2.server.admin.entity.TeamBuildingStatus;
 import wap.web2.server.admin.service.AdminTeamBuildingService;
 import wap.web2.server.admin.service.TeamBuildingExportService;
 
@@ -26,8 +27,6 @@ public class AdminTeamBuildingController {
     private final TeamBuildingExportService exportService;
     private final AdminTeamBuildingService adminTeamBuildingService;
 
-    // 현재 상태를 가져오는 api
-
     // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘 실행 트리거
     @PostMapping("/building/run")
     @Operation(summary = "팀 생성하기", description = "팀 지원과 팀원 모집이 완료되면 팀을 생성합니다.")
@@ -37,6 +36,17 @@ public class AdminTeamBuildingController {
             return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
+        }
+    }
+
+    @GetMapping("/building/status")
+    @Operation(summary = "팀빌딩 진행 상태 확인", description = "팀빌딩 기능의 상태를 반환합니다.")
+    public ResponseEntity<?> getStatus() {
+        try {
+            TeamBuildingStatus status = adminTeamBuildingService.getStatus();
+            return ResponseEntity.ok().body(status);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("[ERROR] 확인 실패" + e.getMessage());
         }
     }
 
