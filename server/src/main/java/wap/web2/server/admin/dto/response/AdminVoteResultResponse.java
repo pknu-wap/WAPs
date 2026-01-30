@@ -22,4 +22,5 @@ public record AdminVoteResultResponse(
                 .voteRate(roundedRate)
                 .build();
     }
+
 }

@@ -47,6 +47,12 @@ public class AdminTeamBuildingService {
     private final TeamRepository teamRepository;
     private final TeamBuilder teamBuilder;
 
+    @Transactional(readOnly = true)
+    public TeamBuildingStatus getStatus() {
+        TeamBuildingMeta currentMeta = findCurrentMeta();
+        return currentMeta.getStatus();
+    }
+
     @Transactional
     public void changeStatus(TeamBuildingStatusRequest statusRequest) {
         String semester = statusRequest.semester();
