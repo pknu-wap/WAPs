@@ -1,0 +1,670 @@
+.page {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  min-height: 100vh;
+  color: #f7f7f7;
+  background:
+    radial-gradient(900px 480px at 15% 0%, rgba(150, 170, 210, 0.65), transparent 60%),
+    radial-gradient(720px 520px at 100% 10%, rgba(120, 190, 210, 0.45), transparent 55%),
+    linear-gradient(180deg, #8ea1bf 0%, #5c6d84 28%, #2b333b 58%, #0b0b0d 100%);
+  overflow-x: hidden;
+}
+
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(460px 240px at 12% 30%, rgba(255, 255, 255, 0.08), transparent 60%),
+    radial-gradient(520px 320px at 85% 40%, rgba(255, 255, 255, 0.06), transparent 60%);
+  pointer-events: none;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 20px 18px 80px;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brandLogo {
+  height: 18px;
+  opacity: 0.9;
+}
+
+.brandText {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.closeButton {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.closeButton:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.03);
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.heroTitle {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.heroSubtitle {
+  margin-top: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.backRow {
+  margin-bottom: 18px;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+  color: #f4f4f4;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.backButton:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.backArrow {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.panel {
+  background: rgba(14, 14, 14, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 26px;
+  padding: 22px 20px;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
+  margin-bottom: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.panelTitle {
+  font-size: 18px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #9fc7f2;
+  color: #101317;
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.infoBox {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 16px;
+}
+
+.primaryCta {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: #a9cdf6;
+  color: #0c1217;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.primaryCta:hover {
+  filter: brightness(1.02);
+}
+
+.secondaryCta {
+  align-self: flex-start;
+  margin-top: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.applicationPreview {
+  display: grid;
+  gap: 14px;
+}
+
+.previewLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 6px;
+}
+
+.previewValue {
+  font-size: 14px;
+  color: #f7f7f7;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.cartBox {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 16px;
+  min-height: 90px;
+}
+
+.cartEmpty {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+}
+
+.cartItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cartItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.cartRemove {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.clearButton {
+  background: rgba(255, 130, 130, 0.2);
+  color: #ffecec;
+  border: 1px solid rgba(255, 130, 130, 0.4);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.applyButton {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.applyButton:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.35);
+  cursor: not-allowed;
+}
+
+.projectsSection {
+  display: grid;
+  gap: 16px;
+}
+
+.emptyProjects {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  padding: 24px 0;
+}
+
+.projectCard {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.projectSelected {
+  border-color: rgba(160, 210, 255, 0.7);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.projectHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.projectTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.projectCheck {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #8fd47a;
+  color: #0f151a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.projectSummary {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 12px;
+}
+
+.techStack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.techTag {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.projectButton {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.projectButtonSelected {
+  background: rgba(130, 200, 120, 0.2);
+  border-color: rgba(130, 200, 120, 0.4);
+  color: #e7ffe7;
+}
+
+.projectButton:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: not-allowed;
+}
+
+.floatingCart {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #11171d;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-weight: 800;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  z-index: 30;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modalContent {
+  width: min(520px, 92vw);
+  background: #0d0d0f;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 22px;
+  color: #f7f7f7;
+  max-height: 86vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.modalTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.modalSubtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.modalClose {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.formGroup {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.formGroup select,
+.formGroup textarea {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #15161a;
+  color: #f8f8f8;
+  padding: 12px 14px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.formGroup select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg width='14' height='9' viewBox='0 0 14 9' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L7 7.5L13 1.5' stroke='%23d9e2f1' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 14px 9px;
+}
+
+.formGroup textarea {
+  min-height: 140px;
+  resize: none;
+}
+
+.textareaError {
+  border-color: #ff7070;
+}
+
+.messageError {
+  font-size: 12px;
+  color: #ff7070;
+}
+
+.modalSubmit {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: #a9cdf6;
+  color: #0c1217;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.priorityGuide {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.priorityList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.priorityItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: grab;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.priorityItem:hover {
+  border-color: rgba(160, 210, 255, 0.7);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.dragging {
+  opacity: 0.6;
+  cursor: grabbing;
+}
+
+.dragOver {
+  border-color: rgba(160, 210, 255, 0.8);
+}
+
+.priorityNumber {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #11171d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.priorityInfo {
+  flex: 1;
+}
+
+.priorityTitle {
+  font-weight: 700;
+}
+
+.priorityRole {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dragHandle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.priorityItem:hover .dragHandle {
+  color: rgba(255, 255, 255, 0.85);
+  transform: scale(1.05);
+}
+
+.errorCard {
+  margin-top: 120px;
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+}
+
+.errorTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.errorMessage {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 16px;
+}
+
+.appliedCard {
+  max-width: 520px;
+  margin: 120px auto 0;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.appliedCard h1 {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
+.appliedCard p {
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 20px;
+}
+
+.primaryButton {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #a9cdf6;
+  color: #0c1217;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .heroTitle {
+    font-size: 26px;
+  }
+
+  .panel {
+    padding: 20px 16px;
+  }
+
+  .floatingCart {
+    right: 18px;
+    bottom: 18px;
+  }
+}
