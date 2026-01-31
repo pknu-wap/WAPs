@@ -48,3 +48,33 @@ export const adminPlanApi = {
     createEvent: (eventBody) =>
         apiClient.post("/admin/calendar/event", eventBody),
 }
+
+// 팀빌딩 관리 API
+export const adminTeamBuildApi = {
+    // 지원 현황 반환
+    getApplies: () =>
+        apiClient.get("/admin/team/applies/export", { responseType: 'blob' }),
+
+    // 모집 현황 반환
+    getRecruits: () =>
+        apiClient.get("/admin/team/recruits/export", { responseType: 'blob' }),
+
+    // 팀빌딩 알고리즘 실행
+    runTeamBuilding: () =>
+        apiClient.post("/admin/team/building/run"),
+
+    // 팀 빌딩 상태 조회
+    getTeamBuildStatus: () =>
+        apiClient.get("/admin/team/building/status"),
+
+    // 팀 빌딩 상태 변경
+    updateTeamBuildStatus: (semester, status) =>
+        apiClient.patch("/admin/team/building/status", {
+            semester: semester,
+            status: status
+        }),
+
+    // 현재 학기 팀빌딩 기능 생성
+    createTeamBuild: () =>
+        apiClient.post("/admin/team/building/open/current"),
+}

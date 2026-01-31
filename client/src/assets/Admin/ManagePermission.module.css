@@ -199,7 +199,10 @@ td:last-child {
   background-color: transparent;
   font-size: 18px;
   text-align: center;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition:
+    0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .adjust:hover,
