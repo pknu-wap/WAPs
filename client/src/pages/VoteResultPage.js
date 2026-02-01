@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { voteApi } from "../api/vote";
 import styles from "../assets/ProjectVote.module.css";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -51,11 +51,8 @@ const VoteResultPage = () => {
     }
   }, [semesterParam]);
 
-  const voteUrl = semesterParam
-    ? `${process.env.REACT_APP_API_BASE_URL}/vote/result/${semesterParam}`
-    : `${process.env.REACT_APP_API_BASE_URL}/vote/result`;
-
   const [projects, setProjects] = useState([]);
+  const [emptyMessage, setEmptyMessage] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   // 순위 계산용
@@ -69,16 +66,16 @@ const VoteResultPage = () => {
 
     const fetchVoteResults = async () => {
       try {
-        const voteRes = await axios.get(voteUrl);
+        const voteRes = await voteApi.getVoteResult(semesterParam);
         if (!isMounted) return; // 컴포넌트가 언마운트되면 중단
 
-        const apiSemester = voteRes.data?.semester; // "2025-02"
-        const voteItems = voteRes.data?.results || [];
+        const apiSemester = voteRes?.semester; // "2025-02"
+        const voteItems = voteRes?.results || [];
 
         // 데이터가 비어있으면 공개되지 않은 것으로 간주
         if (!voteItems || voteItems.length === 0) {
-          alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
-          navigate("/vote/result", { replace: true });
+          setProjects([]);
+          setEmptyMessage("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
           return;
         }
 
@@ -96,15 +93,17 @@ const VoteResultPage = () => {
 
         const sorted = [...voteItems].sort((a, b) => b.voteCount - a.voteCount);
         setProjects(sorted);
+        setEmptyMessage("");
       } catch (e) {
         if (!isMounted) return;
 
         const status = e?.response?.status;
         if (status === 400 || status === 404 || status === 500) {
-          alert("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
-          navigate("/vote/result", { replace: true });
+          setProjects([]);
+          setEmptyMessage("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
         } else {
-          alert("투표 결과를 가져오는데 실패했습니다.");
+          setProjects([]);
+          setEmptyMessage("투표 결과를 가져오는데 실패했습니다.");
         }
       }
     };
@@ -113,7 +112,7 @@ const VoteResultPage = () => {
     return () => {
       isMounted = false; // cleanup
     };
-  }, [voteUrl, navigate]);
+  }, [semesterParam, navigate]);
 
   const handleProjectClick = (project) => {
     const pid = project.projectId;
@@ -168,7 +167,7 @@ const VoteResultPage = () => {
 
               {/* 드롭다운 */}
               <div
-                className="filter-container"
+                className={`${styles.voteFilter} filter-container`}
                 style={{
                   marginTop: "20px",
                   justifyContent: "flex-end",
@@ -179,9 +178,8 @@ const VoteResultPage = () => {
                   <button onClick={toggleYearAccordion} className="dropdown-button">
                     {semesterFilter.open
                       ? "년도/학기 ▲"
-                      : `${("0" + (semesterFilter.year - 2000)).slice(-2)}년 ${
-                          semesterFilter.semester
-                        }학기 ▼`}
+                      : `${("0" + (semesterFilter.year - 2000)).slice(-2)}년 ${semesterFilter.semester
+                      }학기 ▼`}
                   </button>
 
                   {semesterFilter.open && (
@@ -223,9 +221,8 @@ const VoteResultPage = () => {
 
                 return (
                   <div
-                    className={`${styles.project_list_box} ${
-                      isTop3 ? styles.selected_result : ""
-                    }`}
+                    className={`${styles.project_list_box} ${isTop3 ? styles.selected_result : ""
+                      }`}
                     key={`${project.projectId}-${index}`}
                   >
                     <div className={styles.inform_box}>
@@ -280,6 +277,13 @@ const VoteResultPage = () => {
                   </div>
                 );
               })
+            ) : emptyMessage ? (
+              <div className={styles.empty_state}>
+                <div className={styles.empty_state_title}>{emptyMessage}</div>
+                <div className={styles.empty_state_subtitle}>
+                  다른 학기를 선택해보거나 나중에 다시 확인해주세요.
+                </div>
+              </div>
             ) : (
               <p>프로젝트 데이터를 불러오는 중입니다...</p>
             )}

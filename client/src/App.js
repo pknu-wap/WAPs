@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import ProjectPage from "./pages/ProjectPage";
 import Login from "./pages/Login";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
@@ -12,6 +12,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import VoteResultPage from "./pages/VoteResultPage";
 import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
+import TeamBuildApplyPage from "./pages/TeamBuildApplyPage";
+import TeamBuildEntryPage from "./pages/TeamBuildEntryPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import CalendarPage from "./pages/CalendarPage";
 import AdminRoute from "./components/Login/PrivateRoute";
@@ -61,7 +63,9 @@ function App() {
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
           <Route path="/project/edit/:projectId" element={<ProjectCreatePage />} />
           <Route path="/select/role" element={<RoleSelectPage />} />
-          <Route path="/team-build" element={<TeamBuildPage />} />
+          <Route path="/team-build" element={<TeamBuildEntryPage />} />
+          <Route path="/team-build/projects" element={<TeamBuildApplyPage />} />
+          <Route path="/team-build/recruit" element={<TeamBuildPage />} />
           <Route path="/team-build/result" element={<TeamBuildResultPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
           {/* 보호된 페이지 */}
@@ -76,6 +80,7 @@ function App() {
             element={<AdminRoute requireRole="ROLE_ADMIN" />}
           >
             <Route element={<AdminPageLayout />}>
+              <Route index element={<Navigate to="vote" replace />}></Route>
               <Route path="vote" element={<ManageVotePage />} />
               <Route path="teambuild" element={<ManageTeamBuildPage />} />
               <Route path="permission" element={<ManagePermissionPage />} />
@@ -85,7 +90,7 @@ function App() {
 
         </Route>
       </Routes>
-    </Router >
+    </Router>
   );
 }
 

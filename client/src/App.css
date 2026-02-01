@@ -76,6 +76,7 @@ ul {
   border: 2px;
   min-height: calc(var(--vh, 1vh) * 100);
   box-sizing: border-box;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
 }
 
 /* 콘텐츠 박스 */

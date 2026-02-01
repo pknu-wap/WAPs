@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import { useState, useEffect, useRef } from "react";
 import styles from "../../assets/ProjectCreation/TechStackSelector.module.css";
 import TechStackList from "./TechStackList";
+import { stackApi } from "../../api/techstack";
 
 const SelectedTechStacks = ({ selectedTechStacks }) => {
   return (
@@ -20,15 +20,13 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
   const [showTechStackList, setShowTechStackList] = useState(false);
   const scrollRef = useRef(null);
 
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/techStack/list`;
-
   useEffect(() => {
     const fetchTechStacks = async () => {
       try {
-        const response = await axios.get(apiUrl);
+        const data = await stackApi.getTechStack();
         setTechStacks(
-          Array.isArray(response.data.techStackResponse)
-            ? response.data.techStackResponse
+          Array.isArray(data.techStackResponse)
+            ? data.techStackResponse
             : []
         );
       } catch (error) {
@@ -38,7 +36,7 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
     };
 
     fetchTechStacks();
-  }, [apiUrl]);
+  }, []);
 
   const handleTechStackClick = (techStack) => {
     toggleTechStack(techStack); // 전체 객체를 전달

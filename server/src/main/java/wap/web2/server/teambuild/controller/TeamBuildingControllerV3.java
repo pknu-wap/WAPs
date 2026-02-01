@@ -11,13 +11,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.global.security.CurrentUser;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.project.service.ProjectService;
 import wap.web2.server.teambuild.dto.RecruitmentDto;
 import wap.web2.server.teambuild.dto.TeamMemberResult;
 import wap.web2.server.teambuild.dto.request.ProjectAppliesRequest;
+import wap.web2.server.teambuild.dto.response.ApplyStatusResponse;
 import wap.web2.server.teambuild.dto.response.ProjectAppliesResponse;
+import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 import wap.web2.server.teambuild.dto.response.RoleResponse;
 import wap.web2.server.teambuild.dto.response.TeamBuildingResults;
 import wap.web2.server.teambuild.dto.response.TeamResultsResponse;
@@ -44,16 +46,39 @@ public class TeamBuildingControllerV3 {
         }
     }
 
+    // 팀원 지원 상태(이미 지원 완료 여부) 확인
+    @GetMapping("/apply/status")
+    public ResponseEntity<?> getApplyStatus(@CurrentUser UserPrincipal userPrincipal) {
+        try {
+            boolean hasApplied = applyService.hasAppliedThisSemester(userPrincipal.getId());
+            return ResponseEntity.ok(new ApplyStatusResponse(hasApplied));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("[ERROR] 잘못된 유저입니다.");
+        }
+    }
+
+    // 팀빌딩 지원 가능한 프로젝트 목록
+    @GetMapping("/projects")
+    public ResponseEntity<?> getCurrentProjects(@CurrentUser UserPrincipal userPrincipal) {
+        try {
+            List<ProjectTemplate> projects = projectService.getCurrentProjectRecruits();
+            return ResponseEntity.ok(projects);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("[ERROR] 프로젝트 목록을 불러오지 못했습니다.");
+        }
+    }
+
     // 프로젝트 신청 (for 팀원)
     @PostMapping("/apply/submit")
     public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal,
                                    @Valid @RequestBody ProjectAppliesRequest request) {
-        try {
-            applyService.apply(userPrincipal, request);
-            return ResponseEntity.ok().body("[INFO ] 성공적으로 지원하였습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 지원 실패");
-        }
+//        try {
+        applyService.apply(userPrincipal, request);
+        return ResponseEntity.ok().body("[INFO ] 성공적으로 지원하였습니다.");
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body("[ERROR] 지원 실패");
+//        }
     }
 
     // 희망 팀 구성 제출 (for 팀장)
@@ -71,7 +96,7 @@ public class TeamBuildingControllerV3 {
     // 내 프로젝트에 지원한 멤버 불러오기
     @GetMapping("/{projectId}/applies")
     public ResponseEntity<?> getRecruitPageData(@CurrentUser UserPrincipal userPrincipal,
-                                                @PathVariable Long projectId) {
+                                                @PathVariable("projectId") Long projectId) {
         try {
             // 이미 모집 제출된 상태인지 검사
             boolean hasApplied = applyService.hasRecruited(userPrincipal, projectId);

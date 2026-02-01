@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { projectApi } from "../../api/project";
 import Cookies from "js-cookie";
 import LoadingPage from "../LoadingPage";
 
@@ -20,10 +20,7 @@ const ProjectDelete = () => {
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
-        const response = await axios.get(apiUrl, {
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined, // 비로그인 사용자는 인증 헤더 제외
-        });
-        const data = response.data;
+        const data = await projectApi.getProjectDetail(projectId);
 
         setProject(data); // 프로젝트 데이터 설정
 
@@ -39,7 +36,7 @@ const ProjectDelete = () => {
     };
 
     fetchProjectDetails();
-  }, [apiUrl, token, userId, navigate]);
+  }, [apiUrl, token, userId, navigate, projectId]);
 
   // 프로젝트 삭제 요청
   const handleDelete = async () => {
@@ -48,11 +45,9 @@ const ProjectDelete = () => {
     }
 
     try {
-      const response = await axios.delete(apiUrl, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const data = await projectApi.deleteProject(projectId);
 
-      if (response.status === 204) {
+      if (data.status === 204) {
         alert("프로젝트가 성공적으로 삭제되었습니다.");
         navigate("/"); // 삭제 후 메인 페이지로 이동
       } else {

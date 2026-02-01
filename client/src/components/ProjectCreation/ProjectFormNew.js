@@ -1,7 +1,7 @@
-import React, { /*useState,*/ useEffect } from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import axios from "axios";
+import { projectApi } from "../../api/project";
 import Cookies from "js-cookie";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
@@ -32,7 +32,6 @@ const roleOptions = [
 const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const { projectId } = useParams();
   const maxImageCount = 4; // 최대 이미지 업로드 개수
-  const token = Cookies.get("authToken");
   const navigate = useNavigate(); // navigate 함수
   const {
     title,
@@ -79,8 +78,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   // 기존 데이터 초기화
   useEffect(() => {
     if (isEdit && existingProject) {
-      // 👇 서버에서 받아온 프로젝트 객체 콘솔 출력
-      console.log("받아온 기존 프로젝트 데이터", existingProject);
       setThumbnail(existingProject.thumbnail || null);
       setProjectYear(existingProject.projectYear || new Date().getFullYear());
       setSemester(existingProject.semester || 1);
@@ -88,67 +85,30 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       setTitle(existingProject.title || "");
       setSummary(existingProject.summary || "");
       setContent(existingProject.content || "");
-      // 존재하는 이미지만 표시
-      // existingProject.images.forEach((image, index) => {
-      //   setImages((prev) => {
-      //     const newImages = [...prev];
-      //     newImages[index] = image["imageFile"];
-      //     return newImages;
-      //   });
-      // });
-      // setImages(existingProject.images || [null, null, null, null]);
-
       // 이미지 처리
-      if (existingProject.images && Array.isArray(existingProject.images)) {
-        const parsedImages = existingProject.images.map((img) => {
-          return img.imageFile;
-        });
-        setImages(parsedImages);
+      if (Array.isArray(existingProject.images)) {
+        setImages(existingProject.images.map((img) => img.imageFile));
       }
-
       // 멤버가 존재하면 추가
-      if (existingProject.teamMember) {
-        existingProject.teamMember.forEach((member, index) => {
-          //기존 배열에 member만 추가
-          setTeamMembers((prev) => {
-            const newMembers = [...prev];
-            newMembers[index] = member;
-            return newMembers;
-          });
-        });
+      if (Array.isArray(existingProject.teamMember)) {
+        setTeamMembers(existingProject.teamMember.map((member) => member));
       }
-
       setSelectedTechStacks(existingProject.techStack || []);
       setPassword("");
     }
-  }, [isEdit, existingProject,
-    setContent,
-    setImages,
-    setPassword,
-    setProjectType,
-    setProjectYear,
-    setSemester,
-    setSelectedTechStacks,
-    setSummary,
-    setTeamMembers,
-    setThumbnail,
-    setTitle
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEdit, existingProject]);
 
-  useEffect(() => {
-    console.log("삭제된 이미지 목록:", removalList);
-  }, [removalList]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!password) {
       alert("비밀번호를 입력해 주세요.");
       return;
     }
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project`;
-    const formData = new FormData();
 
+    const formData = new FormData();
     const projectData = {
       title,
       projectType,
@@ -164,75 +124,42 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         techStackName: stack.techStackName,
         techStackType: stack.techStackType,
       })),
-
       password,
     };
-
     const editedProjectData = {
       ...projectData,
-      removal: removalList, // 수정 시에만 포함
+      removal: removalList,
     };
-
-    // blob 객체에 JSON 데이터 추가
-    // const blob = new Blob([JSON.stringify(projectData)], {
-    //   type: "application/json",
-    // });
-
-    const blob = new Blob(
-      [JSON.stringify(isEdit ? editedProjectData : projectData)],
-      { type: "application/json" }
-    );
-
-    // JSON 데이터 추가
+    const blob = new Blob([
+      JSON.stringify(isEdit ? editedProjectData : projectData),
+    ], { type: "application/json" });
     formData.append("project", blob);
-
     if (thumbnail instanceof File) {
       formData.append("thumbnail", thumbnail);
     }
-
     images.forEach((image) => {
       if (image instanceof File) {
         formData.append("image", image);
       }
     });
-
     try {
       if (isEdit) {
-        console.log(
-          "PUT 요청 보낼 projectData:",
-          JSON.stringify(editedProjectData, null, 2)
-        );
-        console.log(removalList);
+        await projectApi.updateProject(projectId, formData);
 
-        await axios.put(`${apiUrl}/${projectId}`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        });
         alert("프로젝트가 성공적으로 수정되었습니다.");
         navigate(`/project/${projectId}`);
       } else {
-        await axios.post(apiUrl, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await projectApi.createProject(formData);
         alert("프로젝트가 성공적으로 생성되었습니다.");
         navigate(`/ProjectPage`);
       }
-
       resetForm();
-      window.location.reload();
     } catch (error) {
-      // console.error("프로젝트 요청 실패:", error);
-      // 에러 출력
-
       alert("프로젝트 요청에 실패했습니다. 다시 시도해 주세요.");
       if (error.response) {
-        console.error("에러 응답 코드:", error.response.status);
-        console.error("에러 메시지:", error.response.data);
+        // 네트워크 에러 등은 콘솔에만 출력
+        // console.error("에러 응답 코드:", error.response.status);
+        // console.error("에러 메시지:", error.response.data);
       }
     }
   };

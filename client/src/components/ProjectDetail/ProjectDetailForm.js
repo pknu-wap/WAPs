@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { projectApi } from "../../api/project";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode"; // JWT 디코딩 모듈
 import styles from "../../assets/ProjectDetail/ProjectDetailForm.module.css";
 import dogImage from "../../assets/img/dog.png";
 import EditButton from "./EditButton";
@@ -19,59 +18,38 @@ const ProjectDetailForm = () => {
   const [projectData, setProjectData] = useState(null); // 프로젝트 데이터
   const [isDataLoaded, setIsDataLoaded] = useState(false); // 데이터 로딩 완료 여부
 
-  const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project/${projectId}`;
-
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
-        const response = await axios.get(apiUrl, {
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        });
-
-        const data = response.data;
-        setProjectData(data); // 프로젝트 데이터 설정
+        const data = await projectApi.getProjectDetail(projectId);
+        setProjectData(data);
         console.log("API 응답 데이터:", data);
 
         // 작성자인지 여부 확인
-        if (data.isOwner === true) {
-          setIsOwner(true);
-        } else {
-          setIsOwner(false);
-        }
+        setIsOwner(data.isOwner === true);
 
         // 일정 시간 후 데이터 렌더링을 완료하도록 설정
-        new Promise((resolve) => setTimeout(resolve, 400)) // 0.6초 후 resolve
+        new Promise((resolve) => setTimeout(resolve, 400))
           .then(() => {
-            setIsDataLoaded(true); // 1초 후 데이터 로딩 완료 표시
+            setIsDataLoaded(true);
           });
       } catch (error) {
-        // console.error("프로젝트 정보 가져오기 실패:", error);
         alert("프로젝트 정보를 불러오는 데 실패했습니다.");
         navigate("/");
       }
     };
-
     fetchProjectDetails();
-  }, [apiUrl, token, navigate]);
+  }, [projectId, navigate]);
 
   const handleDelete = async () => {
     if (!window.confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
       return;
     }
-
     try {
-      const response = await axios.delete(apiUrl, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.status === 204) {
-        alert("프로젝트가 성공적으로 삭제되었습니다.");
-        navigate("/");
-      } else {
-        alert("프로젝트 삭제에 실패했습니다.");
-      }
+      await projectApi.deleteProject(projectId);
+      alert("프로젝트가 성공적으로 삭제되었습니다.");
+      navigate("/");
     } catch (error) {
-      // console.error("프로젝트 삭제 중 오류 발생:", error);
       alert("프로젝트 삭제에 실패했습니다. 다시 시도해주세요.");
     }
   };

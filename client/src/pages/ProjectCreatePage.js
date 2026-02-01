@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { projectApi } from "../api/project";
 import Cookies from "js-cookie";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -43,13 +43,8 @@ const ProjectPage = () => {
         setIsLoading(true);
 
         try {
-          const response = await axios.get(
-            `${process.env.REACT_APP_API_BASE_URL}/project/${projectId}/update`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          setProjectData(response.data);
+          const data = await projectApi.getprojectUpdatePage(projectId);
+          setProjectData(data);
 
           // 가져온 데이터 표시
           // console.log("프로젝트 상세 정보:", response.data);
@@ -73,33 +68,22 @@ const ProjectPage = () => {
       return;
     }
 
-    const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/project${isEditMode ? `/${projectId}` : ""
-      }`;
-
-    const method = isEditMode ? "put" : "post";
-
     try {
-      await axios({
-        method,
-        url: apiUrl,
-        data: projectData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      if (isEditMode) {
+        await projectApi.updateProject(projectId, projectData);
+      } else {
+        await projectApi.createProject(projectData);
+      }
       alert(`프로젝트가 성공적으로 ${isEditMode ? "수정" : "생성"}되었습니다.`);
       navigate("/projects"); // 프로젝트 리스트 페이지로 이동
     } catch (error) {
-      // console.error(`${isEditMode ? "수정" : "생성"} 실패:`, error);
       alert(
-        `프로젝트 ${isEditMode ? "수정" : "생성"
-        }에 실패했습니다. 다시 시도해 주세요.`
+        `프로젝트 ${isEditMode ? "수정" : "생성"}에 실패했습니다. 다시 시도해 주세요.`
       );
     }
   };
 
-  if (isEditMode && isLoading) return <LoadingPage/>;
+  if (isEditMode && isLoading) return <LoadingPage />;
 
   return (
     <div>

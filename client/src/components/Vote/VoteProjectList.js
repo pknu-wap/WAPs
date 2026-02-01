@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import styles from "../../assets/ProjectVote.module.css";
 import { getCurrentSemester } from "../../utils/dateUtils";
-import apiClient from "../../utils/api";
+import apiClient from "../../api/client";
 
 const VoteProjectList = ({
   // handleProjectSelect,
