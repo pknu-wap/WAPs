@@ -12,7 +12,7 @@
 }
 
 /* 박스 사이징 초기화 (반응형 필수 설정) */
-* {
+.container * {
   box-sizing: border-box;
 }
 
