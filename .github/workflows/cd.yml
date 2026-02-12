@@ -72,6 +72,9 @@ jobs:
             # 이미지 태그 설정 (소문자로 변환)
             IMAGE="ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]'):latest"
             
+            # GHCR 로그인 (private 패키지 pull 대비)
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USER }}" --password-stdin
+            
             # 최신 이미지 pull
             docker pull $IMAGE
             
