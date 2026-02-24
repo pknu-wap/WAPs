@@ -160,6 +160,7 @@ function TeamBuildPage() {
     let next = Number(value);
     if (Number.isNaN(next)) next = 0;
     if (next < 0) next = 0;
+    
     next = Math.floor(next);
     setCapacityByPosition((prev) => ({ ...prev, [pos]: next }));
   };
