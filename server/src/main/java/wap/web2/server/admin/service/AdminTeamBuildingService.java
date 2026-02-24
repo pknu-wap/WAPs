@@ -190,7 +190,7 @@ public class AdminTeamBuildingService {
     }
 
     private void validateTeamBuildingStatus(TeamBuildingMeta current) {
-        if (current.getStatus() == TeamBuildingStatus.CLOSED) {
+        if (current.getStatus() != TeamBuildingStatus.CLOSED) {
             throw new IllegalArgumentException("[ERROR] 팀빌딩 기능이 닫혀 있습니다");
         }
     }
