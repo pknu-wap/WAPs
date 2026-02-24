@@ -14,7 +14,7 @@ const createEmptyRankMap = () =>
 
 const createEmptyCapacityMap = () =>
   POSITIONS.reduce((acc, pos) => {
-    acc[pos] = 0;
+    acc[pos] = "0";
     return acc;
   }, {});
 
@@ -157,11 +157,19 @@ function TeamBuildPage() {
   };
 
   const handleCapacityChange = (pos, value) => {
-    let next = Number(value);
-    if (Number.isNaN(next)) next = 0;
-    if (next < 0) next = 0;
-    next = Math.floor(next);
-    setCapacityByPosition((prev) => ({ ...prev, [pos]: next }));
+    if (value === "") {
+      setCapacityByPosition((prev) => ({ ...prev, [pos]: "" }));
+      return;
+    }
+
+    const digitsOnly = value.replace(/[^\d]/g, "");
+    if (digitsOnly === "") {
+      setCapacityByPosition((prev) => ({ ...prev, [pos]: "" }));
+      return;
+    }
+
+    const normalized = digitsOnly.replace(/^0+(?=\d)/, "");
+    setCapacityByPosition((prev) => ({ ...prev, [pos]: normalized }));
   };
 
   const handleDragStart = (candidate, source, index) => (event) => {
@@ -187,7 +195,7 @@ function TeamBuildPage() {
     const dragState = dragStateRef.current;
     if (!dragState.candidate || dragState.position !== position) return;
 
-    const cap = capacityByPosition[position] || 0;
+    const cap = Number(capacityByPosition[position] || 0);
     if (cap === 0) {
       alert("capacity=0 상태에서는 해당 포지션에 우선순위를 설정할 수 없습니다.");
       return;
@@ -232,7 +240,7 @@ function TeamBuildPage() {
   const handleDragOverZone = (position, zone, index = null) => (event) => {
     const dragState = dragStateRef.current;
     if (!dragState.candidate || dragState.position !== position) return;
-    if (zone === "ranked" && (capacityByPosition[position] || 0) === 0) return;
+    if (zone === "ranked" && Number(capacityByPosition[position] || 0) === 0) return;
     event.preventDefault();
     setDragOver({ position, zone, index });
   };
@@ -497,7 +505,8 @@ function TeamBuildPage() {
               visiblePositions.map((pos) => {
                 const ranked = rankedByPosition[pos] || [];
                 const available = availableByPosition[pos] || [];
-                const cap = Number(capacityByPosition[pos] || 0);
+                const capValue = capacityByPosition[pos];
+                const cap = Number(capValue || 0);
                 const rankedDragOver = dragOver.position === pos && dragOver.zone === "ranked";
                 const availableDragOver = dragOver.position === pos && dragOver.zone === "available";
 
@@ -512,11 +521,16 @@ function TeamBuildPage() {
                           type="number"
                           min="0"
                           step="1"
-                          value={cap}
+                          value={capValue === undefined || capValue === null ? "" : capValue}
                           onChange={(event) => handleCapacityChange(pos, event.target.value)}
                           onFocus={(event) => {
                             if (event.target.value === "0") {
                               event.target.select();
+                            }
+                          }}
+                          onBlur={(event) => {
+                            if (event.target.value === "") {
+                              setCapacityByPosition((prev) => ({ ...prev, [pos]: "0" }));
                             }
                           }}
                         />
