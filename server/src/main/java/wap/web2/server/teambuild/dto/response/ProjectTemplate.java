@@ -15,13 +15,20 @@ public class ProjectTemplate {
     private Long projectId;
     private String title;
     private String summary;
+    private String projectType;
     private List<String> techStack;
 
     public static ProjectTemplate from(Project project) {
         List<TechStack> techStacks = project.getTechStacks();
         List<String> techStackNames = techStacks.stream().map(TechStack::getTechStackName).toList();
 
-        return new ProjectTemplate(project.getProjectId(), project.getTitle(), project.getSummary(), techStackNames);
+        return new ProjectTemplate(
+                project.getProjectId(),
+                project.getTitle(),
+                project.getSummary(),
+                project.getProjectType(),
+                techStackNames
+        );
     }
 
 }
