@@ -169,7 +169,15 @@ function TeamBuildPage() {
     }
 
     const normalized = digitsOnly.replace(/^0+(?=\d)/, "");
-    setCapacityByPosition((prev) => ({ ...prev, [pos]: normalized }));
+    const total = totalApplicantsOf(pos);
+    let nextNum = Number(normalized);
+    if (Number.isNaN(nextNum)) {
+      setCapacityByPosition((prev) => ({ ...prev, [pos]: "" }));
+      return;
+    }
+    if (nextNum > total) nextNum = total;
+    if (nextNum < 0) nextNum = 0;
+    setCapacityByPosition((prev) => ({ ...prev, [pos]: String(nextNum) }));
   };
 
   const handleDragStart = (candidate, source, index) => (event) => {
@@ -507,6 +515,7 @@ function TeamBuildPage() {
                 const available = availableByPosition[pos] || [];
                 const capValue = capacityByPosition[pos];
                 const cap = Number(capValue || 0);
+                const maxCap = totalApplicantsOf(pos);
                 const rankedDragOver = dragOver.position === pos && dragOver.zone === "ranked";
                 const availableDragOver = dragOver.position === pos && dragOver.zone === "available";
 
@@ -520,6 +529,7 @@ function TeamBuildPage() {
                           className={styles.capacityInput}
                           type="number"
                           min="0"
+                          max={maxCap}
                           step="1"
                           value={capValue === undefined || capValue === null ? "" : capValue}
                           onChange={(event) => handleCapacityChange(pos, event.target.value)}
@@ -531,7 +541,15 @@ function TeamBuildPage() {
                           onBlur={(event) => {
                             if (event.target.value === "") {
                               setCapacityByPosition((prev) => ({ ...prev, [pos]: "0" }));
+                              return;
                             }
+                            const nextNum = Number(event.target.value);
+                            if (Number.isNaN(nextNum)) {
+                              setCapacityByPosition((prev) => ({ ...prev, [pos]: "0" }));
+                              return;
+                            }
+                            const clamped = Math.min(Math.max(nextNum, 0), maxCap);
+                            setCapacityByPosition((prev) => ({ ...prev, [pos]: String(clamped) }));
                           }}
                         />
                       </div>
