@@ -157,11 +157,10 @@ function TeamBuildPage() {
   };
 
   const handleCapacityChange = (pos, value) => {
-    const total = totalApplicantsOf(pos);
     let next = Number(value);
     if (Number.isNaN(next)) next = 0;
     if (next < 0) next = 0;
-    if (next > total) next = total;
+    next = Math.floor(next);
     setCapacityByPosition((prev) => ({ ...prev, [pos]: next }));
   };
 
@@ -512,8 +511,14 @@ function TeamBuildPage() {
                           className={styles.capacityInput}
                           type="number"
                           min="0"
+                          step="1"
                           value={cap}
                           onChange={(event) => handleCapacityChange(pos, event.target.value)}
+                          onFocus={(event) => {
+                            if (event.target.value === "0") {
+                              event.target.select();
+                            }
+                          }}
                         />
                       </div>
                       <span className={styles.capacityLabel}>Capacity</span>
