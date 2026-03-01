@@ -1,5 +1,6 @@
 package wap.web2.server.teambuild.repository;
 
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,11 @@ public interface ProjectApplyRepository extends JpaRepository<ProjectApply, Long
 
     @Query("select DISTINCT new wap.web2.server.teambuild.dto.TeamMemberResult(p.user.id, p.user.name, p.position) from ProjectApply p where p.user.id in :userIds")
     List<TeamMemberResult> findAllByUserId(@Param("userIds") List<Long> userIds);
+
+
+    List<ProjectApply> findByProject_ProjectIdAndSemesterAndUser_IdInOrderByPriorityAsc(Long projectId,
+                                                                                        String semester,
+                                                                                        Collection<Long> userIds);
 
     boolean existsByUserIdAndSemester(Long userId, String semester);
 

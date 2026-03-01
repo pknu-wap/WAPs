@@ -11,11 +11,15 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
     const today = new Date();
     const startYear = 2024;
     const endYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    const currentSemesterNum = currentMonth <= 6 ? 1 : 2;
     const semesters = [];
 
     for (let year = startYear; year <= endYear; year++) {
       semesters.push({ projectYear: year, semester: 1 });
-      semesters.push({ projectYear: year, semester: 2 });
+      if (year < endYear || currentSemesterNum === 2) {
+        semesters.push({ projectYear: year, semester: 2 });
+      }
     }
     // 역순 정렬
     semesters.reverse();

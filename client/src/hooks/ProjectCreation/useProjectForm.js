@@ -2,6 +2,9 @@
 import { useState } from "react";
 
 const useProjectForm = () => {
+  const currentMonth = new Date().getMonth() + 1;
+  const currentSemester = currentMonth <= 6 ? 1 : 2;
+
   // 입력 폼 요소들의 상태
   const [teamName, setTeamName] = useState(null);
   const [title, setTitle] = useState("");
@@ -9,7 +12,7 @@ const useProjectForm = () => {
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
   
-  const [semester, setSemester] = useState(2); // 기본값: 현재 학기
+  const [semester, setSemester] = useState(currentSemester);
   const [password, setPassword] = useState("");
   const [removalList, setRemovalList] = useState([]); // 삭제된 이미지 URL들 저장용
 

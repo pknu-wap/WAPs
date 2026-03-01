@@ -35,12 +35,14 @@ public class TeamBuildingResultService {
 
     @Transactional(readOnly = true)
     public TeamBuildingResults getResults() {
+        final String semester = generateSemester();
+
         // 1) 이번 학기 모든 프로젝트
         List<Project> projects
                 = projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue());
 
         // 2) 이번 학기 팀 배정 결과(없을 수도 있음)
-        List<Team> teams = teamRepository.findAllBySemester(generateSemester());
+        List<Team> teams = teamRepository.findAllBySemester(semester);
 
         // 3) 프로젝트별 팀원 ID 묶기
         Map<Long, List<Long>> memberIdsByProject = teams.stream()
@@ -55,11 +57,7 @@ public class TeamBuildingResultService {
         for (Project project : projects) {
             Long projectId = project.getProjectId();
             List<Long> memberIds = memberIdsByProject.getOrDefault(projectId, Collections.emptyList());
-
-            // 멤버 지원서 조회 (빈 리스트면 그대로 빈 결과 반환)
-            List<TeamMemberResult> members = memberIds.isEmpty()
-                    ? Collections.emptyList()
-                    : projectApplyRepository.findAllByUserId(memberIds);
+            List<TeamMemberResult> members = buildAssignedMembers(projectId, semester, memberIds);
 
             // 리더 정보
             TeamMemberResult leader = TeamMemberResult.fromLeader(project.getUser());
@@ -70,6 +68,23 @@ public class TeamBuildingResultService {
         }
 
         return results;
+    }
+
+    private List<TeamMemberResult> buildAssignedMembers(Long projectId, String semester, List<Long> memberIds) {
+        if (memberIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<ProjectApply> assignedApplies
+                = projectApplyRepository.findByProject_ProjectIdAndSemesterAndUser_IdInOrderByPriorityAsc(
+                projectId,
+                semester,
+                memberIds
+        );
+
+        return assignedApplies.stream()
+                .map(TeamMemberResult::from)
+                .toList();
     }
 
     @Transactional(readOnly = true)
