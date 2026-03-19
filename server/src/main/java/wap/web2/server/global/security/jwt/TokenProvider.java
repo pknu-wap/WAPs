@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import wap.web2.server.exception.ErrorCode;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.global.security.config.AppProperties;
 
@@ -70,19 +71,26 @@ public class TokenProvider {
     }
 
     public boolean validateToken(String authToken) {
+        return getAccessTokenErrorCode(authToken) == null;
+    }
+
+    public ErrorCode getAccessTokenErrorCode(String authToken) {
         try {
             Jwts.parser().setSigningKey(key).build().parseClaimsJws(authToken);
-            return true;
+            return null;
         } catch (SecurityException | MalformedJwtException ex) {
-            logger.error("Invalid JWT signature: {}", ex.getMessage());
+            logger.warn("유효하지 않은 JWT 서명입니다. message={}", ex.getMessage());
+            return ErrorCode.AUTH_INVALID_TOKEN;
         } catch (ExpiredJwtException ex) {
-            logger.error("Expired JWT token: {}", ex.getMessage());
+            logger.warn("만료된 JWT 토큰입니다. message={}", ex.getMessage());
+            return ErrorCode.AUTH_TOKEN_EXPIRED;
         } catch (UnsupportedJwtException ex) {
-            logger.error("Unsupported JWT token: {}", ex.getMessage());
+            logger.warn("지원하지 않는 JWT 토큰입니다. message={}", ex.getMessage());
+            return ErrorCode.AUTH_INVALID_TOKEN;
         } catch (IllegalArgumentException ex) {
-            logger.error("JWT token is empty: {}", ex.getMessage());
+            logger.warn("JWT 토큰이 비어 있습니다. message={}", ex.getMessage());
+            return ErrorCode.AUTH_INVALID_TOKEN;
         }
-        return false;
     }
 
 }
