@@ -7,6 +7,8 @@ import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.comment.dto.request.CommentCreateRequest;
 import wap.web2.server.comment.entity.Comment;
 import wap.web2.server.comment.repository.CommentRepository;
+import wap.web2.server.exception.ForbiddenException;
+import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.project.entity.Project;
@@ -23,9 +25,9 @@ public class CommentService {
     @Transactional
     public void save(Long projectId, CommentCreateRequest request, UserPrincipal userPrincipal) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] Project not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
         User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
 
         commentRepository.save(request.toEntity(project, user));
     }
@@ -33,12 +35,12 @@ public class CommentService {
     @Transactional
     public void delete(Long commentId, UserPrincipal userPrincipal) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
         User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
 
         if (!comment.isOwner(user)) {
-            throw new IllegalArgumentException("[ERROR] Is not your comment");
+            throw new ForbiddenException("댓글 삭제 권한이 없습니다.");
         }
         commentRepository.delete(comment);
     }

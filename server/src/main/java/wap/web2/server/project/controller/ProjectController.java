@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Encoding;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import wap.web2.server.global.security.UserPrincipal;
+import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.global.security.CurrentUser;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
@@ -35,9 +35,8 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final ApplyService applyService;
-    private final PropertyResolver propertyResolver;
 
-    // TODO: ProjectsResponse에 담기 전에 검사하는건 별로인가요?
+    // TODO: ProjectsResponse를 만들기 전에 검사하거나 별도로 할까?
     //  또는 컨트롤러에서는 try catch를 두고 ProjectResponse안에서 throw 하는 것은?
     @GetMapping("/list")
     public ResponseEntity<?> getProjects(@RequestParam("projectYear") Integer year,
@@ -48,13 +47,13 @@ public class ProjectController {
                 .build();
 
         if (projectsResponse.getProjectsResponse().isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         }
-        return new ResponseEntity<>(projectsResponse, HttpStatus.OK);
+        return ResponseEntity.ok(projectsResponse);
     }
 
-    // TODO: 투표가 먼저 생성되고 있음
-    // TODO: 입력 폼 변경해야함
+    // TODO: 파일과 객체가 같이 생성되고 있음
+    // TODO: 입력 값 변경해야함
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
             encoding = @Encoding(name = "project", contentType = MediaType.APPLICATION_JSON_VALUE)
@@ -63,7 +62,7 @@ public class ProjectController {
                                            @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
                                            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
                                            @RequestPart("project") ProjectRequest request) throws IOException {
-        // RequestPart 중 ContentType 형식이 다르게 온 file 2종류를 ProjectCreateRequest 에 할당하여 새로운 RequestDto 객체 생성
+        // RequestPart 중 ContentType 형식이 서로 다른 file 2종류를 ProjectCreateRequest 에 할당하여 새로운 RequestDto 객체 생성
         ProjectRequest fullRequest = ProjectRequest.builder()
                 .title(request.getTitle())
                 .projectType(request.getProjectType())
@@ -75,47 +74,31 @@ public class ProjectController {
                 .teamMember(request.getTeamMember())
                 .techStack(request.getTechStack())
                 .image(request.getImage())
-                .imageS3(imageFiles) // image file 초기화
+                .imageS3(imageFiles)
                 .thumbnail(request.getThumbnail())
-                .thumbnailS3(thumbnailFile) // thumbnail file 초기화
+                .thumbnailS3(thumbnailFile)
                 .build();
 
         // 비밀번호가 null 인지 체크
-        if (fullRequest.getPassword() == null) {
-            return ResponseEntity.status(400).body("비밀번호를 입력하세요.");
-        }
+        validatePassword(fullRequest.getPassword());
 
         String result = projectService.save(fullRequest, userPrincipal);
-
-        if (result.equals("비밀번호가 틀렸습니다.")) {
-            return ResponseEntity.status(401).body(result);
-        } else {
-            return ResponseEntity.status(201).body(result);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @GetMapping("/{projectId}")
     public ResponseEntity<?> getProject(@PathVariable("projectId") Long projectId,
                                         @CurrentUser UserPrincipal userPrincipal) {
-        try {
-            ProjectDetailsResponse projectDetails = projectService.getProjectDetails(projectId, userPrincipal);
-            return ResponseEntity.ok(projectDetails);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        ProjectDetailsResponse projectDetails = projectService.getProjectDetails(projectId, userPrincipal);
+        return ResponseEntity.ok(projectDetails);
     }
 
     @GetMapping("/{projectId}/update")
     public ResponseEntity<?> getProjectDetailsForUpdate(@PathVariable("projectId") Long projectId,
                                                         @CurrentUser UserPrincipal userPrincipal) {
-        try {
-            // 프로젝트 상세 정보를 가져오는 서비스 호출
-            ProjectDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (IllegalArgumentException ex) {
-            // 유효하지 않은 유저 ID
-            return ResponseEntity.status(403).body("수정 권한이 없습니다.");
-        }
+        // 프로젝트 상세 정보를 가져오는 서비스 호출
+        ProjectDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("{projectId}")
@@ -124,32 +107,26 @@ public class ProjectController {
                                            @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
                                            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
                                            @RequestPart("project") ProjectRequest request) throws IOException {
-        // RequestPart 중 ContentType 형식이 다르게 온 file 2종류를 ProjectRequest 에 할당
+        // RequestPart 중 ContentType 형식이 서로 다른 file 2종류를 ProjectRequest 에 할당
         request.setMultipartFiles(thumbnailFile, imageFiles);
 
         // 비밀번호가 null 인지 체크
-        if (request.getPassword() == null) {
-            return ResponseEntity.status(400).body("비밀번호를 입력하세요.");
-        }
+        validatePassword(request.getPassword());
 
         String result = projectService.update(projectId, request, userPrincipal);
-        if (result.equals("비밀번호가 틀렸습니다.")) {
-            return ResponseEntity.status(401).body(result);
-        } else {
-            return ResponseEntity.status(201).body(result);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @DeleteMapping("{projectId}")
-    public ResponseEntity<?> deleteProject(@PathVariable("projectId") Long projectId, @CurrentUser UserPrincipal user) {
-        try {
-            projectService.delete(projectId, user);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
-        }
+    public ResponseEntity<?> deleteProject(@PathVariable("projectId") Long projectId,
+                                           @CurrentUser UserPrincipal user) {
+        projectService.delete(projectId, user);
+        return ResponseEntity.noContent().build();
     }
 
+    private void validatePassword(String password) {
+        if (password == null) {
+            throw new BadRequestException("비밀번호를 입력하세요.");
+        }
+    }
 }

@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.auth.domain.RefreshToken;
 import wap.web2.server.auth.domain.Tokens;
 import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.exception.ConflictException;
+import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.global.security.config.AppProperties;
 import wap.web2.server.global.security.jwt.TokenProvider;
@@ -27,14 +29,14 @@ public class AuthService {
     @Transactional
     public Tokens createNewToken(String token) {
         if (!tokenProvider.validateToken(token)) {
-            throw new BadRequestException("Invalid Refresh Token");
+            throw new BadRequestException("유효하지 않은 리프레시 토큰입니다.");
         }
 
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token).orElse(null);
 
         if (refreshToken == null) {
             handleTokenTheft(token);
-            throw new BadRequestException("Refresh Token reuse detected");
+            throw new ConflictException("리프레시 토큰이 재사용되었습니다.");
         }
 
         validateToken(refreshToken);
@@ -50,7 +52,7 @@ public class AuthService {
     private void handleTokenTheft(String token) {
         Long userId = tokenProvider.getUserIdFromToken(token);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BadRequestException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
 
         refreshTokenRepository.deleteByUser(user);
     }
@@ -70,7 +72,7 @@ public class AuthService {
     private void validateToken(RefreshToken token) {
         if (token.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenRepository.delete(token);
-            throw new BadRequestException("Refresh Token expired");
+            throw new BadRequestException("리프레시 토큰이 만료되었습니다.");
         }
     }
 }
