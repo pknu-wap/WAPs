@@ -5,18 +5,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import wap.web2.server.exception.ErrorCode;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(RestAccessDeniedHandler.class);
 
     private final SecurityErrorResponseWriter securityErrorResponseWriter;
 
@@ -26,7 +24,7 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) throws IOException, ServletException {
-        logger.warn("인가에 실패했습니다. path={}", request.getRequestURI(), accessDeniedException);
+        log.warn("인가에 실패했습니다. path={}", request.getRequestURI(), accessDeniedException);
         securityErrorResponseWriter.write(
                 request,
                 response,

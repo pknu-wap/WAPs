@@ -5,18 +5,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import wap.web2.server.exception.ErrorCode;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private static final Logger logger = LoggerFactory.getLogger(RestAuthenticationEntryPoint.class);
     private final SecurityErrorResponseWriter securityErrorResponseWriter;
 
     @Override
@@ -26,7 +25,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         ErrorCode errorCode = resolveErrorCode(httpServletRequest);
         String message = resolveMessage(httpServletRequest, errorCode);
 
-        logger.warn("인증에 실패했습니다. path={}, code={}", httpServletRequest.getRequestURI(), errorCode.getCode(), e);
+        log.warn("인증에 실패했습니다. path={}, code={}", httpServletRequest.getRequestURI(), errorCode.getCode(), e);
         securityErrorResponseWriter.write(httpServletRequest, httpServletResponse, errorCode, message);
     }
 
@@ -45,5 +44,4 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         }
         return errorCode.getDefaultMessage();
     }
-
 }
