@@ -56,20 +56,20 @@ public class TeamBuildingControllerV3 {
     public ResponseEntity<String> apply(@CurrentUser UserPrincipal userPrincipal,
                                         @Valid @RequestBody ProjectAppliesRequest request) {
         applyService.apply(userPrincipal, request);
-        return ResponseEntity.ok("[INFO ] 성공적으로 지원하였습니다.");
+        return ResponseEntity.ok("지원이 완료되었습니다.");
     }
 
     @PostMapping("/recruit/submit")
     public ResponseEntity<String> setPreference(@CurrentUser UserPrincipal userPrincipal,
                                                 @Valid @RequestBody RecruitmentDto request) {
         applyService.setPreference(userPrincipal, request);
-        return ResponseEntity.ok("[INFO ] 성공적으로 등록하였습니다.");
+        return ResponseEntity.ok("모집 정보가 등록되었습니다.");
     }
 
     @GetMapping("/{projectId}/applies")
     public ResponseEntity<ProjectAppliesResponse> getRecruitPageData(@CurrentUser UserPrincipal userPrincipal,
                                                                      @PathVariable("projectId") Long projectId) {
-        ProjectAppliesResponse response = applyService.getApplies(userPrincipal, projectId);
+        ProjectAppliesResponse response = applyService.getRecruitPageData(userPrincipal, projectId);
         return ResponseEntity.ok(response);
     }
 

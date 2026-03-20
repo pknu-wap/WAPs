@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ import wap.web2.server.vote.dto.VoteResultsResponse;
 import wap.web2.server.vote.entity.Ballot;
 import wap.web2.server.vote.repository.BallotRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class VoteService {
@@ -51,7 +53,7 @@ public class VoteService {
 
         List<Long> projectIds = voteRequest.projectIds();
         validateUserBallot(semester, userId);
-        validateParticipatingProjects(projectIds, voteMeta.getId());
+        validateParticipatingProjects(semester, userId, projectIds, voteMeta.getId());
 
         for (Long projectId : projectIds) {
             ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
@@ -149,7 +151,7 @@ public class VoteService {
         }
     }
 
-    private void validateParticipatingProjects(List<Long> projectIds, Long voteMetaId) {
+    private void validateParticipatingProjects(String semester, Long userId, List<Long> projectIds, Long voteMetaId) {
         Set<Long> participants = voteMetaRepository.findParticipantsByVoteMetaId(voteMetaId);
 
         Set<Long> invalidIds = projectIds.stream()
@@ -157,9 +159,15 @@ public class VoteService {
                 .collect(Collectors.toSet());
 
         if (!invalidIds.isEmpty()) {
-            throw new BadRequestException(
-                    "투표 대상이 아닌 프로젝트가 포함되어 있습니다. invalidProjectIds=" + invalidIds
+            log.warn(
+                    "유효하지 않은 투표 대상이 포함되었습니다. semester={}, userId={}, requestProjectIds={}, invalidProjectIds={}, allowedProjectIds={}",
+                    semester,
+                    userId,
+                    projectIds,
+                    invalidIds,
+                    participants
             );
+            throw new BadRequestException("투표 대상이 아닌 프로젝트가 포함되어 있습니다.");
         }
     }
 

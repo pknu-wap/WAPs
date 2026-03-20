@@ -28,47 +28,37 @@ public class AdminTeamBuildingController {
     private final TeamBuildingExportService exportService;
     private final AdminTeamBuildingService adminTeamBuildingService;
 
-    // apply와 recruit이 준비되었을 때 팀 빌딩 알고리즘 실행 트리거
     @PostMapping("/building/run")
-    @Operation(summary = "팀 생성하기", description = "팀 지원과 팀원 모집이 완료되면 팀을 생성합니다.")
-    public ResponseEntity<?> makeTeam() {
-        try {
-            adminTeamBuildingService.makeTeam();
-            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
-        }
+    @Operation(summary = "팀 생성", description = "지원과 모집이 완료되면 팀을 생성합니다.")
+    public ResponseEntity<String> makeTeam() {
+        adminTeamBuildingService.makeTeam();
+        return ResponseEntity.ok("팀 분배가 완료되었습니다.");
     }
 
     @GetMapping("/building/status")
-    @Operation(summary = "팀빌딩 진행 상태 확인", description = "팀빌딩 기능의 상태를 반환합니다.")
-    public ResponseEntity<?> getStatus() {
-        try {
-            TeamBuildingStatus status = adminTeamBuildingService.getStatus();
-            return ResponseEntity.ok().body(TeamBuildingMetaStatusResponse.of(status));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 확인 실패" + e.getMessage());
-        }
+    @Operation(summary = "팀빌딩 상태 조회", description = "현재 팀빌딩 기능의 상태를 조회합니다.")
+    public ResponseEntity<TeamBuildingMetaStatusResponse> getStatus() {
+        TeamBuildingStatus status = adminTeamBuildingService.getStatus();
+        return ResponseEntity.ok(TeamBuildingMetaStatusResponse.of(status));
     }
 
-    // TODO: status request를 역직렬화할 때 예외가 발생한다면
+    // TODO: status request를 직렬화했을 때 예외가 발생한다면?
     @PatchMapping("/building/status")
-    @Operation(summary = "팀빌딩 기능 상태 변경", description = "팀빌딩 기능의 상태를 열림, 지원중, 모집중, 닫힘 중 1가지로 변경합니다.")
-    public ResponseEntity<?> changeStatus(@RequestBody TeamBuildingStatusRequest statusRequest) {
+    @Operation(summary = "팀빌딩 상태 변경", description = "팀빌딩 상태를 변경합니다.")
+    public ResponseEntity<Void> changeStatus(@RequestBody TeamBuildingStatusRequest statusRequest) {
         adminTeamBuildingService.changeStatus(statusRequest);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/building/open/current")
-    @Operation(summary = "현재 학기의 팀빌딩 기능 생성", description = "현재 학기 팀빌딩 기능을 생성합니다.")
-    public ResponseEntity<?> openTeamBuilding() {
+    @Operation(summary = "현재 학기 팀빌딩 생성", description = "현재 학기의 팀빌딩 기능을 생성합니다.")
+    public ResponseEntity<Void> openTeamBuilding() {
         adminTeamBuildingService.openTeamBuilding(generateSemester());
         return ResponseEntity.ok().build();
     }
 
-    // 지원 현황 반환 (.CSV)
     @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
-    @Operation(summary = "지원 현황을 CSV로 내보내기", description = "현재까지 완성된 지원현황을 CSV 형식으로 내보냅니다.")
+    @Operation(summary = "지원 현황 CSV 다운로드", description = "현재까지의 지원 현황을 CSV 형식으로 다운로드합니다.")
     public ResponseEntity<byte[]> exportAppliesCsv() {
         byte[] bytes = exportService.generateAppliesCsvBytes();
 
@@ -80,9 +70,8 @@ public class AdminTeamBuildingController {
                 .body(bytes);
     }
 
-    // 모집 현황 반환 (.CSV)
     @GetMapping(value = "/recruits/export", produces = "text/csv; charset=UTF-8")
-    @Operation(summary = "모집 현황을 CSV로 내보내기", description = "현재까지 완성된 모집현황을 CSV 형식으로 내보냅니다.")
+    @Operation(summary = "모집 현황 CSV 다운로드", description = "현재까지의 모집 현황을 CSV 형식으로 다운로드합니다.")
     public ResponseEntity<byte[]> exportRecruitsCsv() {
         byte[] bytes = exportService.generateRecruitsCsvBytes();
 
@@ -93,5 +82,4 @@ public class AdminTeamBuildingController {
                 .contentLength(bytes.length)
                 .body(bytes);
     }
-
 }
