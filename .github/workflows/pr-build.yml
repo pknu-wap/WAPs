@@ -2,6 +2,8 @@ name: PR Build Validation
 
 on:
   pull_request:
+    branches:
+      - develop
     types:
       - opened
       - synchronize
