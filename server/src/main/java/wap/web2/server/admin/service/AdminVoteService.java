@@ -56,7 +56,7 @@ public class AdminVoteService {
     @Transactional
     public void closeVote(String semester, Long userId) {
         VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 투표가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 학기의 투표를 찾을 수 없습니다."));
 
         voteMeta.close(userId);
     }
@@ -78,7 +78,7 @@ public class AdminVoteService {
     @Transactional
     public VoteResultsVisibility getVisibility(String semester) {
         Boolean isPublic = voteMetaRepository.findIsResultPublicBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 투표가 생성되지 않았습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("투표가 생성되지 않았습니다."));
         return new VoteResultsVisibility(isPublic);
     }
 
@@ -94,7 +94,7 @@ public class AdminVoteService {
         missing.removeAll(existingProjectIds);
 
         if (!missing.isEmpty()) {
-            throw new ResourceNotFoundException("[ERROR] 존재하지 않는 프로젝트가 포함되어 있습니다. missingIds=" + missing);
+            throw new ResourceNotFoundException("존재하지 않는 프로젝트가 포함되어 있습니다. missingIds=" + missing);
         }
     }
 

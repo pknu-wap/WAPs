@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.aws.AwsUtils;
+import wap.web2.server.exception.ForbiddenException;
+import wap.web2.server.exception.ProjectPasswordInvalidException;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
@@ -49,11 +51,10 @@ public class ProjectService {
     @Transactional
     public String save(ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
-            return "비밀번호가 틀렸습니다.";
+            throw new ProjectPasswordInvalidException();
         }
 
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
+        User user = findUser(userPrincipal.getId());
 
         List<String> imageUrls = Collections.emptyList();
         if (request.getImageS3() != null) {
@@ -108,8 +109,7 @@ public class ProjectService {
         ProjectDetailsResponse projectDetailsResponse = ProjectDetailsResponse.from(project);
 
         if (userPrincipal != null) {
-            User user = userRepository.findById(userPrincipal.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid user Id")); // 아래 메서드와 예외처리를 동일하게
+            User user = findUser(userPrincipal.getId());
 
             if (project.isOwner(user)) {
                 // 로그인한 사용자이고, 프로젝트의 주인이면 isOwner 플래그를 true로 바꾸고 리턴한다.
@@ -123,17 +123,16 @@ public class ProjectService {
     @CacheEvict(value = "projectList", allEntries = true)
     public ProjectDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
         if (userPrincipal == null) {
-            throw new IllegalArgumentException();
+            throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
         }
 
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id"));
+        User user = findUser(userPrincipal.getId());
         log.info("[수정 요청] - 유저ID: {}, 유저명: {}, 프로젝트ID: {}", user.getId(), user.getName(), projectId);
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("프로젝트가 없습니다."));
 
         if (!project.getUser().getId().equals(user.getId())) {
-            throw new IllegalArgumentException("수정 권한이 없습니다.");
+            throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
         }
 
         return ProjectDetailsResponse.from(project);
@@ -143,13 +142,16 @@ public class ProjectService {
     @Transactional
     public String update(Long projectId, ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
-            return "비밀번호가 틀렸습니다.";
+            throw new ProjectPasswordInvalidException();
         }
 
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-        Project project = projectRepository.findByProjectIdAndUser(projectId, user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 프로젝트의 생성자가 아닙니다."));
+        User user = findUser(userPrincipal.getId());
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
+
+        if (!project.isOwner(user)) {
+            throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
+        }
 
         // 썸네일 이미지가 없으면 유지 or 있으면 변경
         if (request.getThumbnailS3() != null) {
@@ -186,25 +188,28 @@ public class ProjectService {
     @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public void delete(Long projectId, UserPrincipal userPrincipal) {
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-        Project project = projectRepository.findByProjectIdAndUser(projectId, user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 프로젝트의 생성자가 아닙니다."));
+        User user = findUser(userPrincipal.getId());
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
 
-        if (project == null) {
-            throw new IllegalArgumentException("[ERROR] 해당 사용자에게 삭제 권한이 없습니다.");
+        if (!project.isOwner(user)) {
+            throw new ForbiddenException("프로젝트 삭제 권한이 없습니다.");
         }
         projectRepository.delete(project);
     }
 
     public boolean isLeader(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
+        User user = findUser(userId);
 
         // 이번 학기 모든 프로젝트를 찾아서 내가 주인인 프로젝트가 하나라도 있으면 true
         return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue())
                 .stream()
                 .anyMatch(project -> project.isOwner(user));
+    }
+
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
 }

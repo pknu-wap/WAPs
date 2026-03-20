@@ -12,6 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.entity.VoteMeta;
 import wap.web2.server.admin.entity.VoteStatus;
 import wap.web2.server.admin.repository.VoteMetaRepository;
+import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.exception.ConflictException;
+import wap.web2.server.exception.ForbiddenException;
+import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
@@ -35,20 +39,20 @@ public class VoteService {
     private final VoteMetaRepository voteMetaRepository;
 
     @Transactional
-    public void vote(Long userId, String role, VoteRequest voteRequest) {
+    public void vote(UserPrincipal userPrincipal, VoteRequest voteRequest) {
+        Long userId = userPrincipal.getId();
+        Role userRole = resolveUserRole(userPrincipal);
         String semester = voteRequest.semester();
-        Role userRole = Role.from(role);
 
-        VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 투표가 존재하지 않습니다."));
-
+        VoteMeta voteMeta = findVoteMeta(semester);
         if (voteMeta.getStatus() != VoteStatus.VOTING) {
-            throw new IllegalArgumentException(String.format("[ERROR] %s학기의 투표가 열리지 않았습니다.", semester));
+            throw new ConflictException(String.format("%s 학기의 투표가 진행 중이 아닙니다.", semester));
         }
 
         List<Long> projectIds = voteRequest.projectIds();
         validateUserBallot(semester, userId);
         validateParticipatingProjects(projectIds, voteMeta.getId());
+
         for (Long projectId : projectIds) {
             ballotRepository.save(Ballot.of(semester, userId, userRole, projectId));
         }
@@ -56,14 +60,12 @@ public class VoteService {
 
     @Transactional(readOnly = true)
     public VoteInfoResponse getVoteInfo(UserPrincipal userPrincipal, String semester) {
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-        VoteStatus voteStatus = voteMetaRepository.findStatusBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 투표가 존재하지 않습니다."));
+        User user = findUser(userPrincipal.getId());
+        VoteStatus voteStatus = findVoteStatus(semester);
 
         long votedCount = ballotRepository.countBallotsBySemesterAndUserId(semester, user.getId());
         boolean isVotedUser = votedCount > 0;
-        boolean isOpen = (voteStatus == VoteStatus.VOTING);
+        boolean isOpen = voteStatus == VoteStatus.VOTING;
 
         return VoteInfoResponse.builder()
                 .isVotedUser(isVotedUser)
@@ -80,7 +82,7 @@ public class VoteService {
         long totalVotes = calculateTotalVotes(projectVoteCounts);
 
         List<VoteResultResponse> results = projectVoteCounts.stream()
-                .map(pvc -> VoteResultResponse.of(pvc, totalVotes))
+                .map(projectVoteCount -> VoteResultResponse.of(projectVoteCount, totalVotes))
                 .toList();
 
         return VoteResultsResponse.of(semester, results);
@@ -94,13 +96,12 @@ public class VoteService {
         List<ProjectVoteCount> latestVotes = ballotRepository.findPublicLatestBallots(latestSemester);
 
         if (latestVotes.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 현재까지 투표가 진행된 적이 없습니다.");
+            throw new ResourceNotFoundException("공개된 투표 결과가 없습니다.");
         }
 
         long totalVotes = calculateTotalVotes(latestVotes);
-
         List<VoteResultResponse> results = latestVotes.stream()
-                .map(lv -> VoteResultResponse.of(lv, totalVotes))
+                .map(latestVote -> VoteResultResponse.of(latestVote, totalVotes))
                 .toList();
 
         return VoteResultsResponse.of(latestSemester, results);
@@ -108,12 +109,32 @@ public class VoteService {
 
     @Transactional(readOnly = true)
     public List<VoteParticipantsResponse> getParticipants(String semester) {
-        List<VoteParticipants> participants
-                = voteMetaRepository.findParticipantsProjectBySemester(semester);
-
-        return participants.stream().map(VoteParticipantsResponse::from).toList();
+        List<VoteParticipants> participants = voteMetaRepository.findParticipantsProjectBySemester(semester);
+        return participants.stream()
+                .map(VoteParticipantsResponse::from)
+                .toList();
     }
 
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
+    private Role resolveUserRole(UserPrincipal userPrincipal) {
+        String role = userPrincipal.getUserRole()
+                .orElseThrow(() -> new ForbiddenException("사용자 권한 정보가 존재하지 않습니다."));
+        return Role.from(role);
+    }
+
+    private VoteMeta findVoteMeta(String semester) {
+        return voteMetaRepository.findBySemester(semester)
+                .orElseThrow(() -> new ResourceNotFoundException("투표를 찾을 수 없습니다."));
+    }
+
+    private VoteStatus findVoteStatus(String semester) {
+        return voteMetaRepository.findStatusBySemester(semester)
+                .orElseThrow(() -> new ResourceNotFoundException("투표를 찾을 수 없습니다."));
+    }
 
     private long calculateTotalVotes(List<ProjectVoteCount> projectVoteCounts) {
         return projectVoteCounts.stream()
@@ -124,7 +145,7 @@ public class VoteService {
     private void validateUserBallot(String semester, Long userId) {
         long votedCount = ballotRepository.countBallotsBySemesterAndUserId(semester, userId);
         if (votedCount >= 3) {
-            throw new IllegalArgumentException("[ERROR] 투표는 최대 3개까지 가능합니다.");
+            throw new BadRequestException("투표는 최대 3개까지 가능합니다.");
         }
     }
 
@@ -132,12 +153,12 @@ public class VoteService {
         Set<Long> participants = voteMetaRepository.findParticipantsByVoteMetaId(voteMetaId);
 
         Set<Long> invalidIds = projectIds.stream()
-                .filter(id -> !participants.contains(id))
+                .filter(projectId -> !participants.contains(projectId))
                 .collect(Collectors.toSet());
 
         if (!invalidIds.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "[ERROR] 투표에 참여하지 않는 프로젝트가 포함되어 있습니다. invalidProjectIds=" + invalidIds
+            throw new BadRequestException(
+                    "투표 대상이 아닌 프로젝트가 포함되어 있습니다. invalidProjectIds=" + invalidIds
             );
         }
     }
@@ -145,8 +166,7 @@ public class VoteService {
     private void validateResultVisibility(String semester) {
         boolean isPublic = voteMetaRepository.isResultPublic(semester);
         if (!isPublic) {
-            throw new IllegalArgumentException("[ERROR] 해당 투표 결과는 비공개입니다.");
+            throw new ForbiddenException("해당 투표 결과는 비공개입니다.");
         }
     }
-
 }

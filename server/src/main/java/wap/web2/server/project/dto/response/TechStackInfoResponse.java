@@ -3,6 +3,7 @@ package wap.web2.server.project.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.project.entity.TechStackName;
 import wap.web2.server.project.entity.TechStackType;
 
@@ -54,7 +55,7 @@ public class TechStackInfoResponse {
             case TENSERFLOW:
                 return TechStackType.AI;
             default:
-                throw new IllegalArgumentException("Unknown TechStackName: " + techStackName);
+                throw new BadRequestException("알 수 없는 기술 스택입니다: " + techStackName);
         }
     }
 }
