@@ -5,18 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Created by rajeevkumarsingh on 02/08/17.
- */
 @Getter
 @Setter
 public class LoginRequest {
 
-    @Email
-    @NotBlank
+    @Email(message = "올바른 이메일 형식을 입력해 주세요.")
+    @NotBlank(message = "이메일을 입력해 주세요.")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "비밀번호를 입력해 주세요.")
     private String password;
-
 }

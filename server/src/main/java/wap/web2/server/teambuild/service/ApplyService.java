@@ -11,6 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.entity.TeamBuildingMeta;
 import wap.web2.server.admin.entity.TeamBuildingStatus;
 import wap.web2.server.admin.repository.TeamBuildingMetaRepository;
+import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.exception.ConflictException;
+import wap.web2.server.exception.ForbiddenException;
+import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
@@ -44,24 +48,21 @@ public class ApplyService {
     @Transactional
     public void apply(UserPrincipal userPrincipal, ProjectAppliesRequest request) {
         if (!isTeamApplyOpen()) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 지원 기능이 열리지 않았습니다.");
+            throw new ConflictException("현재 팀빌딩 상태에서는 지원할 수 없습니다.");
         }
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
 
-        // TODO: 이미 신청한 사용자 처리
-
+        User user = findUser(userPrincipal.getId());
         List<ApplyRequest> applies = request.getApplies();
-        int priority = 1; // 우선순위는 1-based
+        int priority = 1;
+
         for (ApplyRequest applyRequest : applies) {
-            Project project = projectRepository.findById(applyRequest.getProjectId())
-                    .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
+            Project project = findProject(applyRequest.getProjectId());
             log.info("apply-user:{},priority:{},project:{}", userPrincipal.getName(), priority, project.getTitle());
 
             applyRepository.save(
                     ProjectApply.builder()
                             .priority(priority++)
-                            .position(Position.valueOf(applyRequest.getPosition()))
+                            .position(parsePosition(applyRequest.getPosition()))
                             .comment(applyRequest.getComment())
                             .user(user)
                             .project(project)
@@ -70,16 +71,13 @@ public class ApplyService {
         }
     }
 
-    // 이미 모집했는가
     @Transactional(readOnly = true)
     public boolean hasRecruited(UserPrincipal userPrincipal, Long projectId) {
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
+        User user = findUser(userPrincipal.getId());
+        Project project = findProject(projectId);
 
         if (!project.isOwner(user)) {
-            throw new IllegalArgumentException("[ERROR] 프로젝트의 팀장이 아닙니다.");
+            throw new ForbiddenException("프로젝트 열람 권한이 없습니다.");
         }
 
         return recruitRepository.existsByProjectIdAndSemester(projectId, generateSemester());
@@ -87,13 +85,11 @@ public class ApplyService {
 
     @Transactional(readOnly = true)
     public ProjectAppliesResponse getApplies(UserPrincipal userPrincipal, Long projectId) {
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
+        User user = findUser(userPrincipal.getId());
+        Project project = findProject(projectId);
 
         if (!project.isOwner(user)) {
-            throw new IllegalArgumentException("[ERROR] 해당 프로젝트의 팀장이 아닙니다.");
+            throw new ForbiddenException("프로젝트 열람 권한이 없습니다.");
         }
 
         List<ProjectApply> applies = applyRepository.findAllByProject(project);
@@ -102,33 +98,41 @@ public class ApplyService {
         return ProjectAppliesResponse.fromEntities(applies);
     }
 
-    // 팀장이 선호하는 지원자를 나열한 wishList 저장
+    @Transactional(readOnly = true)
+    public ProjectAppliesResponse getRecruitPageData(UserPrincipal userPrincipal, Long projectId) {
+        if (hasRecruited(userPrincipal, projectId)) {
+            throw new ConflictException("이미 제출된 모집이 존재합니다.");
+        }
+
+        return getApplies(userPrincipal, projectId);
+    }
+
     @Transactional
     public void setPreference(UserPrincipal userPrincipal, RecruitmentDto request) {
         if (!isTeamRecruitOpen()) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 모집 기능이 열리지 않았습니다.");
+            throw new ConflictException("현재 팀빌딩 상태에서는 모집을 제출할 수 없습니다.");
         }
 
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-        Project project = projectRepository.findById(request.getProjectId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
+        User user = findUser(userPrincipal.getId());
+        Project project = findProject(request.getProjectId());
 
-        log.info("setPreference요청-user:{},project:{}", user.getId(), project.getProjectId());
+        if (!project.isOwner(user)) {
+            throw new ForbiddenException("프로젝트 모집 권한이 없습니다.");
+        }
+
+        log.info("setPreference-user:{},project:{}", user.getId(), project.getProjectId());
 
         List<RecruitmentInfo> roasters = request.getRoasters();
         for (RecruitmentInfo roaster : roasters) {
-            // 1. 먼저 ProjectRecruit 저장 (부모 엔티티)
             ProjectRecruit recruit = recruitRepository.save(
                     ProjectRecruit.builder()
                             .leaderId(user.getId())
                             .projectId(project.getProjectId())
-                            .position(Position.valueOf(roaster.getPosition()))
+                            .position(parsePosition(roaster.getPosition()))
                             .capacity(roaster.getCapacity())
                             .build()
             );
 
-            // 2. 각 분야별로 우선순위 1부터 시작
             int priority = 1;
             List<ProjectRecruitWish> wishes = new ArrayList<>();
             for (long applicantId : roaster.getApplicantIds()) {
@@ -142,19 +146,20 @@ public class ApplyService {
                 wishes.add(wish);
             }
 
-            // 3. 부모 엔티티에 자식 리스트 설정
             recruit.setWishList(wishes);
         }
     }
 
+    @Transactional(readOnly = true)
     public boolean hasAppliedThisSemester(Long userId) {
+        findUser(userId);
         return applyRepository.existsByUserIdAndSemester(userId, generateSemester());
     }
 
     private boolean isTeamApplyOpen() {
         String semester = generateSemester();
         TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+                .orElseThrow(() -> new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
 
         return teamBuildingMeta.getStatus() == TeamBuildingStatus.APPLY;
     }
@@ -162,8 +167,26 @@ public class ApplyService {
     private boolean isTeamRecruitOpen() {
         String semester = generateSemester();
         TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+                .orElseThrow(() -> new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
 
         return teamBuildingMeta.getStatus() == TeamBuildingStatus.RECRUIT;
+    }
+
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
+    private Project findProject(Long projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
+    }
+
+    private Position parsePosition(String position) {
+        try {
+            return Position.valueOf(position);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("유효하지 않은 포지션입니다.");
+        }
     }
 }

@@ -12,6 +12,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import wap.web2.server.exception.InternalServerException;
 import wap.web2.server.teambuild.entity.ProjectApply;
 import wap.web2.server.teambuild.entity.ProjectRecruit;
 import wap.web2.server.teambuild.entity.ProjectRecruitWish;
@@ -58,7 +59,7 @@ public class TeamBuildingExportService {
             } while (!p.isLast());
 
         } catch (IOException e) {
-            throw new RuntimeException("[ERROR] applies CSV 생성 중 오류", e);
+            throw new InternalServerException("지원 CSV 생성 중 오류가 발생했습니다.", e);
         }
 
         return baos.toByteArray();
@@ -127,7 +128,7 @@ public class TeamBuildingExportService {
             } while (!p.isLast());
 
         } catch (IOException e) {
-            throw new RuntimeException("[ERROR] Recruits CSV 생성 중 오류", e);
+            throw new InternalServerException("모집 CSV 생성 중 오류가 발생했습니다.", e);
         }
 
         return baos.toByteArray();

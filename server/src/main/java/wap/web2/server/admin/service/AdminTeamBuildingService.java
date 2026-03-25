@@ -21,6 +21,8 @@ import wap.web2.server.admin.dto.request.TeamBuildingStatusRequest;
 import wap.web2.server.admin.entity.TeamBuildingMeta;
 import wap.web2.server.admin.entity.TeamBuildingStatus;
 import wap.web2.server.admin.repository.TeamBuildingMetaRepository;
+import wap.web2.server.exception.ConflictException;
+import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.teambuild.dto.ApplyInfo;
@@ -59,14 +61,14 @@ public class AdminTeamBuildingService {
         TeamBuildingStatus status = statusRequest.status();
         int updated = teamBuildingMetaRepository.updateTeamBuildingMetaStatus(semester, status);
         if (updated == 0) {
-            throw new IllegalArgumentException(String.format("[ERROR] %s 학기의 팀빌딩이 존재하지 않습니다.", semester));
+            throw new ResourceNotFoundException(String.format("%s 학기의 팀빌딩을 찾을 수 없습니다.", semester));
         }
     }
 
     @Transactional
     public void openTeamBuilding(String semester) {
         if (teamBuildingMetaRepository.existsTeamBuildingMetaBySemester(semester)) {
-            throw new IllegalArgumentException("[ERROR] 해당 학기의 팀빌딩이 이미 생성되었습니다.");
+            throw new ConflictException("해당 학기의 팀빌딩이 이미 생성되었습니다.");
         }
 
         TeamBuildingMeta teamBuildingMeta = new TeamBuildingMeta(semester);
@@ -186,12 +188,12 @@ public class AdminTeamBuildingService {
     private TeamBuildingMeta findCurrentMeta() {
         String semester = generateSemester();
         return teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+                .orElseThrow(() -> new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
     }
 
     private void validateTeamBuildingStatus(TeamBuildingMeta current) {
         if (current.getStatus() != TeamBuildingStatus.CLOSED) {
-            throw new IllegalArgumentException("[ERROR] 팀빌딩 기능이 닫혀 있습니다");
+            throw new ConflictException("현재 팀빌딩 상태에서는 팀을 구성할 수 없습니다.");
         }
     }
 
@@ -202,7 +204,7 @@ public class AdminTeamBuildingService {
             Long projectId = projectEntry.getKey();
             Long leaderId = projectRepository.findById(projectId)
                     .map(project -> project.getUser().getId()) // leader id 찾기
-                    .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 프로젝트입니다."));
+                    .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
 
             Map<Position, Set<Long>> byPosition = projectEntry.getValue();
             for (Map.Entry<Position, Set<Long>> posEntry : byPosition.entrySet()) {

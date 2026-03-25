@@ -10,24 +10,22 @@ import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import wap.web2.server.exception.ErrorCode;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.global.security.config.AppProperties;
 
+@Slf4j
 @Service
 public class TokenProvider {
-
-    private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
     private final AppProperties appProperties;
     private final Key key;
 
     public TokenProvider(AppProperties appProperties) {
         this.appProperties = appProperties;
-        // 문자열로부터 HMAC SHA 키 생성 (64바이트 이상 권장)
         this.key = Keys.hmacShaKeyFor(appProperties.getAuth().getTokenSecret().getBytes(StandardCharsets.UTF_8));
     }
 
@@ -70,19 +68,25 @@ public class TokenProvider {
     }
 
     public boolean validateToken(String authToken) {
-        try {
-            Jwts.parser().setSigningKey(key).build().parseClaimsJws(authToken);
-            return true;
-        } catch (SecurityException | MalformedJwtException ex) {
-            logger.error("Invalid JWT signature: {}", ex.getMessage());
-        } catch (ExpiredJwtException ex) {
-            logger.error("Expired JWT token: {}", ex.getMessage());
-        } catch (UnsupportedJwtException ex) {
-            logger.error("Unsupported JWT token: {}", ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            logger.error("JWT token is empty: {}", ex.getMessage());
-        }
-        return false;
+        return getAccessTokenErrorCode(authToken) == null;
     }
 
+    public ErrorCode getAccessTokenErrorCode(String authToken) {
+        try {
+            Jwts.parser().setSigningKey(key).build().parseClaimsJws(authToken);
+            return null;
+        } catch (SecurityException | MalformedJwtException ex) {
+            log.warn("유효하지 않은 JWT 서명입니다. message={}", ex.getMessage());
+            return ErrorCode.AUTH_INVALID_TOKEN;
+        } catch (ExpiredJwtException ex) {
+            log.warn("만료된 JWT 토큰입니다. message={}", ex.getMessage());
+            return ErrorCode.AUTH_TOKEN_EXPIRED;
+        } catch (UnsupportedJwtException ex) {
+            log.warn("지원하지 않는 JWT 토큰입니다. message={}", ex.getMessage());
+            return ErrorCode.AUTH_INVALID_TOKEN;
+        } catch (IllegalArgumentException ex) {
+            log.warn("JWT 토큰이 비어 있습니다. message={}", ex.getMessage());
+            return ErrorCode.AUTH_INVALID_TOKEN;
+        }
+    }
 }

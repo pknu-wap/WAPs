@@ -24,8 +24,10 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import wap.web2.server.global.security.CustomUserDetailsService;
 import wap.web2.server.global.security.handler.OAuth2AuthenticationFailureHandler;
 import wap.web2.server.global.security.handler.OAuth2AuthenticationSuccessHandler;
+import wap.web2.server.global.security.handler.RestAccessDeniedHandler;
 import wap.web2.server.global.security.handler.RestAuthenticationEntryPoint;
 import wap.web2.server.global.security.jwt.TokenAuthenticationFilter;
+import wap.web2.server.global.security.jwt.TokenProvider;
 import wap.web2.server.global.security.oauth2.CustomOAuth2UserService;
 import wap.web2.server.global.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 
@@ -40,10 +42,13 @@ public class SecurityConfig {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    private final RestAccessDeniedHandler restAccessDeniedHandler;
+    private final TokenProvider tokenProvider;
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
-        return new TokenAuthenticationFilter();
+        return new TokenAuthenticationFilter(tokenProvider, customUserDetailsService);
     }
 
     @Bean
@@ -76,7 +81,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(new RestAuthenticationEntryPoint()))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(restAuthenticationEntryPoint)
+                        .accessDeniedHandler(restAccessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(staticResources()).permitAll()
 

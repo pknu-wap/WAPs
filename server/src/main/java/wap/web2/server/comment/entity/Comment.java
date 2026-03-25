@@ -40,7 +40,10 @@ public class Comment {
     private User user;
 
     public boolean isOwner(User user) {
-        return this.user == user;
+        if (this.user == null || user == null) {
+            return false;
+        }
+        return this.user.getId().equals(user.getId());
     }
 
 }

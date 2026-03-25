@@ -3,8 +3,8 @@ package wap.web2.server.member.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.exception.ResourceNotFoundException;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.member.dto.UserResponse;
 import wap.web2.server.member.dto.UserRoleResponse;
 import wap.web2.server.member.dto.UserVoteResponse;
@@ -20,38 +20,32 @@ public class UserService {
     private final BallotRepository ballotRepository;
     private final UserRepository userRepository;
 
-    // 유저 정보 조회
     public UserResponse getUserDetail(UserPrincipal userPrincipal) {
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
-
+        User user = findUser(userPrincipal.getId());
         return UserResponse.of(user);
     }
 
-    // 유저가 투표한 프로젝트 id 3개 반환
     public UserVoteResponse getUserVotedInfo(UserPrincipal userPrincipal, String semester) {
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-
+        User user = findUser(userPrincipal.getId());
         List<Long> projectIds = ballotRepository.findProjectIdsByUserIdAndSemester(user.getId(), semester);
         return new UserVoteResponse(projectIds);
     }
 
     public void setRole(UserPrincipal userPrincipal, String role) {
-        User user = userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
-
+        User user = findUser(userPrincipal.getId());
         user.setRole(Role.from(role));
         userRepository.save(user);
     }
 
     public UserRoleResponse getMyRole(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 사용자입니다."));
+        User user = findUser(id);
         Role role = user.getRole();
-        boolean isAssigned = (role != null);
-
+        boolean isAssigned = role != null;
         return new UserRoleResponse(role, isAssigned);
     }
-}
 
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+    }
+}
