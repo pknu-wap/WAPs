@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.entity.VoteMeta;
@@ -75,7 +74,6 @@ public class VoteService {
                 .build();
     }
 
-    @Cacheable(value = "voteResults", key = "#semester")
     @Transactional(readOnly = true)
     public VoteResultsResponse getVoteResults(String semester) {
         validateResultVisibility(semester);
@@ -90,7 +88,6 @@ public class VoteService {
         return VoteResultsResponse.of(semester, results);
     }
 
-    @Cacheable(value = "voteResults", key = "'latest'")
     @Transactional(readOnly = true)
     public VoteResultsResponse getMostRecentResults() {
         String currentSemester = generateSemester();

@@ -12,8 +12,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.global.security.UserPrincipal;
@@ -47,7 +45,6 @@ public class ProjectService {
 
     // TODO: 비밀번호 체크 로직이 각 메서드 마다 있음
     // TODO: "비밀번호가 틀렸습니다." 를 반환하면 컨트롤러에서 401 에러를 내보내는데, 유연하지 못하다고 생각됩니다.
-    @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public String save(ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
@@ -85,7 +82,6 @@ public class ProjectService {
         return "등록되었습니다.";
     }
 
-    @Cacheable(value = "projectList", key = "#year + '-' + #semester")
     @Transactional(readOnly = true)
     public List<ProjectInfoResponse> getProjects(Integer year, Integer semester) {
         return projectRepository.findProjectsByYearAndSemesterOrderByProjectIdDesc(year, semester)
@@ -120,7 +116,6 @@ public class ProjectService {
         return projectDetailsResponse;
     }
 
-    @CacheEvict(value = "projectList", allEntries = true)
     public ProjectDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
         if (userPrincipal == null) {
             throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
@@ -138,7 +133,6 @@ public class ProjectService {
         return ProjectDetailsResponse.from(project);
     }
 
-    @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public String update(Long projectId, ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
@@ -185,7 +179,6 @@ public class ProjectService {
         return "수정되었습니다.";
     }
 
-    @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public void delete(Long projectId, UserPrincipal userPrincipal) {
         User user = findUser(userPrincipal.getId());
