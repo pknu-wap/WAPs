@@ -4,10 +4,15 @@ on:
   push:
     branches:
       - main
+      - test/non-cache-version
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/${{ github.event.repository.name }}
+
+concurrency:
+  group: cd-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -38,6 +43,12 @@ jobs:
       - name: Convert image name to lowercase
         id: string
         run: echo "IMAGE_NAME_LC=$(echo ${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Log deployment context
+        run: |
+          echo "Triggered by branch: ${{ github.ref_name }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Deploy target: existing EC2 via latest tag"
 
       - name: Extract metadata for Docker
         id: meta
@@ -72,17 +83,16 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 이미지 태그 설정 (소문자로 변환)
+            echo "Starting deployment for branch: ${{ github.ref_name }}"
+            echo "Deploy target: existing EC2"
+
             IMAGE="ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]'):latest"
-            
-            # 최신 이미지 pull
+
             docker pull $IMAGE
-            
-            # 기존 컨테이너 중지 및 제거
+
             docker stop waps-server || true
             docker rm waps-server || true
-            
-            # 새 컨테이너 실행
+
             docker run -d \
               --name waps-server \
               --restart unless-stopped \
@@ -101,8 +111,7 @@ jobs:
               -e AWS_REGION=${{ secrets.AWS_REGION }} \
               -e SWAGGER_SERVER_URL=${{ secrets.SWAGGER_SERVER_URL }} \
               $IMAGE
-            
-            # 헬스체크 (최대 90초 대기, 10초 간격으로 재시도)
+
             echo "Waiting for application to start..."
             MAX_RETRIES=9
             RETRY_COUNT=0
@@ -117,8 +126,7 @@ jobs:
               sleep 10
             done
             echo "Application is healthy!"
-            
-            # 미사용 이미지 정리
+
             docker image prune -f
-            
+
             echo "Deployment completed successfully!"
