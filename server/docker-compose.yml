@@ -1,8 +1,9 @@
 services:
   app:
     platform: linux/arm64
+    image: waps-server:test-non-cache-version
     build:
-      context: .
+      context: https://github.com/pknu-wap/WAPs.git#test/non-cache-version:server
       dockerfile: Dockerfile
     container_name: waps-server
     ports:
