@@ -6,6 +6,7 @@ import static wap.web2.server.aws.AwsUtils.THUMBNAIL;
 import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
 import static wap.web2.server.util.SemesterGenerator.generateYearValue;
 
+import io.micrometer.observation.annotation.Observed;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +50,11 @@ public class ProjectService {
     // TODO: "비밀번호가 틀렸습니다." 를 반환하면 컨트롤러에서 401 에러를 내보내는데, 유연하지 못하다고 생각됩니다.
     @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
+    @Observed(
+            name = "project.create",
+            contextualName = "project-create",
+            lowCardinalityKeyValues = {"operation", "project.create"}
+    )
     public String save(ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
             throw new ProjectPasswordInvalidException();
@@ -140,6 +146,11 @@ public class ProjectService {
 
     @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
+    @Observed(
+            name = "project.update",
+            contextualName = "project-update",
+            lowCardinalityKeyValues = {"operation", "project.update"}
+    )
     public String update(Long projectId, ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
             throw new ProjectPasswordInvalidException();
