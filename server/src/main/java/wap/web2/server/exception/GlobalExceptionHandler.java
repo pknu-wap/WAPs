@@ -17,6 +17,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import wap.web2.server.observability.RequestCorrelation;
 
 @Slf4j
 @RestControllerAdvice
@@ -191,7 +192,12 @@ public class GlobalExceptionHandler {
     }
 
     private String extractRequestId(HttpServletRequest request) {
-        String requestId = request.getHeader("X-Request-Id");
+        Object requestIdAttribute = request.getAttribute(RequestCorrelation.REQUEST_ID_ATTRIBUTE);
+        if (requestIdAttribute instanceof String requestId && !requestId.isBlank()) {
+            return requestId;
+        }
+
+        String requestId = request.getHeader(RequestCorrelation.REQUEST_ID_HEADER);
         return requestId == null || requestId.isBlank() ? null : requestId;
     }
 }

@@ -83,8 +83,22 @@ project:
 #  level:
 #    org.springframework.security: DEBUG
 
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[traceId=%X{traceId:-}, spanId=%X{spanId:-}, requestId=%X{requestId:-}] "
+
 ## monitoring
 management:
+  observations:
+    annotations:
+      enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: ${OTLP_TRACING_ENDPOINT:http://localhost:4318/v1/traces}
   endpoints:
     enabled-by-default: false
     web:
