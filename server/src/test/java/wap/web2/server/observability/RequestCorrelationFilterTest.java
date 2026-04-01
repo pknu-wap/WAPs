@@ -89,6 +89,13 @@ class RequestCorrelationFilterTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void actuatorHealthRequestBypassesCorrelationFilter() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+                .andExpect(status().isOk())
+                .andExpect(header().doesNotExist(RequestCorrelation.REQUEST_ID_HEADER));
+    }
+
     @RestController
     static class TestController {
 
@@ -100,6 +107,11 @@ class RequestCorrelationFilterTest {
         @GetMapping("/test/fail")
         ResponseEntity<String> fail() {
             throw new IllegalStateException("boom");
+        }
+
+        @GetMapping("/actuator/health")
+        ResponseEntity<String> health() {
+            return ResponseEntity.ok("healthy");
         }
     }
 }
