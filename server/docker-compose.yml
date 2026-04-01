@@ -27,9 +27,13 @@ services:
       AWS_REGION: ${AWS_REGION:-ap-northeast-2}
       # Swagger
       SWAGGER_SERVER_URL: ${SWAGGER_SERVER_URL:-http://localhost:8080}
+      # Tracing
+      OTLP_TRACING_ENDPOINT: ${OTLP_TRACING_ENDPOINT:-http://host.docker.internal:4318/v1/traces}
     depends_on:
       mysql:
         condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - waps-network
     restart: unless-stopped
