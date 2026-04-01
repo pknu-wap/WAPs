@@ -96,6 +96,7 @@ jobs:
             docker run -d \
               --name waps-server \
               --restart unless-stopped \
+              --add-host host.docker.internal:host-gateway \
               -p 8080:8080 \
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_PORT=3306 \
@@ -110,6 +111,7 @@ jobs:
               -e AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }} \
               -e AWS_REGION=${{ secrets.AWS_REGION }} \
               -e SWAGGER_SERVER_URL=${{ secrets.SWAGGER_SERVER_URL }} \
+              -e OTLP_TRACING_ENDPOINT=http://host.docker.internal:4318/v1/traces \
               $IMAGE
 
             echo "Waiting for application to start..."
