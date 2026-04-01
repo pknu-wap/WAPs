@@ -18,6 +18,18 @@ import wap.web2.server.global.security.UserPrincipal;
 @Component
 public class RequestCorrelationFilter extends OncePerRequestFilter {
 
+    private static final String ACTUATOR_HEALTH_PATH = "/actuator/health";
+    private static final String ACTUATOR_PROMETHEUS_PATH = "/actuator/prometheus";
+    private static final String ACTUATOR_METRICS_PATH = "/actuator/metrics";
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith(ACTUATOR_HEALTH_PATH)
+                || path.startsWith(ACTUATOR_PROMETHEUS_PATH)
+                || path.startsWith(ACTUATOR_METRICS_PATH);
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
