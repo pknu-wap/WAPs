@@ -2,6 +2,7 @@ package wap.web2.server.vote.service;
 
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
+import io.micrometer.observation.annotation.Observed;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,6 +41,11 @@ public class VoteService {
     private final VoteMetaRepository voteMetaRepository;
 
     @Transactional
+    @Observed(
+            name = "vote.submit",
+            contextualName = "vote-submit",
+            lowCardinalityKeyValues = {"operation", "vote.submit"}
+    )
     public void vote(UserPrincipal userPrincipal, VoteRequest voteRequest) {
         Long userId = userPrincipal.getId();
         Role userRole = resolveUserRole(userPrincipal);
@@ -75,6 +81,11 @@ public class VoteService {
     }
 
     @Transactional(readOnly = true)
+    @Observed(
+            name = "vote.results",
+            contextualName = "vote-results",
+            lowCardinalityKeyValues = {"operation", "vote.results"}
+    )
     public VoteResultsResponse getVoteResults(String semester) {
         validateResultVisibility(semester);
 
@@ -89,6 +100,11 @@ public class VoteService {
     }
 
     @Transactional(readOnly = true)
+    @Observed(
+            name = "vote.results.latest",
+            contextualName = "vote-results-latest",
+            lowCardinalityKeyValues = {"operation", "vote.results.latest"}
+    )
     public VoteResultsResponse getMostRecentResults() {
         String currentSemester = generateSemester();
         String latestSemester = ballotRepository.findPublicLatestSemester(currentSemester, VoteStatus.ENDED);

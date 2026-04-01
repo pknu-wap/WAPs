@@ -4,6 +4,7 @@ import static wap.web2.server.util.SemesterGenerator.generateSemester;
 import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
 import static wap.web2.server.util.SemesterGenerator.generateYearValue;
 
+import io.micrometer.observation.annotation.Observed;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,6 +35,11 @@ public class TeamBuildingResultService {
     private final ProjectApplyRepository projectApplyRepository;
 
     @Transactional(readOnly = true)
+    @Observed(
+            name = "team_build.results",
+            contextualName = "team-build-results",
+            lowCardinalityKeyValues = {"operation", "team_build.results"}
+    )
     public TeamBuildingResults getResults() {
         final String semester = generateSemester();
 

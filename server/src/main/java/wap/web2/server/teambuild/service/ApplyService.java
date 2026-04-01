@@ -2,6 +2,7 @@ package wap.web2.server.teambuild.service;
 
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
+import io.micrometer.observation.annotation.Observed;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,11 @@ public class ApplyService {
     private final UserRepository userRepository;
 
     @Transactional
+    @Observed(
+            name = "team_build.apply",
+            contextualName = "team-build-apply",
+            lowCardinalityKeyValues = {"operation", "team_build.apply"}
+    )
     public void apply(UserPrincipal userPrincipal, ProjectAppliesRequest request) {
         if (!isTeamApplyOpen()) {
             throw new ConflictException("현재 팀빌딩 상태에서는 지원할 수 없습니다.");
@@ -84,6 +90,11 @@ public class ApplyService {
     }
 
     @Transactional(readOnly = true)
+    @Observed(
+            name = "team_build.applies.read",
+            contextualName = "team-build-applies-read",
+            lowCardinalityKeyValues = {"operation", "team_build.applies.read"}
+    )
     public ProjectAppliesResponse getApplies(UserPrincipal userPrincipal, Long projectId) {
         User user = findUser(userPrincipal.getId());
         Project project = findProject(projectId);
@@ -108,6 +119,11 @@ public class ApplyService {
     }
 
     @Transactional
+    @Observed(
+            name = "team_build.preference",
+            contextualName = "team-build-preference",
+            lowCardinalityKeyValues = {"operation", "team_build.preference"}
+    )
     public void setPreference(UserPrincipal userPrincipal, RecruitmentDto request) {
         if (!isTeamRecruitOpen()) {
             throw new ConflictException("현재 팀빌딩 상태에서는 모집을 제출할 수 없습니다.");
