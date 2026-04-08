@@ -83,8 +83,6 @@ logging:
   level:
     org.hibernate.SQL: debug
     # org.hibernate.orm.jdbc.bind: trace
-
-logging:
   include-application-name: false
   pattern:
     correlation: "[traceId=%X{traceId:-}, spanId=%X{spanId:-}, requestId=%X{requestId:-}] "
