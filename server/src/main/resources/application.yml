@@ -79,9 +79,10 @@ swagger:
 project:
   password: 1248
 
-#logging:
-#  level:
-#    org.springframework.security: DEBUG
+logging:
+  level:
+    org.hibernate.SQL: debug
+    # org.hibernate.orm.jdbc.bind: trace
 
 logging:
   include-application-name: false
