@@ -34,6 +34,10 @@ dependencies {
     implementation("software.amazon.awssdk:s3")
     implementation("software.amazon.awssdk:auth")
 
+    // Oracle
+    implementation 'com.oracle.oci.sdk:oci-java-sdk-objectstorage:3.67.1'
+    implementation 'com.oracle.oci.sdk:oci-java-sdk-common:3.67.1'
+
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'

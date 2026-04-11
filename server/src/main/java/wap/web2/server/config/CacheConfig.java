@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CacheConfig {
 
-
     // 사용될 api마다 개별 정책(TTL, Cap)을 설정한다.
     @Bean
     public CacheManager cacheManager() {
