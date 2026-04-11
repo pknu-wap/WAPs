@@ -58,16 +58,26 @@ public class ProjectService {
 
         List<String> imageUrls = Collections.emptyList();
         if (request.getImageS3() != null) {
-            imageUrls = objectStorageService.uploadImages(PROJECT_DIR, request.getProjectYear(),
+            imageUrls = objectStorageService.uploadImages(
+                    PROJECT_DIR,
+                    request.getProjectYear(),
                     request.getSemester(),
-                    request.getTitle(), IMAGES, request.getImageS3());
+                    request.getTitle(),
+                    IMAGES,
+                    request.getImageS3()
+            );
         }
 
         String thumbnailUrl = "";
         if (request.getThumbnailS3() != null) {
-            thumbnailUrl = objectStorageService.uploadImage(PROJECT_DIR, request.getProjectYear(),
+            thumbnailUrl = objectStorageService.uploadImage(
+                    PROJECT_DIR,
+                    request.getProjectYear(),
                     request.getSemester(),
-                    request.getTitle(), THUMBNAIL, request.getThumbnailS3());
+                    request.getTitle(),
+                    THUMBNAIL,
+                    request.getThumbnailS3()
+            );
         }
 
         // request.toEntity() 를 호출함으로서 매개변수로 넘어온 객체(request)를 사용
@@ -90,22 +100,19 @@ public class ProjectService {
     @Cacheable(value = "projectList", key = "#year + '-' + #semester")
     @Transactional(readOnly = true)
     public List<ProjectInfoResponse> getProjects(Integer year, Integer semester) {
-        return projectRepository.findProjectsByYearAndSemesterOrderByProjectIdDesc(year, semester)
-                .stream()
+        return projectRepository.findProjectsByYearAndSemesterOrderByProjectIdDesc(year, semester).stream()
                 .map(ProjectInfoResponse::from)
                 .toList();
     }
 
     public List<ProjectTemplate> getCurrentProjectRecruits() {
-        return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue())
-                .stream()
+        return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue()).stream()
                 .map(ProjectTemplate::from)
                 .toList();
     }
 
     public ProjectDetailsResponse getProjectDetails(Long projectId, UserPrincipal userPrincipal) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ResourceNotFoundException("프로젝트가 없습니다.")); // 아래 메서드와 예외처리를 동일하게
+        Project project = findProject(projectId);
 
         // response는 isOwner 플랙그가 false인 채로 생성된다.
         ProjectDetailsResponse projectDetailsResponse = ProjectDetailsResponse.from(project);
@@ -130,10 +137,9 @@ public class ProjectService {
 
         User user = findUser(userPrincipal.getId());
         log.info("[수정 요청] - 유저ID: {}, 유저명: {}, 프로젝트ID: {}", user.getId(), user.getName(), projectId);
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ResourceNotFoundException("프로젝트가 없습니다."));
+        Project project = findProject(projectId);
 
-        if (!project.getUser().getId().equals(user.getId())) {
+        if (!project.isOwner(user)) {
             throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
         }
 
@@ -148,8 +154,7 @@ public class ProjectService {
         }
 
         User user = findUser(userPrincipal.getId());
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
+        Project project = findProject(projectId);
 
         if (!project.isOwner(user)) {
             throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
@@ -158,9 +163,14 @@ public class ProjectService {
         // 썸네일 이미지가 없으면 유지 or 있으면 변경
         if (request.getThumbnailS3() != null) {
             log.info("[프로젝트 수정] ({})의 thumbnail 이미지 변경", project.getTitle());
-            String thumbnailUrl = objectStorageService.uploadImage(PROJECT_DIR, request.getProjectYear(),
+            String thumbnailUrl = objectStorageService.uploadImage(
+                    PROJECT_DIR,
+                    request.getProjectYear(),
                     request.getSemester(),
-                    request.getTitle(), THUMBNAIL, request.getThumbnailS3());
+                    request.getTitle(),
+                    THUMBNAIL,
+                    request.getThumbnailS3()
+            );
             project.updateThumbnail(thumbnailUrl);
         }
 
@@ -175,9 +185,14 @@ public class ProjectService {
         // 추가 이미지를 Project에 삽입, 만약 ImageS3가 null이라면 skip
         if (request.getImageS3() != null && !request.getImageS3().isEmpty()) {
             log.info("[프로젝트 수정] ({})에 이미지 추가", project.getTitle());
-            List<String> imageUrls = objectStorageService.uploadImages(PROJECT_DIR, request.getProjectYear(),
+            List<String> imageUrls = objectStorageService.uploadImages(
+                    PROJECT_DIR,
+                    request.getProjectYear(),
                     request.getSemester(),
-                    request.getTitle(), IMAGES, request.getImageS3());
+                    request.getTitle(),
+                    IMAGES,
+                    request.getImageS3()
+            );
             List<Image> images = Image.listOf(imageUrls);
             project.addAllImage(images);
         }
@@ -192,8 +207,7 @@ public class ProjectService {
     @Transactional
     public void delete(Long projectId, UserPrincipal userPrincipal) {
         User user = findUser(userPrincipal.getId());
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
+        Project project = findProject(projectId);
 
         if (!project.isOwner(user)) {
             throw new ForbiddenException("프로젝트 삭제 권한이 없습니다.");
@@ -205,14 +219,18 @@ public class ProjectService {
         User user = findUser(userId);
 
         // 이번 학기 모든 프로젝트를 찾아서 내가 주인인 프로젝트가 하나라도 있으면 true
-        return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue())
-                .stream()
+        return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue()).stream()
                 .anyMatch(project -> project.isOwner(user));
     }
 
     private User findUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
+    private Project findProject(Long projectId) {
+        return projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
     }
 
 }
