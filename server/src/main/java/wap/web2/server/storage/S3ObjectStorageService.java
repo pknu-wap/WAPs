@@ -11,7 +11,7 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import wap.web2.server.config.AwsS3Config;
+import wap.web2.server.config.S3Properties;
 
 @Service
 @Profile("aws")
@@ -22,7 +22,7 @@ public class S3ObjectStorageService implements ObjectStorageService {
     private static final int S3_DOMAIN_LENGTH = S3_URL_DOMAIN.length();
 
     private final S3Client s3Client;
-    private final AwsS3Config s3Config;
+    private final S3Properties s3Properties;
 
     @Override
     public List<String> uploadImages(
@@ -55,7 +55,7 @@ public class S3ObjectStorageService implements ObjectStorageService {
         );
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(s3Config.getBucketName())
+                .bucket(s3Properties.getS3().getBucketName())
                 .key(fileName)
                 .contentType(imageFile.getContentType())
                 .build();
@@ -66,14 +66,14 @@ public class S3ObjectStorageService implements ObjectStorageService {
         );
 
         return s3Client.utilities()
-                .getUrl(builder -> builder.bucket(s3Config.getBucketName()).key(fileName))
+                .getUrl(builder -> builder.bucket(s3Properties.getS3().getBucketName()).key(fileName))
                 .toExternalForm();
     }
 
     @Override
     public void deleteImage(String imageUrl) {
         DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-                .bucket(s3Config.getBucketName())
+                .bucket(s3Properties.getS3().getBucketName())
                 .key(extractKeyFromUrl(imageUrl))
                 .build();
 
