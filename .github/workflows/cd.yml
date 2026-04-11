@@ -88,7 +88,7 @@ jobs:
               --name waps-server \
               --restart unless-stopped \
               -p 8080:8080 \
-              -v /home/ubuntu/.oci:/home/app/.oci:ro \
+              -v /opt/waps/oci:/home/app/.oci:ro \
               -e SPRING_PROFILES_ACTIVE=oracle \
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_PORT=3306 \
