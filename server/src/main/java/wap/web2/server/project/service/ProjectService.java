@@ -1,8 +1,8 @@
 package wap.web2.server.project.service;
 
-import static wap.web2.server.aws.AwsUtils.IMAGES;
-import static wap.web2.server.aws.AwsUtils.PROJECT_DIR;
-import static wap.web2.server.aws.AwsUtils.THUMBNAIL;
+import static wap.web2.server.storage.StoragePathUtils.IMAGES;
+import static wap.web2.server.storage.StoragePathUtils.PROJECT_DIR;
+import static wap.web2.server.storage.StoragePathUtils.THUMBNAIL;
 import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
 import static wap.web2.server.util.SemesterGenerator.generateYearValue;
 
@@ -16,11 +16,10 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import wap.web2.server.global.security.UserPrincipal;
-import wap.web2.server.aws.AwsUtils;
 import wap.web2.server.exception.ForbiddenException;
 import wap.web2.server.exception.ProjectPasswordInvalidException;
 import wap.web2.server.exception.ResourceNotFoundException;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.project.dto.request.ProjectRequest;
@@ -30,6 +29,7 @@ import wap.web2.server.project.entity.Image;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ImageRepository;
 import wap.web2.server.project.repository.ProjectRepository;
+import wap.web2.server.storage.ObjectStorageService;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
 
 @Slf4j
@@ -40,7 +40,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
-    private final AwsUtils awsUtils;
+    private final ObjectStorageService objectStorageService;
 
     @Value("${project.password}")
     private String projectPassword;
@@ -58,13 +58,15 @@ public class ProjectService {
 
         List<String> imageUrls = Collections.emptyList();
         if (request.getImageS3() != null) {
-            imageUrls = awsUtils.uploadImagesTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
+            imageUrls = objectStorageService.uploadImages(PROJECT_DIR, request.getProjectYear(),
+                    request.getSemester(),
                     request.getTitle(), IMAGES, request.getImageS3());
         }
 
         String thumbnailUrl = "";
         if (request.getThumbnailS3() != null) {
-            thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
+            thumbnailUrl = objectStorageService.uploadImage(PROJECT_DIR, request.getProjectYear(),
+                    request.getSemester(),
                     request.getTitle(), THUMBNAIL, request.getThumbnailS3());
         }
 
@@ -156,7 +158,8 @@ public class ProjectService {
         // 썸네일 이미지가 없으면 유지 or 있으면 변경
         if (request.getThumbnailS3() != null) {
             log.info("[프로젝트 수정] ({})의 thumbnail 이미지 변경", project.getTitle());
-            String thumbnailUrl = awsUtils.uploadImageTo(PROJECT_DIR, request.getProjectYear(), request.getSemester(),
+            String thumbnailUrl = objectStorageService.uploadImage(PROJECT_DIR, request.getProjectYear(),
+                    request.getSemester(),
                     request.getTitle(), THUMBNAIL, request.getThumbnailS3());
             project.updateThumbnail(thumbnailUrl);
         }
@@ -166,13 +169,13 @@ public class ProjectService {
         for (String imageUrl : request.getRemoval()) {
             log.info("[프로젝트 수정] 삭제하려는 image url: {}", imageUrl);
             imageRepository.deleteByImageFile(imageUrl);
-            awsUtils.deleteImage(imageUrl);
+            objectStorageService.deleteImage(imageUrl);
         }
 
         // 추가 이미지를 Project에 삽입, 만약 ImageS3가 null이라면 skip
         if (request.getImageS3() != null && !request.getImageS3().isEmpty()) {
             log.info("[프로젝트 수정] ({})에 이미지 추가", project.getTitle());
-            List<String> imageUrls = awsUtils.uploadImagesTo(PROJECT_DIR, request.getProjectYear(),
+            List<String> imageUrls = objectStorageService.uploadImages(PROJECT_DIR, request.getProjectYear(),
                     request.getSemester(),
                     request.getTitle(), IMAGES, request.getImageS3());
             List<Image> images = Image.listOf(imageUrls);

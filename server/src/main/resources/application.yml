@@ -48,6 +48,9 @@ spring:
     baseline-on-migrate: true
     baseline-version: 1
 
+  profiles:
+    active: aws # ObjectStorage 구현체 명시
+
 app:
   auth:
     tokenSecret: ${JWT_SECRET_KEY}
