@@ -72,21 +72,24 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 이미지 태그 설정 (소문자로 변환)
+            set -e
+
             IMAGE="ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]'):latest"
-            
-            # 최신 이미지 pull
-            docker pull $IMAGE
-            
-            # 기존 컨테이너 중지 및 제거
+
+            echo "Pull latest image..."
+            docker pull "$IMAGE"
+
+            echo "Stop and remove old container..."
             docker stop waps-server || true
             docker rm waps-server || true
-            
-            # 새 컨테이너 실행
+
+            echo "Run new container..."
             docker run -d \
               --name waps-server \
               --restart unless-stopped \
               -p 8080:8080 \
+              -v /home/ubuntu/.oci:/home/app/.oci:ro \
+              -e SPRING_PROFILES_ACTIVE=oracle \
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_PORT=3306 \
               -e DB_NAME=${{ secrets.DB_NAME }} \
@@ -99,26 +102,30 @@ jobs:
               -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
               -e AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }} \
               -e AWS_REGION=${{ secrets.AWS_REGION }} \
+              -e OCI_NAMESPACE=${{ secrets.OCI_NAMESPACE }} \
+              -e OCI_BUCKET_NAME=${{ secrets.OCI_BUCKET_NAME }} \
+              -e OCI_REGION=${{ secrets.OCI_REGION }} \
+              -e OCI_CONFIG_PATH=/home/app/.oci/config \
               -e SWAGGER_SERVER_URL=${{ secrets.SWAGGER_SERVER_URL }} \
-              $IMAGE
-            
-            # 헬스체크 (최대 90초 대기, 10초 간격으로 재시도)
+              "$IMAGE"
+
             echo "Waiting for application to start..."
             MAX_RETRIES=9
             RETRY_COUNT=0
+
             until curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; do
               RETRY_COUNT=$((RETRY_COUNT + 1))
               if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
                 echo "Health check failed after $MAX_RETRIES attempts"
-                docker logs waps-server --tail 50
+                docker logs waps-server --tail 100
                 exit 1
               fi
               echo "Attempt $RETRY_COUNT/$MAX_RETRIES - Application not ready, waiting 10s..."
               sleep 10
             done
+
             echo "Application is healthy!"
-            
-            # 미사용 이미지 정리
+
             docker image prune -f
-            
+
             echo "Deployment completed successfully!"
