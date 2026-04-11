@@ -3,9 +3,11 @@ package wap.web2.server.config.s3;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Profile;
 
 @Getter
 @Setter
+@Profile("aws")
 @ConfigurationProperties(prefix = "aws")
 public class S3Properties {
 
