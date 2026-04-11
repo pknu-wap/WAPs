@@ -74,9 +74,9 @@ public class ProjectController {
                 .teamMember(request.getTeamMember())
                 .techStack(request.getTechStack())
                 .image(request.getImage())
-                .imageS3(imageFiles)
+                .imageFiles(imageFiles)
                 .thumbnail(request.getThumbnail())
-                .thumbnailS3(thumbnailFile)
+                .thumbnailFiles(thumbnailFile)
                 .build();
 
         // 비밀번호가 null 인지 체크

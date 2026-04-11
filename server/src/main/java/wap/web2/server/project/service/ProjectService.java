@@ -57,26 +57,26 @@ public class ProjectService {
         User user = findUser(userPrincipal.getId());
 
         List<String> imageUrls = Collections.emptyList();
-        if (request.getImageS3() != null) {
+        if (request.getImageFiles() != null) {
             imageUrls = objectStorageService.uploadImages(
                     PROJECT_DIR,
                     request.getProjectYear(),
                     request.getSemester(),
                     request.getTitle(),
                     IMAGES,
-                    request.getImageS3()
+                    request.getImageFiles()
             );
         }
 
         String thumbnailUrl = "";
-        if (request.getThumbnailS3() != null) {
+        if (request.getThumbnailFiles() != null) {
             thumbnailUrl = objectStorageService.uploadImage(
                     PROJECT_DIR,
                     request.getProjectYear(),
                     request.getSemester(),
                     request.getTitle(),
                     THUMBNAIL,
-                    request.getThumbnailS3()
+                    request.getThumbnailFiles()
             );
         }
 
@@ -161,7 +161,7 @@ public class ProjectService {
         }
 
         // 썸네일 이미지가 없으면 유지 or 있으면 변경
-        if (request.getThumbnailS3() != null) {
+        if (request.getThumbnailFiles() != null) {
             log.info("[프로젝트 수정] ({})의 thumbnail 이미지 변경", project.getTitle());
             String thumbnailUrl = objectStorageService.uploadImage(
                     PROJECT_DIR,
@@ -169,7 +169,7 @@ public class ProjectService {
                     request.getSemester(),
                     request.getTitle(),
                     THUMBNAIL,
-                    request.getThumbnailS3()
+                    request.getThumbnailFiles()
             );
             project.updateThumbnail(thumbnailUrl);
         }
@@ -183,7 +183,7 @@ public class ProjectService {
         }
 
         // 추가 이미지를 Project에 삽입, 만약 ImageS3가 null이라면 skip
-        if (request.getImageS3() != null && !request.getImageS3().isEmpty()) {
+        if (request.getImageFiles() != null && !request.getImageFiles().isEmpty()) {
             log.info("[프로젝트 수정] ({})에 이미지 추가", project.getTitle());
             List<String> imageUrls = objectStorageService.uploadImages(
                     PROJECT_DIR,
@@ -191,7 +191,7 @@ public class ProjectService {
                     request.getSemester(),
                     request.getTitle(),
                     IMAGES,
-                    request.getImageS3()
+                    request.getImageFiles()
             );
             List<Image> images = Image.listOf(imageUrls);
             project.addAllImage(images);
