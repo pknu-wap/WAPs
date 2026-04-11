@@ -1,4 +1,4 @@
-package wap.web2.server.storage;
+package wap.web2.server.storage.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,7 +11,9 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import wap.web2.server.config.S3Properties;
+import wap.web2.server.config.s3.S3Properties;
+import wap.web2.server.storage.ObjectStorageService;
+import wap.web2.server.storage.StoragePathUtils;
 
 @Service
 @Profile("aws")

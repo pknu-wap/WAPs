@@ -1,4 +1,4 @@
-package wap.web2.server.config;
+package wap.web2.server.config.s3;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -30,5 +30,5 @@ public class S3Config {
                 )
                 .build();
     }
-    
+
 }

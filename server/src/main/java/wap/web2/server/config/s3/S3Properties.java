@@ -1,4 +1,4 @@
-package wap.web2.server.config;
+package wap.web2.server.config.s3;
 
 import lombok.Getter;
 import lombok.Setter;
