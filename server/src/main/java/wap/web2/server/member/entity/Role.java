@@ -1,6 +1,7 @@
 package wap.web2.server.member.entity;
 
 import java.util.Arrays;
+import wap.web2.server.exception.BadRequestException;
 
 public enum Role {
 
@@ -13,7 +14,7 @@ public enum Role {
         return Arrays.stream(Role.values())
                 .filter(role -> role.name().equalsIgnoreCase(value))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 유효하지 않은 역할입니다: " + value));
+                .orElseThrow(() -> new BadRequestException("유효하지 않은 역할입니다: " + value));
     }
 
 }

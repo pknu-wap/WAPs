@@ -3,7 +3,6 @@ package wap.web2.server.teambuild.controller;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,100 +34,51 @@ public class TeamBuildingControllerV3 {
     private final ProjectService projectService;
     private final ApplyService applyService;
 
-    // 팀 빌딩 시 사용되는 "내 역할(팀장 or 팀원)" 반환
     @GetMapping("/role")
-    public ResponseEntity<?> getMyRole(@CurrentUser UserPrincipal userPrincipal) {
-        try {
-            boolean isLeader = projectService.isLeader(userPrincipal.getId());
-            return ResponseEntity.ok(new RoleResponse(isLeader ? "leader" : "member"));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("[ERROR] 잘못된 유저입니다.");
-        }
+    public ResponseEntity<RoleResponse> getMyRole(@CurrentUser UserPrincipal userPrincipal) {
+        boolean isLeader = projectService.isLeader(userPrincipal.getId());
+        return ResponseEntity.ok(new RoleResponse(isLeader ? "leader" : "member"));
     }
 
-    // 팀원 지원 상태(이미 지원 완료 여부) 확인
     @GetMapping("/apply/status")
-    public ResponseEntity<?> getApplyStatus(@CurrentUser UserPrincipal userPrincipal) {
-        try {
-            boolean hasApplied = applyService.hasAppliedThisSemester(userPrincipal.getId());
-            return ResponseEntity.ok(new ApplyStatusResponse(hasApplied));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("[ERROR] 잘못된 유저입니다.");
-        }
+    public ResponseEntity<ApplyStatusResponse> getApplyStatus(@CurrentUser UserPrincipal userPrincipal) {
+        boolean hasApplied = applyService.hasAppliedThisSemester(userPrincipal.getId());
+        return ResponseEntity.ok(new ApplyStatusResponse(hasApplied));
     }
 
-    // 팀빌딩 지원 가능한 프로젝트 목록
     @GetMapping("/projects")
-    public ResponseEntity<?> getCurrentProjects(@CurrentUser UserPrincipal userPrincipal) {
-        try {
-            List<ProjectTemplate> projects = projectService.getCurrentProjectRecruits();
-            return ResponseEntity.ok(projects);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("[ERROR] 프로젝트 목록을 불러오지 못했습니다.");
-        }
+    public ResponseEntity<List<ProjectTemplate>> getCurrentProjects(@CurrentUser UserPrincipal userPrincipal) {
+        List<ProjectTemplate> projects = projectService.getCurrentProjectRecruits();
+        return ResponseEntity.ok(projects);
     }
 
-    // 프로젝트 신청 (for 팀원)
     @PostMapping("/apply/submit")
-    public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal,
-                                   @Valid @RequestBody ProjectAppliesRequest request) {
-//        try {
+    public ResponseEntity<String> apply(@CurrentUser UserPrincipal userPrincipal,
+                                        @Valid @RequestBody ProjectAppliesRequest request) {
         applyService.apply(userPrincipal, request);
-        return ResponseEntity.ok().body("[INFO ] 성공적으로 지원하였습니다.");
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body("[ERROR] 지원 실패");
-//        }
+        return ResponseEntity.ok("지원이 완료되었습니다.");
     }
 
-    // 희망 팀 구성 제출 (for 팀장)
     @PostMapping("/recruit/submit")
-    public ResponseEntity<?> setPreference(@CurrentUser UserPrincipal userPrincipal,
-                                           @Valid @RequestBody RecruitmentDto request) {
-        try {
-            applyService.setPreference(userPrincipal, request);
-            return ResponseEntity.ok().body("[INFO ] 성공적으로 등록하였습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 등록 실패");
-        }
+    public ResponseEntity<String> setPreference(@CurrentUser UserPrincipal userPrincipal,
+                                                @Valid @RequestBody RecruitmentDto request) {
+        applyService.setPreference(userPrincipal, request);
+        return ResponseEntity.ok("모집 정보가 등록되었습니다.");
     }
 
-    // 내 프로젝트에 지원한 멤버 불러오기
     @GetMapping("/{projectId}/applies")
-    public ResponseEntity<?> getRecruitPageData(@CurrentUser UserPrincipal userPrincipal,
-                                                @PathVariable("projectId") Long projectId) {
-        try {
-            // 이미 모집 제출된 상태인지 검사
-            boolean hasApplied = applyService.hasRecruited(userPrincipal, projectId);
-            if (hasApplied) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("[ERROR] 이미 제출된 모집이 존재합니다.");
-            }
-
-            // 프로젝트 지원자 목록 조회
-            ProjectAppliesResponse response = applyService.getApplies(userPrincipal, projectId);
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("[ERROR] 멤버 불러오기가 실패했습니다. " + e.getMessage());
-        }
+    public ResponseEntity<ProjectAppliesResponse> getRecruitPageData(@CurrentUser UserPrincipal userPrincipal,
+                                                                     @PathVariable("projectId") Long projectId) {
+        ProjectAppliesResponse response = applyService.getRecruitPageData(userPrincipal, projectId);
+        return ResponseEntity.ok(response);
     }
 
-    // 팀 빌딩 결과를 가져오기
     @GetMapping("/results")
-    public ResponseEntity<?> getTeamBuildResults() {
-        try {
-            TeamBuildingResults results = teamBuildingResultService.getResults();
-            List<TeamMemberResult> unassigned = teamBuildingResultService.getUnassignedMembers(results);
+    public ResponseEntity<TeamResultsResponse> getTeamBuildResults() {
+        TeamBuildingResults results = teamBuildingResultService.getResults();
+        List<TeamMemberResult> unassigned = teamBuildingResultService.getUnassignedMembers(results);
 
-            // response가 requests: { requests : {}, unassigned: {} } 즉, requests가 requests를 감싸는 구조를 해결.
-            //  TeamBuildingResults의 일급컬랙션 형태를 유지하기위해서 results에서 results를 꺼냄.
-            TeamResultsResponse response = new TeamResultsResponse(results.getResults(), unassigned);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 결과 불러오기 실패" + e.getMessage());
-        }
+        TeamResultsResponse response = new TeamResultsResponse(results.getResults(), unassigned);
+        return ResponseEntity.ok(response);
     }
-
 }

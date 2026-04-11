@@ -40,10 +40,10 @@ public class ProjectRequest {
     private List<TechStackDto> techStack;
 
     private List<ImageDto> image; // toEntity 용
-    private List<MultipartFile> imageS3; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
+    private List<MultipartFile> imageFiles; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
     private String thumbnail; // toEntity
-    private MultipartFile thumbnailS3; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
+    private MultipartFile thumbnailFiles; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
     public Project toEntity(ProjectRequest request, List<String> imageUrls, String thumbnailUrl, User user) {
         List<Image> imagesEntities = imageUrls.stream()
@@ -79,8 +79,8 @@ public class ProjectRequest {
     }
 
     public void setMultipartFiles(MultipartFile thumbnail, List<MultipartFile> images) {
-        this.thumbnailS3 = thumbnail;
-        this.imageS3 = images;
+        this.thumbnailFiles = thumbnail;
+        this.imageFiles = images;
     }
 
 }

@@ -48,6 +48,9 @@ spring:
     baseline-on-migrate: true
     baseline-version: 1
 
+  profiles:
+    active: oracle # ObjectStorage config 명시
+
 app:
   auth:
     tokenSecret: ${JWT_SECRET_KEY}
@@ -66,12 +69,6 @@ app:
       - http://localhost:3000/oauth2/redirect
       - myandroidapp://oauth2/redirect
       - myiosapp://oauth2/redirect
-aws:
-  accessKeyId: ${AWS_ACCESS_KEY}
-  secretKey: ${AWS_SECRET_KEY}
-  s3:
-    bucketName: ${AWS_S3_BUCKET_NAME}
-    region: ${AWS_REGION}
 
 swagger:
   server-url: ${SWAGGER_SERVER_URL}
