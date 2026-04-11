@@ -69,20 +69,6 @@ app:
       - http://localhost:3000/oauth2/redirect
       - myandroidapp://oauth2/redirect
       - myiosapp://oauth2/redirect
-aws:
-  accessKeyId: ${AWS_ACCESS_KEY}
-  secretKey: ${AWS_SECRET_KEY}
-  s3:
-    bucketName: ${AWS_S3_BUCKET_NAME}
-    region: ${AWS_REGION}
-
-oracle:
-  object-storage:
-    namespace: ${OCI_NAMESPACE}
-    bucketName: ${OCI_BUCKET_NAME}
-    region: ${OCI_REGION}
-    configPath: ${OCI_CONFIG_PATH}
-    profile: DEFAULT
 
 swagger:
   server-url: ${SWAGGER_SERVER_URL}

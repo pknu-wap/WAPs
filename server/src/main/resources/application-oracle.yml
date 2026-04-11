@@ -1,0 +1,7 @@
+oracle:
+  object-storage:
+    namespace: ${OCI_NAMESPACE}
+    bucketName: ${OCI_BUCKET_NAME}
+    region: ${OCI_REGION}
+    configPath: ${OCI_CONFIG_PATH}
+    profile: DEFAULT
