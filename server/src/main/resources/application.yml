@@ -49,7 +49,7 @@ spring:
     baseline-version: 1
 
   profiles:
-    active: aws # ObjectStorage 구현체 명시
+    active: oracle # ObjectStorage config 명시
 
 app:
   auth:
@@ -75,6 +75,14 @@ aws:
   s3:
     bucketName: ${AWS_S3_BUCKET_NAME}
     region: ${AWS_REGION}
+
+oracle:
+  object-storage:
+    namespace: ${OCI_NAMESPACE}
+    bucketName: ${OCI_BUCKET_NAME}
+    region: ${OCI_REGION}
+    configPath: ${OCI_CONFIG_PATH}
+    profile: DEFAULT
 
 swagger:
   server-url: ${SWAGGER_SERVER_URL}
