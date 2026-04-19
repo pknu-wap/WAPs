@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { projectApi } from "../../api/project";
-import Cookies from "js-cookie";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
 import ImageUploader from "./ImageUploader";
@@ -63,7 +62,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     handleRemoveImage,
     handleMemberNameFocus,
     handleMemberNameChange,
-    handleMemberImageUpload,
     handleRoleChange,
     addTeamMember,
     handleRemoveTeamMember,
@@ -298,16 +296,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
             member={member}
             index={index}
             handleMemberNameChange={handleMemberNameChange}
-            handleMemberImageUpload={handleMemberImageUpload}
             handleRoleChange={handleRoleChange}
             handleMemberNameFocus={handleMemberNameFocus}
             roleOptions={roleOptions}
-            handleImgUpload={handleImgUpload}
-            errorMessage={errorMessage}
             addTeamMember={addTeamMember}
             handleRemoveTeamMember={handleRemoveTeamMember}
             teamMembers={teamMembers}
-            setTeamMembers={setTeamMembers}
           />
         ))}
       </div>
