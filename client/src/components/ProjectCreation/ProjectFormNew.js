@@ -323,7 +323,11 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         type="submit"
         className={styles.submit_button}
         disabled={uploading || isSubmitting}
-        style={{ marginTop: "20px", marginBottom: "100px", cursor: "pointer" }}
+        style={{
+          marginTop: "20px",
+          marginBottom: "100px",
+          cursor: isSubmitting ? "not-allowed" : "pointer",
+        }}
       >
         {isSubmitting ? "업로드 중..." : isEdit ? "프로젝트 수정" : "프로젝트 생성"}
       </button>
