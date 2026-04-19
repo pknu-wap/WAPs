@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { projectApi } from "../../api/project";
@@ -33,6 +33,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const { projectId } = useParams();
   const maxImageCount = 4; // 최대 이미지 업로드 개수
   const navigate = useNavigate(); // navigate 함수
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     title,
     setTitle,
@@ -103,10 +104,14 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     if (!password) {
       alert("비밀번호를 입력해 주세요.");
       return;
     }
+
+    setIsSubmitting(true);
 
     const formData = new FormData();
     const projectData = {
@@ -161,6 +166,8 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         // console.error("에러 응답 코드:", error.response.status);
         // console.error("에러 메시지:", error.response.data);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -168,7 +175,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     <form
       className={`${styles.project_form} ${styles.mount1}`}
       onSubmit={handleSubmit}
+      aria-busy={isSubmitting}
     >
+      <fieldset
+        disabled={isSubmitting}
+        style={{ border: 0, margin: 0, padding: 0, minInlineSize: 0 }}
+      >
       <ImageUploader
         imgText={"메인 이미지 등록"}
         imgName={thumbnail}
@@ -316,11 +328,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       <button
         type="submit"
         className={styles.submit_button}
-        disabled={uploading}
+        disabled={uploading || isSubmitting}
         style={{ marginTop: "20px", marginBottom: "100px", cursor: "pointer" }}
       >
-        {isEdit ? "프로젝트 수정" : "프로젝트 생성"}
+        {isSubmitting ? "업로드 중..." : isEdit ? "프로젝트 수정" : "프로젝트 생성"}
       </button>
+      </fieldset>
     </form>
   );
 };
