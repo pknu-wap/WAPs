@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - test/non-cache-version
 
 env:
   REGISTRY: ghcr.io
