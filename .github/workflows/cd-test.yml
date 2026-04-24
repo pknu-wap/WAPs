@@ -1,0 +1,148 @@
+name: Test CD Pipeline
+
+on:
+  push:
+    branches:
+      - test/non-cache-version
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/${{ github.event.repository.name }}
+  IMAGE_TAG: test-non-cache-version
+  CACHE_SCOPE: waps-server-test
+  CONTAINER_NAME: waps-server-test
+  HOST_PORT: 8081
+  APP_PORT: 8080
+
+concurrency:
+  group: cd-test-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Push Test Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout server only
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            server
+          sparse-checkout-cone-mode: true
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Convert image name to lowercase
+        id: string
+        run: echo "IMAGE_NAME_LC=$(echo ${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Log deployment context
+        run: |
+          echo "Triggered by branch: ${{ github.ref_name }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Deploy target: test EC2 container via ${{ env.IMAGE_TAG }} tag"
+          echo "Container: ${{ env.CONTAINER_NAME }}"
+          echo "Port mapping: ${{ env.HOST_PORT }}:${{ env.APP_PORT }}"
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ steps.string.outputs.IMAGE_NAME_LC }}
+          tags: |
+            type=sha,prefix=
+            type=raw,value=${{ env.IMAGE_TAG }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ env.CACHE_SCOPE }}
+          cache-to: type=gha,mode=max,scope=${{ env.CACHE_SCOPE }}
+          platforms: linux/arm64
+
+  deploy:
+    name: Deploy Test Container to EC2
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Deploy test container to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "Starting test deployment for branch: ${{ github.ref_name }}"
+            echo "Deploy target: existing EC2 test container"
+
+            IMAGE="ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]'):${{ env.IMAGE_TAG }}"
+
+            docker pull $IMAGE
+
+            docker stop ${{ env.CONTAINER_NAME }} || true
+            docker rm ${{ env.CONTAINER_NAME }} || true
+
+            docker run -d \
+              --name ${{ env.CONTAINER_NAME }} \
+              --restart unless-stopped \
+              --label app=waps \
+              --label env=test \
+              --label service=${{ env.CONTAINER_NAME }} \
+              --add-host host.docker.internal:host-gateway \
+              -p ${{ env.HOST_PORT }}:${{ env.APP_PORT }} \
+              -e DB_HOST=${{ secrets.DB_HOST }} \
+              -e DB_PORT=3306 \
+              -e DB_NAME=${{ secrets.DB_NAME }} \
+              -e DB_USER=${{ secrets.DB_USER }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
+              -e KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }} \
+              -e SERVER_URL=${{ secrets.SERVER_URL }} \
+              -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
+              -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
+              -e AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }} \
+              -e AWS_REGION=${{ secrets.AWS_REGION }} \
+              -e SWAGGER_SERVER_URL=${{ secrets.SWAGGER_SERVER_URL }} \
+              -e OTLP_TRACING_ENDPOINT=http://host.docker.internal:4318/v1/traces \
+              $IMAGE
+
+            echo "Waiting for test application to start..."
+            MAX_RETRIES=9
+            RETRY_COUNT=0
+            until curl -sf http://localhost:${{ env.HOST_PORT }}/actuator/health > /dev/null 2>&1; do
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+                echo "Health check failed after $MAX_RETRIES attempts"
+                docker logs ${{ env.CONTAINER_NAME }} --tail 50
+                exit 1
+              fi
+              echo "Attempt $RETRY_COUNT/$MAX_RETRIES - Test application not ready, waiting 10s..."
+              sleep 10
+            done
+            echo "Test application is healthy!"
+
+            docker image prune -f
+
+            echo "Test deployment completed successfully!"
