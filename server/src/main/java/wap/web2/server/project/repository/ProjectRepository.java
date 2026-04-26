@@ -11,7 +11,7 @@ import wap.web2.server.project.entity.Project;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-    @Query(value = "select p from Project p where p.projectYear = :year and p.semester = :semester")
+    @Query("select p from Project p left join fetch p.user where p.projectYear = :year and p.semester = :semester")
     List<Project> findProjectsByYearAndSemester(@Param("year") Integer year, @Param("semester") Integer semester);
 
     @Query("SELECT b FROM Project b WHERE b.projectId = :projectId AND b.user.id = :userId")

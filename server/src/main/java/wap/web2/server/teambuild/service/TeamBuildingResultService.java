@@ -82,7 +82,7 @@ public class TeamBuildingResultService {
         }
 
         List<ProjectApply> assignedApplies
-                = projectApplyRepository.findByProject_ProjectIdAndSemesterAndUser_IdInOrderByPriorityAsc(
+                = projectApplyRepository.findByProjectIdAndSemesterAndUserIdsWithUserOrderByPriorityAsc(
                 projectId,
                 semester,
                 memberIds
@@ -110,7 +110,7 @@ public class TeamBuildingResultService {
         });
 
         // 2. 이번 학기 전체 지원 내역 조회
-        List<ProjectApply> applies = projectApplyRepository.findAllBySemester(semester);
+        List<ProjectApply> applies = projectApplyRepository.findAllBySemesterWithUser(semester);
 
         // 3. 유저별 대표 지원(최저 priority)만 선택
         //  이번 학기 지원한 유저를 뽑아내기 위함!

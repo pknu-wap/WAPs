@@ -45,7 +45,7 @@ class TeamBuildingResultServiceTest {
         ProjectApply assignedApply = apply(2L, 1, Position.AI, "2026-01", user(2L, "팀원"), project);
         ProjectApply unassignedApply = apply(3L, 1, Position.FRONTEND, "2026-01", user(3L, "미배정"), project);
 
-        when(projectApplyRepository.findAllBySemester(anyString()))
+        when(projectApplyRepository.findAllBySemesterWithUser(anyString()))
                 .thenReturn(List.of(leaderApply, assignedApply, unassignedApply));
 
         // when

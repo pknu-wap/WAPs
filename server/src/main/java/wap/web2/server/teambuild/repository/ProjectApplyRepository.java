@@ -24,14 +24,31 @@ public interface ProjectApplyRepository extends JpaRepository<ProjectApply, Long
     List<TeamMemberResult> findAllByUserId(@Param("userIds") List<Long> userIds);
 
 
-    List<ProjectApply> findByProject_ProjectIdAndSemesterAndUser_IdInOrderByPriorityAsc(Long projectId,
-                                                                                        String semester,
-                                                                                        Collection<Long> userIds);
+    @Query("""
+            select pa from ProjectApply pa
+            join fetch pa.user
+            where pa.project.projectId = :projectId
+              and pa.semester = :semester
+              and pa.user.id in :userIds
+            order by pa.priority asc
+            """)
+    List<ProjectApply> findByProjectIdAndSemesterAndUserIdsWithUserOrderByPriorityAsc(
+            @Param("projectId") Long projectId,
+            @Param("semester") String semester,
+            @Param("userIds") Collection<Long> userIds
+    );
 
     boolean existsByUserIdAndSemester(Long userId, String semester);
 
     Page<ProjectApply> findAllBySemester(String semester, Pageable pageable);
 
     List<ProjectApply> findAllBySemester(String semester);
+
+    @Query("""
+            select pa from ProjectApply pa
+            join fetch pa.user
+            where pa.semester = :semester
+            """)
+    List<ProjectApply> findAllBySemesterWithUser(@Param("semester") String semester);
 
 }
