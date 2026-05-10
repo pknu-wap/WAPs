@@ -1,22 +1,21 @@
-# Stage 1: Build
 FROM --platform=$BUILDPLATFORM gradle:8.5-jdk17 AS builder
 
 WORKDIR /app
 
-COPY build.gradle settings.gradle ./
+COPY gradlew ./
 COPY gradle ./gradle
+COPY build.gradle settings.gradle ./
 
-RUN gradle dependencies --no-daemon || true
+RUN chmod +x ./gradlew
+RUN ./gradlew dependencies --no-daemon || true
 
 COPY src ./src
-RUN gradle bootJar --no-daemon -x test
+RUN ./gradlew bootJar --no-daemon -x test
 
-# Stage 2: Runtime
-FROM --platform=$TARGETPLATFORM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
-# ubuntu 기반 이미지에서 사용할 런타임 사용자와 헬스체크 도구를 준비한다.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
@@ -25,7 +24,6 @@ RUN apt-get update \
 
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-# 소유권 변경
 RUN chown spring:spring app.jar
 
 USER spring
