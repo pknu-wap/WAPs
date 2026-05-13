@@ -89,7 +89,6 @@ jobs:
               --restart unless-stopped \
               -p 8080:8080 \
               -v /opt/waps/oci:/home/app/.oci:ro \
-              -e SPRING_PROFILES_ACTIVE=oracle \
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_PORT=3306 \
               -e DB_NAME=${{ secrets.DB_NAME }} \
