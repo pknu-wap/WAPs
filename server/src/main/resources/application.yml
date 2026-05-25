@@ -49,7 +49,7 @@ spring:
     baseline-version: 1
 
   profiles:
-    active: oracle # ObjectStorage config 명시
+    active: aws
 
 app:
   auth:
