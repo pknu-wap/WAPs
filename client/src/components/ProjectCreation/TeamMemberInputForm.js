@@ -9,9 +9,7 @@ const TeamMemberInputForm = ({
   handleMemberNameFocus,
   roleOptions,
   addTeamMember,
-  handleMemberImageUpload,
   teamMembers,
-  setTeamMembers,
   handleRemoveTeamMember,
 }) => (
   <div className={styles.teammember}>
