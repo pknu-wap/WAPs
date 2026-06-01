@@ -89,23 +89,24 @@ jobs:
               --restart unless-stopped \
               -p 8080:8080 \
               -v /opt/waps/oci:/home/app/.oci:ro \
-              -e DB_HOST=${{ secrets.DB_HOST }} \
-              -e DB_PORT=3306 \
-              -e DB_NAME=${{ secrets.DB_NAME }} \
-              -e DB_USER=${{ secrets.DB_USER }} \
-              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
-              -e KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }} \
-              -e SERVER_URL=${{ secrets.SERVER_URL }} \
-              -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
-              -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
-              -e AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }} \
-              -e AWS_REGION=${{ secrets.AWS_REGION }} \
-              -e OCI_NAMESPACE=${{ secrets.OCI_NAMESPACE }} \
-              -e OCI_BUCKET_NAME=${{ secrets.OCI_BUCKET_NAME }} \
-              -e OCI_REGION=${{ secrets.OCI_REGION }} \
-              -e OCI_CONFIG_PATH=/home/app/.oci/config \
-              -e SWAGGER_SERVER_URL=${{ secrets.SWAGGER_SERVER_URL }} \
+              -e "DB_HOST=${{ secrets.DB_HOST }}" \
+              -e "DB_PORT=3306" \
+              -e "DB_NAME=${{ secrets.DB_NAME }}" \
+              -e "DB_USER=${{ secrets.DB_USER }}" \
+              -e "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" \
+              -e "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" \
+              -e "KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}" \
+              -e "SERVER_URL=${{ secrets.SERVER_URL }}" \
+              -e "AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
+              -e "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" \
+              -e "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" \
+              -e "AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}" \
+              -e "AWS_REGION=${{ secrets.AWS_REGION }}" \
+              -e "OCI_NAMESPACE=${{ secrets.OCI_NAMESPACE }}" \
+              -e "OCI_BUCKET_NAME=${{ secrets.OCI_BUCKET_NAME }}" \
+              -e "OCI_REGION=${{ secrets.OCI_REGION }}" \
+              -e "OCI_CONFIG_PATH=/home/app/.oci/config" \
+              -e "SWAGGER_SERVER_URL=${{ secrets.SWAGGER_SERVER_URL }}" \
               "$IMAGE"
 
             echo "Waiting for application to start..."
