@@ -49,7 +49,7 @@ spring:
     baseline-version: 1
 
   profiles:
-    active: aws
+    active: azure
 
 app:
   auth:
