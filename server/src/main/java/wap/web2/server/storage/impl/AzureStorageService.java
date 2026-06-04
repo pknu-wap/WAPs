@@ -5,6 +5,7 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.options.BlobParallelUploadOptions;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +21,7 @@ import wap.web2.server.storage.StoragePathUtils;
 @RequiredArgsConstructor
 public class AzureStorageService implements ObjectStorageService {
 
-    private static final String AZURE_BLOB_URL_SEPARATOR = ".blob.core.windows.net/";
+    private static final String AZURE_BLOB_HOST_SUFFIX = ".blob.core.windows.net";
     private static final long MAX_FILE_SIZE = 100L * 1024 * 1024;
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif", "webp", "bmp");
 
@@ -97,16 +98,23 @@ public class AzureStorageService implements ObjectStorageService {
 
     private String extractBlobNameFromUrl(String url) {
         // URL format: https://{account}.blob.core.windows.net/{container}/{blobName}
-        int separatorIdx = url.indexOf(AZURE_BLOB_URL_SEPARATOR);
-        if (separatorIdx == -1) {
+        URI uri = URI.create(url);
+        String host = uri.getHost();
+        if (host == null || !host.endsWith(AZURE_BLOB_HOST_SUFFIX)) {
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 Azure Blob URL: " + url);
         }
-        String afterDomain = url.substring(separatorIdx + AZURE_BLOB_URL_SEPARATOR.length());
-        int blobNameStart = afterDomain.indexOf('/');
-        if (blobNameStart == -1) {
+
+        String path = uri.getPath();
+        if (path == null || path.isBlank()) {
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 Azure Blob URL: " + url);
         }
-        return afterDomain.substring(blobNameStart + 1);
+
+        String containerPrefix = "/" + blobContainerClient.getBlobContainerName() + "/";
+        if (!path.startsWith(containerPrefix)) {
+            throw new IllegalArgumentException("[ERROR] 올바르지 않은 Azure Blob URL: " + url);
+        }
+
+        return path.substring(containerPrefix.length());
     }
 
     private String getOriginalFileName(MultipartFile multipartFile) {

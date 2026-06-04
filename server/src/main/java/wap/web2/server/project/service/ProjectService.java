@@ -16,6 +16,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import wap.web2.server.exception.ForbiddenException;
 import wap.web2.server.exception.ProjectPasswordInvalidException;
 import wap.web2.server.exception.ResourceNotFoundException;
@@ -27,7 +28,6 @@ import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
 import wap.web2.server.project.entity.Image;
 import wap.web2.server.project.entity.Project;
-import wap.web2.server.project.repository.ImageRepository;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.storage.ObjectStorageService;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
@@ -39,7 +39,6 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-    private final ImageRepository imageRepository;
     private final ObjectStorageService objectStorageService;
 
     @Value("${project.password}")
@@ -56,20 +55,21 @@ public class ProjectService {
 
         User user = findUser(userPrincipal.getId());
 
+        List<MultipartFile> imageFiles = getNonEmptyImageFiles(request);
         List<String> imageUrls = Collections.emptyList();
-        if (request.getImageFiles() != null) {
+        if (!imageFiles.isEmpty()) {
             imageUrls = objectStorageService.uploadImages(
                     PROJECT_DIR,
                     request.getProjectYear(),
                     request.getSemester(),
                     request.getTitle(),
                     IMAGES,
-                    request.getImageFiles()
+                    imageFiles
             );
         }
 
         String thumbnailUrl = "";
-        if (request.getThumbnailFiles() != null) {
+        if (hasFile(request.getThumbnailFiles())) {
             thumbnailUrl = objectStorageService.uploadImage(
                     PROJECT_DIR,
                     request.getProjectYear(),
@@ -161,7 +161,7 @@ public class ProjectService {
         }
 
         // 썸네일 이미지가 없으면 유지 or 있으면 변경
-        if (request.getThumbnailFiles() != null) {
+        if (hasFile(request.getThumbnailFiles())) {
             log.info("[프로젝트 수정] ({})의 thumbnail 이미지 변경", project.getTitle());
             String thumbnailUrl = objectStorageService.uploadImage(
                     PROJECT_DIR,
@@ -174,16 +174,17 @@ public class ProjectService {
             project.updateThumbnail(thumbnailUrl);
         }
 
-        // 기존 프로젝트의 이미지 삭제 (행 없앰), null-safe
+        // 기존 프로젝트의 이미지 삭제
         log.info("[프로젝트 수정] ({})의 삭제 요청된 이미지 삭제", project.getTitle());
-        for (String imageUrl : request.getRemoval()) {
+        List<String> removedImageUrls = project.removeImages(getRemovalTargets(request));
+        for (String imageUrl : removedImageUrls) {
             log.info("[프로젝트 수정] 삭제하려는 image url: {}", imageUrl);
-            imageRepository.deleteByImageFile(imageUrl);
             objectStorageService.deleteImage(imageUrl);
         }
 
         // 추가 이미지를 Project에 삽입, 만약 ImageS3가 null이라면 skip
-        if (request.getImageFiles() != null && !request.getImageFiles().isEmpty()) {
+        List<MultipartFile> imageFiles = getNonEmptyImageFiles(request);
+        if (!imageFiles.isEmpty()) {
             log.info("[프로젝트 수정] ({})에 이미지 추가", project.getTitle());
             List<String> imageUrls = objectStorageService.uploadImages(
                     PROJECT_DIR,
@@ -191,7 +192,7 @@ public class ProjectService {
                     request.getSemester(),
                     request.getTitle(),
                     IMAGES,
-                    request.getImageFiles()
+                    imageFiles
             );
             List<Image> images = Image.listOf(imageUrls);
             project.addAllImage(images);
@@ -231,6 +232,28 @@ public class ProjectService {
     private Project findProject(Long projectId) {
         return projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
+    }
+
+    private List<String> getRemovalTargets(ProjectRequest request) {
+        if (request.getRemoval() == null) {
+            return Collections.emptyList();
+        }
+
+        return request.getRemoval();
+    }
+
+    private List<MultipartFile> getNonEmptyImageFiles(ProjectRequest request) {
+        if (request.getImageFiles() == null) {
+            return Collections.emptyList();
+        }
+
+        return request.getImageFiles().stream()
+                .filter(this::hasFile)
+                .toList();
+    }
+
+    private boolean hasFile(MultipartFile file) {
+        return file != null && !file.isEmpty();
     }
 
 }

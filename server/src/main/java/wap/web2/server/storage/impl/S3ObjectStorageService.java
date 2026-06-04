@@ -1,6 +1,7 @@
 package wap.web2.server.storage.impl;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,6 @@ import wap.web2.server.storage.StoragePathUtils;
 @Profile("aws")
 @RequiredArgsConstructor
 public class S3ObjectStorageService implements ObjectStorageService {
-
-    private static final String S3_URL_DOMAIN = ".amazonaws.com/";
-    private static final int S3_DOMAIN_LENGTH = S3_URL_DOMAIN.length();
 
     private final S3Client s3Client;
     private final S3Properties s3Properties;
@@ -83,11 +81,13 @@ public class S3ObjectStorageService implements ObjectStorageService {
     }
 
     private String extractKeyFromUrl(String url) {
-        int idx = url.indexOf(S3_URL_DOMAIN);
-        if (idx == -1) {
+        URI uri = URI.create(url);
+        String path = uri.getPath();
+        if (path == null || path.length() <= 1) {
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 S3 URL: " + url);
         }
-        return url.substring(idx + S3_DOMAIN_LENGTH);
+
+        return path.substring(1);
     }
 
     private String getOriginalFileName(MultipartFile multipartFile) {
