@@ -179,6 +179,10 @@ public class ProjectService {
         List<String> removedImageUrls = project.removeImages(getRemovalTargets(request));
         for (String imageUrl : removedImageUrls) {
             log.info("[프로젝트 수정] 삭제하려는 image url: {}", imageUrl);
+            if (!objectStorageService.supports(imageUrl)) {
+                log.info("[프로젝트 수정] 현재 스토리지에서 관리하지 않는 image url 이므로 물리 삭제를 건너뜁니다: {}", imageUrl);
+                continue;
+            }
             objectStorageService.deleteImage(imageUrl);
         }
 

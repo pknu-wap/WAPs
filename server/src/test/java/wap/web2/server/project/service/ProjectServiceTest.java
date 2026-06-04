@@ -119,6 +119,7 @@ class ProjectServiceTest {
 
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
+        when(objectStorageService.supports("https://cdn.example.com/a.png")).thenReturn(true);
 
         ProjectRequest request = baseRequestBuilder()
                 .removal(List.of("https://cdn.example.com/a.png", "https://cdn.example.com/missing.png"))
@@ -133,6 +134,31 @@ class ProjectServiceTest {
                 .containsExactly("https://cdn.example.com/b.png");
         verify(objectStorageService).deleteImage("https://cdn.example.com/a.png");
         verify(objectStorageService, never()).deleteImage("https://cdn.example.com/missing.png");
+    }
+
+    @Test
+    void 현재_스토리지에서_관리하지_않는_이미지는_프로젝트_컬렉션에서만_제거한다() throws Exception {
+        // given
+        User owner = owner();
+        UserPrincipal principal = principal(owner.getId());
+        Project project = project(owner);
+        String legacyS3Url = "https://waps-bucket.s3.ap-northeast-2.amazonaws.com/projects/2025-2/test/image.png";
+        project.addAllImage(Image.listOf(List.of(legacyS3Url)));
+
+        when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
+        when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
+        when(objectStorageService.supports(legacyS3Url)).thenReturn(false);
+
+        ProjectRequest request = baseRequestBuilder()
+                .removal(List.of(legacyS3Url))
+                .build();
+
+        // when
+        projectService.update(project.getProjectId(), request, principal);
+
+        // then
+        assertThat(project.getImages()).isEmpty();
+        verify(objectStorageService, never()).deleteImage(legacyS3Url);
     }
 
     private ProjectRequest.ProjectRequestBuilder baseRequestBuilder() {
