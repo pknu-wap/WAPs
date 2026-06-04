@@ -80,6 +80,17 @@ public class S3ObjectStorageService implements ObjectStorageService {
         s3Client.deleteObject(deleteRequest);
     }
 
+    @Override
+    public boolean supports(String imageUrl) {
+        try {
+            URI uri = URI.create(imageUrl);
+            String host = uri.getHost();
+            return host != null && host.startsWith(s3Properties.getS3().getBucketName() + ".s3.");
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     private String extractKeyFromUrl(String url) {
         URI uri = URI.create(url);
         String path = uri.getPath();

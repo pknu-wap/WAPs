@@ -24,6 +24,8 @@ public interface ObjectStorageService {
             MultipartFile imageFile
     ) throws IOException;
 
+    boolean supports(String imageUrl);
+
     void deleteImage(String imageUrl);
 
 }
