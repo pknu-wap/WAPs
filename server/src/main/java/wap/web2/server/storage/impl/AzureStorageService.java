@@ -78,6 +78,16 @@ public class AzureStorageService implements ObjectStorageService {
         blobContainerClient.getBlobClient(blobName).delete();
     }
 
+    @Override
+    public boolean supports(String imageUrl) {
+        try {
+            extractBlobNameFromUrl(imageUrl);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     private void validateImage(MultipartFile imageFile) {
         if (imageFile.isEmpty()) {
             throw new IllegalArgumentException("[ERROR] 파일이 비어있습니다.");

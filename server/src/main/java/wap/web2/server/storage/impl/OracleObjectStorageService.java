@@ -87,6 +87,17 @@ public class OracleObjectStorageService implements ObjectStorageService {
         objectStorageClient.deleteObject(deleteObjectRequest);
     }
 
+    @Override
+    public boolean supports(String imageUrl) {
+        try {
+            extractObjectNameFromUrl(imageUrl);
+            return imageUrl.contains("objectstorage." + properties.getRegion() + ".oraclecloud.com")
+                    && imageUrl.contains("/n/" + properties.getNamespace() + "/b/" + properties.getBucketName() + "/o/");
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
     private String getOriginalFileName(MultipartFile multipartFile) {
         String originalFilename = multipartFile.getOriginalFilename();
         if (originalFilename == null) {
