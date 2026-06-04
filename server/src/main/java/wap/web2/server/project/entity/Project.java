@@ -12,8 +12,11 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,15 +64,19 @@ public class Project {
     @Column(length = 1000)
     private String thumbnail;
 
+    @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Image> images = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Comment> comments = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     List<TeamMember> teamMembers = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     List<TechStack> techStacks = new ArrayList<>();
 
@@ -121,6 +128,18 @@ public class Project {
             this.images.add(image);
             image.updateImage(this); // 연관관계 양쪽 매핑
         }
+    }
+
+    public List<String> removeImages(Collection<String> imageUrls) {
+        Set<String> removalTargets = new HashSet<>(imageUrls);
+        List<String> removedImageUrls = this.images.stream()
+                .filter(image -> removalTargets.contains(image.getImageFile()))
+                .map(Image::getImageFile)
+                .toList();
+
+        this.images.removeIf(image -> removalTargets.contains(image.getImageFile()));
+
+        return removedImageUrls;
     }
 
     public boolean isOwner(User user) {

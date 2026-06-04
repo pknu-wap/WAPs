@@ -27,7 +27,6 @@ import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
 import wap.web2.server.project.entity.Image;
 import wap.web2.server.project.entity.Project;
-import wap.web2.server.project.repository.ImageRepository;
 import wap.web2.server.project.repository.ProjectRepository;
 import wap.web2.server.storage.ObjectStorageService;
 import wap.web2.server.teambuild.dto.response.ProjectTemplate;
@@ -39,7 +38,6 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-    private final ImageRepository imageRepository;
     private final ObjectStorageService objectStorageService;
 
     @Value("${project.password}")
@@ -174,11 +172,11 @@ public class ProjectService {
             project.updateThumbnail(thumbnailUrl);
         }
 
-        // 기존 프로젝트의 이미지 삭제 (행 없앰), null-safe
+        // 기존 프로젝트의 이미지 삭제
         log.info("[프로젝트 수정] ({})의 삭제 요청된 이미지 삭제", project.getTitle());
-        for (String imageUrl : request.getRemoval()) {
+        List<String> removedImageUrls = project.removeImages(getRemovalTargets(request));
+        for (String imageUrl : removedImageUrls) {
             log.info("[프로젝트 수정] 삭제하려는 image url: {}", imageUrl);
-            imageRepository.deleteByImageFile(imageUrl);
             objectStorageService.deleteImage(imageUrl);
         }
 
@@ -231,6 +229,14 @@ public class ProjectService {
     private Project findProject(Long projectId) {
         return projectRepository.findById(projectId)
                 .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
+    }
+
+    private List<String> getRemovalTargets(ProjectRequest request) {
+        if (request.getRemoval() == null) {
+            return Collections.emptyList();
+        }
+
+        return request.getRemoval();
     }
 
 }
