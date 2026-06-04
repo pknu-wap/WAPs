@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.member.entity.User;
@@ -66,6 +67,46 @@ class ProjectServiceTest {
         assertThat(result).isEqualTo("수정되었습니다.");
         assertThat(project.getTitle()).isEqualTo("updated title");
         verify(objectStorageService, never()).deleteImage(org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    void 빈_파일_part는_첨부되지_않은_파일로_취급한다() throws Exception {
+        // given
+        User owner = owner();
+        UserPrincipal principal = principal(owner.getId());
+        Project project = project(owner);
+
+        when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
+        when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
+
+        ProjectRequest request = baseRequestBuilder()
+                .removal(null)
+                .build();
+        request.setMultipartFiles(
+                new MockMultipartFile("thumbnail", "", "image/png", new byte[0]),
+                List.of(new MockMultipartFile("image", "", "image/png", new byte[0]))
+        );
+
+        // when
+        projectService.update(project.getProjectId(), request, principal);
+
+        // then
+        verify(objectStorageService, never()).uploadImage(
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyInt(),
+                org.mockito.ArgumentMatchers.anyInt(),
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.any()
+        );
+        verify(objectStorageService, never()).uploadImages(
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyInt(),
+                org.mockito.ArgumentMatchers.anyInt(),
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.anyList()
+        );
     }
 
     @Test
