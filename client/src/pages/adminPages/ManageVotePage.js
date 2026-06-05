@@ -69,7 +69,7 @@ const ManageVotePage = () => {
 
         try {
             setIsProcessing(true);
-            await adminVoteApi.open(selectedProjects, semester);
+            await adminVoteApi.open(semester, selectedProjects);
             setVoteStatus("VOTING");
             setIsModalOpen(false);
         } catch (e) {
