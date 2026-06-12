@@ -20,7 +20,9 @@ public class AdminCalendarController {
 
     @PostMapping("/event")
     @Operation(summary = "일정 등록", description = "관리자 일정 이벤트를 등록합니다.")
-    public ResponseEntity<String> postCalendarEvent(@RequestBody @Valid CalendarEventPostingRequest request) {
+    public ResponseEntity<String> postCalendarEvent(
+            @RequestBody @Valid CalendarEventPostingRequest request
+    ) {
         adminCalendarService.postCalendarEvent(request);
         return ResponseEntity.ok("일정이 등록되었습니다.");
     }

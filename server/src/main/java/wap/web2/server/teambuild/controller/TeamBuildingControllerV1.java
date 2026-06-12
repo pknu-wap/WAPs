@@ -32,10 +32,12 @@ public class TeamBuildingControllerV1 {
     private final TeamBuildingResultService teamBuildingResultService;
 
     //@GetMapping
-    public String entry(Model model,
-                        @RequestParam(value = "token", required = false) String tokenParam,
-                        @CookieValue(name = "authToken", required = false) String cookieToken,
-                        HttpServletResponse response) throws Exception {
+    public String entry(
+            Model model,
+            @RequestParam(value = "token", required = false) String tokenParam,
+            @CookieValue(name = "authToken", required = false) String cookieToken,
+            HttpServletResponse response
+    ) throws Exception {
         log.info("[/team-build] cookieToken?={} / tokenParam?={}", cookieToken != null, tokenParam != null);
 
         // 0) 쿠키로부터 or 쿼리 파라미터로부터 주입될 토큰
@@ -87,8 +89,10 @@ public class TeamBuildingControllerV1 {
     }
 
     //@GetMapping("/projects")
-    public String projects(Model model,
-                           @CookieValue(name = "authToken", required = false) String authToken) throws Exception {
+    public String projects(
+            Model model,
+            @CookieValue(name = "authToken", required = false) String authToken
+    ) throws Exception {
 
         List<ProjectTemplate> projects = projectService.getCurrentProjectRecruits();
 
@@ -100,9 +104,11 @@ public class TeamBuildingControllerV1 {
 
     // 리더용 모집하기 페이지
     //@GetMapping("/recruit")
-    public String recruitPage(Model model,
-                              @CookieValue(name = "authToken", required = false) String authToken,
-                              @CurrentUser UserPrincipal userPrincipal) throws Exception {
+    public String recruitPage(
+            Model model,
+            @CookieValue(name = "authToken", required = false) String authToken,
+            @CurrentUser UserPrincipal userPrincipal
+    ) throws Exception {
 
         // 리더(=로그인 유저)가 소유/담당한 프로젝트 목록 (원하는 기준으로 교체 OK)
         List<ProjectTemplate> myProjects = projectService.getCurrentProjectRecruits();

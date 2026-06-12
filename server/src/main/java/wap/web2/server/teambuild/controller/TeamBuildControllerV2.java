@@ -29,8 +29,10 @@ public class TeamBuildControllerV2 {
 
     // 프로젝트 신청 (for 팀원)
     //@PostMapping("/apply")
-    public ResponseEntity<?> apply(@CurrentUser UserPrincipal userPrincipal,
-                                   @Valid @RequestBody ProjectAppliesRequest request) {
+    public ResponseEntity<String> apply(
+            @CurrentUser UserPrincipal userPrincipal,
+            @Valid @RequestBody ProjectAppliesRequest request
+    ) {
         try {
             log.info("[/team-build/apply] {}: {}", userPrincipal.getId(), request.toString());
             applyService.apply(userPrincipal, request);
@@ -43,8 +45,10 @@ public class TeamBuildControllerV2 {
     // 프로젝트에 신청한 사람 보기 (for 팀장)
     @ResponseBody
     //@GetMapping("/{projectId}/applies")
-    public ResponseEntity<?> getApplies(@CurrentUser UserPrincipal userPrincipal,
-                                        @PathVariable("projectId") Long projectId) {
+    public ResponseEntity<Map<String, Object>> getApplies(
+            @CurrentUser UserPrincipal userPrincipal,
+            @PathVariable("projectId") Long projectId
+    ) {
         try {
             boolean hasApplied = applyService.hasRecruited(userPrincipal, projectId);
             if (hasApplied) {
@@ -72,8 +76,10 @@ public class TeamBuildControllerV2 {
     // 팀 구성 완료 (RecruitmentDto 사용)
     @ResponseBody
     //@PostMapping("/preference")
-    public ResponseEntity<?> setPreference(@CurrentUser UserPrincipal userPrincipal,
-                                           @Valid @RequestBody RecruitmentDto request) {
+    public ResponseEntity<Map<String, Object>> setPreference(
+            @CurrentUser UserPrincipal userPrincipal,
+            @Valid @RequestBody RecruitmentDto request
+    ) {
         try {
             applyService.setPreference(userPrincipal, request);
             log.info("[preference] {}", request.toString());

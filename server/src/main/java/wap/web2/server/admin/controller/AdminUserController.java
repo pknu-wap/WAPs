@@ -22,15 +22,19 @@ public class AdminUserController {
     private final UserRoleService userRoleService;
 
     @PatchMapping("/user")
-    public ResponseEntity<?> changeUserRole(@RequestBody RoleChangeRequest roleChangeRequest) {
+    public ResponseEntity<RoleChangeResponse> changeUserRole(
+            @RequestBody RoleChangeRequest roleChangeRequest
+    ) {
         RoleChangeResponse response = userRoleService.change(roleChangeRequest);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllUserInfos(@RequestParam("size") Integer size,
-                                             @RequestParam("page") Integer page,
-                                             @RequestParam(value = "role", required = false) Role role) {
+    public ResponseEntity<UserRolePageResponse> getAllUserInfos(
+            @RequestParam("size") Integer size,
+            @RequestParam("page") Integer page,
+            @RequestParam(value = "role", required = false) Role role
+    ) {
         UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page, role);
         return ResponseEntity.ok(response);
     }

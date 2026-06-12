@@ -39,8 +39,10 @@ public class ProjectController {
     // TODO: ProjectsResponse를 만들기 전에 검사하거나 별도로 할까?
     //  또는 컨트롤러에서는 try catch를 두고 ProjectResponse안에서 throw 하는 것은?
     @GetMapping("/list")
-    public ResponseEntity<?> getProjects(@RequestParam("projectYear") Integer year,
-                                         @RequestParam("semester") Integer semester) {
+    public ResponseEntity<ProjectsResponse> getProjects(
+            @RequestParam("projectYear") Integer year,
+            @RequestParam("semester") Integer semester
+    ) {
         List<ProjectInfoResponse> projects = projectService.getProjects(year, semester);
         ProjectsResponse projectsResponse = ProjectsResponse.builder()
                 .projectsResponse(projects)
@@ -58,10 +60,12 @@ public class ProjectController {
     @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
             encoding = @Encoding(name = "project", contentType = MediaType.APPLICATION_JSON_VALUE)
     ))
-    public ResponseEntity<?> createProject(@CurrentUser UserPrincipal userPrincipal,
-                                           @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
-                                           @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
-                                           @RequestPart("project") ProjectRequest request) throws IOException {
+    public ResponseEntity<String> createProject(
+            @CurrentUser UserPrincipal userPrincipal,
+            @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
+            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
+            @RequestPart("project") ProjectRequest request
+    ) throws IOException {
         // RequestPart 중 ContentType 형식이 서로 다른 file 2종류를 ProjectCreateRequest 에 할당하여 새로운 RequestDto 객체 생성
         ProjectRequest fullRequest = ProjectRequest.builder()
                 .title(request.getTitle())
@@ -87,26 +91,32 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}")
-    public ResponseEntity<?> getProject(@PathVariable("projectId") Long projectId,
-                                        @CurrentUser UserPrincipal userPrincipal) {
+    public ResponseEntity<ProjectDetailsResponse> getProject(
+            @PathVariable("projectId") Long projectId,
+            @CurrentUser UserPrincipal userPrincipal
+    ) {
         ProjectDetailsResponse projectDetails = projectService.getProjectDetails(projectId, userPrincipal);
         return ResponseEntity.ok(projectDetails);
     }
 
     @GetMapping("/{projectId}/update")
-    public ResponseEntity<?> getProjectDetailsForUpdate(@PathVariable("projectId") Long projectId,
-                                                        @CurrentUser UserPrincipal userPrincipal) {
+    public ResponseEntity<ProjectDetailsResponse> getProjectDetailsForUpdate(
+            @PathVariable("projectId") Long projectId,
+            @CurrentUser UserPrincipal userPrincipal
+    ) {
         // 프로젝트 상세 정보를 가져오는 서비스 호출
         ProjectDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("{projectId}")
-    public ResponseEntity<?> updateProject(@PathVariable("projectId") Long projectId,
-                                           @CurrentUser UserPrincipal userPrincipal,
-                                           @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
-                                           @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
-                                           @RequestPart("project") ProjectRequest request) throws IOException {
+    public ResponseEntity<String> updateProject(
+            @PathVariable("projectId") Long projectId,
+            @CurrentUser UserPrincipal userPrincipal,
+            @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
+            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
+            @RequestPart("project") ProjectRequest request
+    ) throws IOException {
         // RequestPart 중 ContentType 형식이 서로 다른 file 2종류를 ProjectRequest 에 할당
         request.setMultipartFiles(thumbnailFile, imageFiles);
 
@@ -118,8 +128,10 @@ public class ProjectController {
     }
 
     @DeleteMapping("{projectId}")
-    public ResponseEntity<?> deleteProject(@PathVariable("projectId") Long projectId,
-                                           @CurrentUser UserPrincipal user) {
+    public ResponseEntity<Void> deleteProject(
+            @PathVariable("projectId") Long projectId,
+            @CurrentUser UserPrincipal user
+    ) {
         projectService.delete(projectId, user);
         return ResponseEntity.noContent().build();
     }

@@ -17,7 +17,7 @@ import wap.web2.server.project.entity.TechStackName;
 public class TechStackController {
 
     @GetMapping("/list")
-    public ResponseEntity<?> getTechStackList() {
+    public ResponseEntity<TechStackResponse> getTechStackList() {
         List<TechStackInfoResponse> techStackResponseList = Arrays.stream(TechStackName.values())
                 .map(techStackName -> TechStackInfoResponse.builder()
                         .techStackName(techStackName)
