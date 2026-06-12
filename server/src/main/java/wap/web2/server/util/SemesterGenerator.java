@@ -27,8 +27,4 @@ public class SemesterGenerator {
                 : 2;
     }
 
-    public static String convertFrom(Integer year, Integer semester) {
-        return String.format("%d-0%d", year, semester);
-    }
-
 }

@@ -26,7 +26,6 @@ import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
 import wap.web2.server.project.dto.response.ProjectsResponse;
 import wap.web2.server.project.service.ProjectService;
-import wap.web2.server.teambuild.service.ApplyService;
 
 @RestController
 @RequestMapping("/project")
@@ -34,7 +33,6 @@ import wap.web2.server.teambuild.service.ApplyService;
 public class ProjectController {
 
     private final ProjectService projectService;
-    private final ApplyService applyService;
 
     // TODO: ProjectsResponse를 만들기 전에 검사하거나 별도로 할까?
     //  또는 컨트롤러에서는 try catch를 두고 ProjectResponse안에서 throw 하는 것은?
