@@ -20,11 +20,18 @@ public record ErrorResponse(
         errors = errors == null ? List.of() : List.copyOf(errors);
     }
 
-    public static ErrorResponse of(ErrorCode errorCode, String path) {
+    public static ErrorResponse of(
+            ErrorCode errorCode,
+            String path
+    ) {
         return of(errorCode, errorCode.getDefaultMessage(), path);
     }
 
-    public static ErrorResponse of(ErrorCode errorCode, String message, String path) {
+    public static ErrorResponse of(
+            ErrorCode errorCode,
+            String message,
+            String path
+    ) {
         return of(errorCode, message, path, List.of(), null);
     }
 
@@ -58,4 +65,5 @@ public record ErrorResponse(
     private static boolean hasText(String value) {
         return value != null && !value.isBlank();
     }
+
 }

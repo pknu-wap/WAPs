@@ -1,8 +1,9 @@
 package wap.web2.server.exception;
 
 import java.util.Objects;
-import org.springframework.http.HttpStatus;
+import lombok.Getter;
 
+@Getter
 public class BusinessException extends RuntimeException {
 
     private final ErrorCode errorCode;
@@ -22,16 +23,4 @@ public class BusinessException extends RuntimeException {
         this.errorCode = Objects.requireNonNull(errorCode, "errorCode는 null일 수 없습니다.");
     }
 
-    public BusinessException(ErrorCode errorCode, Throwable cause) {
-        super(Objects.requireNonNull(errorCode, "errorCode는 null일 수 없습니다.").getDefaultMessage(), cause);
-        this.errorCode = errorCode;
-    }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return errorCode.getHttpStatus();
-    }
 }
