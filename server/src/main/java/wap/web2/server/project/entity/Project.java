@@ -133,8 +133,8 @@ public class Project {
     public List<String> removeImages(Collection<String> imageUrls) {
         Set<String> removalTargets = new HashSet<>(imageUrls);
         List<String> removedImageUrls = this.images.stream()
-                .filter(image -> removalTargets.contains(image.getImageFile()))
                 .map(Image::getImageFile)
+                .filter(removalTargets::contains)
                 .toList();
 
         this.images.removeIf(image -> removalTargets.contains(image.getImageFile()));

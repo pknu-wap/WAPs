@@ -43,7 +43,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> authenticateUser(
+            @Valid @RequestBody LoginRequest loginRequest
+    ) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
@@ -58,7 +60,9 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<ApiResponse> registerUser(
+            @Valid @RequestBody SignUpRequest signUpRequest
+    ) {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("이미 사용 중인 이메일입니다.");
         }
@@ -85,7 +89,9 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refreshToken(@CookieValue(name = "refresh_token") String refreshToken) {
+    public ResponseEntity<AuthResponse> refreshToken(
+            @CookieValue(name = "refresh_token") String refreshToken
+    ) {
         Tokens newTokens = authService.createNewToken(refreshToken);
 
         long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpirationMsec();

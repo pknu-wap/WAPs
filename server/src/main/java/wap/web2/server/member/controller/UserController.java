@@ -24,28 +24,36 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<?> findUserDetail(@CurrentUser UserPrincipal userPrincipal) {
+    public ResponseEntity<UserResponse> findUserDetail(
+            @CurrentUser UserPrincipal userPrincipal
+    ) {
         UserResponse response = userService.getUserDetail(userPrincipal);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/vote/{semester}")
-    public ResponseEntity<?> getMyVotedInfo(@CurrentUser UserPrincipal userPrincipal,
-                                            @PathVariable("semester") @Semester String semester) {
+    public ResponseEntity<UserVoteResponse> getMyVotedInfo(
+            @CurrentUser UserPrincipal userPrincipal,
+            @PathVariable("semester") @Semester String semester
+    ) {
         UserVoteResponse response = userService.getUserVotedInfo(userPrincipal, semester);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/role/{role}")
-    public ResponseEntity<?> setMyRole(@CurrentUser UserPrincipal userPrincipal,
-                                       @PathVariable("role") String role) {
+    public ResponseEntity<String> setMyRole(
+            @CurrentUser UserPrincipal userPrincipal,
+            @PathVariable("role") String role
+    ) {
         userService.setRole(userPrincipal, role);
         return ResponseEntity.ok("회원 등록에 성공했습니다!");
     }
 
     @GetMapping("/role")
     @Operation(summary = "사용자 권한 확인", description = "사용자가 권한을 설정했는지, 어떤 권한을 가지고 있는지 확인합니다.")
-    public ResponseEntity<?> getMyRole(@CurrentUser UserPrincipal userPrincipal) {
+    public ResponseEntity<UserRoleResponse> getMyRole(
+            @CurrentUser UserPrincipal userPrincipal
+    ) {
         UserRoleResponse response = userService.getMyRole(userPrincipal.getId());
         return ResponseEntity.ok(response);
     }

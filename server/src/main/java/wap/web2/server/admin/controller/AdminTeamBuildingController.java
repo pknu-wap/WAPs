@@ -45,7 +45,9 @@ public class AdminTeamBuildingController {
     // TODO: status request를 직렬화했을 때 예외가 발생한다면?
     @PatchMapping("/building/status")
     @Operation(summary = "팀빌딩 상태 변경", description = "팀빌딩 상태를 변경합니다.")
-    public ResponseEntity<Void> changeStatus(@RequestBody TeamBuildingStatusRequest statusRequest) {
+    public ResponseEntity<Void> changeStatus(
+            @RequestBody TeamBuildingStatusRequest statusRequest
+    ) {
         adminTeamBuildingService.changeStatus(statusRequest);
         return ResponseEntity.ok().build();
     }
