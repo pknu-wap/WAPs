@@ -54,10 +54,6 @@ public class Project {
     @Column
     private Integer semester;
 
-    @Deprecated
-    @Column
-    private Long voteCount; // 득표 수
-
     @Column
     private Integer projectYear;
 

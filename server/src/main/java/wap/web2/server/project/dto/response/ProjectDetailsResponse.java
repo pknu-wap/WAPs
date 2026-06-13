@@ -22,7 +22,6 @@ public class ProjectDetailsResponse {
     private String content;
     private String summary;
     private Integer semester;
-    private Long vote;
     private Integer projectYear;
     private String thumbnail;
     private List<TeamMemberDto> teamMember;
@@ -48,7 +47,6 @@ public class ProjectDetailsResponse {
                 .content(project.getContent())
                 .summary(project.getSummary())
                 .semester(project.getSemester())
-                .vote(project.getVoteCount())
                 .projectYear(project.getProjectYear())
                 .thumbnail(project.getThumbnail())
                 .teamMember(teamMembers)
