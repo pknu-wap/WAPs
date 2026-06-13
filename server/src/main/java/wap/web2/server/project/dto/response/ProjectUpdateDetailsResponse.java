@@ -18,9 +18,7 @@ public class ProjectUpdateDetailsResponse {
     private String projectType;
     private String content;
     private String summary;
-    private Integer semester;
-    private Long vote;
-    private Integer projectYear;
+    private String semester;
     private List<TeamMemberDto> teamMember;
     private List<CommentDto> comments;
 
@@ -37,8 +35,6 @@ public class ProjectUpdateDetailsResponse {
                 .content(project.getContent())
                 .summary(project.getSummary())
                 .semester(project.getSemester())
-                .vote(project.getVoteCount())
-                .projectYear(project.getProjectYear())
                 .teamMember(teamMembers)
                 .comments(comments)
                 .build();

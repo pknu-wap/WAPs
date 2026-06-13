@@ -2,7 +2,14 @@ import React, { useEffect, useRef } from "react";
 // 스크롤 이벤트를 등록하기 위해 useEffect, useRef 사용
 import "../../assets/ProjectCreation/YearSelector.css"; // External CSS file
 
-const YearSelector = ({ selectedYear, setSelectedYear }) => {
+const toSemester = (year, semester) => `${year}-${String(semester).padStart(2, "0")}`;
+
+const formatSemester = (semester) => {
+  const [year, semesterValue] = semester.split("-");
+  return `${year}년 ${Number(semesterValue)}학기`;
+};
+
+const YearSelector = ({ selectedSemester, setSelectedSemester }) => {
   // 스크롤 컨테이너 참조
   const scrollRef = useRef(null);
 
@@ -16,9 +23,9 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
     const semesters = [];
 
     for (let year = startYear; year <= endYear; year++) {
-      semesters.push({ projectYear: year, semester: 1 });
+      semesters.push(toSemester(year, 1));
       if (year < endYear || currentSemesterNum === 2) {
-        semesters.push({ projectYear: year, semester: 2 });
+        semesters.push(toSemester(year, 2));
       }
     }
     // 역순 정렬
@@ -42,7 +49,7 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
         index = Math.max(0, Math.min(index, semesters.length - 1));
 
         const selected = semesters[index];
-        setSelectedYear(selected);
+        setSelectedSemester(selected);
       }
     };
 
@@ -55,30 +62,25 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
         scrollElement.removeEventListener("scroll", handleScroll);
       }
     };
-  }, [setSelectedYear, semesters]);
+  }, [setSelectedSemester, semesters]);
 
   // 만약 이미 연도/학기가 선택되어 있다면 해당 연도/학기로 스크롤 이동
   useEffect(() => {
-    if (scrollRef.current && selectedYear) {
-      const index = semesters.findIndex(
-        (s) =>
-          s.projectYear === selectedYear.projectYear && s.semester === selectedYear.semester
-      );
+    if (scrollRef.current && selectedSemester) {
+      const index = semesters.findIndex((semester) => semester === selectedSemester);
       if (index !== -1) {
         const itemHeight = 26;
         scrollRef.current.scrollTop = index * itemHeight;
       }
     }
-  }, [selectedYear, semesters]);
+  }, [selectedSemester, semesters]);
 
   // 클릭 핸들러
   const handleClick = (item) => {
-    setSelectedYear(item); // 클릭한 년도로 선택 변경
+    setSelectedSemester(item); // 클릭한 학기로 선택 변경
     if (scrollRef.current) {
       // 클릭 시 스크롤을 해당 위치로 이동
-      const index = semesters.findIndex(
-        (s) => s.projectYear === item.projectYear && s.semester === item.semester
-      );
+      const index = semesters.findIndex((semester) => semester === item);
       if (index !== -1) {
         const itemHeight = 26; // 각 아이템의 높이
         scrollRef.current.scrollTop = index * itemHeight; // 스크롤 위치 설정
@@ -92,17 +94,11 @@ const YearSelector = ({ selectedYear, setSelectedYear }) => {
       <div className="scroll-container" ref={scrollRef}>
         {semesters.map((item, idx) => (
           <p
-            key={`${item.projectYear}-${item.semester}`}
-            className={`year-item ${
-              selectedYear &&
-              item.projectYear === selectedYear.projectYear &&
-              item.semester === selectedYear.semester
-                ? "selected"
-                : ""
-            }`}
+            key={item}
+            className={`year-item ${selectedSemester === item ? "selected" : ""}`}
             onClick={() => handleClick(item)} // 클릭 이벤트 추가
           >
-            {item.projectYear}년 {item.semester}학기
+            {formatSemester(item)}
           </p>
         ))}
       </div>

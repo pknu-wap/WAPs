@@ -22,10 +22,12 @@ import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.global.security.CurrentUser;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.project.dto.request.ProjectRequest;
+import wap.web2.server.project.dto.response.ProjectCurrentSemesterResponse;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
 import wap.web2.server.project.dto.response.ProjectsResponse;
 import wap.web2.server.project.service.ProjectService;
+import wap.web2.server.util.Semester;
 
 @RestController
 @RequestMapping("/project")
@@ -38,10 +40,9 @@ public class ProjectController {
     //  또는 컨트롤러에서는 try catch를 두고 ProjectResponse안에서 throw 하는 것은?
     @GetMapping("/list")
     public ResponseEntity<ProjectsResponse> getProjects(
-            @RequestParam("projectYear") Integer year,
-            @RequestParam("semester") Integer semester
+            @RequestParam("semester") @Semester String semester
     ) {
-        List<ProjectInfoResponse> projects = projectService.getProjects(year, semester);
+        List<ProjectInfoResponse> projects = projectService.getProjects(semester);
         ProjectsResponse projectsResponse = ProjectsResponse.builder()
                 .projectsResponse(projects)
                 .build();
@@ -50,6 +51,14 @@ public class ProjectController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(projectsResponse);
+    }
+
+    @GetMapping("/semester/current")
+    public ResponseEntity<ProjectCurrentSemesterResponse> getCurrentSemester() {
+        ProjectCurrentSemesterResponse response = new ProjectCurrentSemesterResponse(
+                projectService.getCurrentSemester()
+        );
+        return ResponseEntity.ok(response);
     }
 
     // TODO: 파일과 객체가 같이 생성되고 있음
@@ -70,8 +79,6 @@ public class ProjectController {
                 .projectType(request.getProjectType())
                 .content(request.getContent())
                 .summary(request.getSummary())
-                .semester(request.getSemester())
-                .projectYear(request.getProjectYear())
                 .password(request.getPassword())
                 .teamMember(request.getTeamMember())
                 .techStack(request.getTechStack())

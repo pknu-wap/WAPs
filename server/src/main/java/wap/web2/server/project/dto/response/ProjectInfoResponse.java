@@ -15,8 +15,7 @@ public class ProjectInfoResponse {
     private String title;
     private String projectType;
     private String summary;
-    private Integer semester;
-    private Integer projectYear;
+    private String semester;
     private String thumbnail;
 
     public static ProjectInfoResponse from(Project project) {
@@ -26,7 +25,6 @@ public class ProjectInfoResponse {
             .projectType(project.getProjectType())
             .summary(project.getSummary())
             .semester(project.getSemester())
-            .projectYear(project.getProjectYear())
             .thumbnail(project.getThumbnail())
             .build();
     }

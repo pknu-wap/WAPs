@@ -8,8 +8,7 @@ public interface ObjectStorageService {
 
     List<String> uploadImages(
             String dirName,
-            Integer projectYear,
-            Integer semester,
+            String semester,
             String projectName,
             String imageType,
             List<MultipartFile> imageFiles
@@ -17,8 +16,7 @@ public interface ObjectStorageService {
 
     String uploadImage(
             String dirName,
-            Integer projectYear,
-            Integer semester,
+            String semester,
             String projectName,
             String imageType,
             MultipartFile imageFile

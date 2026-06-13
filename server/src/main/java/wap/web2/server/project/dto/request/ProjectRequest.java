@@ -30,8 +30,6 @@ public class ProjectRequest {
     private String projectType;
     private String content;
     private String summary;
-    private Integer semester;
-    private Integer projectYear;
     private String password;
     private List<String> removal; // 삭제할 이미지의 URL
 
@@ -45,7 +43,7 @@ public class ProjectRequest {
     private String thumbnail; // toEntity
     private MultipartFile thumbnailFiles; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
-    public Project toEntity(ProjectRequest request, List<String> imageUrls, String thumbnailUrl, User user) {
+    public Project toEntity(ProjectRequest request, String semester, List<String> imageUrls, String thumbnailUrl, User user) {
         List<Image> imagesEntities = imageUrls.stream()
                 .map(ImageDto::toEntity)
                 .collect(Collectors.toList());
@@ -69,8 +67,7 @@ public class ProjectRequest {
                 .projectType(request.getProjectType())
                 .content(request.getContent())
                 .summary(request.getSummary())
-                .semester(request.getSemester())
-                .projectYear(request.getProjectYear())
+                .semester(semester)
                 .images(imagesEntities)
                 .techStacks(techStacksEntities)
                 .teamMembers(teamMemberEntities)
