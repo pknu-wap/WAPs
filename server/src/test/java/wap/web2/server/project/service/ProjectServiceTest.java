@@ -165,7 +165,6 @@ class ProjectServiceTest {
                 .projectType("WEB")
                 .content("updated content")
                 .summary("updated summary")
-                .semester("2026-01")
                 .password("pw")
                 .teamMember(List.of(TeamMemberDto.builder()
                         .memberName("member")

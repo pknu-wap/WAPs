@@ -22,6 +22,7 @@ import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.global.security.CurrentUser;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.project.dto.request.ProjectRequest;
+import wap.web2.server.project.dto.response.ProjectCurrentSemesterResponse;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
 import wap.web2.server.project.dto.response.ProjectsResponse;
@@ -52,6 +53,14 @@ public class ProjectController {
         return ResponseEntity.ok(projectsResponse);
     }
 
+    @GetMapping("/semester/current")
+    public ResponseEntity<ProjectCurrentSemesterResponse> getCurrentSemester() {
+        ProjectCurrentSemesterResponse response = new ProjectCurrentSemesterResponse(
+                projectService.getCurrentSemester()
+        );
+        return ResponseEntity.ok(response);
+    }
+
     // TODO: 파일과 객체가 같이 생성되고 있음
     // TODO: 입력 값 변경해야함
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -70,7 +79,6 @@ public class ProjectController {
                 .projectType(request.getProjectType())
                 .content(request.getContent())
                 .summary(request.getSummary())
-                .semester(request.getSemester())
                 .password(request.getPassword())
                 .teamMember(request.getTeamMember())
                 .techStack(request.getTechStack())

@@ -83,7 +83,6 @@ public class Project {
         this.projectType = request.getProjectType();
         this.content = request.getContent();
         this.summary = request.getSummary();
-        this.semester = request.getSemester();
 
         // 팀 멤버 리스트 초기화 및 새로 추가
         this.teamMembers.clear();
