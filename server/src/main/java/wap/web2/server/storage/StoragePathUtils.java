@@ -11,13 +11,12 @@ public class StoragePathUtils {
 
     public static String createTimestampFileName(
             String dirName,
-            Integer year,
-            Integer semester,
+            String semester,
             String projectName,
             String imageType,
             String originName
     ) {
-        return dirName + "/" + year + "-" + semester + "/" + projectName + "/" + imageType + "/" +
+        return dirName + "/" + semester + "/" + projectName + "/" + imageType + "/" +
                 System.currentTimeMillis() + "_" + originName;
     }
 

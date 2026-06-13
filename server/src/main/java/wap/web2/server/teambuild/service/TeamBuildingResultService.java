@@ -1,8 +1,6 @@
 package wap.web2.server.teambuild.service;
 
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
-import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
-import static wap.web2.server.util.SemesterGenerator.generateYearValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,8 +36,7 @@ public class TeamBuildingResultService {
         final String semester = generateSemester();
 
         // 1) 이번 학기 모든 프로젝트
-        List<Project> projects
-                = projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue());
+        List<Project> projects = projectRepository.findProjectsBySemester(semester);
 
         // 2) 이번 학기 팀 배정 결과(없을 수도 있음)
         List<Team> teams = teamRepository.findAllBySemester(semester);

@@ -8,7 +8,6 @@ const useProjectDetailForm = () => {
   const [content, setContent] = useState("");
   const [semester, setSemester] = useState("");
 
-  const [projectYear, setProjectYear] = useState("");
   const [teamMembers, setTeamMembers] = useState([]);
   const [techStacks, setTechStacks] = useState([]);
   const [images, setImages] = useState([null, null, null, null]);
@@ -26,8 +25,6 @@ const useProjectDetailForm = () => {
     setContent,
     semester,
     setSemester,
-    projectYear,
-    setProjectYear,
     teamMembers,
     setTeamMembers,
     techStacks,

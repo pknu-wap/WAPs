@@ -29,15 +29,14 @@ public class OracleObjectStorageService implements ObjectStorageService {
     @Override
     public List<String> uploadImages(
             String dirName,
-            Integer projectYear,
-            Integer semester,
+            String semester,
             String projectName,
             String imageType,
             List<MultipartFile> imageFiles
     ) throws IOException {
         List<String> imageUrls = new ArrayList<>();
         for (MultipartFile imageFile : imageFiles) {
-            imageUrls.add(uploadImage(dirName, projectYear, semester, projectName, imageType, imageFile));
+            imageUrls.add(uploadImage(dirName, semester, projectName, imageType, imageFile));
         }
         return imageUrls;
     }
@@ -45,8 +44,7 @@ public class OracleObjectStorageService implements ObjectStorageService {
     @Override
     public String uploadImage(
             String dirName,
-            Integer projectYear,
-            Integer semester,
+            String semester,
             String projectName,
             String imageType,
             MultipartFile imageFile
@@ -54,7 +52,6 @@ public class OracleObjectStorageService implements ObjectStorageService {
         String originalFileName = getOriginalFileName(imageFile);
         String objectName = StoragePathUtils.createTimestampFileName(
                 dirName,
-                projectYear,
                 semester,
                 projectName,
                 imageType,

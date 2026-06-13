@@ -17,6 +17,7 @@ import wap.web2.server.project.entity.Image;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.entity.TeamMember;
 import wap.web2.server.project.entity.TechStack;
+import wap.web2.server.util.Semester;
 
 // 프로젝트 생성 및 수정에 사용되는 dto
 @Getter
@@ -30,8 +31,8 @@ public class ProjectRequest {
     private String projectType;
     private String content;
     private String summary;
-    private Integer semester;
-    private Integer projectYear;
+    @Semester
+    private String semester;
     private String password;
     private List<String> removal; // 삭제할 이미지의 URL
 
@@ -70,7 +71,6 @@ public class ProjectRequest {
                 .content(request.getContent())
                 .summary(request.getSummary())
                 .semester(request.getSemester())
-                .projectYear(request.getProjectYear())
                 .images(imagesEntities)
                 .techStacks(techStacksEntities)
                 .teamMembers(teamMemberEntities)

@@ -93,16 +93,14 @@ class ProjectServiceTest {
         // then
         verify(objectStorageService, never()).uploadImage(
                 org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyInt(),
-                org.mockito.ArgumentMatchers.anyInt(),
+                org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.any()
         );
         verify(objectStorageService, never()).uploadImages(
                 org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyInt(),
-                org.mockito.ArgumentMatchers.anyInt(),
+                org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.anyList()
@@ -167,8 +165,7 @@ class ProjectServiceTest {
                 .projectType("WEB")
                 .content("updated content")
                 .summary("updated summary")
-                .semester(1)
-                .projectYear(2026)
+                .semester("2026-01")
                 .password("pw")
                 .teamMember(List.of(TeamMemberDto.builder()
                         .memberName("member")
@@ -201,8 +198,7 @@ class ProjectServiceTest {
                 .projectType("WEB")
                 .content("old content")
                 .summary("old summary")
-                .semester(1)
-                .projectYear(2026)
+                .semester("2026-01")
                 .images(new ArrayList<>())
                 .teamMembers(new ArrayList<>())
                 .techStacks(new ArrayList<>())

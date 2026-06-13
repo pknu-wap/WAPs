@@ -21,8 +21,7 @@ public class ProjectDetailsResponse {
     private String projectType;
     private String content;
     private String summary;
-    private Integer semester;
-    private Integer projectYear;
+    private String semester;
     private String thumbnail;
     private List<TeamMemberDto> teamMember;
     private List<TechStackDto> techStack;
@@ -47,7 +46,6 @@ public class ProjectDetailsResponse {
                 .content(project.getContent())
                 .summary(project.getSummary())
                 .semester(project.getSemester())
-                .projectYear(project.getProjectYear())
                 .thumbnail(project.getThumbnail())
                 .teamMember(teamMembers)
                 .techStack(techStacks)

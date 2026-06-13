@@ -12,6 +12,7 @@ import TechStackSelector from "./TechStackSelector";
 import TeamMemberInputForm from "./TeamMemberInputForm";
 // import TeamMemberInputNew from "./TeamMemberInputNew";
 import InputPin from "./InputPin";
+import { getCurrentSemester } from "../../utils/dateUtils";
 
 // 사용성을 높인 버전의 프로젝트 생성 폼
 
@@ -44,8 +45,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     setSummary,
     semester,
     setSemester,
-    projectYear,
-    setProjectYear,
     teamMembers,
     setTeamMembers,
     thumbnail,
@@ -78,8 +77,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   useEffect(() => {
     if (isEdit && existingProject) {
       setThumbnail(existingProject.thumbnail || null);
-      setProjectYear(existingProject.projectYear || new Date().getFullYear());
-      setSemester(existingProject.semester || 1);
+      setSemester(existingProject.semester || getCurrentSemester());
       setProjectType(existingProject.projectType || "");
       setTitle(existingProject.title || "");
       setSummary(existingProject.summary || "");
@@ -118,7 +116,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       content,
       summary,
       semester,
-      projectYear,
       teamMember: teamMembers.map((member) => ({
         memberName: member.memberName,
         memberRole: member.memberRole,
@@ -188,11 +185,8 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         type="thumbnail"
       />
       <YearScroll
-        selectedYear={{ projectYear, semester }}  // 전달
-        setSelectedYear={(yearData) => {           // 객체를 받아서 분리
-          setProjectYear(yearData.projectYear);
-          setSemester(yearData.semester);
-        }}
+        selectedSemester={semester}
+        setSelectedSemester={setSemester}
       />
       <RadioButton
         labelname={"프로젝트 타입"}

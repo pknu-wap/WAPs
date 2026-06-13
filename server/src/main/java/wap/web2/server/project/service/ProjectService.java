@@ -3,8 +3,7 @@ package wap.web2.server.project.service;
 import static wap.web2.server.storage.StoragePathUtils.IMAGES;
 import static wap.web2.server.storage.StoragePathUtils.PROJECT_DIR;
 import static wap.web2.server.storage.StoragePathUtils.THUMBNAIL;
-import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
-import static wap.web2.server.util.SemesterGenerator.generateYearValue;
+import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -60,7 +59,6 @@ public class ProjectService {
         if (!imageFiles.isEmpty()) {
             imageUrls = objectStorageService.uploadImages(
                     PROJECT_DIR,
-                    request.getProjectYear(),
                     request.getSemester(),
                     request.getTitle(),
                     IMAGES,
@@ -72,7 +70,6 @@ public class ProjectService {
         if (hasFile(request.getThumbnailFiles())) {
             thumbnailUrl = objectStorageService.uploadImage(
                     PROJECT_DIR,
-                    request.getProjectYear(),
                     request.getSemester(),
                     request.getTitle(),
                     THUMBNAIL,
@@ -97,16 +94,16 @@ public class ProjectService {
         return "등록되었습니다.";
     }
 
-    @Cacheable(value = "projectList", key = "#year + '-' + #semester")
+    @Cacheable(value = "projectList", key = "#semester")
     @Transactional(readOnly = true)
-    public List<ProjectInfoResponse> getProjects(Integer year, Integer semester) {
-        return projectRepository.findProjectsByYearAndSemesterOrderByProjectIdDesc(year, semester).stream()
+    public List<ProjectInfoResponse> getProjects(String semester) {
+        return projectRepository.findProjectsBySemesterOrderByProjectIdDesc(semester).stream()
                 .map(ProjectInfoResponse::from)
                 .toList();
     }
 
     public List<ProjectTemplate> getCurrentProjectRecruits() {
-        return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue()).stream()
+        return projectRepository.findProjectsBySemester(generateSemester()).stream()
                 .map(ProjectTemplate::from)
                 .toList();
     }
@@ -165,7 +162,6 @@ public class ProjectService {
             log.info("[프로젝트 수정] ({})의 thumbnail 이미지 변경", project.getTitle());
             String thumbnailUrl = objectStorageService.uploadImage(
                     PROJECT_DIR,
-                    request.getProjectYear(),
                     request.getSemester(),
                     request.getTitle(),
                     THUMBNAIL,
@@ -192,7 +188,6 @@ public class ProjectService {
             log.info("[프로젝트 수정] ({})에 이미지 추가", project.getTitle());
             List<String> imageUrls = objectStorageService.uploadImages(
                     PROJECT_DIR,
-                    request.getProjectYear(),
                     request.getSemester(),
                     request.getTitle(),
                     IMAGES,
@@ -224,7 +219,7 @@ public class ProjectService {
         User user = findUser(userId);
 
         // 이번 학기 모든 프로젝트를 찾아서 내가 주인인 프로젝트가 하나라도 있으면 true
-        return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue()).stream()
+        return projectRepository.findProjectsBySemester(generateSemester()).stream()
                 .anyMatch(project -> project.isOwner(user));
     }
 

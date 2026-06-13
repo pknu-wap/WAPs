@@ -9,6 +9,18 @@ import Comments from "./Comments/Comments";
 import CommentsList from "./Comments/CommentsList";
 import LoadingPage from "../../components/LoadingPage";
 
+const formatSemester = (semester) => {
+  if (!semester) {
+    return { year: "연도 없음", semester: "학기 정보 없음" };
+  }
+
+  const [year, semesterValue] = semester.split("-");
+  return {
+    year: year || "연도 없음",
+    semester: semesterValue ? `${Number(semesterValue)}학기` : "학기 정보 없음",
+  };
+};
+
 const ProjectDetailForm = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
@@ -71,6 +83,8 @@ const ProjectDetailForm = () => {
     );
   }
 
+  const semesterInfo = formatSemester(projectData.semester);
+
   return (
     <div className={`${styles.project_detail_form} ${styles.mount1}`}>
       {/* 프로젝트 썸네일 */}
@@ -87,11 +101,11 @@ const ProjectDetailForm = () => {
           <div className={styles.project_info}>
             <div className={styles.project_year_info}>
               <div className={styles.projectYear}>
-                {projectData.projectYear || "연도 없음"}
+                {semesterInfo.year}
               </div>
               <div>-</div>
               <div className={styles.semester}>
-                {projectData.semester || "학기 정보 없음"}
+                {semesterInfo.semester}
               </div>
             </div>
             <div className={styles.project_type_info}>
