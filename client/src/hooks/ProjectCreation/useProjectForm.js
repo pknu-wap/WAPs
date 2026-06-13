@@ -1,10 +1,7 @@
 // src/hooks/useProjectForm.js
 import { useState } from "react";
-import { getCurrentSemester } from "../../utils/dateUtils";
 
 const useProjectForm = () => {
-  const currentSemester = getCurrentSemester();
-
   // 입력 폼 요소들의 상태
   const [teamName, setTeamName] = useState(null);
   const [title, setTitle] = useState("");
@@ -12,7 +9,7 @@ const useProjectForm = () => {
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
   
-  const [semester, setSemester] = useState(currentSemester);
+  const [semester, setSemester] = useState("");
   const [password, setPassword] = useState("");
   const [removalList, setRemovalList] = useState([]); // 삭제된 이미지 URL들 저장용
 
@@ -207,7 +204,7 @@ const useProjectForm = () => {
     setProjectType("");
     setContent("");
     setSummary("");
-    setSemester(getCurrentSemester());
+    setSemester("");
     setIsLeader(false);
     setTeamMembers([{ memberName: "", image: null, memberRole: "" }]); // 이름을 일관되게 수정(기존: name, role)
     setThumbnail(null);

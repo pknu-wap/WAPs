@@ -5,14 +5,12 @@ import { projectApi } from "../../api/project";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
 import ImageUploader from "./ImageUploader";
-import YearScroll from "./YearSelector";
 import RadioButton from "./RadioButton";
 import TextInputForm from "./TextInputForm";
 import TechStackSelector from "./TechStackSelector";
 import TeamMemberInputForm from "./TeamMemberInputForm";
 // import TeamMemberInputNew from "./TeamMemberInputNew";
 import InputPin from "./InputPin";
-import { getCurrentSemester } from "../../utils/dateUtils";
 
 // 사용성을 높인 버전의 프로젝트 생성 폼
 
@@ -29,11 +27,22 @@ const roleOptions = [
   "기타",
 ];
 
+const formatSemester = (semester) => {
+  if (!semester) {
+    return "학기 정보 없음";
+  }
+
+  const [year, semesterValue] = semester.split("-");
+  return `${year}년 ${Number(semesterValue)}학기`;
+};
+
 const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const { projectId } = useParams();
   const maxImageCount = 4; // 최대 이미지 업로드 개수
   const navigate = useNavigate(); // navigate 함수
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSemesterLoading, setIsSemesterLoading] = useState(!isEdit);
+  const [semesterError, setSemesterError] = useState("");
   const {
     title,
     setTitle,
@@ -73,11 +82,46 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     // setRemovalList,
   } = useProjectForm();
 
+  useEffect(() => {
+    if (isEdit) {
+      return;
+    }
+
+    let ignore = false;
+
+    const fetchCurrentSemester = async () => {
+      setIsSemesterLoading(true);
+      setSemesterError("");
+
+      try {
+        const data = await projectApi.getCurrentSemester();
+        if (!ignore) {
+          setSemester(data.semester);
+        }
+      } catch (error) {
+        if (!ignore) {
+          setSemester("");
+          setSemesterError("현재 학기 정보를 불러오지 못했습니다.");
+        }
+      } finally {
+        if (!ignore) {
+          setIsSemesterLoading(false);
+        }
+      }
+    };
+
+    fetchCurrentSemester();
+
+    return () => {
+      ignore = true;
+    };
+  }, [isEdit, setSemester]);
+
   // 기존 데이터 초기화
   useEffect(() => {
     if (isEdit && existingProject) {
       setThumbnail(existingProject.thumbnail || null);
-      setSemester(existingProject.semester || getCurrentSemester());
+      setSemester(existingProject.semester || "");
       setProjectType(existingProject.projectType || "");
       setTitle(existingProject.title || "");
       setSummary(existingProject.summary || "");
@@ -102,6 +146,11 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     e.preventDefault();
     if (isSubmitting) return;
 
+    if (!semester) {
+      alert("현재 학기 정보를 불러온 뒤 다시 시도해 주세요.");
+      return;
+    }
+
     if (!password) {
       alert("비밀번호를 입력해 주세요.");
       return;
@@ -115,7 +164,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       projectType,
       content,
       summary,
-      semester,
       teamMember: teamMembers.map((member) => ({
         memberName: member.memberName,
         memberRole: member.memberRole,
@@ -184,10 +232,13 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         handleRemoveImage={() => handleRemoveImage("thumbnail", null)}
         type="thumbnail"
       />
-      <YearScroll
-        selectedSemester={semester}
-        setSelectedSemester={setSemester}
-      />
+      <div className={styles.semester_fixed_box}>
+        <span className={styles.semester_label}>학기</span>
+        <span className={styles.semester_value}>
+          {isSemesterLoading ? "현재 학기 확인 중..." : formatSemester(semester)}
+        </span>
+      </div>
+      {semesterError && <p className={styles.semester_error}>{semesterError}</p>}
       <RadioButton
         labelname={"프로젝트 타입"}
         name="projectType"
@@ -316,11 +367,11 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       <button
         type="submit"
         className={styles.submit_button}
-        disabled={uploading || isSubmitting}
+        disabled={uploading || isSubmitting || isSemesterLoading || !semester}
         style={{
           marginTop: "20px",
           marginBottom: "100px",
-          cursor: isSubmitting ? "not-allowed" : "pointer",
+          cursor: isSubmitting || isSemesterLoading || !semester ? "not-allowed" : "pointer",
         }}
       >
         {isSubmitting ? "업로드 중..." : isEdit ? "프로젝트 수정" : "프로젝트 생성"}
