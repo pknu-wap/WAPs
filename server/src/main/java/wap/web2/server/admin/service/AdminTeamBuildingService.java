@@ -1,8 +1,6 @@
 package wap.web2.server.admin.service;
 
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
-import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
-import static wap.web2.server.util.SemesterGenerator.generateYearValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,8 +79,7 @@ public class AdminTeamBuildingService {
         validateTeamBuildingStatus(current);
 
         // 이번학기 모든 프로젝트
-        List<Project> projects
-                = projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue());
+        List<Project> projects = projectRepository.findProjectsBySemester(generateSemester());
 
         // Map<projectId, Map<position, Set<userId>>>
         Map<Long, Map<Position, Set<Long>>> results = new HashMap<>();

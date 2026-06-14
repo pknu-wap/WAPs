@@ -33,6 +33,25 @@ const typeKey = (t) => {
   return map[key] || "etc";
 };
 
+const toSemester = (year, semester) => `${year}-${String(semester).padStart(2, "0")}`;
+
+const normalizeSemesterParam = (semester, projectYear, fallback) => {
+  if (semester?.includes("-")) {
+    return semester;
+  }
+
+  if (semester && projectYear) {
+    return toSemester(projectYear, semester);
+  }
+
+  return fallback;
+};
+
+const formatSemesterLabel = (semester) => {
+  const [year, semesterValue] = semester.split("-");
+  return `${("0" + (Number(year) - 2000)).slice(-2)}년 ${Number(semesterValue)}학기`;
+};
+
 const ContentBox = () => {
   const [filter, setFilter] = useState("All");
   const [yearAccordionOpen, setYearAccordionOpen] = useState(false);
@@ -43,16 +62,15 @@ const ContentBox = () => {
 
   // useSemester 훅을 사용하여 초기 학기/년도 상태 설정
   const semesterString = useSemester();
-  const [defaultYear, defaultSemester] = semesterString.split("-");
 
   // URL에서 값을 읽어와 초기 상태 설정, 없으면 useSemester 값 사용
-  const initialYear = searchParams.get("projectYear") || defaultYear;
-  const initialSemester = searchParams.get("semester") || defaultSemester;
+  const initialSemester = normalizeSemesterParam(
+    searchParams.get("semester"),
+    searchParams.get("projectYear"),
+    semesterString
+  );
 
-  const [semesterFilter, setSemesterFilter] = useState({
-    year: parseInt(initialYear),
-    semester: parseInt(initialSemester),
-  });
+  const [semesterFilter, setSemesterFilter] = useState(initialSemester);
 
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -66,10 +84,7 @@ const ContentBox = () => {
 
     const fetchData = async () => {
       try {
-        const response = await projectApi.getProjectList(
-          semesterFilter.year,
-          semesterFilter.semester
-        );
+        const response = await projectApi.getProjectList(semesterFilter);
 
         if (Array.isArray(response.projectsResponse)) {
           setData(response.projectsResponse);
@@ -114,8 +129,9 @@ const ContentBox = () => {
   const toggleTypeAccordion = () => setTypeAccordionOpen(!typeAccordionOpen);
 
   const handleSemesterChange = (year, semester) => {
-    setSemesterFilter({ year, semester });
-    setSearchParams({ projectYear: year, semester });
+    const nextSemester = toSemester(year, semester);
+    setSemesterFilter(nextSemester);
+    setSearchParams({ semester: nextSemester });
     setYearAccordionOpen(false);
   };
 
@@ -178,7 +194,7 @@ const ContentBox = () => {
             <div className="filter-dropdown">
               <button onClick={toggleYearAccordion} className="dropdown-button">
                 {yearAccordionOpen ? "년도/학기 ▲"
-                  : `${('0' + (semesterFilter.year - 2000)).slice(-2)}년 ${semesterFilter.semester}학기 ▼`}
+                  : `${formatSemesterLabel(semesterFilter)} ▼`}
               </button>
               {yearAccordionOpen && (
                 <div className="dropdown-content">

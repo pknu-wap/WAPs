@@ -9,14 +9,9 @@ import wap.web2.server.project.entity.Project;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-    @Query(value = "select p from Project p where p.projectYear = :year and p.semester = :semester")
-    List<Project> findProjectsByYearAndSemester(@Param("year") Integer year, @Param("semester") Integer semester);
+    List<Project> findProjectsBySemester(String semester);
 
-    @Query("SELECT p FROM Project p WHERE p.projectYear = :year AND p.semester = :semester ORDER BY p.projectId DESC")
-    List<Project> findProjectsByYearAndSemesterOrderByProjectIdDesc(
-            @Param("year") Integer year,
-            @Param("semester") Integer semester
-    );
+    List<Project> findProjectsBySemesterOrderByProjectIdDesc(String semester);
 
     @Query("SELECT p.projectId FROM Project p WHERE p.projectId IN :projectIds")
     List<Long> findExistingProjectIds(@Param("projectIds") Set<Long> projectIds);

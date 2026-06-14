@@ -3,8 +3,7 @@ package wap.web2.server.project.service;
 import static wap.web2.server.storage.StoragePathUtils.IMAGES;
 import static wap.web2.server.storage.StoragePathUtils.PROJECT_DIR;
 import static wap.web2.server.storage.StoragePathUtils.THUMBNAIL;
-import static wap.web2.server.util.SemesterGenerator.generateSemesterValue;
-import static wap.web2.server.util.SemesterGenerator.generateYearValue;
+import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -44,6 +43,10 @@ public class ProjectService {
     @Value("${project.password}")
     private String projectPassword;
 
+    public String getCurrentSemester() {
+        return generateSemester();
+    }
+
     // TODO: 비밀번호 체크 로직이 각 메서드 마다 있음
     // TODO: "비밀번호가 틀렸습니다." 를 반환하면 컨트롤러에서 401 에러를 내보내는데, 유연하지 못하다고 생각됩니다.
     @CacheEvict(value = "projectList", allEntries = true)
@@ -54,14 +57,14 @@ public class ProjectService {
         }
 
         User user = findUser(userPrincipal.getId());
+        String semester = getCurrentSemester();
 
         List<MultipartFile> imageFiles = getNonEmptyImageFiles(request);
         List<String> imageUrls = Collections.emptyList();
         if (!imageFiles.isEmpty()) {
             imageUrls = objectStorageService.uploadImages(
                     PROJECT_DIR,
-                    request.getProjectYear(),
-                    request.getSemester(),
+                    semester,
                     request.getTitle(),
                     IMAGES,
                     imageFiles
@@ -72,8 +75,7 @@ public class ProjectService {
         if (hasFile(request.getThumbnailFiles())) {
             thumbnailUrl = objectStorageService.uploadImage(
                     PROJECT_DIR,
-                    request.getProjectYear(),
-                    request.getSemester(),
+                    semester,
                     request.getTitle(),
                     THUMBNAIL,
                     request.getThumbnailFiles()
@@ -82,7 +84,7 @@ public class ProjectService {
 
         // request.toEntity() 를 호출함으로서 매개변수로 넘어온 객체(request)를 사용
         // 기괴한 구조 ㄷㄷ
-        Project project = request.toEntity(request, imageUrls, thumbnailUrl, user);
+        Project project = request.toEntity(request, semester, imageUrls, thumbnailUrl, user);
 
         // 양방향 연관관계 데이터 일관성 유지
         project.getTechStacks().forEach(techStack -> techStack.updateTechStack(project));
@@ -97,16 +99,16 @@ public class ProjectService {
         return "등록되었습니다.";
     }
 
-    @Cacheable(value = "projectList", key = "#year + '-' + #semester")
+    @Cacheable(value = "projectList", key = "#semester")
     @Transactional(readOnly = true)
-    public List<ProjectInfoResponse> getProjects(Integer year, Integer semester) {
-        return projectRepository.findProjectsByYearAndSemesterOrderByProjectIdDesc(year, semester).stream()
+    public List<ProjectInfoResponse> getProjects(String semester) {
+        return projectRepository.findProjectsBySemesterOrderByProjectIdDesc(semester).stream()
                 .map(ProjectInfoResponse::from)
                 .toList();
     }
 
     public List<ProjectTemplate> getCurrentProjectRecruits() {
-        return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue()).stream()
+        return projectRepository.findProjectsBySemester(generateSemester()).stream()
                 .map(ProjectTemplate::from)
                 .toList();
     }
@@ -165,8 +167,7 @@ public class ProjectService {
             log.info("[프로젝트 수정] ({})의 thumbnail 이미지 변경", project.getTitle());
             String thumbnailUrl = objectStorageService.uploadImage(
                     PROJECT_DIR,
-                    request.getProjectYear(),
-                    request.getSemester(),
+                    project.getSemester(),
                     request.getTitle(),
                     THUMBNAIL,
                     request.getThumbnailFiles()
@@ -192,8 +193,7 @@ public class ProjectService {
             log.info("[프로젝트 수정] ({})에 이미지 추가", project.getTitle());
             List<String> imageUrls = objectStorageService.uploadImages(
                     PROJECT_DIR,
-                    request.getProjectYear(),
-                    request.getSemester(),
+                    project.getSemester(),
                     request.getTitle(),
                     IMAGES,
                     imageFiles
@@ -224,7 +224,7 @@ public class ProjectService {
         User user = findUser(userId);
 
         // 이번 학기 모든 프로젝트를 찾아서 내가 주인인 프로젝트가 하나라도 있으면 true
-        return projectRepository.findProjectsByYearAndSemester(generateYearValue(), generateSemesterValue()).stream()
+        return projectRepository.findProjectsBySemester(generateSemester()).stream()
                 .anyMatch(project -> project.isOwner(user));
     }
 
