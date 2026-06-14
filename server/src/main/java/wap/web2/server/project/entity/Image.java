@@ -34,9 +34,7 @@ public class Image {
 
     public static List<Image> listOf(List<String> imageUrls) {
         return imageUrls.stream()
-                .map(url -> Image.builder()
-                        .imageFile(url)
-                        .build())
+                .map(url -> Image.builder().imageFile(url).build())
                 .toList();
     }
 

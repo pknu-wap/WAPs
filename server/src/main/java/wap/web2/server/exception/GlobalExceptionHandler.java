@@ -194,4 +194,5 @@ public class GlobalExceptionHandler {
         String requestId = request.getHeader("X-Request-Id");
         return requestId == null || requestId.isBlank() ? null : requestId;
     }
+    
 }

@@ -6,7 +6,4 @@ public class ConflictException extends BusinessException {
         super(ErrorCode.COMMON_CONFLICT, message);
     }
 
-    public ConflictException(ErrorCode errorCode, String message) {
-        super(errorCode, message);
-    }
 }

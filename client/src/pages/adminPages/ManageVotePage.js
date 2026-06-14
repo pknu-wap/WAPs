@@ -47,7 +47,7 @@ const ManageVotePage = () => {
 
         const fetchProjects = async () => {
             try {
-                const data = await projectApi.getProjectList(semester.split("-")[0], semester.split("-")[1]);
+                const data = await projectApi.getProjectList(semester);
                 setProjects(data.projectsResponse || []);
             } catch (e) {
                 setError("프로젝트 목록 조회 실패");

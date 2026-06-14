@@ -18,8 +18,6 @@ public interface VoteMetaRepository extends JpaRepository<VoteMeta, Long> {
     @Query("SELECT v.status FROM VoteMeta v WHERE v.semester = :semester")
     Optional<VoteStatus> findStatusBySemester(@Param("semester") String semester);
 
-    boolean existsBySemester(String semester);
-
     Optional<VoteMeta> findBySemester(String semester);
 
     @Query(

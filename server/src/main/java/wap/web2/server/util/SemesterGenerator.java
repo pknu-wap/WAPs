@@ -15,20 +15,4 @@ public class SemesterGenerator {
                 : now.getYear() + SECOND_SEMESTER;
     }
 
-    public static Integer generateYearValue() {
-        YearMonth now = YearMonth.now();
-        return now.getYear();
-    }
-
-    public static Integer generateSemesterValue() {
-        YearMonth now = YearMonth.now();
-        return now.getMonthValue() <= SECOND_SEMESTER_MONTH
-                ? 1
-                : 2;
-    }
-
-    public static String convertFrom(Integer year, Integer semester) {
-        return String.format("%d-0%d", year, semester);
-    }
-
 }

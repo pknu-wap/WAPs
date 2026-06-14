@@ -10,8 +10,4 @@ public class BadRequestException extends BusinessException {
         super(ErrorCode.COMMON_INVALID_INPUT, message);
     }
 
-    public BadRequestException(String message, Throwable cause) {
-        super(ErrorCode.COMMON_INVALID_INPUT, message, cause);
-    }
-
 }

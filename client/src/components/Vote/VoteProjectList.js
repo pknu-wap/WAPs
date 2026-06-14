@@ -11,10 +11,6 @@ const VoteProjectList = ({
 }) => {
   const [projects, setProjects] = useState([]);
   const semesterInfo = getCurrentSemester();
-  const [yearStr, semesterStr] = semesterInfo.split('-');
-
-  const currentYear = parseInt(yearStr, 10);
-  const currentSemester = parseInt(semesterStr, 10);
 
   const handleProjectSelect = (participants, isVotedUser) => {
     // console.log("클릭됨", participants);
@@ -39,7 +35,7 @@ const VoteProjectList = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await apiClient.get("/vote/2025-02/projects");
+        const response = await apiClient.get(`/vote/${semesterInfo}/projects`);
 
         // console.log("API 응답 데이터:", response.data);
 
@@ -57,7 +53,7 @@ const VoteProjectList = ({
     };
 
     fetchData();
-  }, [currentYear, currentSemester]);
+  }, [semesterInfo]);
 
   return (
     <div className={styles.project_list_form}>

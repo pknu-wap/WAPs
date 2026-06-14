@@ -12,7 +12,10 @@ public interface TeamBuildingMetaRepository extends JpaRepository<TeamBuildingMe
 
     @Modifying
     @Query("UPDATE TeamBuildingMeta t SET t.status = :status WHERE t.semester = :semester")
-    int updateTeamBuildingMetaStatus(@Param("semester") String semester, @Param("status") TeamBuildingStatus status);
+    int updateTeamBuildingMetaStatus(
+            @Param("semester") String semester,
+            @Param("status") TeamBuildingStatus status
+    );
 
     Optional<TeamBuildingMeta> findBySemester(String semester);
 

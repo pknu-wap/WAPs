@@ -29,8 +29,10 @@ public class VoteController {
     private final VoteService voteService;
 
     @PostMapping
-    public ResponseEntity<Void> voteProjects(@CurrentUser UserPrincipal userPrincipal,
-                                             @RequestBody @Valid VoteRequest voteRequest) {
+    public ResponseEntity<Void> voteProjects(
+            @CurrentUser UserPrincipal userPrincipal,
+            @RequestBody @Valid VoteRequest voteRequest
+    ) {
         voteService.vote(userPrincipal, voteRequest);
         return ResponseEntity.ok().build();
     }
@@ -46,7 +48,9 @@ public class VoteController {
 
     @GetMapping("/now")
     @Operation(summary = "현재 학기 투표 상태 조회", description = "현재 학기 투표 여부와 투표 진행 상태를 조회합니다.")
-    public ResponseEntity<VoteInfoResponse> getVoteInfo(@CurrentUser UserPrincipal userPrincipal) {
+    public ResponseEntity<VoteInfoResponse> getVoteInfo(
+            @CurrentUser UserPrincipal userPrincipal
+    ) {
         String semester = SemesterGenerator.generateSemester();
         VoteInfoResponse response = voteService.getVoteInfo(userPrincipal, semester);
         return ResponseEntity.ok(response);
@@ -61,7 +65,9 @@ public class VoteController {
 
     @GetMapping("/result/{semester}")
     @Operation(summary = "학기별 투표 결과 조회", description = "특정 학기의 투표 결과를 조회합니다.")
-    public ResponseEntity<VoteResultsResponse> getVoteResults(@PathVariable("semester") @Semester String semester) {
+    public ResponseEntity<VoteResultsResponse> getVoteResults(
+            @PathVariable("semester") @Semester String semester
+    ) {
         VoteResultsResponse voteResults = voteService.getVoteResults(semester);
         return ResponseEntity.ok(voteResults);
     }

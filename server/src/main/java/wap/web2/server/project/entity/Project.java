@@ -51,15 +51,8 @@ public class Project {
     @Column
     private String summary;
 
-    @Column
-    private Integer semester;
-
-    @Deprecated
-    @Column
-    private Long voteCount; // 득표 수
-
-    @Column
-    private Integer projectYear;
+    @Column(length = 7)
+    private String semester;
 
     @Column(length = 1000)
     private String thumbnail;
@@ -90,8 +83,6 @@ public class Project {
         this.projectType = request.getProjectType();
         this.content = request.getContent();
         this.summary = request.getSummary();
-        this.semester = request.getSemester();
-        this.projectYear = request.getProjectYear();
 
         // 팀 멤버 리스트 초기화 및 새로 추가
         this.teamMembers.clear();
@@ -133,8 +124,8 @@ public class Project {
     public List<String> removeImages(Collection<String> imageUrls) {
         Set<String> removalTargets = new HashSet<>(imageUrls);
         List<String> removedImageUrls = this.images.stream()
-                .filter(image -> removalTargets.contains(image.getImageFile()))
                 .map(Image::getImageFile)
+                .filter(removalTargets::contains)
                 .toList();
 
         this.images.removeIf(image -> removalTargets.contains(image.getImageFile()));
