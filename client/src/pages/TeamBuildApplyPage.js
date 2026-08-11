@@ -5,6 +5,7 @@ import { teamBuildApi } from "../api/team-build";
 import LoadingPage from "../components/LoadingPage";
 import wapsLogo from "../assets/img/waps_logo.png";
 import styles from "../assets/TeamBuildApply.module.css";
+import noticeIcon from "../assets/img/noticeIcon.svg";
 
 const MAX_SELECTION = 5;
 const POSITION_OPTIONS = [
@@ -110,50 +111,83 @@ function TeamBuildApplyPage() {
   const [dragOverId, setDragOverId] = useState(null);
   const [dragOverPlacement, setDragOverPlacement] = useState("before");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isNoticeOpen, setIsNoticeOpen] = useState(false);
+  //추가한 내용
+
+  // useEffect(() => {
+  //   const token = Cookies.get("authToken") || window.localStorage.getItem("authToken") || "";
+  //   if (!token) {
+  //     alert("로그인이 필요합니다.");
+  //     navigate("/login");
+  //   }
+  // }, [navigate]);
+
+  // useEffect(() => {
+  //   let active = true;
+
+  //   const fetchData = async () => {
+  //     const token = Cookies.get("authToken") || window.localStorage.getItem("authToken") || "";
+  //     if (!token) {
+  //       setIsLoading(false);
+  //       return;
+  //     }
+  //     setIsLoading(true);
+  //     setLoadError("");
+  //     try {
+  //       const status = await teamBuildApi.getApplyStatus();
+  //       if (!active) return;
+  //       const applied = Boolean(status?.hasApplied);
+  //       setHasApplied(applied);
+
+  //       if (!applied) {
+  //         const projectList = await teamBuildApi.getApplyProjects();
+  //         if (!active) return;
+  //         setProjects(Array.isArray(projectList) ? projectList : []);
+  //       }
+  //     } catch (err) {
+  //       if (!active) return;
+  //       setLoadError(formatApiError(err, "프로젝트 목록을 불러오지 못했습니다."));
+  //     } finally {
+  //       if (active) setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  //   return () => {
+  //     active = false;
+  //   };
+  // }, []);
 
   useEffect(() => {
-    const token = Cookies.get("authToken") || window.localStorage.getItem("authToken") || "";
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-    }
-  }, [navigate]);
+  setHasApplied(false);
 
-  useEffect(() => {
-    let active = true;
+  setProjects([
+      {
+        projectId: 1,
+        title: "프로젝트 1",
+        projectType: "WEB",
+        summary: "사용자 경험을 혁신하는 웹 플랫폼 개발 프로젝트입니다.",
+        techStack: ["React", "JavaScript"],
+      },
+      {
+        projectId: 2,
+        title: "프로젝트 2",
+        projectType: "APP",
+        summary: "데이터 기반 서비스를 구축하는 프로젝트입니다.",
+        techStack: ["React Native", "Spring"],
+      },
+      {
+        projectId: 3,
+        title: "프로젝트 3",
+        projectType: "GAME",
+        summary: "새로운 게임 서비스를 개발하는 프로젝트입니다.",
+        techStack: ["Unity", "C#"],
+      },
+    ]);
 
-    const fetchData = async () => {
-      const token = Cookies.get("authToken") || window.localStorage.getItem("authToken") || "";
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-      setIsLoading(true);
-      setLoadError("");
-      try {
-        const status = await teamBuildApi.getApplyStatus();
-        if (!active) return;
-        const applied = Boolean(status?.hasApplied);
-        setHasApplied(applied);
-
-        if (!applied) {
-          const projectList = await teamBuildApi.getApplyProjects();
-          if (!active) return;
-          setProjects(Array.isArray(projectList) ? projectList : []);
-        }
-      } catch (err) {
-        if (!active) return;
-        setLoadError(formatApiError(err, "프로젝트 목록을 불러오지 못했습니다."));
-      } finally {
-        if (active) setIsLoading(false);
-      }
-    };
-
-    fetchData();
-    return () => {
-      active = false;
-    };
+    setIsLoading(false);
   }, []);
+  // 나중에 제거하기. 임시 내용
 
   const projectsById = useMemo(() => {
     const map = new Map();
@@ -482,7 +516,7 @@ function TeamBuildApplyPage() {
         <div className={styles.hero}>
           <div className={styles.heroTitle}>TEAM BUILDING</div>
           <div className={styles.heroSubtitle}>
-            지원서를 작성하고 원하는 프로젝트들에 한 번에 지원하세요!
+            함께할 팀을 찾고, 원하는 프로젝트에 도전해보세요
           </div>
         </div>
 
@@ -490,6 +524,39 @@ function TeamBuildApplyPage() {
           <button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
             <span className={styles.backArrow}>←</span> 뒤로가기
           </button>
+        </div>
+
+        <div className={styles.notice}>
+          <button
+            type="button"
+            className={styles.noticeButton}
+            onClick={() => setIsNoticeOpen(!isNoticeOpen)}
+          >
+            <div className={styles.noticeTitle}>
+              <img
+                src={noticeIcon}
+                alt=""
+                className={styles.noticeIcon}
+              />
+              <span>팀빌딩 안내사항</span>
+            </div>
+
+            <span
+              className={`${styles.noticeArrow} ${
+                isNoticeOpen ? styles.noticeArrowOpen : ""
+              }`}
+            >
+              ›
+            </span>
+          </button>
+
+          {isNoticeOpen && (
+            <div className={styles.noticeContent}>
+              <p>• 최대 5개의 프로젝트에 지원할 수 있습니다.</p>
+              <p>• 지원 전 프로젝트 정보를 확인해주세요.</p>
+              <p>• 자세한 팀빌딩 진행 방식은 안내사항을 참고해주세요.</p>
+            </div>
+          )}
         </div>
 
         <section className={styles.stepStack} aria-label="지원 단계">

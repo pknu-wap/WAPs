@@ -85,7 +85,7 @@
 .heroTitle {
   font-size: 34px;
   font-weight: 800;
-  letter-spacing: 0.14em;
+  letter-spacing: -1px;
 }
 
 .heroSubtitle {
@@ -120,6 +120,30 @@
 .backArrow {
   font-size: 16px;
   line-height: 1;
+}
+
+.notice {
+  width:100%;
+  align-items: stretch;
+  background: rgb(0, 0, 0, 0.5);
+  border-radius: 26px;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
+  margin-bottom: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.noticeButton{
+  padding:20px 20px;
+}
+
+.noticeIcon {
+  width:20px;
+  height:20px;
+  object-fit : contain;
+}
+
+.noticeTitle {
+  display : flex;
 }
 
 .stepGuide {
