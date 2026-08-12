@@ -216,6 +216,38 @@ class ApplyServiceTest {
         assertDoesNotThrow(() -> applyService.setPreference(principal, request));
     }
 
+    @Test
+    void 제2차_팀빌딩에서_지원자_일부에게만_우선순위를_매기면_예외가_발생한다() {
+        // given
+        UserPrincipal principal = stubLeaderPrincipal();
+        Project project = stubLeaderContext(principal, 2);
+        stubApplicants(project, 5);
+        RecruitmentDto request = new RecruitmentDto(
+                1L,
+                List.of(new RecruitmentInfo(2, Position.BACKEND.name(), List.of(1L, 2L, 3L, 4L)))
+        );
+
+        // when & then
+        assertThatThrownBy(() -> applyService.setPreference(principal, request))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    void 제2차_팀빌딩에서_모든_지원자에게_우선순위를_매기면_제출할_수_있다() {
+        // given
+        UserPrincipal principal = stubLeaderPrincipal();
+        Project project = stubLeaderContext(principal, 2);
+        stubApplicants(project, 5);
+        RecruitmentDto request = new RecruitmentDto(
+                1L,
+                List.of(new RecruitmentInfo(2, Position.BACKEND.name(), List.of(1L, 2L, 3L, 4L, 5L)))
+        );
+
+        // when & then
+        assertDoesNotThrow(() -> applyService.setPreference(principal, request));
+        verify(recruitWishRepository, times(5)).save(any(ProjectRecruitWish.class));
+    }
+
     private UserPrincipal stubLeaderPrincipal() {
         UserPrincipal principal = mock(UserPrincipal.class);
         when(principal.getId()).thenReturn(1L);
