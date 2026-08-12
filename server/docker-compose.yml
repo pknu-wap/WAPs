@@ -38,8 +38,8 @@ services:
         condition: service_healthy
     networks:
       - waps-network
-    volumes:
-      - /home/ubuntu/.oci:/home/app/.oci:ro
+    # volumes:
+    #   - /home/ubuntu/.oci:/home/app/.oci:ro  # Oracle Cloud 서버에서만 사용
     restart: unless-stopped
 
   mysql:
