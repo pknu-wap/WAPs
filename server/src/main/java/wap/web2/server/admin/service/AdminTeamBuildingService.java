@@ -114,6 +114,8 @@ public class AdminTeamBuildingService {
         }
 
         saveTeamBuildingResults(results);
+        current.startNextRound();
+        log.info("team-build-round-advanced:{}", current.getRound());
     }
 
     // TODO: 내부 객체에 position 빼기

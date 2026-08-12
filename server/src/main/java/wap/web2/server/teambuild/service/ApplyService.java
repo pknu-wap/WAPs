@@ -111,7 +111,9 @@ public class ApplyService {
 
     @Transactional
     public void setPreference(UserPrincipal userPrincipal, RecruitmentDto request) {
-        if (!isTeamRecruitOpen()) {
+        TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(generateSemester())
+                .orElseThrow(() -> new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+        if (teamBuildingMeta.getStatus() != TeamBuildingStatus.RECRUIT) {
             throw new ConflictException("현재 팀빌딩 상태에서는 모집을 제출할 수 없습니다.");
         }
 
@@ -127,7 +129,7 @@ public class ApplyService {
         List<RecruitmentInfo> roasters = request.getRoasters() != null
                 ? request.getRoasters()
                 : List.of();
-        validateMinimumRanking(project, roasters);
+        validateMinimumRanking(project, roasters, teamBuildingMeta.getRound());
 
         for (RecruitmentInfo roaster : roasters) {
             ProjectRecruit recruit = recruitRepository.save(
@@ -156,7 +158,7 @@ public class ApplyService {
         }
     }
 
-    private void validateMinimumRanking(Project project, List<RecruitmentInfo> roasters) {
+    private void validateMinimumRanking(Project project, List<RecruitmentInfo> roasters, Integer round) {
         boolean hasRecruiting = roasters.stream()
                 .anyMatch(roaster -> roaster.getCapacity() != null && roaster.getCapacity() > 0);
         if (!hasRecruiting) {
@@ -168,7 +170,9 @@ public class ApplyService {
                 .map(apply -> apply.getUser().getId())
                 .distinct()
                 .count();
-        long minRequired = Math.min(totalApplicants, MIN_RANKING_APPLICANTS);
+        long minRequired = round >= 2
+                ? totalApplicants
+                : Math.min(totalApplicants, MIN_RANKING_APPLICANTS);
 
         long rankedCount = roasters.stream()
                 .filter(roaster -> roaster.getApplicantIds() != null)
@@ -176,7 +180,10 @@ public class ApplyService {
                 .distinct()
                 .count();
         if (rankedCount < minRequired) {
-            throw new BadRequestException("최소 4명의 지원자에게 우선순위를 매겨야 합니다.");
+            String message = round >= 2
+                    ? "2차 팀빌딩에서는 모든 지원자에게 우선순위를 매겨야 합니다."
+                    : "지원자가 4명 이상인 프로젝트는 최소 4명 이상, 4명 미만인 프로젝트는 모든 지원자에게 우선순위를 매겨야 합니다.";
+            throw new BadRequestException(message);
         }
     }
 
@@ -192,14 +199,6 @@ public class ApplyService {
                 .orElseThrow(() -> new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
 
         return teamBuildingMeta.getStatus() == TeamBuildingStatus.APPLY;
-    }
-
-    private boolean isTeamRecruitOpen() {
-        String semester = generateSemester();
-        TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
-
-        return teamBuildingMeta.getStatus() == TeamBuildingStatus.RECRUIT;
     }
 
     private User findUser(Long userId) {
