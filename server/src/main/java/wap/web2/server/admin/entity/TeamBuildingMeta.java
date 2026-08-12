@@ -33,4 +33,12 @@ public class TeamBuildingMeta {
     @Enumerated(EnumType.STRING)
     private TeamBuildingStatus status = TeamBuildingStatus.OPEN;
 
+    @Column(nullable = false)
+    private Integer round = 1;
+
+    public void startNextRound() {
+        this.round = this.round + 1;
+        this.status = TeamBuildingStatus.OPEN;
+    }
+
 }
