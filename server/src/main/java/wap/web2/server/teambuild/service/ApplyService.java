@@ -38,6 +38,8 @@ import wap.web2.server.teambuild.repository.ProjectRecruitWishRepository;
 @RequiredArgsConstructor
 public class ApplyService {
 
+    private static final int MIN_RANKING_APPLICANTS = 4;
+
     private final TeamBuildingMetaRepository teamBuildingMetaRepository;
     private final ProjectRecruitWishRepository recruitWishRepository;
     private final ProjectRecruitRepository recruitRepository;
@@ -122,7 +124,11 @@ public class ApplyService {
 
         log.info("setPreference-user:{},project:{}", user.getId(), project.getProjectId());
 
-        List<RecruitmentInfo> roasters = request.getRoasters();
+        List<RecruitmentInfo> roasters = request.getRoasters() != null
+                ? request.getRoasters()
+                : List.of();
+        validateMinimumRanking(project, roasters);
+
         for (RecruitmentInfo roaster : roasters) {
             ProjectRecruit recruit = recruitRepository.save(
                     ProjectRecruit.builder()
@@ -147,6 +153,30 @@ public class ApplyService {
             }
 
             recruit.setWishList(wishes);
+        }
+    }
+
+    private void validateMinimumRanking(Project project, List<RecruitmentInfo> roasters) {
+        boolean hasRecruiting = roasters.stream()
+                .anyMatch(roaster -> roaster.getCapacity() != null && roaster.getCapacity() > 0);
+        if (!hasRecruiting) {
+            return;
+        }
+
+        long totalApplicants = applyRepository.findAllByProjectAndSemester(project, generateSemester())
+                .stream()
+                .map(apply -> apply.getUser().getId())
+                .distinct()
+                .count();
+        long minRequired = Math.min(totalApplicants, MIN_RANKING_APPLICANTS);
+
+        long rankedCount = roasters.stream()
+                .filter(roaster -> roaster.getApplicantIds() != null)
+                .flatMap(roaster -> roaster.getApplicantIds().stream())
+                .distinct()
+                .count();
+        if (rankedCount < minRequired) {
+            throw new BadRequestException("최소 4명의 지원자에게 우선순위를 매겨야 합니다.");
         }
     }
 
