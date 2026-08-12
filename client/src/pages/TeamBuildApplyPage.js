@@ -7,6 +7,7 @@ import wapsLogo from "../assets/img/waps_logo.png";
 import styles from "../assets/TeamBuildApply.module.css";
 import noticeIcon from "../assets/img/noticeIcon.svg";
 import noticeArrow from "../assets/img/noticeArrow.svg";
+import emptyFolder from "../assets/img/emptyFolder.png";
 
 const MAX_SELECTION = 5;
 const POSITION_OPTIONS = [
@@ -553,12 +554,33 @@ function TeamBuildApplyPage() {
 
           {isNoticeOpen && (
             <div className={styles.noticeContent}>
-              <p>• 최대 5개의 프로젝트에 지원할 수 있습니다.</p>
-              <p>• 지원 전 프로젝트 정보를 확인해주세요.</p>
-              <p>• 자세한 팀빌딩 진행 방식은 안내사항을 참고해주세요.</p>
+              <p>• 이번 팀빌딩은 총 3차에 걸쳐 진행됩니다.</p>
+              <p>• 지원서는 최소 3개 - 최대 5개까지 지원할 수 있으며, 동일 프로젝트에도 서로 다른 직무로 지원할 수 있습니다.</p>
             </div>
           )}
         </div>
+
+        <section className={styles.myApply}>
+          <div className={styles.myApplyHeader}>
+            <h2>내 지원서</h2>
+
+            <div className={styles.myApplyCount}>
+              <span className={styles.currentCount}>0</span>
+              <span>/</span>
+              <span>5</span>
+            </div>
+          </div>
+
+          <div className={styles.emptyApply}>
+            <img
+              src={emptyFolder}
+              alt=""
+              className={styles.emptyFolder}
+            />
+
+            <p>아직 지원한 프로젝트가 없습니다</p>
+          </div>
+        </section>
 
         <section className={styles.stepStack} aria-label="지원 단계">
           <section
