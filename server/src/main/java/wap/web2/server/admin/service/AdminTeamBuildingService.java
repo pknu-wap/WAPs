@@ -48,9 +48,8 @@ public class AdminTeamBuildingService {
     private final TeamBuilder teamBuilder;
 
     @Transactional(readOnly = true)
-    public TeamBuildingStatus getStatus() {
-        TeamBuildingMeta currentMeta = findCurrentMeta();
-        return currentMeta.getStatus();
+    public TeamBuildingMeta getStatus() {
+        return findCurrentMeta();
     }
 
     @Transactional
