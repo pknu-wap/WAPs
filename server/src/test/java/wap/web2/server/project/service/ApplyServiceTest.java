@@ -69,7 +69,7 @@ class ApplyServiceTest {
         when(principal.getId()).thenReturn(1L);
         when(principal.getName()).thenReturn("tester");
 
-        TeamBuildingMeta meta = new TeamBuildingMeta(null, SemesterGenerator.generateSemester(), TeamBuildingStatus.APPLY);
+        TeamBuildingMeta meta = new TeamBuildingMeta(null, SemesterGenerator.generateSemester(), TeamBuildingStatus.APPLY, 1);
         when(teamBuildingMetaRepository.findBySemester(any())).thenReturn(Optional.of(meta));
 
         User user = new User();
@@ -129,10 +129,10 @@ class ApplyServiceTest {
     }
 
     @Test
-    void 지원자가_4명_이상인_프로젝트는_4명_이상에게_우선순위를_매기면_제출할_수_있다() {
+    void 제1차_팀빌딩에서_지원자가_4명_이상인_프로젝트는_4명_이상에게_우선순위를_매기면_제출할_수_있다() {
         // given
         UserPrincipal principal = stubLeaderPrincipal();
-        Project project = stubLeaderContext(principal);
+        Project project = stubLeaderContext(principal, 1);
         stubApplicants(project, 5);
         RecruitmentDto request = new RecruitmentDto(
                 1L,
@@ -148,10 +148,10 @@ class ApplyServiceTest {
     }
 
     @Test
-    void 지원자가_4명_이상인_프로젝트에_3명_이하로만_우선순위를_매기면_예외가_발생한다() {
+    void 제1차_팀빌딩에서_지원자가_4명_이상인_프로젝트에_3명_이하로만_우선순위를_매기면_예외가_발생한다() {
         // given
         UserPrincipal principal = stubLeaderPrincipal();
-        Project project = stubLeaderContext(principal);
+        Project project = stubLeaderContext(principal, 1);
         stubApplicants(project, 5);
         RecruitmentDto request = new RecruitmentDto(
                 1L,
@@ -167,10 +167,10 @@ class ApplyServiceTest {
     }
 
     @Test
-    void 지원자가_4명_미만인_프로젝트는_전원에게_우선순위를_매기면_제출할_수_있다() {
+    void 제1차_팀빌딩에서_지원자가_4명_미만인_프로젝트는_전원에게_우선순위를_매기면_제출할_수_있다() {
         // given
         UserPrincipal principal = stubLeaderPrincipal();
-        Project project = stubLeaderContext(principal);
+        Project project = stubLeaderContext(principal, 1);
         stubApplicants(project, 3);
         RecruitmentDto request = new RecruitmentDto(
                 1L,
@@ -183,10 +183,10 @@ class ApplyServiceTest {
     }
 
     @Test
-    void 지원자가_4명_미만인_프로젝트에_일부만_우선순위를_매기면_예외가_발생한다() {
+    void 제1차_팀빌딩에서_지원자가_4명_미만인_프로젝트에_일부만_우선순위를_매기면_예외가_발생한다() {
         // given
         UserPrincipal principal = stubLeaderPrincipal();
-        Project project = stubLeaderContext(principal);
+        Project project = stubLeaderContext(principal, 1);
         stubApplicants(project, 3);
         RecruitmentDto request = new RecruitmentDto(
                 1L,
@@ -202,7 +202,7 @@ class ApplyServiceTest {
     void 모든_포지션의_capacity가_0이면_우선순위를_매기지_않아도_제출할_수_있다() {
         // given
         UserPrincipal principal = stubLeaderPrincipal();
-        Project project = stubLeaderContext(principal);
+        Project project = stubLeaderContext(principal, 1);
         stubApplicants(project, 5);
         RecruitmentDto request = new RecruitmentDto(
                 1L,
@@ -222,7 +222,7 @@ class ApplyServiceTest {
         return principal;
     }
 
-    private Project stubLeaderContext(UserPrincipal principal) {
+    private Project stubLeaderContext(UserPrincipal principal, int round) {
         User leader = new User();
         leader.setId(principal.getId());
         when(userRepository.findById(1L)).thenReturn(Optional.of(leader));
@@ -234,7 +234,7 @@ class ApplyServiceTest {
                 .build();
         when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
 
-        TeamBuildingMeta meta = new TeamBuildingMeta(null, SemesterGenerator.generateSemester(), TeamBuildingStatus.RECRUIT);
+        TeamBuildingMeta meta = new TeamBuildingMeta(null, SemesterGenerator.generateSemester(), TeamBuildingStatus.RECRUIT, round);
         when(teamBuildingMetaRepository.findBySemester(any())).thenReturn(Optional.of(meta));
 
         lenient().when(recruitRepository.save(any(ProjectRecruit.class)))
