@@ -6,6 +6,7 @@ import LoadingPage from "../components/LoadingPage";
 import wapsLogo from "../assets/img/waps_logo.png";
 import styles from "../assets/TeamBuildApply.module.css";
 import noticeIcon from "../assets/img/noticeIcon.svg";
+import noticeArrow from "../assets/img/noticeArrow.svg";
 
 const MAX_SELECTION = 5;
 const POSITION_OPTIONS = [
@@ -546,7 +547,7 @@ function TeamBuildApplyPage() {
                 isNoticeOpen ? styles.noticeArrowOpen : ""
               }`}
             >
-              ›
+              <img src={noticeArrow} alt="" aria-hidden="true" />
             </span>
           </button>
 

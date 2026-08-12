@@ -123,27 +123,74 @@
 }
 
 .notice {
-  width:100%;
-  align-items: stretch;
-  background: rgb(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.5);
   border-radius: 26px;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
-  margin-bottom: 20px;
-  backdrop-filter: blur(8px);
+  margin-bottom: 10px;
 }
 
-.noticeButton{
-  padding:20px 20px;
+.noticeButton {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
 }
 
-.noticeIcon {
-  width:20px;
-  height:20px;
-  object-fit : contain;
+.noticeIcon{
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 
 .noticeTitle {
-  display : flex;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+}
+
+.noticeArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.noticeArrow img {
+  display: block;
+  width: 15px;
+  height: 15px;
+}
+
+.noticeArrowOpen {
+  transform: rotate(90deg);
+}
+
+.noticeContent {
+  width: 100%;
+  padding: 0 20px 20px;
+  box-sizing: border-box;
+}
+
+.noticeContent p {
+  margin: 4px 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.notice {
+  flex-direction: column;
 }
 
 .stepGuide {
