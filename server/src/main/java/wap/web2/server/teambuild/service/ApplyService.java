@@ -41,6 +41,7 @@ import wap.web2.server.teambuild.repository.ProjectRecruitWishRepository;
 public class ApplyService {
 
     private static final int MIN_RANKING_APPLICANTS = 4;
+    private static final int MAX_APPLIES = 5;
 
     private final TeamBuildingMetaRepository teamBuildingMetaRepository;
     private final ProjectRecruitWishRepository recruitWishRepository;
@@ -57,6 +58,7 @@ public class ApplyService {
 
         User user = findUser(userPrincipal.getId());
         List<ApplyRequest> applies = request.getApplies();
+        validateApplyCount(applies);
         validateNoDuplicateApply(applies);
         int priority = 1;
 
@@ -187,6 +189,12 @@ public class ApplyService {
                     ? "2차 팀빌딩에서는 모든 지원자에게 우선순위를 매겨야 합니다."
                     : "지원자가 4명 이상인 프로젝트는 최소 4명 이상, 4명 미만인 프로젝트는 모든 지원자에게 우선순위를 매겨야 합니다.";
             throw new BadRequestException(message);
+        }
+    }
+
+    private void validateApplyCount(List<ApplyRequest> applies) {
+        if (applies.size() > MAX_APPLIES) {
+            throw new BadRequestException("직무 지원은 총 " + MAX_APPLIES + "개까지만 가능합니다.");
         }
     }
 
