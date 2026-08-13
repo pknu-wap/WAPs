@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -100,6 +101,96 @@ class ApplyServiceTest {
         List<ProjectApply> saved = captor.getAllValues();
         assertThat(saved).extracting(ProjectApply::getPriority)
                 .containsExactly(1, 2, 3); // 순서대로 증가했는지 체크
+    }
+
+    @Test
+    void 같은_프로젝트에_서로_다른_직무로_지원할_수_있다() {
+        // given
+        UserPrincipal principal = stubApplyPrincipal();
+        stubApplyContext(principal, 10L);
+
+        ProjectAppliesRequest request = new ProjectAppliesRequest(
+                List.of(
+                        new ApplyRequest(10L, Position.BACKEND.name(), "백엔드로 지원합니다."),
+                        new ApplyRequest(10L, Position.FRONTEND.name(), "프론트엔드로 지원합니다.")
+                )
+        );
+
+        // when
+        applyService.apply(principal, request);
+
+        // then
+        ArgumentCaptor<ProjectApply> captor = ArgumentCaptor.forClass(ProjectApply.class);
+        verify(applyRepository, times(2)).save(captor.capture());
+
+        List<ProjectApply> saved = captor.getAllValues();
+        assertThat(saved).extracting(ProjectApply::getPriority)
+                .containsExactly(1, 2);
+        assertThat(saved).extracting(ProjectApply::getPosition)
+                .containsExactly(Position.BACKEND, Position.FRONTEND);
+        assertThat(saved).extracting(apply -> apply.getProject().getProjectId())
+                .containsOnly(10L);
+        assertThat(saved).extracting(ProjectApply::getComment)
+                .containsExactly("백엔드로 지원합니다.", "프론트엔드로 지원합니다.");
+    }
+
+    @Test
+    void 같은_프로젝트에서_최대_5개_직무까지_지원할_수_있다() {
+        // given
+        UserPrincipal principal = stubApplyPrincipal();
+        stubApplyContext(principal, 10L);
+
+        List<Position> positions = List.of(
+                Position.FRONTEND,
+                Position.BACKEND,
+                Position.AI,
+                Position.DESIGN,
+                Position.APP
+        );
+        ProjectAppliesRequest request = new ProjectAppliesRequest(
+                positions.stream()
+                        .map(position -> new ApplyRequest(10L, position.name(), "지원합니다."))
+                        .toList()
+        );
+
+        // when
+        applyService.apply(principal, request);
+
+        // then
+        ArgumentCaptor<ProjectApply> captor = ArgumentCaptor.forClass(ProjectApply.class);
+        verify(applyRepository, times(5)).save(captor.capture());
+
+        List<ProjectApply> saved = captor.getAllValues();
+        assertThat(saved).extracting(ProjectApply::getPriority)
+                .containsExactly(1, 2, 3, 4, 5);
+        assertThat(saved).extracting(ProjectApply::getPosition)
+                .containsExactlyElementsOf(positions);
+        assertThat(saved).extracting(apply -> apply.getProject().getProjectId())
+                .containsOnly(10L);
+    }
+
+    @Test
+    void 같은_프로젝트에_같은_직무로_중복_지원하면_예외가_발생한다() {
+        // given
+        UserPrincipal principal = stubApplyPrincipal();
+        TeamBuildingMeta meta = new TeamBuildingMeta(null, SemesterGenerator.generateSemester(), TeamBuildingStatus.APPLY, 1);
+        when(teamBuildingMetaRepository.findBySemester(any())).thenReturn(Optional.of(meta));
+        User user = new User();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        lenient().when(projectRepository.findById(10L))
+                .thenReturn(Optional.of(Project.builder().projectId(10L).title("A").build()));
+
+        ProjectAppliesRequest request = new ProjectAppliesRequest(
+                List.of(
+                        new ApplyRequest(10L, Position.BACKEND.name(), "첫 번째 지원입니다."),
+                        new ApplyRequest(10L, Position.BACKEND.name(), "두 번째 지원입니다.")
+                )
+        );
+
+        // when & then
+        assertThatThrownBy(() -> applyService.apply(principal, request))
+                .isInstanceOf(BadRequestException.class);
+        verify(applyRepository, never()).save(any());
     }
 
     @Test
@@ -293,6 +384,28 @@ class ApplyServiceTest {
 
         lenient().when(applyRepository.findAllByProjectAndSemester(any(), any()))
                 .thenReturn(applies);
+    }
+
+    private UserPrincipal stubApplyPrincipal() {
+        UserPrincipal principal = mock(UserPrincipal.class);
+        when(principal.getId()).thenReturn(1L);
+        lenient().when(principal.getName()).thenReturn("tester");
+        return principal;
+    }
+
+    private Project stubApplyContext(UserPrincipal principal, Long projectId) {
+        TeamBuildingMeta meta = new TeamBuildingMeta(null, SemesterGenerator.generateSemester(), TeamBuildingStatus.APPLY, 1);
+        when(teamBuildingMetaRepository.findBySemester(any())).thenReturn(Optional.of(meta));
+
+        User user = new User();
+        when(userRepository.findById(principal.getId())).thenReturn(Optional.of(user));
+
+        Project project = Project.builder()
+                .projectId(projectId)
+                .title("A")
+                .build();
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        return project;
     }
 
 }
