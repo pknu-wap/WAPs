@@ -114,6 +114,14 @@ function TeamBuildApplyPage() {
   const [dragOverPlacement, setDragOverPlacement] = useState("before");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isNoticeOpen, setIsNoticeOpen] = useState(false);
+  const [projectApplications, setProjectApplications] = useState([]);
+  const [applicationModal, setApplicationModal] = useState(null);
+  const [projectFormPosition, setProjectFormPosition] = useState("");
+  const [projectFormMessage, setProjectFormMessage] = useState("");
+  const [cancelTarget, setCancelTarget] = useState(null);
+  const [applicationDraggingId, setApplicationDraggingId] = useState(null);
+  const [applicationDragOverId, setApplicationDragOverId] = useState(null);
+  const [applicationDragOverPlacement, setApplicationDragOverPlacement] = useState("before");
   //추가한 내용
 
   // useEffect(() => {
@@ -170,6 +178,7 @@ function TeamBuildApplyPage() {
         projectType: "WEB",
         summary: "사용자 경험을 혁신하는 웹 플랫폼 개발 프로젝트입니다.",
         techStack: ["React", "JavaScript"],
+        recruitPositions: ["FRONTEND", "BACKEND", "DESIGN"],
       },
       {
         projectId: 2,
@@ -177,6 +186,7 @@ function TeamBuildApplyPage() {
         projectType: "APP",
         summary: "데이터 기반 서비스를 구축하는 프로젝트입니다.",
         techStack: ["React Native", "Spring"],
+        recruitPositions: ["APP", "BACKEND", "DESIGN"],
       },
       {
         projectId: 3,
@@ -184,6 +194,7 @@ function TeamBuildApplyPage() {
         projectType: "GAME",
         summary: "새로운 게임 서비스를 개발하는 프로젝트입니다.",
         techStack: ["Unity", "C#"],
+        recruitPositions: ["GAME", "BACKEND", "DESIGN"],
       },
     ]);
 
@@ -241,6 +252,139 @@ function TeamBuildApplyPage() {
   const isAllProjectTypes = selectedProjectTypes.length === 0;
 
   const getPositionLabel = (value) => POSITION_LABELS[value] || value;
+
+  const openProjectApplication = (project, application = null) => {
+    if (!application && projectApplications.length >= MAX_SELECTION) {
+      alert(`지원서는 최대 ${MAX_SELECTION}개까지 작성할 수 있습니다.`);
+      return;
+    }
+    setApplicationModal({ project, application });
+    setProjectFormPosition(application?.position || "");
+    setProjectFormMessage(application?.message || "");
+  };
+
+  const closeProjectApplication = () => {
+    setApplicationModal(null);
+    setProjectFormPosition("");
+    setProjectFormMessage("");
+  };
+
+  const saveProjectApplication = () => {
+    if (!projectFormPosition) {
+      alert("지원 직무를 선택해주세요.");
+      return;
+    }
+    if (!projectFormMessage.trim()) {
+      alert("자기소개 및 PR 메시지를 작성해주세요.");
+      return;
+    }
+
+    const { project, application } = applicationModal;
+    const isDuplicate = projectApplications.some(
+      (item) => item.projectId === project.projectId &&
+        item.position === projectFormPosition && item.id !== application?.id
+    );
+    if (isDuplicate) {
+      alert("이미 이 프로젝트의 같은 직무에 지원했습니다.");
+      return;
+    }
+
+    if (application) {
+      setProjectApplications((prev) => prev.map((item) =>
+        item.id === application.id
+          ? { ...item, position: projectFormPosition, message: projectFormMessage.trim() }
+          : item
+      ));
+    } else {
+      setProjectApplications((prev) => [...prev, {
+        id: `${project.projectId}-${Date.now()}`,
+        projectId: project.projectId,
+        projectTitle: project.title,
+        position: projectFormPosition,
+        message: projectFormMessage.trim(),
+      }]);
+    }
+    closeProjectApplication();
+  };
+
+  const cancelProjectApplication = () => {
+    if (!cancelTarget) return;
+    setProjectApplications((prev) => prev.filter((item) => item.id !== cancelTarget.id));
+    setCancelTarget(null);
+  };
+
+  const handleApplicationDragStart = (applicationId) => (event) => {
+    setApplicationDraggingId(applicationId);
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", String(applicationId));
+  };
+
+  const handleApplicationDragOver = (applicationId) => (event) => {
+    if (!applicationDraggingId || applicationDraggingId === applicationId) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    const rect = event.currentTarget.getBoundingClientRect();
+    setApplicationDragOverPlacement(
+      event.clientY - rect.top > rect.height / 2 ? "after" : "before"
+    );
+    setApplicationDragOverId(applicationId);
+  };
+
+  const handleApplicationDrop = (targetId) => (event) => {
+    event.preventDefault();
+    if (!applicationDraggingId || applicationDraggingId === targetId) return;
+
+    setProjectApplications((prev) => {
+      const applicationById = new Map(prev.map((application) => [application.id, application]));
+      return reorderProjectIds(
+        prev.map((application) => application.id),
+        applicationDraggingId,
+        targetId,
+        applicationDragOverPlacement
+      ).map((id) => applicationById.get(id));
+    });
+    setApplicationDragOverId(null);
+    setApplicationDragOverPlacement("before");
+  };
+
+  const handleApplicationDragEnd = () => {
+    setApplicationDraggingId(null);
+    setApplicationDragOverId(null);
+    setApplicationDragOverPlacement("before");
+  };
+
+  const submitProjectApplications = async () => {
+    if (projectApplications.length < 3) return;
+
+    const confirmMessage =
+      `다음 우선순위로 ${projectApplications.length}개의 지원서를 최종 제출하시겠습니까?\n\n` +
+      projectApplications
+        .map(
+          (application, index) =>
+            `${index + 1}순위: ${application.projectTitle} (${getPositionLabel(application.position)})`
+        )
+        .join("\n");
+
+    if (!window.confirm(confirmMessage)) return;
+
+    const applies = projectApplications.map((application) => ({
+      projectId: application.projectId,
+      position: application.position,
+      comment: application.message,
+    }));
+
+    setIsSubmitting(true);
+    try {
+      await teamBuildApi.submitApply({ applies });
+      alert("지원서가 우선순위대로 최종 제출되었습니다.");
+      setHasApplied(true);
+      navigate(-1);
+    } catch (err) {
+      alert(formatApiError(err, "지원서 제출 중 오류가 발생했습니다."));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const getPreviewText = (text, maxLength = 120) => {
     if (!text) return "";
@@ -522,12 +666,6 @@ function TeamBuildApplyPage() {
           </div>
         </div>
 
-        <div className={styles.backRow}>
-          <button type="button" className={styles.backButton} onClick={() => navigate(-1)}>
-            <span className={styles.backArrow}>←</span> 뒤로가기
-          </button>
-        </div>
-
         <div className={styles.notice}>
           <button
             type="button"
@@ -562,25 +700,152 @@ function TeamBuildApplyPage() {
 
         <section className={styles.myApply}>
           <div className={styles.myApplyHeader}>
-            <h2>내 지원서</h2>
-
-            <div className={styles.myApplyCount}>
-              <span className={styles.currentCount}>0</span>
-              <span>/</span>
-              <span>5</span>
+            <div className={styles.myApplyTitle}>
+              <div className={styles.myApplyTitleRow}>
+                <h2>내 지원서</h2>
+                <div className={styles.myApplyCount}>
+                  <span className={styles.currentCount}>{projectApplications.length}</span>
+                  <span>/</span>
+                  <span>5</span>
+                </div>
+              </div>
+              <p>지원한 프로젝트를 한눈에 확인하고, 우선순위를 조정하세요</p>
+              <p>(우선순위는 드래그로 조정이 가능합니다)</p>
             </div>
           </div>
 
-          <div className={styles.emptyApply}>
-            <img
-              src={emptyFolder}
-              alt=""
-              className={styles.emptyFolder}
-            />
+          {projectApplications.length === 0 ? (
+            <div className={styles.emptyApply}>
+              <img src={emptyFolder} alt="" className={styles.emptyFolder} />
+              <p>아직 지원한 프로젝트가 없습니다</p>
+            </div>
+          ) : (
+            <>
+              <div className={styles.myApplicationList}>
+                {projectApplications.map((application, index) => {
+                const isDropTarget =
+                  applicationDragOverId === application.id &&
+                  applicationDraggingId !== application.id;
+                const dropPlacementClass = isDropTarget
+                  ? applicationDragOverPlacement === "after"
+                    ? styles.dropAfter
+                    : styles.dropBefore
+                  : "";
 
-            <p>아직 지원한 프로젝트가 없습니다</p>
+                return (
+                <div
+                  key={application.id}
+                  className={`${styles.myApplicationItem} ${
+                    applicationDraggingId === application.id ? styles.dragging : ""
+                  } ${isDropTarget ? styles.dragOver : ""} ${dropPlacementClass}`}
+                  draggable
+                  onDragStart={handleApplicationDragStart(application.id)}
+                  onDragEnd={handleApplicationDragEnd}
+                  onDragOver={handleApplicationDragOver(application.id)}
+                  onDrop={handleApplicationDrop(application.id)}
+                >
+                  <div className={`${styles.priorityNumber} ${styles.myApplicationPriorityNumber}`}>
+                    {index + 1}
+                  </div>
+                  <div className={styles.myApplicationName}>
+                    <span>{application.projectTitle}</span>
+                    <span>·</span>
+                    <strong>{getPositionLabel(application.position)}</strong>
+                  </div>
+                  <span className={styles.dragHandle}>⋮⋮</span>
+                  <button
+                    type="button"
+                    className={styles.cancelApplicationButton}
+                    onClick={() => setCancelTarget(application)}
+                  >
+                    지원 취소
+                  </button>
+                </div>
+                );
+                })}
+              </div>
+              {projectApplications.length >= 3 && (
+                <button
+                  type="button"
+                  className={`${styles.modifyApplicationButton} ${styles.finalSubmitButton}`}
+                  onClick={submitProjectApplications}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "제출 중..." : "최종 제출하기"}
+                </button>
+              )}
+            </>
+          )}
+        </section>
+
+        <section className={styles.availableSection}>
+          <div className={styles.availableHeader}>
+            <div>
+              <h2>지원가능한 프로젝트</h2>
+              <p></p>
+            </div>
+          </div>
+
+          <div className={styles.availableProjectList}>
+            {projects.map((project) => {
+              const applications = projectApplications.filter(
+                (item) => item.projectId === project.projectId
+              );
+              return (
+                <article
+                  key={project.projectId}
+                  className={styles.applicationProjectCard}
+                >
+                  <div className={styles.applicationProjectTop}>
+                    <div>
+                      <h3>{project.title}</h3>
+                      <p>{project.summary}</p>
+                    </div>
+                    {applications.length > 0 && <span className={styles.appliedMark}></span>}
+                  </div>
+                  <div className={styles.recruitBlock}>
+                    <div className={styles.recruitPositions}>
+                      {project.recruitPositions.map((position) => (
+                        <span
+                          key={position}
+                          className={`${styles.recruitPosition} ${
+                            applications.some((item) => item.position === position)
+                              ? styles.recruitPositionApplied : ""
+                          }`}
+                        >
+                          {getPositionLabel(position)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={styles.applicationActions}>
+                    {applications.map((application) => (
+                      <button
+                        key={application.id}
+                        type="button"
+                        className={styles.modifyApplicationButton}
+                        onClick={() => openProjectApplication(project, application)}
+                      >
+                        지원서 수정하기 ({getPositionLabel(application.position)})
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      className={applications.length
+                        ? styles.addApplicationButton : styles.writeApplicationButton}
+                      onClick={() => openProjectApplication(project)}
+                      disabled={projectApplications.length >= MAX_SELECTION}
+                    >
+                      {applications.length ? "+ 지원서 추가 작성하기" : "지원서 작성하기"}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </section>
+
+        <div className={styles.existingFormLabel}>기존 지원서 작성 박스</div>
 
         <section className={styles.stepStack} aria-label="지원 단계">
           <section
@@ -985,6 +1250,93 @@ function TeamBuildApplyPage() {
           </section>
         </section>
       </div>
+      {applicationModal && (
+        <div className={styles.applicationModal} onMouseDown={closeProjectApplication}>
+          <div
+            className={styles.applicationModalContent}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="project-application-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className={styles.applicationModalClose}
+              onClick={closeProjectApplication}
+              aria-label="지원서 닫기"
+            >
+              ×
+            </button>
+            <h2 id="project-application-title">{applicationModal.project.title} 지원서</h2>
+            <p className={styles.applicationModalDescription}>
+              이 지원서로 {applicationModal.project.title}에 지원하게 됩니다.
+            </p>
+            <div className={styles.formGroup}>
+              <label htmlFor="projectPosition">지원 직무</label>
+              <select
+                id="projectPosition"
+                value={projectFormPosition}
+                onChange={(event) => setProjectFormPosition(event.target.value)}
+              >
+                <option value="">직무를 선택해주세요</option>
+                {applicationModal.project.recruitPositions.map((position) => (
+                  <option key={position} value={position}>{getPositionLabel(position)}</option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="projectMessage">자기소개 및 PR 메시지</label>
+              <textarea
+                id="projectMessage"
+                value={projectFormMessage}
+                onChange={(event) => setProjectFormMessage(event.target.value.slice(0, 255))}
+                maxLength={255}
+                placeholder="자신의 경험과 프로젝트에 기여할 수 있는 부분을 작성해주세요."
+              />
+              <div className={styles.characterCount}>{projectFormMessage.length} / 255</div>
+            </div>
+            <button type="button" className={styles.modalSubmit} onClick={saveProjectApplication}>
+              지원서 저장하기
+            </button>
+          </div>
+        </div>
+      )}
+      {cancelTarget && (
+        <div className={styles.applicationModal} onMouseDown={() => setCancelTarget(null)}>
+          <div
+            className={`${styles.applicationModalContent} ${styles.cancelModalContent}`}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="cancel-application-title"
+            aria-describedby="cancel-application-description"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <h2 id="cancel-application-title">정말 지원을 취소하시겠습니까?</h2>
+            <p id="cancel-application-description" className={styles.cancelModalDescription}>
+              <strong>{cancelTarget.projectTitle}</strong>
+              <span>·</span>
+              <strong>{getPositionLabel(cancelTarget.position)}</strong>
+            </p>
+            <p className={styles.cancelWarning}>취소한 지원서는 복구할 수 없습니다.</p>
+            <div className={styles.cancelModalActions}>
+              <button
+                type="button"
+                className={styles.keepApplicationButton}
+                onClick={() => setCancelTarget(null)}
+              >
+                돌아가기
+              </button>
+              <button
+                type="button"
+                className={styles.confirmCancelButton}
+                onClick={cancelProjectApplication}
+              >
+                지원 취소하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
