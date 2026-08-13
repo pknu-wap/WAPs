@@ -3,7 +3,9 @@ package wap.web2.server.teambuild.service;
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -55,6 +57,7 @@ public class ApplyService {
 
         User user = findUser(userPrincipal.getId());
         List<ApplyRequest> applies = request.getApplies();
+        validateNoDuplicateApply(applies);
         int priority = 1;
 
         for (ApplyRequest applyRequest : applies) {
@@ -184,6 +187,16 @@ public class ApplyService {
                     ? "2차 팀빌딩에서는 모든 지원자에게 우선순위를 매겨야 합니다."
                     : "지원자가 4명 이상인 프로젝트는 최소 4명 이상, 4명 미만인 프로젝트는 모든 지원자에게 우선순위를 매겨야 합니다.";
             throw new BadRequestException(message);
+        }
+    }
+
+    private void validateNoDuplicateApply(List<ApplyRequest> applies) {
+        Set<String> keys = new HashSet<>();
+        for (ApplyRequest apply : applies) {
+            String key = apply.getProjectId() + ":" + apply.getPosition();
+            if (!keys.add(key)) {
+                throw new BadRequestException("같은 프로젝트에 같은 직무로는 중복 지원할 수 없습니다.");
+            }
         }
     }
 
