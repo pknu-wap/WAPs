@@ -170,6 +170,67 @@ class ApplyServiceTest {
     }
 
     @Test
+    void 여러_프로젝트에_걸쳐_총_5개_직무까지_지원할_수_있다() {
+        // given
+        UserPrincipal principal = stubApplyPrincipal();
+        stubApplyContext(principal, 10L);
+        stubApplyContext(principal, 20L);
+
+        ProjectAppliesRequest request = new ProjectAppliesRequest(
+                List.of(
+                        new ApplyRequest(10L, Position.FRONTEND.name(), "지원합니다."),
+                        new ApplyRequest(10L, Position.BACKEND.name(), "지원합니다."),
+                        new ApplyRequest(10L, Position.AI.name(), "지원합니다."),
+                        new ApplyRequest(20L, Position.DESIGN.name(), "지원합니다."),
+                        new ApplyRequest(20L, Position.APP.name(), "지원합니다.")
+                )
+        );
+
+        // when
+        applyService.apply(principal, request);
+
+        // then
+        ArgumentCaptor<ProjectApply> captor = ArgumentCaptor.forClass(ProjectApply.class);
+        verify(applyRepository, times(5)).save(captor.capture());
+
+        List<ProjectApply> saved = captor.getAllValues();
+        assertThat(saved).extracting(ProjectApply::getPriority)
+                .containsExactly(1, 2, 3, 4, 5);
+        assertThat(saved).extracting(apply -> apply.getProject().getProjectId())
+                .containsExactly(10L, 10L, 10L, 20L, 20L);
+    }
+
+    @Test
+    void 여러_프로젝트에_걸쳐_총_6개_직무에_지원하면_예외가_발생한다() {
+        // given
+        UserPrincipal principal = stubApplyPrincipal();
+        TeamBuildingMeta meta = new TeamBuildingMeta(null, SemesterGenerator.generateSemester(), TeamBuildingStatus.APPLY, 1);
+        when(teamBuildingMetaRepository.findBySemester(any())).thenReturn(Optional.of(meta));
+        User user = new User();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        lenient().when(projectRepository.findById(10L))
+                .thenReturn(Optional.of(Project.builder().projectId(10L).title("A").build()));
+        lenient().when(projectRepository.findById(20L))
+                .thenReturn(Optional.of(Project.builder().projectId(20L).title("B").build()));
+
+        ProjectAppliesRequest request = new ProjectAppliesRequest(
+                List.of(
+                        new ApplyRequest(10L, Position.FRONTEND.name(), "지원합니다."),
+                        new ApplyRequest(10L, Position.BACKEND.name(), "지원합니다."),
+                        new ApplyRequest(10L, Position.AI.name(), "지원합니다."),
+                        new ApplyRequest(20L, Position.DESIGN.name(), "지원합니다."),
+                        new ApplyRequest(20L, Position.APP.name(), "지원합니다."),
+                        new ApplyRequest(20L, Position.GAME.name(), "지원합니다.")
+                )
+        );
+
+        // when & then
+        assertThatThrownBy(() -> applyService.apply(principal, request))
+                .isInstanceOf(BadRequestException.class);
+        verify(applyRepository, never()).save(any());
+    }
+
+    @Test
     void 같은_프로젝트에_같은_직무로_중복_지원하면_예외가_발생한다() {
         // given
         UserPrincipal principal = stubApplyPrincipal();
