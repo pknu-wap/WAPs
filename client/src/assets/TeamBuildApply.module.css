@@ -1562,10 +1562,15 @@
 
 .cancelModalContent {
   width: min(420px, 100%);
+  border-color: #ffffff51;
+  background: #ffffff11;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   text-align: center;
 }
 
 .cancelModalContent h2 { margin: 0 0 14px; font-size: 19px; font-weight: 600; }
+.cancelModalContent > .applicationModalClose + h2 { margin-right: 38px; margin-left: 38px; }
 
 .cancelModalDescription {
   display: flex;
@@ -1584,7 +1589,43 @@
   font-size: 12px;
 }
 
+.submitApplicationList {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.submitApplicationList li {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
+  background: rgba(255,255,255,.06);
+  font-size: 13px;
+}
+
+.submitApplicationPriority { color: #a9cdf6; font-weight: 700; }
+.submitApplicationProject { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.submitApplicationTeam {
+  padding: 4px 7px;
+  border: 1px solid rgba(169, 205, 246, .42);
+  border-radius: 999px;
+  background: rgba(169, 205, 246, .14);
+  color: #cfe4ff;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.submitApplicationList strong { color: rgba(255,255,255,.72); font-size: 12px; }
+
 .cancelModalActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.submitModalActions { grid-template-columns: 1fr; }
 .keepApplicationButton, .confirmCancelButton {
   padding: 12px 14px;
   border-radius: 12px;
@@ -1603,6 +1644,12 @@
   border: 1px solid rgba(255, 126, 126, .45);
   background: rgba(216, 92, 92, .18);
   color: #ffb3b3;
+}
+
+.confirmSubmitButton {
+  border-color: rgba(169, 205, 246, .65);
+  background: rgba(169, 205, 246, .24);
+  color: #dcecff;
 }
 
 @media (max-width: 640px) {

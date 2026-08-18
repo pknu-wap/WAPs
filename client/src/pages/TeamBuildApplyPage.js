@@ -119,6 +119,7 @@ function TeamBuildApplyPage() {
   const [projectFormPosition, setProjectFormPosition] = useState("");
   const [projectFormMessage, setProjectFormMessage] = useState("");
   const [cancelTarget, setCancelTarget] = useState(null);
+  const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
   const [applicationDraggingId, setApplicationDraggingId] = useState(null);
   const [applicationDragOverId, setApplicationDragOverId] = useState(null);
   const [applicationDragOverPlacement, setApplicationDragOverPlacement] = useState("before");
@@ -253,6 +254,18 @@ function TeamBuildApplyPage() {
 
   const getPositionLabel = (value) => POSITION_LABELS[value] || value;
 
+  const getProjectTeamLabel = (projectId) => {
+    const project = projectsById.get(projectId);
+    if (!project) return "";
+
+    const projectType = normalizeProjectType(readProjectType(project));
+    const teamNumber = projects
+      .filter((item) => normalizeProjectType(readProjectType(item)) === projectType)
+      .findIndex((item) => item.projectId === projectId) + 1;
+
+    return `${projectType} ${teamNumber || 1}`;
+  };
+
   const openProjectApplication = (project, application = null) => {
     if (!application && projectApplications.length >= MAX_SELECTION) {
       alert(`지원서는 최대 ${MAX_SELECTION}개까지 작성할 수 있습니다.`);
@@ -356,16 +369,11 @@ function TeamBuildApplyPage() {
   const submitProjectApplications = async () => {
     if (projectApplications.length < 3) return;
 
-    const confirmMessage =
-      `다음 우선순위로 ${projectApplications.length}개의 지원서를 최종 제출하시겠습니까?\n\n` +
-      projectApplications
-        .map(
-          (application, index) =>
-            `${index + 1}순위: ${application.projectTitle} (${getPositionLabel(application.position)})`
-        )
-        .join("\n");
+    setIsSubmitConfirmOpen(true);
+  };
 
-    if (!window.confirm(confirmMessage)) return;
+  const confirmProjectApplications = async () => {
+    if (projectApplications.length < 3 || isSubmitting) return;
 
     const applies = projectApplications.map((application) => ({
       projectId: application.projectId,
@@ -376,6 +384,7 @@ function TeamBuildApplyPage() {
     setIsSubmitting(true);
     try {
       await teamBuildApi.submitApply({ applies });
+      setIsSubmitConfirmOpen(false);
       alert("지원서가 우선순위대로 최종 제출되었습니다.");
       setHasApplied(true);
       navigate(-1);
@@ -1311,7 +1320,7 @@ function TeamBuildApplyPage() {
             aria-describedby="cancel-application-description"
             onMouseDown={(event) => event.stopPropagation()}
           >
-            <h2 id="cancel-application-title">정말 지원을 취소하시겠습니까?</h2>
+            <h2 id="cancel-application-title">지원을 취소하시겠습니까?</h2>
             <p id="cancel-application-description" className={styles.cancelModalDescription}>
               <strong>{cancelTarget.projectTitle}</strong>
               <span>·</span>
@@ -1332,6 +1341,55 @@ function TeamBuildApplyPage() {
                 onClick={cancelProjectApplication}
               >
                 지원 취소하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isSubmitConfirmOpen && (
+        <div
+          className={styles.applicationModal}
+          onMouseDown={() => !isSubmitting && setIsSubmitConfirmOpen(false)}
+        >
+          <div
+            className={`${styles.applicationModalContent} ${styles.cancelModalContent}`}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="submit-application-title"
+            aria-describedby="submit-application-description"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className={styles.applicationModalClose}
+              onClick={() => setIsSubmitConfirmOpen(false)}
+              disabled={isSubmitting}
+              aria-label="최종 제출 확인창 닫기"
+            >
+              ×
+            </button>
+            <h2 id="submit-application-title">지원을 최종 제출하시겠습니까?</h2>
+            <ol id="submit-application-description" className={styles.submitApplicationList}>
+              {projectApplications.map((application, index) => (
+                <li key={application.id}>
+                  <span className={styles.submitApplicationPriority}>{index + 1}순위</span>
+                  <span className={styles.submitApplicationProject}>{application.projectTitle}</span>
+                  <span className={styles.submitApplicationTeam}>
+                    {getProjectTeamLabel(application.projectId)}
+                  </span>
+                  <strong>{getPositionLabel(application.position)}</strong>
+                </li>
+              ))}
+            </ol>
+            <p className={styles.cancelWarning}>제출 이후 지원서와 우선순위 수정이 불가능합니다.</p>
+            <div className={`${styles.cancelModalActions} ${styles.submitModalActions}`}>
+              <button
+                type="button"
+                className={`${styles.confirmCancelButton} ${styles.confirmSubmitButton}`}
+                onClick={confirmProjectApplications}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "제출 중..." : "최종 제출하기"}
               </button>
             </div>
           </div>
