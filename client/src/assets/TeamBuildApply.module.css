@@ -79,7 +79,7 @@
 
 .hero {
   text-align: center;
-  margin-bottom: 22px;
+  margin-bottom: 42px;
 }
 
 .heroTitle {
@@ -177,6 +177,10 @@
   backdrop-filter: blur(8px);
 }
 
+.completedApply {
+  margin-top: 120px;
+}
+
 .myApplyHeader {
   display: block;
 }
@@ -211,17 +215,23 @@
 }
 
 .myApplyCount {
-  display: flex;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 14px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.55);
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  font-weight: 800;
   margin-top: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.currentCount {
-  color: #a9cdf6;
+.myApplyCountActive {
+  background: #9ed0ff;
+  color: #000000;
 }
 
 .emptyApply {
@@ -233,10 +243,10 @@
 }
 
 .emptyFolder {
-  width: 200px;
+  width: 120px;
   height: auto;
   object-fit: contain;
-  opacity: 0.85;
+  opacity: 0.3;
   margin-top: 20px;
 }
 
@@ -1048,6 +1058,13 @@
   background-size: 14px 9px;
 }
 
+.formGroup select:focus,
+.formGroup select:focus-visible {
+  outline: none;
+  border-color: #9ed0ff;
+  box-shadow: 0 0 0 3px rgba(158, 208, 255, 0.16);
+}
+
 .formGroup textarea {
   min-height: 140px;
   resize: none;
@@ -1376,25 +1393,38 @@
 .myApplicationPriorityNumber {
   flex-shrink: 0;
   align-self: center;
-  background: rgba(255, 255, 255, 0.1);
-  font-weight: 400;
+  background: transparent;
+  color: #9ed0ff;
+  font-weight: 800;
 }
 
 .cancelApplicationButton {
   flex-shrink: 0;
-  padding: 7px 11px;
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  border-radius: 999px;
-  background: rgba(135, 135, 135, 0.13);
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
   cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
 }
 
 .cancelApplicationButton:hover {
-  border-color: rgba(112, 181, 255, .78);
-  background: rgba(214, 234, 255, 0.196);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.cancelApplicationButton:focus-visible {
+  outline: 2px solid rgba(169, 205, 246, 0.8);
+  outline-offset: 2px;
 }
 
 .availableSection {
@@ -1430,9 +1460,54 @@
 .applicationProjectTop { display: flex; justify-content: space-between; gap: 14px; }
 .applicationProjectTop h3 { margin: 0 0 7px; font-size: 20px; }
 .applicationProjectTop p { margin: 0; color: rgba(255,255,255,.63); font-size: 13px; }
+.applicationProjectTitleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 7px;
+}
+.applicationProjectTitleRow h3 { margin: 0; }
 .appliedMark { color: #9ed0ff; font-size: 12px; font-weight: 800; white-space: nowrap; }
-.recruitBlock { margin: 17px 0; }
+.recruitBlock {
+  margin: 17px 0;
+}
 .recruitPositions { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.projectTeamBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 5px 7px;
+  /* border: 1px solid currentColor; */
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.projectTeamBadgeWEB {
+  background: rgba(158, 208, 255, 0.078);
+  color: #9ed0ff90;
+}
+
+.projectTeamBadgeAPP {
+  background: rgba(255, 132, 132, 0.084);
+  color: #ffaaaa85;
+}
+
+.projectTeamBadgeGAME{
+  background: rgba(118, 218, 156, 0.087);
+  color: #8de3ae7b;
+}
+
+.projectTeamBadgeOTHER,
+.projectTeamBadgeEMBEDDED {
+  background: rgba(255, 210, 105, 0.057);
+  color: #ffd2697a;
+}
 
 .recruitPosition {
   padding: 6px 11px;
@@ -1591,7 +1666,7 @@
 
 .submitApplicationList {
   display: grid;
-  gap: 8px;
+  gap: 0;
   margin: 0 0 14px;
   padding: 0;
   list-style: none;
@@ -1599,32 +1674,37 @@
 }
 
 .submitApplicationList li {
-  display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) auto auto;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 8px;
-  padding: 10px 12px;
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 10px;
-  background: rgba(255,255,255,.06);
-  font-size: 13px;
+  min-width: 0;
+  padding: 10px 0;
+  font-size: 14px;
 }
 
-.submitApplicationPriority { color: #a9cdf6; font-weight: 700; }
-.submitApplicationProject { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.submitApplicationTeam {
-  padding: 4px 7px;
-  border: 1px solid rgba(169, 205, 246, .42);
-  border-radius: 999px;
-  background: rgba(169, 205, 246, .14);
-  color: #cfe4ff;
-  font-size: 11px;
+.submitApplicationPriority {
+  flex-shrink: 0;
+  color: #9ed0ff;
   font-weight: 800;
-  white-space: nowrap;
 }
-.submitApplicationList strong { color: rgba(255,255,255,.72); font-size: 12px; }
+.submitApplicationProject {
+  color: #ffffff;
+  font-weight: 700;
+}
+.submitApplicationPosition {
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 400;
+}
 
-.cancelModalActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cancelModalActions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+  gap: 10px;
+}
 .submitModalActions { grid-template-columns: 1fr; }
 .keepApplicationButton, .confirmCancelButton {
   padding: 12px 14px;
@@ -1641,15 +1721,42 @@
 }
 
 .confirmCancelButton {
-  border: 1px solid rgba(255, 126, 126, .45);
-  background: rgba(216, 92, 92, .18);
-  color: #ffb3b3;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 1px solid #9ed0ff;
+  background: #9ed0ff;
+  color: #000000;
+  font-size: 15px;
+  font-weight: 700;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.confirmCancelButton:hover {
+  background: #b5dcff;
+  border-color: #b5dcff;
 }
 
 .confirmSubmitButton {
   border-color: rgba(169, 205, 246, .65);
   background: rgba(169, 205, 246, .24);
   color: #dcecff;
+}
+
+.confirmSubmitButton:not(:disabled):hover {
+  border-color: rgba(169, 205, 246, 0.82);
+  background: rgba(169, 205, 246, 0.34);
+  color: #ffffff;
+}
+
+.confirmSubmitButton:disabled,
+.confirmSubmitButton:disabled:hover {
+  border-color: rgba(169, 205, 246, 0.45);
+  background: rgba(169, 205, 246, 0.18);
+  color: rgba(220, 236, 255, 0.65);
+  cursor: wait;
 }
 
 @media (max-width: 640px) {
