@@ -175,8 +175,9 @@ public class ApplyService {
                 .map(apply -> apply.getUser().getId())
                 .distinct()
                 .count();
+
         long minRequired = round >= 2
-                ? totalApplicants
+                ? 0
                 : Math.min(totalApplicants, MIN_RANKING_APPLICANTS);
 
         long rankedCount = roasters.stream()
@@ -185,9 +186,7 @@ public class ApplyService {
                 .distinct()
                 .count();
         if (rankedCount < minRequired) {
-            String message = round >= 2
-                    ? "2차 팀빌딩에서는 모든 지원자에게 우선순위를 매겨야 합니다."
-                    : "지원자가 4명 이상인 프로젝트는 최소 4명 이상, 4명 미만인 프로젝트는 모든 지원자에게 우선순위를 매겨야 합니다.";
+            String message = "지원자가 4명 이상인 프로젝트는 최소 4명 이상, 4명 미만인 프로젝트는 모든 지원자에게 우선순위를 매겨야 합니다.";
             throw new BadRequestException(message);
         }
     }
