@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +25,7 @@ public class AzureStorageService implements ObjectStorageService {
     private static final long MAX_FILE_SIZE = 100L * 1024 * 1024;
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif", "webp", "bmp");
 
-    private final ObjectProvider<BlobContainerClient> blobContainerClientProvider;
+    private final BlobContainerClient blobContainerClient;
 
     @Override
     public List<String> uploadImages(
@@ -58,11 +57,7 @@ public class AzureStorageService implements ObjectStorageService {
                 dirName, semester, projectName, imageType, originalFileName
         );
 
-        if (getBlobContainerClient() == null) {
-            throw new IllegalStateException("[ERROR] Azure Storage 연결 정보가 설정되지 않았습니다.");
-        }
-
-        BlobClient blobClient = getBlobContainerClient().getBlobClient(blobName);
+        BlobClient blobClient = blobContainerClient.getBlobClient(blobName);
 
         BlobHttpHeaders headers = new BlobHttpHeaders().setContentType(imageFile.getContentType());
         blobClient.uploadWithResponse(
@@ -77,18 +72,12 @@ public class AzureStorageService implements ObjectStorageService {
 
     @Override
     public void deleteImage(String imageUrl) {
-        if (getBlobContainerClient() == null) {
-            throw new IllegalStateException("[ERROR] Azure Storage 연결 정보가 설정되지 않았습니다.");
-        }
         String blobName = extractBlobNameFromUrl(imageUrl);
-        getBlobContainerClient().getBlobClient(blobName).delete();
+        blobContainerClient.getBlobClient(blobName).delete();
     }
 
     @Override
     public boolean supports(String imageUrl) {
-        if (getBlobContainerClient() == null) {
-            return false;
-        }
         try {
             extractBlobNameFromUrl(imageUrl);
             return true;
@@ -128,16 +117,12 @@ public class AzureStorageService implements ObjectStorageService {
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 Azure Blob URL: " + url);
         }
 
-        String containerPrefix = "/" + getBlobContainerClient().getBlobContainerName() + "/";
+        String containerPrefix = "/" + blobContainerClient.getBlobContainerName() + "/";
         if (!path.startsWith(containerPrefix)) {
             throw new IllegalArgumentException("[ERROR] 올바르지 않은 Azure Blob URL: " + url);
         }
 
         return path.substring(containerPrefix.length());
-    }
-
-    private BlobContainerClient getBlobContainerClient() {
-        return blobContainerClientProvider.getIfAvailable();
     }
 
     private String getOriginalFileName(MultipartFile multipartFile) {
