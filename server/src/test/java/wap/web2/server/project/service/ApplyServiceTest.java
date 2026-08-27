@@ -201,6 +201,30 @@ class ApplyServiceTest {
     }
 
     @Test
+    void priority가_1인_지원의_position이_주요_직무로_동기화된다() {
+        // given
+        UserPrincipal principal = stubApplyPrincipal();
+        stubApplyContext(principal, 10L);
+        stubApplyContext(principal, 20L);
+
+        User user = new User();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        ProjectAppliesRequest request = new ProjectAppliesRequest(
+                List.of(
+                        new ApplyRequest(10L, Position.AI.name(), "AI로 우선 지원"),
+                        new ApplyRequest(20L, Position.BACKEND.name(), "백엔드로도 지원")
+                )
+        );
+
+        // when
+        applyService.apply(principal, request);
+
+        // then
+        assertThat(user.getPrimaryPosition()).isEqualTo(Position.AI);
+    }
+
+    @Test
     void 여러_프로젝트에_걸쳐_총_6개_직무에_지원하면_예외가_발생한다() {
         // given
         UserPrincipal principal = stubApplyPrincipal();
