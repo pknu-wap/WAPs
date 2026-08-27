@@ -76,6 +76,8 @@ public class ApplyService {
                             .build()
             );
         }
+
+        user.setPrimaryPosition(parsePosition(applies.get(0).getPosition()));
     }
 
     @Transactional(readOnly = true)
