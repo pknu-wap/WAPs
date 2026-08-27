@@ -54,12 +54,16 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew bootJar -x test --no-daemon
 
-      - name: Prepare Swagger UI assets
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch swagger-ui-dist via npm
         run: |
+          npm install swagger-ui-dist@5.29.5 --no-audit --no-fund
           mkdir -p site
-          curl -fsSL -o swagger-ui.zip \
-            https://github.com/swagger-api/swagger-ui/releases/download/v5.17.14/swagger-ui-dist.zip
-          unzip -q swagger-ui.zip -d swagger-ui-dist
+          cp -r node_modules/swagger-ui-dist/. site/
 
       - name: Start Spring Boot server
         env:
@@ -89,12 +93,11 @@ jobs:
           tail -n 200 app.log
           exit 1
 
-      - name: Fetch OpenAPI spec and bundle Swagger UI
+      - name: Fetch OpenAPI spec and patch initializer
         run: |
           curl -fsS http://localhost:8080/v3/api-docs -o site/openapi.json
-          cp -r swagger-ui-dist/. site/
-          sed -i 's|https://petstore3.swagger.io/api/v3/openapi.json|./openapi.json|g' site/index.html
-          sed -i 's|https://petstore.swagger.io/v2/swagger.json|./openapi.json|g' site/index.html
+          sed -i 's|https://petstore.swagger.io/v2/swagger.json|./openapi.json|g' site/swagger-initializer.js
+          sed -i 's|https://petstore3.swagger.io/api/v3/openapi.json|./openapi.json|g' site/swagger-initializer.js
 
       - name: Show site contents
         run: ls -la site/
