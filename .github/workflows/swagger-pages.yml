@@ -31,10 +31,10 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: root1234
           MYSQL_DATABASE: waps
-          MYSQL_USER: ${{ secrets.DB_USER }}
-          MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_USER: waps
+          MYSQL_PASSWORD: waps1234
         ports:
           - 3306:3306
         options: >-
@@ -69,9 +69,11 @@ jobs:
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: waps
+          # CI uses root because the waps user created by MySQL image lacks
+          # the CREATE/ALTER privileges required by Flyway and Hibernate.
+          DB_USER: root
+          DB_PASSWORD: root1234
           # JWT_SECRET_KEY is generated per-run because /v3/api-docs is permitAll
           # and no real tokens are issued during CI spec extraction.
           JWT_SECRET_KEY: ${{ secrets.CI_JWT_SECRET_KEY }}
@@ -80,6 +82,15 @@ jobs:
           SWAGGER_SERVER_URL: ${{ vars.PUBLIC_SERVER_URL }}
           SPRING_PROFILES_ACTIVE: ""
         run: |
+          # Wait until MySQL has finished initializing (DB & users ready).
+          for i in {1..60}; do
+            if mysql -h 127.0.0.1 -uroot -proot1234 -e "SELECT 1 FROM mysql.user LIMIT 1;" > /dev/null 2>&1; then
+              echo "mysql ready"
+              break
+            fi
+            sleep 2
+          done
+
           nohup java -jar build/libs/server-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
           echo "server pid=$!"
           for i in {1..60}; do
