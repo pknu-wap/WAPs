@@ -1,5 +1,0 @@
-ignore_patterns:
-    - "pnpm-lock.yaml"
-code_review:
-    pull_request_opened:
-        summary: true
