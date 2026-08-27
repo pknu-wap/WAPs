@@ -54,7 +54,7 @@ public class UnassignedMemberAssigner {
             return;
         }
 
-        Map<Field, List<UnassignedMember>> buckets = bucketByField(unassigned, semester);
+        Map<Field, List<UnassignedMember>> buckets = bucketByField(unassigned);
         if (buckets.isEmpty()) {
             return;
         }
@@ -63,11 +63,7 @@ public class UnassignedMemberAssigner {
         for (Map.Entry<Field, List<UnassignedMember>> entry : buckets.entrySet()) {
             Field field = entry.getKey();
             List<UnassignedMember> members = entry.getValue();
-            if (members.size() <= SMALL_BUCKET_THRESHOLD) {
-                distributeToExistingTeams(field, members, semester, toSave);
-            } else {
-                formNewTeamsAndDistributeRemainder(field, members, semester, toSave);
-            }
+            processBucket(field, members, semester, toSave);
         }
 
         if (!toSave.isEmpty()) {
@@ -76,7 +72,23 @@ public class UnassignedMemberAssigner {
         log.info("[UnassignedAssigner] 처리된 미배정자: {}", toSave.size());
     }
 
-    private Map<Field, List<UnassignedMember>> bucketByField(List<TeamMemberResult> unassigned, String semester) {
+    private void processBucket(Field field,
+                               List<UnassignedMember> members,
+                               String semester,
+                               List<Team> sink) {
+        Map<Long, Team> existingTeams = existingTeamsByField(field, semester);
+        if (members.size() <= SMALL_BUCKET_THRESHOLD) {
+            if (existingTeams.isEmpty()) {
+                createNewTeams(field, members, semester, sink);
+            } else {
+                distributeToExistingTeams(members, existingTeams, semester, sink);
+            }
+            return;
+        }
+        formNewTeamsAndDistributeRemainder(field, members, existingTeams, semester, sink);
+    }
+
+    private Map<Field, List<UnassignedMember>> bucketByField(List<TeamMemberResult> unassigned) {
         Map<Field, List<UnassignedMember>> buckets = new EnumMap<>(Field.class);
         Set<Long> userIds = unassigned.stream().map(TeamMemberResult::getId).collect(Collectors.toSet());
         Map<Long, User> userMap = userRepository.findAllById(userIds).stream()
@@ -98,26 +110,19 @@ public class UnassignedMemberAssigner {
         return result.getPosition();
     }
 
-    private void distributeToExistingTeams(Field field,
-                                           List<UnassignedMember> members,
+    private void distributeToExistingTeams(List<UnassignedMember> members,
+                                           Map<Long, Team> candidates,
                                            String semester,
                                            List<Team> sink) {
-        Map<Long, Team> candidates = existingTeamsByField(field, semester);
-        if (candidates.isEmpty()) {
-            formNewTeamsAndDistributeRemainder(field, members, semester, sink);
-            return;
-        }
-
         Map<Long, Long> memberCountByProject = memberCountByProject(semester);
-        List<Long> orderedProjectIds = candidates.keySet().stream()
-                .sorted(Comparator
-                        .<Long>comparingLong(pid -> memberCountByProject.getOrDefault(pid, 0L))
-                        .thenComparing(Long::compareTo))
-                .toList();
 
-        int idx = 0;
         for (UnassignedMember member : members) {
-            Long projectId = orderedProjectIds.get(idx % orderedProjectIds.size());
+            Long projectId = candidates.keySet().stream()
+                    .min(Comparator
+                            .<Long>comparingLong(pid -> memberCountByProject.getOrDefault(pid, 0L))
+                            .thenComparing(Long::compareTo))
+                    .orElseThrow();
+
             Team template = candidates.get(projectId);
             sink.add(Team.builder()
                     .projectId(template.getProjectId())
@@ -128,12 +133,12 @@ public class UnassignedMemberAssigner {
                     .field(null)
                     .build());
             memberCountByProject.merge(projectId, 1L, Long::sum);
-            idx++;
         }
     }
 
     private void formNewTeamsAndDistributeRemainder(Field field,
                                                     List<UnassignedMember> members,
+                                                    Map<Long, Team> existingTeams,
                                                     String semester,
                                                     List<Team> sink) {
         List<List<UnassignedMember>> groups = new ArrayList<>();
@@ -144,20 +149,31 @@ public class UnassignedMemberAssigner {
         List<UnassignedMember> last = groups.get(groups.size() - 1);
         if (last.size() < NEW_TEAM_SIZE) {
             groups.remove(groups.size() - 1);
-            distributeToExistingTeams(field, last, semester, sink);
+            if (existingTeams.isEmpty()) {
+                createNewTeams(field, last, semester, sink);
+            } else {
+                distributeToExistingTeams(last, existingTeams, semester, sink);
+            }
         }
 
         for (List<UnassignedMember> group : groups) {
-            for (UnassignedMember member : group) {
-                sink.add(Team.builder()
-                        .projectId(null)
-                        .leaderId(null)
-                        .memberId(member.userId())
-                        .position(member.position())
-                        .semester(semester)
-                        .field(field)
-                        .build());
-            }
+            createNewTeams(field, group, semester, sink);
+        }
+    }
+
+    private void createNewTeams(Field field,
+                                List<UnassignedMember> members,
+                                String semester,
+                                List<Team> sink) {
+        for (UnassignedMember member : members) {
+            sink.add(Team.builder()
+                    .projectId(null)
+                    .leaderId(null)
+                    .memberId(member.userId())
+                    .position(member.position())
+                    .semester(semester)
+                    .field(field)
+                    .build());
         }
     }
 
