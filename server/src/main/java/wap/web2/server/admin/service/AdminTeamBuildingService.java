@@ -19,6 +19,7 @@ import wap.web2.server.admin.dto.request.TeamBuildingStatusRequest;
 import wap.web2.server.admin.entity.TeamBuildingMeta;
 import wap.web2.server.admin.entity.TeamBuildingStatus;
 import wap.web2.server.admin.repository.TeamBuildingMetaRepository;
+import wap.web2.server.admin.service.UnassignedMemberAssigner;
 import wap.web2.server.exception.ConflictException;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.project.entity.Project;
@@ -46,6 +47,7 @@ public class AdminTeamBuildingService {
     private final ProjectRepository projectRepository;
     private final TeamRepository teamRepository;
     private final TeamBuilder teamBuilder;
+    private final UnassignedMemberAssigner unassignedMemberAssigner;
 
     @Transactional(readOnly = true)
     public TeamBuildingMeta getStatus() {
@@ -77,8 +79,11 @@ public class AdminTeamBuildingService {
         TeamBuildingMeta current = findCurrentMeta();
         validateTeamBuildingStatus(current);
 
+        int previousRound = current.getRound();
+        String semester = generateSemester();
+
         // 이번학기 모든 프로젝트
-        List<Project> projects = projectRepository.findProjectsBySemester(generateSemester());
+        List<Project> projects = projectRepository.findProjectsBySemester(semester);
 
         // Map<projectId, Map<position, Set<userId>>>
         Map<Long, Map<Position, Set<Long>>> results = new HashMap<>();
@@ -114,6 +119,12 @@ public class AdminTeamBuildingService {
         }
 
         saveTeamBuildingResults(results);
+
+        // 2차 팀빌딩 완료 시점에만 미배정자 처리
+        if (previousRound == 2) {
+            unassignedMemberAssigner.assign(semester);
+        }
+
         current.startNextRound();
         log.info("team-build-round-advanced:{}", current.getRound());
     }
