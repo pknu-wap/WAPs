@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import wap.web2.server.comment.entity.Comment;
 import wap.web2.server.project.entity.Project;
+import wap.web2.server.teambuild.entity.Position;
 
 @Entity
 @Getter
@@ -60,6 +61,10 @@ public class User {
     @Column
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Position primaryPosition;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Project> projects = new ArrayList<>();

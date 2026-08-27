@@ -23,10 +23,10 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private Long projectId;
 
-    @Column(nullable = false)
+    @Column
     private Long leaderId;
 
     @Column(nullable = false)
@@ -38,5 +38,9 @@ public class Team {
 
     @Column(nullable = false, length = 7)
     private String semester;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Field field;
 
 }
