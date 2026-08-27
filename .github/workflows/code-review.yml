@@ -1,0 +1,20 @@
+name: AI Code Review with MiniMax
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  review:
+    name: Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Review
+        uses: tarmojussila/minimax-code-review@v0.4.0
+        with:
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+          MINIMAX_MODEL: MiniMax-M3
+          MINIMAX_SYSTEM_PROMPT: 당신은 전문 코드 리뷰어입니다. 변경사항을 검토하고 명확하고 실행 가능한 피드백을 제공하세요.
