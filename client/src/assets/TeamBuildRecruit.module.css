@@ -107,7 +107,7 @@
 }
 
 .card {
-  background: linear-gradient(180deg, rgba(41, 41, 41, 0.95) 0%, rgba(22, 22, 22, 0.95) 100%);
+  background: rgba(1, 1, 1, 0.447);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 26px;
   padding: 24px;
@@ -156,6 +156,14 @@
 
 .projectIdInput {
   max-width: 140px;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.projectIdInput::-webkit-inner-spin-button,
+.projectIdInput::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
 }
 
 .inputField::placeholder {
@@ -166,7 +174,7 @@
   padding: 8px 14px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  background: linear-gradient(135deg, #4e4e4e 0%, #2c2c2c 100%);
+  background: rgba(108, 108, 108, 0.3);
   color: #fff;
   font-size: 12px;
   cursor: pointer;
@@ -174,8 +182,8 @@
 }
 
 .primaryButton:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.671);
+  background-color: rgba(255, 255, 255, 0.199);
 }
 
 .primaryButton:disabled {
@@ -349,9 +357,40 @@
   border-right: none;
 }
 
-.commentCell {
-  text-align: left;
-  white-space: pre-wrap;
+.arrowCell {
+  width: 48px;
+  padding: 4px 8px !important;
+}
+
+.applicationArrow {
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.applicationArrow:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.applicationArrowExpanded {
+  transform: rotate(90deg);
+}
+
+.applicationDetailRow td {
+  padding: 0 12px 12px;
+  background: #333;
 }
 
 .rowHighlight td {
@@ -367,27 +406,38 @@
 .applicantCard {
   background: rgba(0, 0, 0, 0.5);
   border-radius: 14px;
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 20px;
   display: grid;
   gap: 6px;
+  transition: background 0.2s ease;
+}
+
+.applicantCardExpanded {
+  background: rgba(0, 0, 0, 0.68);
 }
 
 .cardHeaderRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 8px;
 }
 
 .cardName {
-  font-size: 13px;
+  font-size: 18px;
   font-weight: 700;
 }
 
-.cardComment {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
+.applicationContent {
+  margin-top: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .positions {
@@ -591,7 +641,7 @@
   padding: 10px 18px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  background: linear-gradient(135deg, #5b5b5b 0%, #2d2d2d 100%);
+  background: rgba(108, 108, 108, 0.3);
   color: #fff;
   font-weight: 700;
   font-size: 12px;
@@ -600,7 +650,8 @@
 }
 
 .submitButton:hover {
-  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.671);
+  background-color: rgba(255, 255, 255, 0.199);
 }
 
 .submitButton:disabled {
@@ -680,7 +731,9 @@
   }
 
   .heroTitle {
-    font-size: 24px;
+    font-size: 30px;
+    letter-spacing: -1px;
+
   }
 
   .card {

@@ -50,6 +50,7 @@ function TeamBuildPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState("");
   const [submitStatus, setSubmitStatus] = useState("");
+  const [expandedApplicantIds, setExpandedApplicantIds] = useState(() => new Set());
   const [highlightedApplicantId, setHighlightedApplicantId] = useState(null);
   const [draggingId, setDraggingId] = useState(null);
   const [dragOver, setDragOver] = useState({ position: null, zone: null, index: null });
@@ -117,44 +118,107 @@ function TeamBuildPage() {
 
   const totalApplicantsOf = (pos) => countsByPosition[pos] || 0;
 
-  const handleLoad = async () => {
-    const projectId = Number(projectIdInput);
-    if (!projectId) {
-      alert("프로젝트 ID를 입력하세요.");
-      return;
-    }
+    const handleLoad = () => {
+    const mockApplies = [
+      // FRONTEND: 5명 → 최소 4명 선택해야 함
+      {
+        applicantId: 1,
+        applicantName: "프론트1",
+        position: "FRONTEND",
+        comment: "지원자 1어라ㅓㅣ어ㅏㅣ너이런아ㅣㅓ라ㅣ넝라너아ㅣ러나ㅣㅇ러니ㅏ어라넝리ㅏ넝라ㅓㅇ라ㅣㅓ닝ㄹ",
+      },
+      {
+        applicantId: 2,
+        applicantName: "프론트2",
+        position: "FRONTEND",
+        comment: "지원자 2",
+      },
+      {
+        applicantId: 3,
+        applicantName: "프론트3",
+        position: "FRONTEND",
+        comment: "지원자 3",
+      },
+      {
+        applicantId: 4,
+        applicantName: "프론트4",
+        position: "FRONTEND",
+        comment: "지원자 4",
+      },
+      {
+        applicantId: 5,
+        applicantName: "프론트5",
+        position: "FRONTEND",
+        comment: "지원자 5",
+      },
 
-    setIsLoading(true);
-    setSubmitMsg("");
-    setSubmitStatus("");
-    try {
-      const response = await teamBuildApi.getRecruitApplies(projectId);
-      if (response?.success === false) {
-        throw new Error(response.message || "불러오기 실패");
-      }
+      // BACKEND: 3명 → 3명 전부 선택해야 함
+      {
+        applicantId: 6,
+        applicantName: "백엔드1",
+        position: "BACKEND",
+        comment: "지원자 1",
+      },
+      {
+        applicantId: 7,
+        applicantName: "백엔드2",
+        position: "BACKEND",
+        comment: "지원자 2",
+      },
+      {
+        applicantId: 8,
+        applicantName: "백엔드3",
+        position: "BACKEND",
+        comment: "지원자 3",
+      },
+    ];
 
-      const normalized = normalizeApplies(response?.applies || response?.data?.applies || []);
-      const rawTitle = response?.projectTitle;
-      const safeTitle = rawTitle && rawTitle !== "null" ? rawTitle : "";
-      setCurrentProjectId(projectId);
-      setProjectTitle(safeTitle);
-      setApplies(normalized);
-      setRankedByPosition(createEmptyRankMap());
-      setCapacityByPosition(createEmptyCapacityMap());
-      setCurrentFilter("");
-      setFilterOpen(false);
-    } catch (err) {
-      setCurrentProjectId(null);
-      setProjectTitle("");
-      setApplies([]);
-      setRankedByPosition(createEmptyRankMap());
-      setCapacityByPosition(createEmptyCapacityMap());
-      setCurrentFilter("");
-      alert(formatApiError(err, "불러오기 실패"));
-    } finally {
-      setIsLoading(false);
-    }
+    setCurrentProjectId(1);
+    setProjectTitle("우선순위 조건 테스트");
+    setApplies(mockApplies);
+    setRankedByPosition(createEmptyRankMap());
+    setCapacityByPosition(createEmptyCapacityMap());
+    setCurrentFilter("");
+    setFilterOpen(false);
   };
+  // const handleLoad = async () => {
+  //   const projectId = Number(projectIdInput);
+  //   if (!projectId) {
+  //     alert("프로젝트 ID를 입력하세요.");
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+  //   setSubmitMsg("");
+  //   setSubmitStatus("");
+  //   try {
+  //     const response = await teamBuildApi.getRecruitApplies(projectId);
+  //     if (response?.success === false) {
+  //       throw new Error(response.message || "불러오기 실패");
+  //     }
+
+  //     const normalized = normalizeApplies(response?.applies || response?.data?.applies || []);
+  //     const rawTitle = response?.projectTitle;
+  //     const safeTitle = rawTitle && rawTitle !== "null" ? rawTitle : "";
+  //     setCurrentProjectId(projectId);
+  //     setProjectTitle(safeTitle);
+  //     setApplies(normalized);
+  //     setRankedByPosition(createEmptyRankMap());
+  //     setCapacityByPosition(createEmptyCapacityMap());
+  //     setCurrentFilter("");
+  //     setFilterOpen(false);
+  //   } catch (err) {
+  //     setCurrentProjectId(null);
+  //     setProjectTitle("");
+  //     setApplies([]);
+  //     setRankedByPosition(createEmptyRankMap());
+  //     setCapacityByPosition(createEmptyCapacityMap());
+  //     setCurrentFilter("");
+  //     alert(formatApiError(err, "불러오기 실패"));
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleCapacityChange = (pos, value) => {
     if (value === "") {
@@ -266,8 +330,9 @@ function TeamBuildPage() {
       if (cap <= 0) continue;
       const total = totalApplicantsOf(pos);
       const ranked = (rankedByPosition[pos] || []).length;
-      if (total > 0 && ranked !== total) {
-        missing.push({ pos, total, ranked });
+      const required = Math.min(total, 4);
+      if (ranked < required) {
+        missing.push({ pos, total, ranked, required });
       }
     }
     return missing;
@@ -282,10 +347,10 @@ function TeamBuildPage() {
     const incomplete = validatePriorityBeforeSubmit();
     if (incomplete.length > 0) {
       const msgLines = incomplete.map(
-        (g) => `• ${g.pos}: 전체 ${g.total}명 중 ${g.ranked}명만 우선순위 설정됨`
+        (g) => `• ${g.pos}: 전체 ${g.total}명 중 ${g.ranked}명 설정 (최소 ${g.required}명 필요)`
       );
       alert(
-        "모집(capacity > 0) 포지션의 모든 지원자에게 우선순위를 설정해야 제출할 수 있습니다.\n\n" +
+        "지원자가 4명 미만이면 전원, 4명 이상이면 최소 4명의 우선순위를 설정해야 제출할 수 있습니다.\n\n" +
           msgLines.join("\n")
       );
       return;
@@ -353,8 +418,8 @@ function TeamBuildPage() {
         </div>
 
         <div className={styles.hero}>
-          <h1 className={styles.heroTitle}>RECRUITMENT PAGE</h1>
-          <div className={styles.heroSubtitle}>모집하기 페이지</div>
+          <h1 className={styles.heroTitle}>RECRUITMENT PAGE_1st</h1>
+          <div className={styles.heroSubtitle}>1차 모집하기 페이지</div>
         </div>
 
         <div className={styles.card}>
@@ -442,7 +507,7 @@ function TeamBuildPage() {
                 <tr>
                   <th>이름</th>
                   <th>분야</th>
-                  <th>코멘트</th>
+                  <th aria-label="지원서 보기"></th>
                 </tr>
               </thead>
               <tbody>
@@ -453,18 +518,52 @@ function TeamBuildPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredApplies.map((apply) => (
-                    <tr
-                      key={apply.applicantId}
-                      className={
-                        highlightedApplicantId === apply.applicantId ? styles.rowHighlight : ""
-                      }
-                    >
-                      <td>{apply.applicantName || "-"}</td>
-                      <td>{renderPositionBadge(apply.position)}</td>
-                      <td className={styles.commentCell}>{apply.comment || "-"}</td>
-                    </tr>
-                  ))
+                  filteredApplies.map((apply) => {
+                    const isExpanded = expandedApplicantIds.has(apply.applicantId);
+                    return (
+                      <React.Fragment key={apply.applicantId}>
+                        <tr
+                          className={
+                            highlightedApplicantId === apply.applicantId ? styles.rowHighlight : ""
+                          }
+                        >
+                          <td>{apply.applicantName || "-"}</td>
+                          <td>{renderPositionBadge(apply.position)}</td>
+                          <td className={styles.arrowCell}>
+                            <button
+                              type="button"
+                              className={`${styles.applicationArrow} ${
+                                isExpanded ? styles.applicationArrowExpanded : ""
+                              }`}
+                              aria-label={`${apply.applicantName || "지원자"} 지원서 ${
+                                isExpanded ? "닫기" : "보기"
+                              }`}
+                              aria-expanded={isExpanded}
+                              onClick={() =>
+                                setExpandedApplicantIds((prev) => {
+                                  const next = new Set(prev);
+                                  if (next.has(apply.applicantId)) next.delete(apply.applicantId);
+                                  else next.add(apply.applicantId);
+                                  return next;
+                                })
+                              }
+                            >
+                              &rsaquo;
+                            </button>
+                          </td>
+                        </tr>
+                        {isExpanded && (
+                          <tr className={styles.applicationDetailRow}>
+                            <td colSpan="3">
+                              <div className={styles.applicationContent}>
+                                {apply.comment || "작성된 지원서 내용이 없습니다."}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -476,20 +575,47 @@ function TeamBuildPage() {
                 {emptyApplyMessage}
               </div>
             ) : (
-              filteredApplies.map((apply) => (
+              filteredApplies.map((apply) => {
+                const isExpanded = expandedApplicantIds.has(apply.applicantId);
+                return (
                 <div
                   key={apply.applicantId}
-                  className={styles.applicantCard}
+                  className={`${styles.applicantCard} ${isExpanded ? styles.applicantCardExpanded : ""}`}
                   onMouseEnter={() => setHighlightedApplicantId(apply.applicantId)}
                   onMouseLeave={() => setHighlightedApplicantId(null)}
                 >
                   <div className={styles.cardHeaderRow}>
                     <span className={styles.cardName}>{apply.applicantName || "-"}</span>
                     {renderPositionBadge(apply.position)}
+                    <button
+                      type="button"
+                      className={`${styles.applicationArrow} ${
+                        isExpanded ? styles.applicationArrowExpanded : ""
+                      }`}
+                      aria-label={`${apply.applicantName || "지원자"} 지원서 ${
+                        isExpanded ? "닫기" : "보기"
+                      }`}
+                      aria-expanded={isExpanded}
+                      onClick={() =>
+                        setExpandedApplicantIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(apply.applicantId)) next.delete(apply.applicantId);
+                          else next.add(apply.applicantId);
+                          return next;
+                        })
+                      }
+                    >
+                      &rsaquo;
+                    </button>
                   </div>
-                  <div className={styles.cardComment}>{apply.comment || "-"}</div>
+                  {isExpanded && (
+                    <div className={styles.applicationContent}>
+                      {apply.comment || "작성된 지원서 내용이 없습니다."}
+                    </div>
+                  )}
                 </div>
-              ))
+                );
+              })
             )}
           </div>
 
@@ -499,10 +625,12 @@ function TeamBuildPage() {
               드래그 앤 드롭으로 지원자를 선택하고 우선순위를 변경하세요.
             </div>
             <ul className={styles.instructionList}>
-              <li>모집을 희망하는 분야에 원하는 인원만큼 capacity를 입력하세요.</li>
-              <li>지원자를 드래그하여 우선순위를 정해주세요. (1순위부터 마지막 순위까지)</li>
-              <li>capacity가 0이면 우선순위를 설정할 수 없습니다.</li>
-              <li>모든 지원자에게 우선순위를 지정해야 제출이 가능합니다.</li>
+              <li>1. 모집을 희망하는 분야에 원하는 인원만큼 capacity를 입력하세요.</li>
+              <li>2. 지원자를 드래그하여 우선순위를 정해주세요. (1순위부터 마지막 순위까지)</li>
+              <li>3. capacity가 0이면 우선순위를 설정할 수 없습니다.</li>
+              <li>4. 지원자가 4명 미만이면 전원의 우선순위를 지정해야 합니다.</li>
+              <li>5. 지원자가 4명 이상이면 최소 4명의 우선순위를 지정해야 합니다.</li>
+              <li>6. 팀 최소 인원은 4명이며 최대 인원은 6명입니다. (디자이너 포함)</li>
             </ul>
           </div>
 
