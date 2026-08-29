@@ -507,7 +507,7 @@ function TeamBuildPage() {
                 <tr>
                   <th>이름</th>
                   <th>분야</th>
-                  <th aria-label="지원서 보기"></th>
+                  <th>지원서 내용</th>
                 </tr>
               </thead>
               <tbody>
@@ -518,52 +518,20 @@ function TeamBuildPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredApplies.map((apply) => {
-                    const isExpanded = expandedApplicantIds.has(apply.applicantId);
-                    return (
-                      <React.Fragment key={apply.applicantId}>
-                        <tr
-                          className={
-                            highlightedApplicantId === apply.applicantId ? styles.rowHighlight : ""
-                          }
-                        >
-                          <td>{apply.applicantName || "-"}</td>
-                          <td>{renderPositionBadge(apply.position)}</td>
-                          <td className={styles.arrowCell}>
-                            <button
-                              type="button"
-                              className={`${styles.applicationArrow} ${
-                                isExpanded ? styles.applicationArrowExpanded : ""
-                              }`}
-                              aria-label={`${apply.applicantName || "지원자"} 지원서 ${
-                                isExpanded ? "닫기" : "보기"
-                              }`}
-                              aria-expanded={isExpanded}
-                              onClick={() =>
-                                setExpandedApplicantIds((prev) => {
-                                  const next = new Set(prev);
-                                  if (next.has(apply.applicantId)) next.delete(apply.applicantId);
-                                  else next.add(apply.applicantId);
-                                  return next;
-                                })
-                              }
-                            >
-                              &rsaquo;
-                            </button>
-                          </td>
-                        </tr>
-                        {isExpanded && (
-                          <tr className={styles.applicationDetailRow}>
-                            <td colSpan="3">
-                              <div className={styles.applicationContent}>
-                                {apply.comment || "작성된 지원서 내용이 없습니다."}
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    );
-                  })
+                  filteredApplies.map((apply) => (
+                    <tr
+                      key={apply.applicantId}
+                      className={
+                        highlightedApplicantId === apply.applicantId ? styles.rowHighlight : ""
+                      }
+                    >
+                      <td className={styles.applicantNameCell}>{apply.applicantName || "-"}</td>
+                      <td className={styles.positionCell}>{renderPositionBadge(apply.position)}</td>
+                      <td className={styles.applicationTextCell}>
+                        {apply.comment || "작성된 지원서 내용이 없습니다."}
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
