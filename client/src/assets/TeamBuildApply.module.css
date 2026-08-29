@@ -102,7 +102,7 @@
   overflow: hidden;
   background: rgba(0, 0, 0, 0.185);
   border-radius: 26px;
-  margin-bottom: 10px;
+  margin: 24px 0 10px;
 }
 
 .noticeButton {
@@ -232,6 +232,77 @@
 .myApplyCountActive {
   background: #9ed0ff;
   color: #000000;
+}
+
+.primaryPositionCard {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  margin-top: 20px;
+  padding: 18px 16px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.059);
+  backdrop-filter: blur(8px);
+}
+
+.primaryPositionHeader h2 {
+  margin: 0 0 0 8px;
+  color: #f7f7f7ac;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.primaryPositionHeader p {
+  margin: 4px 0 0 8px;
+  color: rgba(255, 255, 255, 0.205);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.formGroup.primaryPositionSelect {
+  position: relative;
+  margin: 10px 8px 0;
+}
+
+.formGroup.primaryPositionSelect::after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  right: 16px;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid #d9e2f1;
+  border-bottom: 1.5px solid #d9e2f1;
+  pointer-events: none;
+  transform: rotate(45deg);
+}
+
+.formGroup.primaryPositionSelect select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  border-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(255, 255, 255, 0.14);
+  background-image: none !important;
+  color-scheme: dark;
+}
+
+.formGroup.primaryPositionSelect select::-ms-expand {
+  display: none;
+}
+
+.formGroup.primaryPositionSelect select:focus,
+.formGroup.primaryPositionSelect select:focus-visible {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: none;
+}
+
+.formGroup.primaryPositionSelect option {
+  background-color: #292a2e;
+  color: #f8f8f8;
 }
 
 .emptyApply {
@@ -1671,6 +1742,50 @@
   padding: 0;
   list-style: none;
   text-align: left;
+}
+
+.submitPrimaryPosition {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  margin: 8px 0 2px;
+  padding: 12px 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 13px;
+}
+
+.submitPrimaryPosition span {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.submitPrimaryPosition strong {
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 700;
+}
+
+.submitModalContent {
+  text-align: left;
+}
+
+.submitModalContent h2 {
+  margin-bottom: 14px;
+  color: #b8dcff;
+  font-size: 19px;
+  text-align: center;
+}
+
+.submitModalContent .confirmSubmitButton {
+  text-align: center;
+}
+
+.submitModalContent .submitApplicationList li {
+  justify-content: flex-start;
+  padding: 9px 2px;
+}
+
+.submitModalContent .submitApplicationPriority {
+  color: rgba(255, 255, 255, 0.48);
 }
 
 .submitApplicationList li {

@@ -20,6 +20,17 @@ const POSITION_OPTIONS = [
   { value: "EMBEDDED", label: "임베디드" },
 ];
 
+const PRIMARY_POSITION_OPTIONS = [
+  { value: "BACKEND", label: "백엔드" },
+  { value: "FRONTEND", label: "프론트엔드" },
+  { value: "DESIGN", label: "디자이너" },
+  { value: "GAME", label: "게임" },
+  { value: "APP", label: "앱" },
+  { value: "EMBEDDED", label: "임베디드" },
+  { value: "AI", label: "AI" },
+  { value: "OTHER", label: "기타" },
+];
+
 const POSITION_LABELS = POSITION_OPTIONS.reduce((acc, item) => {
   acc[item.value] = item.label;
   return acc;
@@ -136,6 +147,7 @@ function TeamBuildApplyPage() {
   const [applicationDraggingId, setApplicationDraggingId] = useState(null);
   const [applicationDragOverId, setApplicationDragOverId] = useState(null);
   const [applicationDragOverPlacement, setApplicationDragOverPlacement] = useState("before");
+  const [primaryPosition, setPrimaryPosition] = useState("");
   //추가한 내용
 
   // useEffect(() => {
@@ -266,6 +278,8 @@ function TeamBuildApplyPage() {
   const isAllProjectTypes = selectedProjectTypes.length === 0;
 
   const getPositionLabel = (value) => POSITION_LABELS[value] || value;
+  const getPrimaryPositionLabel = (value) =>
+    PRIMARY_POSITION_OPTIONS.find((option) => option.value === value)?.label || "미선택";
 
   const getProjectTeamLabel = (project) => {
     const projectType = getProjectTeamType(readProjectType(project));
@@ -378,12 +392,16 @@ function TeamBuildApplyPage() {
 
   const submitProjectApplications = async () => {
     if (projectApplications.length < 3) return;
+    if (!primaryPosition) {
+      alert("주요 직무를 선택해주세요.");
+      return;
+    }
 
     setIsSubmitConfirmOpen(true);
   };
 
   const confirmProjectApplications = async () => {
-    if (projectApplications.length < 3 || isSubmitting) return;
+    if (projectApplications.length < 3 || !primaryPosition || isSubmitting) return;
 
     const applies = projectApplications.map((application) => ({
       projectId: application.projectId,
@@ -757,6 +775,28 @@ function TeamBuildApplyPage() {
             </div>
           </div>
 
+          <section className={styles.primaryPositionCard} aria-labelledby="primary-position-title">
+            <div className={styles.primaryPositionHeader}>
+              <h2 id="primary-position-title">주요 직무</h2>
+              <p>주요직무는 1차 팀빌딩에는 영향을 끼치지 않으며, 2·3차 팀빌딩시 사용될 예정입니다</p>
+            </div>
+            <div className={`${styles.formGroup} ${styles.primaryPositionSelect}`}>
+              <select
+                id="primaryPosition"
+                aria-label="주요 직무"
+                value={primaryPosition}
+                onChange={(event) => setPrimaryPosition(event.target.value)}
+              >
+                <option value="">직무를 선택해주세요</option>
+                {PRIMARY_POSITION_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </section>
+
           {projectApplications.length === 0 ? (
             <div className={styles.emptyApply}>
               <img src={emptyFolder} alt="" className={styles.emptyFolder} />
@@ -990,7 +1030,7 @@ function TeamBuildApplyPage() {
           onMouseDown={() => !isSubmitting && setIsSubmitConfirmOpen(false)}
         >
           <div
-            className={`${styles.applicationModalContent} ${styles.cancelModalContent}`}
+            className={`${styles.applicationModalContent} ${styles.cancelModalContent} ${styles.submitModalContent}`}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="submit-application-title"
@@ -1006,7 +1046,11 @@ function TeamBuildApplyPage() {
             >
               ×
             </button>
-            <h2 id="submit-application-title">모든 지원서를 제출하시겠습니까?</h2>
+            <h2 id="submit-application-title">최종 제출을 진행하시겠습니까?</h2>
+            <div className={styles.submitPrimaryPosition}>
+              <span>주요 직무</span>
+              <strong>{getPrimaryPositionLabel(primaryPosition)}</strong>
+            </div>
             <ol id="submit-application-description" className={styles.submitApplicationList}>
               {projectApplications.map((application, index) => (
                 <li key={application.id}>
