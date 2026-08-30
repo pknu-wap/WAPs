@@ -118,107 +118,108 @@ function TeamBuildPage() {
 
   const totalApplicantsOf = (pos) => countsByPosition[pos] || 0;
 
-    const handleLoad = () => {
-    const mockApplies = [
-      // FRONTEND: 5명 → 최소 4명 선택해야 함
-      {
-        applicantId: 1,
-        applicantName: "프론트1",
-        position: "FRONTEND",
-        comment: "지원자 1어라ㅓㅣ어ㅏㅣ너이런아ㅣㅓ라ㅣ넝라너아ㅣ러나ㅣㅇ러니ㅏ어라넝리ㅏ넝라ㅓㅇ라ㅣㅓ닝ㄹ",
-      },
-      {
-        applicantId: 2,
-        applicantName: "프론트2",
-        position: "FRONTEND",
-        comment: "지원자 2",
-      },
-      {
-        applicantId: 3,
-        applicantName: "프론트3",
-        position: "FRONTEND",
-        comment: "지원자 3",
-      },
-      {
-        applicantId: 4,
-        applicantName: "프론트4",
-        position: "FRONTEND",
-        comment: "지원자 4",
-      },
-      {
-        applicantId: 5,
-        applicantName: "프론트5",
-        position: "FRONTEND",
-        comment: "지원자 5",
-      },
+  //   const handleLoad = () => {
+  //   const mockApplies = [
+  //     // FRONTEND: 5명 → 최소 4명 선택해야 함
+  //     {
+  //       applicantId: 1,
+  //       applicantName: "프론트1",
+  //       position: "FRONTEND",
+  //       comment: "지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.지원자 1의 지원서 내용입니다.",
+  //     },
+  //     {
+  //       applicantId: 2,
+  //       applicantName: "프론트2",
+  //       position: "FRONTEND",
+  //       comment: "지원자 2",
+  //     },
+  //     {
+  //       applicantId: 3,
+  //       applicantName: "프론트3",
+  //       position: "FRONTEND",
+  //       comment: "지원자 3",
+  //     },
+  //     {
+  //       applicantId: 4,
+  //       applicantName: "프론트4",
+  //       position: "FRONTEND",
+  //       comment: "지원자 4",
+  //     },
+  //     {
+  //       applicantId: 5,
+  //       applicantName: "프론트5",
+  //       position: "FRONTEND",
+  //       comment: "지원자 5",
+  //     },
 
-      // BACKEND: 3명 → 3명 전부 선택해야 함
-      {
-        applicantId: 6,
-        applicantName: "백엔드1",
-        position: "BACKEND",
-        comment: "지원자 1",
-      },
-      {
-        applicantId: 7,
-        applicantName: "백엔드2",
-        position: "BACKEND",
-        comment: "지원자 2",
-      },
-      {
-        applicantId: 8,
-        applicantName: "백엔드3",
-        position: "BACKEND",
-        comment: "지원자 3",
-      },
-    ];
+  //     // BACKEND: 3명 → 3명 전부 선택해야 함
+  //     {
+  //       applicantId: 6,
+  //       applicantName: "백엔드1",
+  //       position: "BACKEND",
+  //       comment: "지원자 1",
+  //     },
+  //     {
+  //       applicantId: 7,
+  //       applicantName: "백엔드2",
+  //       position: "BACKEND",
+  //       comment: "지원자 2",
+  //     },
+  //     {
+  //       applicantId: 8,
+  //       applicantName: "백엔드3",
+  //       position: "BACKEND",
+  //       comment: "지원자 3",
+  //     },
+  //   ];
 
-    setCurrentProjectId(1);
-    setProjectTitle("우선순위 조건 테스트");
-    setApplies(mockApplies);
-    setRankedByPosition(createEmptyRankMap());
-    setCapacityByPosition(createEmptyCapacityMap());
-    setCurrentFilter("");
-    setFilterOpen(false);
-  };
-  // const handleLoad = async () => {
-  //   const projectId = Number(projectIdInput);
-  //   if (!projectId) {
-  //     alert("프로젝트 ID를 입력하세요.");
-  //     return;
-  //   }
-
-  //   setIsLoading(true);
-  //   setSubmitMsg("");
-  //   setSubmitStatus("");
-  //   try {
-  //     const response = await teamBuildApi.getRecruitApplies(projectId);
-  //     if (response?.success === false) {
-  //       throw new Error(response.message || "불러오기 실패");
-  //     }
-
-  //     const normalized = normalizeApplies(response?.applies || response?.data?.applies || []);
-  //     const rawTitle = response?.projectTitle;
-  //     const safeTitle = rawTitle && rawTitle !== "null" ? rawTitle : "";
-  //     setCurrentProjectId(projectId);
-  //     setProjectTitle(safeTitle);
-  //     setApplies(normalized);
-  //     setRankedByPosition(createEmptyRankMap());
-  //     setCapacityByPosition(createEmptyCapacityMap());
-  //     setCurrentFilter("");
-  //     setFilterOpen(false);
-  //   } catch (err) {
-  //     setCurrentProjectId(null);
-  //     setProjectTitle("");
-  //     setApplies([]);
-  //     setRankedByPosition(createEmptyRankMap());
-  //     setCapacityByPosition(createEmptyCapacityMap());
-  //     setCurrentFilter("");
-  //     alert(formatApiError(err, "불러오기 실패"));
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
+  //   setCurrentProjectId(1);
+  //   setProjectTitle("우선순위 조건 테스트");
+  //   setApplies(mockApplies);
+  //   setRankedByPosition(createEmptyRankMap());
+  //   setCapacityByPosition(createEmptyCapacityMap());
+  //   setCurrentFilter("");
+  //   setFilterOpen(false);
   // };
+  
+  const handleLoad = async () => {
+    const projectId = Number(projectIdInput);
+    if (!projectId) {
+      alert("프로젝트 ID를 입력하세요.");
+      return;
+    }
+
+    setIsLoading(true);
+    setSubmitMsg("");
+    setSubmitStatus("");
+    try {
+      const response = await teamBuildApi.getRecruitApplies(projectId);
+      if (response?.success === false) {
+        throw new Error(response.message || "불러오기 실패");
+      }
+
+      const normalized = normalizeApplies(response?.applies || response?.data?.applies || []);
+      const rawTitle = response?.projectTitle;
+      const safeTitle = rawTitle && rawTitle !== "null" ? rawTitle : "";
+      setCurrentProjectId(projectId);
+      setProjectTitle(safeTitle);
+      setApplies(normalized);
+      setRankedByPosition(createEmptyRankMap());
+      setCapacityByPosition(createEmptyCapacityMap());
+      setCurrentFilter("");
+      setFilterOpen(false);
+    } catch (err) {
+      setCurrentProjectId(null);
+      setProjectTitle("");
+      setApplies([]);
+      setRankedByPosition(createEmptyRankMap());
+      setCapacityByPosition(createEmptyCapacityMap());
+      setCurrentFilter("");
+      alert(formatApiError(err, "불러오기 실패"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleCapacityChange = (pos, value) => {
     if (value === "") {
