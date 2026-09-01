@@ -192,6 +192,7 @@ function TeamBuildApplyPage2nd() {
         summary: "사용자 경험을 혁신하는 웹 플랫폼 개발 프로젝트입니다.",
         techStack: ["React", "JavaScript"],
         recruitPositions: ["FRONTEND", "BACKEND", "DESIGN"],
+        recruitCount: 3,
         requirements: "주 1회 팀 회의에 참여할 수 있고, 적극적으로 소통하실 분을 찾습니다.",
       },
       {
@@ -201,6 +202,7 @@ function TeamBuildApplyPage2nd() {
         summary: "데이터 기반 서비스를 구축하는 프로젝트입니다.",
         techStack: ["React Native", "Spring"],
         recruitPositions: ["APP", "BACKEND", "DESIGN"],
+        recruitCount: 2,
         requirements: "앱 서비스 개발 경험이 있거나 새로운 기술을 배우는 데 관심 있는 분을 환영합니다.",
       },
       {
@@ -210,6 +212,7 @@ function TeamBuildApplyPage2nd() {
         summary: "새로운 게임 서비스를 개발하는 프로젝트입니다.",
         techStack: ["Unity", "C#"],
         recruitPositions: ["GAME", "BACKEND", "DESIGN"],
+        recruitCount: 4,
         requirements: "Unity 기반 협업이 가능하고 게임 기획에 관심 있는 분을 찾습니다.",
       },
     ]);
@@ -737,8 +740,7 @@ function TeamBuildApplyPage2nd() {
 
           {isNoticeOpen && (
             <div className={styles.noticeContent}>
-              <p>• 이번 팀빌딩은 총 3차에 걸쳐 진행됩니다.</p>
-              <p>• 지원서는 최소 3개 - 최대 5개까지 지원할 수 있으며, 동일 프로젝트에도 서로 다른 직무로 지원할 수 있습니다.</p>
+              <p>• 2차 팀빌딩도 마찬가지로 최소 3개 - 최대 5개까지 지원할 수 있으며, 동일 프로젝트에도 서로 다른 직무로 지원할 수 있습니다.</p>
             </div>
           )}
         </div>
@@ -846,7 +848,7 @@ function TeamBuildApplyPage2nd() {
                   className={styles.applicationProjectCard}
                 >
                   <div className={styles.applicationProjectTop}>
-                    <div>
+                    <div className={styles.applicationProjectInfo}>
                       <div className={styles.applicationProjectTitleRow}>
                         <h3>{project.title}</h3>
                         <span
@@ -855,6 +857,9 @@ function TeamBuildApplyPage2nd() {
                           }`}
                         >
                           {getProjectTeamLabel(project)}
+                        </span>
+                        <span className={styles.recruitCount}>
+                          모집인원 : {project.recruitCount ?? 0}명
                         </span>
                       </div>
                       <p>{project.summary}</p>
