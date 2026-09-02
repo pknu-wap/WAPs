@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import LoadingPage from "../../components/LoadingPage";
@@ -7,7 +7,7 @@ const Callback = () => {
   const navigate = useNavigate();
   const hasHandled = useRef(false);
 
-  const fetchUserInfo = (token) => {
+  const fetchUserInfo = useCallback((token) => {
     fetch(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
       method: "GET",
       headers: {
@@ -62,7 +62,7 @@ const Callback = () => {
         alert("사용자 정보를 가져오는 중 오류가 발생했습니다.");
         navigate("/login");
       });
-  };
+  }, [navigate]);
 
   useEffect(() => {
     if (hasHandled.current) return;
@@ -77,7 +77,7 @@ const Callback = () => {
       alert("인증 코드가 없습니다. 다시 로그인해주세요.");
       navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, fetchUserInfo]);
 
   return <LoadingPage />;
 };

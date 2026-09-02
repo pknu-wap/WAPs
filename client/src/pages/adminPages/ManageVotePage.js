@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styles from "../../assets/Admin/ManageVote.module.css";
 import { adminVoteApi } from "../../api/admin";
 import { projectApi } from "../../api/project";
@@ -122,7 +122,7 @@ const ManageVotePage = () => {
     };
 
     // 투표 결과 공개 여부 조회 함수
-    const fetchResultVisibility = async () => {
+    const fetchResultVisibility = useCallback(async () => {
         if (!semester) return;
         try {
             const data = await adminVoteApi.getIsVoteOpen(semester);
@@ -130,7 +130,7 @@ const ManageVotePage = () => {
         } catch (e) {
             setError("투표 공개 상태 조회 실패");
         }
-    }
+    }, [semester])
 
     // ENDED 상태일 때 투표 결과 요청하기
     useEffect(() => {
@@ -146,7 +146,7 @@ const ManageVotePage = () => {
         };
         fetchResultVisibility();
         fetchVoteResult();
-    }, [voteStatus, semester]);
+    }, [voteStatus, semester, fetchResultVisibility]);
 
 
     // 투표 결과 공개 여부 핸들러
