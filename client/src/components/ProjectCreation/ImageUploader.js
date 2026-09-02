@@ -72,7 +72,7 @@ const ImageUploader = ({
             src={
               imgName instanceof File ? URL.createObjectURL(imgName) : imgName
             }
-            alt="Image Preview"
+            alt="Preview"
             style={{
               width: "100%",
               maxHeight: "282px",
