@@ -719,6 +719,8 @@ function TeamBuildApplyPage2nd() {
             type="button"
             className={styles.noticeButton}
             onClick={() => setIsNoticeOpen(!isNoticeOpen)}
+            aria-expanded={isNoticeOpen}
+            aria-controls="notice-content"
           >
             <div className={styles.noticeTitle}>
               <img

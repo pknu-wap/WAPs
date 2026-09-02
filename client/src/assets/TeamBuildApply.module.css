@@ -161,10 +161,6 @@
   line-height: 1.4;
 }
 
-.notice {
-  flex-direction: column;
-}
-
 .myApply {
   width: 100%;
   box-sizing: border-box;
