@@ -195,36 +195,36 @@ function TeamBuildApplyPage() {
   // }, []);
 
   useEffect(() => {
-  setHasApplied(false);
+    setHasApplied(false);
 
-  setProjects([
-      {
-        projectId: 1,
-        title: "프로젝트 1",
-        projectType: "WEB",
-        summary: "사용자 경험을 혁신하는 웹 플랫폼 개발 프로젝트입니다.",
-        techStack: ["React", "JavaScript"],
-        recruitPositions: ["FRONTEND", "BACKEND", "DESIGN"],
-      },
-      {
-        projectId: 2,
-        title: "프로젝트 2",
-        projectType: "APP",
-        summary: "데이터 기반 서비스를 구축하는 프로젝트입니다.",
-        techStack: ["React Native", "Spring"],
-        recruitPositions: ["APP", "BACKEND", "DESIGN"],
-      },
-      {
-        projectId: 3,
-        title: "프로젝트 3",
-        projectType: "GAME",
-        summary: "새로운 게임 서비스를 개발하는 프로젝트입니다.",
-        techStack: ["Unity", "C#"],
-        recruitPositions: ["GAME", "BACKEND", "DESIGN"],
-      },
-    ]);
+    setProjects([
+        {
+          projectId: 1,
+          title: "프로젝트 1",
+          projectType: "WEB",
+          summary: "사용자 경험을 혁신하는 웹 플랫폼 개발 프로젝트입니다.",
+          techStack: ["React", "JavaScript"],
+          recruitPositions: ["FRONTEND", "BACKEND", "DESIGN"],
+        },
+        {
+          projectId: 2,
+          title: "프로젝트 2",
+          projectType: "APP",
+          summary: "데이터 기반 서비스를 구축하는 프로젝트입니다.",
+          techStack: ["React Native", "Spring"],
+          recruitPositions: ["APP", "BACKEND", "DESIGN"],
+        },
+        {
+          projectId: 3,
+          title: "프로젝트 3",
+          projectType: "GAME",
+          summary: "새로운 게임 서비스를 개발하는 프로젝트입니다.",
+          techStack: ["Unity", "C#"],
+          recruitPositions: ["GAME", "BACKEND", "DESIGN"],
+        },
+      ]);
 
-    setIsLoading(false);
+      setIsLoading(false);
   }, []);
   // 나중에 제거하기. 임시 내용
 
