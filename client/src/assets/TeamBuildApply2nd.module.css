@@ -161,6 +161,10 @@
   line-height: 1.4;
 }
 
+.notice {
+  flex-direction: column;
+}
+
 .myApply {
   width: 100%;
   box-sizing: border-box;
@@ -1525,6 +1529,7 @@
 }
 
 .applicationProjectTop { display: flex; justify-content: space-between; gap: 14px; }
+.applicationProjectInfo { min-width: 0; flex: 1; }
 .applicationProjectTop h3 { margin: 0 0 7px; font-size: 20px; }
 .applicationProjectTop p { margin: 0; color: rgba(255,255,255,.63); font-size: 13px; }
 .applicationProjectTitleRow {
@@ -1535,11 +1540,35 @@
   margin-bottom: 7px;
 }
 .applicationProjectTitleRow h3 { margin: 0; }
+.recruitCount {
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.406);
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+}
 .appliedMark { color: #9ed0ff; font-size: 12px; font-weight: 800; white-space: nowrap; }
 .recruitBlock {
   margin: 17px 0;
 }
 .recruitPositions { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.projectRequirements {
+  margin-top: 12px;
+  padding: 13px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.projectRequirements p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 
 .projectTeamBadge {
   display: inline-flex;
