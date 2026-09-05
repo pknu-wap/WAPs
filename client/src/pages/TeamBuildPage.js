@@ -24,6 +24,7 @@ const normalizeApplies = (applies) =>
     applicantName: item.applicantName ?? item.name ?? "",
     position: item.position ?? "",
     comment: item.comment ?? "",
+    career: item.career ?? "",
   }));
 
 const formatApiError = (err, fallback) => {
@@ -529,6 +530,7 @@ function TeamBuildPage() {
                       <td className={styles.applicantNameCell}>{apply.applicantName || "-"}</td>
                       <td className={styles.positionCell}>{renderPositionBadge(apply.position)}</td>
                       <td className={styles.applicationTextCell}>
+                        {apply.career && <>경력: {apply.career}<br /><br /></>}
                         {apply.comment || "작성된 지원서 내용이 없습니다."}
                       </td>
                     </tr>
@@ -579,7 +581,8 @@ function TeamBuildPage() {
                   </div>
                   {isExpanded && (
                     <div className={styles.applicationContent}>
-                      {apply.comment || "작성된 지원서 내용이 없습니다."}
+                      {apply.career && <>경력: {apply.career}<br /><br /></>}
+                        {apply.comment || "작성된 지원서 내용이 없습니다."}
                     </div>
                   )}
                 </div>

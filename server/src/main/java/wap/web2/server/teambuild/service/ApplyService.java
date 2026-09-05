@@ -64,6 +64,7 @@ public class ApplyService {
                             .priority(priority++)
                             .position(parsePosition(applyRequest.getPosition()))
                             .comment(applyRequest.getComment())
+                            .career(applyRequest.getCareer())
                             .user(user)
                             .project(project)
                             .build()

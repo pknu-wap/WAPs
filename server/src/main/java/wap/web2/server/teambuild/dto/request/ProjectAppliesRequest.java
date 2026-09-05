@@ -33,8 +33,14 @@ public class ProjectAppliesRequest {
         private String position;
 
         @NotBlank
-        @Size(max = 255)
+        @Size(max = 120)
         private String comment;
+
+        private String career;
+
+        public ApplyRequest(Long projectId, String position, String comment) {
+            this(projectId, position, comment, null);
+        }
     }
 
 }

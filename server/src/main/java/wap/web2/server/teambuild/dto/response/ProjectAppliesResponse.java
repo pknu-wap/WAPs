@@ -20,6 +20,7 @@ public class ProjectAppliesResponse {
         private Long projectId;
         private String position;
         private String comment;
+        private String career;
         private String applicantName;
         private Long applicantId;
     }
@@ -30,6 +31,7 @@ public class ProjectAppliesResponse {
                         apply.getProject().getProjectId(),
                         apply.getPosition().toString(),
                         apply.getComment(),
+                        apply.getCareer(),
                         apply.getUser().getName(),
                         apply.getUser().getId()
                 ))

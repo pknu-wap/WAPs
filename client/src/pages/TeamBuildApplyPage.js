@@ -120,7 +120,8 @@ const calculateDropInsertIndex = (projectIds, movingId, targetId, placement = "b
   return placement === "after" ? targetIndex + 1 : targetIndex;
 };
 
-function TeamBuildApplyPage() {
+function TeamBuildApplyPage({ round = 1 }) {
+  const isSecondRound = round === 2;
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -141,6 +142,8 @@ function TeamBuildApplyPage() {
   const [projectApplications, setProjectApplications] = useState([]);
   const [applicationModal, setApplicationModal] = useState(null);
   const [projectFormPosition, setProjectFormPosition] = useState("");
+  const [defaultCareer, setDefaultCareer] = useState("");
+  const [projectFormCareer, setProjectFormCareer] = useState("");
   const [projectFormMessage, setProjectFormMessage] = useState("");
   const [cancelTarget, setCancelTarget] = useState(null);
   const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
@@ -205,6 +208,8 @@ function TeamBuildApplyPage() {
           summary: "사용자 경험을 혁신하는 웹 플랫폼 개발 프로젝트입니다.",
           techStack: ["React", "JavaScript"],
           recruitPositions: ["FRONTEND", "BACKEND", "DESIGN"],
+          recruitCount: 3,
+          requirements: "주 1회 팀 회의에 참여할 수 있고, 적극적으로 소통하실 분을 찾습니다.",
         },
         {
           projectId: 2,
@@ -213,6 +218,8 @@ function TeamBuildApplyPage() {
           summary: "데이터 기반 서비스를 구축하는 프로젝트입니다.",
           techStack: ["React Native", "Spring"],
           recruitPositions: ["APP", "BACKEND", "DESIGN"],
+          recruitCount: 2,
+          requirements: "앱 서비스 개발 경험이 있거나 새로운 기술을 배우는 데 관심 있는 분을 환영합니다.",
         },
         {
           projectId: 3,
@@ -221,6 +228,8 @@ function TeamBuildApplyPage() {
           summary: "새로운 게임 서비스를 개발하는 프로젝트입니다.",
           techStack: ["Unity", "C#"],
           recruitPositions: ["GAME", "BACKEND", "DESIGN"],
+          recruitCount: 4,
+          requirements: "Unity 기반 협업이 가능하고 게임 기획에 관심 있는 분을 찾습니다.",
         },
       ]);
 
@@ -297,11 +306,13 @@ function TeamBuildApplyPage() {
     }
     setApplicationModal({ project, application });
     setProjectFormPosition(application?.position || "");
+    setProjectFormCareer(application?.career ?? defaultCareer);
     setProjectFormMessage(application?.message || "");
   };
 
   const closeProjectApplication = () => {
     setApplicationModal(null);
+    setProjectFormCareer("");
     setProjectFormPosition("");
     setProjectFormMessage("");
   };
@@ -313,6 +324,11 @@ function TeamBuildApplyPage() {
     }
     if (!projectFormMessage.trim()) {
       alert("자기소개 및 PR 메시지를 작성해주세요.");
+      return;
+    }
+
+    if (projectFormMessage.length > 120) {
+      alert("간단 자기소개 및 PR 메시지는 120자까지 작성할 수 있습니다.");
       return;
     }
 
@@ -329,7 +345,7 @@ function TeamBuildApplyPage() {
     if (application) {
       setProjectApplications((prev) => prev.map((item) =>
         item.id === application.id
-          ? { ...item, position: projectFormPosition, message: projectFormMessage.trim() }
+          ? { ...item, position: projectFormPosition, career: projectFormCareer.trim(), message: projectFormMessage.trim() }
           : item
       ));
     } else {
@@ -338,9 +354,11 @@ function TeamBuildApplyPage() {
         projectId: project.projectId,
         projectTitle: project.title,
         position: projectFormPosition,
+        career: projectFormCareer.trim(),
         message: projectFormMessage.trim(),
       }]);
     }
+    setDefaultCareer(projectFormCareer.trim());
     closeProjectApplication();
   };
 
@@ -392,7 +410,7 @@ function TeamBuildApplyPage() {
 
   const submitProjectApplications = async () => {
     if (projectApplications.length < 3) return;
-    if (!primaryPosition) {
+    if (!isSecondRound && !primaryPosition) {
       alert("주요 직무를 선택해주세요.");
       return;
     }
@@ -401,12 +419,13 @@ function TeamBuildApplyPage() {
   };
 
   const confirmProjectApplications = async () => {
-    if (projectApplications.length < 3 || !primaryPosition || isSubmitting) return;
+    if (projectApplications.length < 3 || (!isSecondRound && !primaryPosition) || isSubmitting) return;
 
     const applies = projectApplications.map((application) => ({
       projectId: application.projectId,
       position: application.position,
       comment: application.message,
+      career: application.career,
     }));
 
     setIsSubmitting(true);
@@ -718,17 +737,19 @@ function TeamBuildApplyPage() {
         </div>
 
         <div className={styles.hero}>
-          <div className={styles.heroTitle}>TEAM BUILDING_1ST</div>
+          <div className={styles.heroTitle}>TEAM BUILDING_{isSecondRound ? "2ND" : "1ST"}</div>
           <div className={styles.heroSubtitle}>
             함께할 팀을 찾고, 원하는 프로젝트에 도전해보세요
           </div>
         </div>
 
-        <div className={styles.notice}>
+        <div className={`${styles.notice} ${isSecondRound ? styles.secondRoundNotice : ""}`}>
           <button
             type="button"
             className={styles.noticeButton}
             onClick={() => setIsNoticeOpen(!isNoticeOpen)}
+            aria-expanded={isNoticeOpen}
+            aria-controls="notice-content"
           >
             <div className={styles.noticeTitle}>
               <img
@@ -736,7 +757,7 @@ function TeamBuildApplyPage() {
                 alt=""
                 className={styles.noticeIcon}
               />
-              <span>팀빌딩 안내사항</span>
+              <span>{isSecondRound ? "2차 팀빌딩 안내사항" : "팀빌딩 안내사항"}</span>
             </div>
 
             <span
@@ -749,9 +770,9 @@ function TeamBuildApplyPage() {
           </button>
 
           {isNoticeOpen && (
-            <div className={styles.noticeContent}>
-              <p>• 이번 팀빌딩은 총 3차에 걸쳐 진행됩니다.</p>
-              <p>• 지원서는 최소 3개 - 최대 5개까지 지원할 수 있으며, 동일 프로젝트에도 서로 다른 직무로 지원할 수 있습니다.</p>
+            <div id="notice-content" className={styles.noticeContent}>
+              {!isSecondRound && <p>• 이번 팀빌딩은 총 3차에 걸쳐 진행됩니다.</p>}
+              <p>• {isSecondRound ? "2차 팀빌딩도 마찬가지로" : "지원서는"} 최소 3개 - 최대 5개까지 지원할 수 있으며, 동일 프로젝트에도 서로 다른 직무로 지원할 수 있습니다.</p>
             </div>
           )}
         </div>
@@ -775,27 +796,29 @@ function TeamBuildApplyPage() {
             </div>
           </div>
 
-          <section className={styles.primaryPositionCard} aria-labelledby="primary-position-title">
-            <div className={styles.primaryPositionHeader}>
-              <h2 id="primary-position-title">주요 직무</h2>
-              <p>주요직무는 1차 팀빌딩에는 영향을 끼치지 않으며, 2·3차 팀빌딩시 사용될 예정입니다</p>
-            </div>
-            <div className={`${styles.formGroup} ${styles.primaryPositionSelect}`}>
-              <select
-                id="primaryPosition"
-                aria-label="주요 직무"
-                value={primaryPosition}
-                onChange={(event) => setPrimaryPosition(event.target.value)}
-              >
-                <option value="">직무를 선택해주세요</option>
-                {PRIMARY_POSITION_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </section>
+          {!isSecondRound && (
+            <section className={styles.primaryPositionCard} aria-labelledby="primary-position-title">
+              <div className={styles.primaryPositionHeader}>
+                <h2 id="primary-position-title">주요 직무</h2>
+                <p>주요 직무는 1차 팀빌딩에는 영향을 미치지 않으며, 3차 팀빌딩 시 활용될 예정입니다.</p>
+              </div>
+              <div className={`${styles.formGroup} ${styles.primaryPositionSelect}`}>
+                <select
+                  id="primaryPosition"
+                  aria-label="주요 직무"
+                  value={primaryPosition}
+                  onChange={(event) => setPrimaryPosition(event.target.value)}
+                >
+                  <option value="">직무를 선택해주세요</option>
+                  {PRIMARY_POSITION_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </section>
+          )}
 
           {projectApplications.length === 0 ? (
             <div className={styles.emptyApply}>
@@ -881,7 +904,7 @@ function TeamBuildApplyPage() {
                   className={styles.applicationProjectCard}
                 >
                   <div className={styles.applicationProjectTop}>
-                    <div>
+                    <div className={isSecondRound ? styles.applicationProjectInfo : undefined}>
                       <div className={styles.applicationProjectTitleRow}>
                         <h3>{project.title}</h3>
                         <span
@@ -891,6 +914,11 @@ function TeamBuildApplyPage() {
                         >
                           {getProjectTeamLabel(project)}
                         </span>
+                        {isSecondRound && (
+                          <span className={styles.recruitCount}>
+                            모집인원 : {project.recruitCount ?? 0}명
+                          </span>
+                        )}
                       </div>
                       <p>{project.summary}</p>
                     </div>
@@ -910,6 +938,14 @@ function TeamBuildApplyPage() {
                         </span>
                       ))}
                     </div>
+                    {isSecondRound && (
+                      <div className={styles.projectRequirements}>
+                        <p>
+                          {project.requirements || project.requirement || project.condition ||
+                            "등록된 요청 조건이 없습니다."}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div className={styles.applicationActions}>
                     {applications.map((application) => (
@@ -974,15 +1010,33 @@ function TeamBuildApplyPage() {
               </select>
             </div>
             <div className={styles.formGroup}>
-              <label htmlFor="projectMessage">자기소개 및 PR 메시지</label>
+              <label htmlFor="projectCareer">경력</label>
+              <textarea
+                id="projectCareer"
+                className={styles.compactTextarea}
+                rows={3}
+                value={projectFormCareer}
+                onChange={(event) => setProjectFormCareer(event.target.value)}
+                aria-describedby="project-career-help"
+                placeholder="프로젝트, 활동 등 관련 경력을 작성해주세요."
+              />
+              <p id="project-career-help" className={styles.applicationModalDescription}>
+                저장한 경력은 새 지원서에 자동 입력되며, 지원서마다 수정할 수 있습니다.
+                없다면 '없음'이라고 작성해주세요
+              </p>
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="projectMessage">간단 자기소개 및 PR 메시지</label>
               <textarea
                 id="projectMessage"
+                className={styles.compactTextarea}
+                rows={3}
                 value={projectFormMessage}
-                onChange={(event) => setProjectFormMessage(event.target.value.slice(0, 255))}
-                maxLength={255}
+                onChange={(event) => setProjectFormMessage(event.target.value.slice(0, 120))}
+                maxLength={120}
                 placeholder="자신의 경험과 프로젝트에 기여할 수 있는 부분을 작성해주세요."
               />
-              <div className={styles.characterCount}>{projectFormMessage.length} / 255</div>
+              <div className={styles.characterCount}>{projectFormMessage.length} / 120</div>
             </div>
             <button type="button" className={styles.modalSubmit} onClick={saveProjectApplication}>
               지원서 저장하기
@@ -1047,10 +1101,12 @@ function TeamBuildApplyPage() {
               ×
             </button>
             <h2 id="submit-application-title">최종 제출을 진행하시겠습니까?</h2>
-            <div className={styles.submitPrimaryPosition}>
-              <span>주요 직무</span>
-              <strong>{getPrimaryPositionLabel(primaryPosition)}</strong>
-            </div>
+            {!isSecondRound && (
+              <div className={styles.submitPrimaryPosition}>
+                <span>주요 직무</span>
+                <strong>{getPrimaryPositionLabel(primaryPosition)}</strong>
+              </div>
+            )}
             <ol id="submit-application-description" className={styles.submitApplicationList}>
               {projectApplications.map((application, index) => (
                 <li key={application.id}>
