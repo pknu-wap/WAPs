@@ -65,7 +65,7 @@ services:
     restart: unless-stopped
 
   caddy:
-    image: caddy:latest
+    image: caddy:2.11.4
     container_name: caddy
     restart: unless-stopped
     ports:
