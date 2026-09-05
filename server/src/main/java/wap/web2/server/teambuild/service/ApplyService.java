@@ -65,13 +65,14 @@ public class ApplyService {
             );
 
             applyRepository.save(
-                ProjectApply.builder()
-                    .priority(priority++)
-                    .position(parsePosition(applyRequest.getPosition()))
-                    .comment(applyRequest.getComment())
-                    .user(user)
-                    .project(project)
-                    .build()
+                    ProjectApply.builder()
+                            .priority(priority++)
+                            .position(parsePosition(applyRequest.getPosition()))
+                            .comment(applyRequest.getComment())
+                            .career(applyRequest.getCareer())
+                            .user(user)
+                            .project(project)
+                            .build()
             );
         }
     }

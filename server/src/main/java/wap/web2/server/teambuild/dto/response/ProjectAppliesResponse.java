@@ -21,23 +21,22 @@ public class ProjectAppliesResponse {
         private Long projectId;
         private String position;
         private String comment;
+        private String career;
         private String applicantName;
         private Long applicantId;
     }
 
     public static ProjectAppliesResponse fromEntities(List<ProjectApply> entities) {
-        List<ApplyResponse> responses = entities
-            .stream()
-            .map(apply ->
-                new ApplyResponse(
-                    apply.getProject().getProjectId(),
-                    apply.getPosition().toString(),
-                    apply.getComment(),
-                    apply.getUser().getName(),
-                    apply.getUser().getId()
-                )
-            )
-            .toList();
+        List<ApplyResponse> responses = entities.stream()
+                .map(apply -> new ApplyResponse(
+                        apply.getProject().getProjectId(),
+                        apply.getPosition().toString(),
+                        apply.getComment(),
+                        apply.getCareer(),
+                        apply.getUser().getName(),
+                        apply.getUser().getId()
+                ))
+                .toList();
 
         return new ProjectAppliesResponse(responses);
     }
