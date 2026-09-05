@@ -17,6 +17,8 @@ const POSITION_OPTIONS = [
   { value: "EMBEDDED", label: "임베디드" },
 ];
 
+const PRIMARY_POSITION_OPTIONS = POSITION_OPTIONS;
+
 const POSITION_LABELS = POSITION_OPTIONS.reduce((acc, item) => {
   acc[item.value] = item.label;
   return acc;
@@ -244,12 +246,12 @@ function TeamBuildApplyPage({ round = 1 }) {
     PRIMARY_POSITION_OPTIONS.find((option) => option.value === value)?.label || "미선택";
 
   const getProjectTeamLabel = (project) => {
-    const projectType = getProjectTeamType(readProjectType(project));
+    const projectType = normalizeProjectType(readProjectType(project));
     const teamNumber = projects
-      .filter((item) => getProjectTeamType(readProjectType(item)) === projectType)
+      .filter((item) => normalizeProjectType(readProjectType(item)) === projectType)
       .findIndex((item) => String(item.projectId) === String(project.projectId)) + 1;
 
-    return `${getProjectTeamTypeLabel(readProjectType(project))} ${teamNumber || 1}`;
+    return `${getProjectTypeLabel(readProjectType(project))} ${teamNumber || 1}`;
   };
 
   const openProjectApplication = (project, application = null) => {
@@ -714,11 +716,6 @@ function TeamBuildApplyPage({ round = 1 }) {
             aria-controls="notice-content"
           >
             <div className={styles.noticeTitle}>
-              <img
-                src={noticeIcon}
-                alt=""
-                className={styles.noticeIcon}
-              />
               <span>{isSecondRound ? "2차 팀빌딩 안내사항" : "팀빌딩 안내사항"}</span>
             </div>
 
@@ -727,7 +724,7 @@ function TeamBuildApplyPage({ round = 1 }) {
                 isNoticeOpen ? styles.noticeArrowOpen : ""
               }`}
             >
-              <img src={noticeArrow} alt="" aria-hidden="true" />
+              <span aria-hidden="true">⌄</span>
             </span>
           </button>
 
@@ -768,72 +765,72 @@ function TeamBuildApplyPage({ round = 1 }) {
               )}
             </div>
 
-    {!step1Expanded ? (
-      <div className={styles.sectionSummary}>
-        <div className={styles.summaryRow}>
-          <span>지원 직무</span>
-          <strong>
-            {getPositionLabel(commonApplication?.position)}
-          </strong>
-        </div>
-
-        <div className={styles.summaryText}>
-          {getPreviewText(commonApplication?.message, 150)}
-        </div>
-      </div>
-    ) : (
-      <div className={styles.sectionBody}>
-        {!isSecondRound && (
-          <section
-            className={styles.primaryPositionCard}
-            aria-labelledby="primary-position-title"
-          >
-            <div className={styles.primaryPositionHeader}>
-              <h2 id="primary-position-title">주요 직무</h2>
-              <p>
-                주요 직무는 1차 팀빌딩에는 영향을 미치지 않으며,
-                3차 팀빌딩 시 활용될 예정입니다.
-              </p>
+            {!step1Expanded ? (
+              <div className={styles.sectionSummary}>
+                <div className={styles.summaryRow}>
+                  <span>지원 직무</span>
+                  <strong>
+                    {getPositionLabel(commonApplication?.position)}
+                  </strong>
+                </div>
+        
+                <div className={styles.summaryText}>
+                  {getPreviewText(commonApplication?.message, 150)}
+                </div>
+              </div>
+            ) : (
+              <div className={styles.sectionBody}>
+                {!isSecondRound && (
+                  <section
+                    className={styles.primaryPositionCard}
+                    aria-labelledby="primary-position-title"
+                  >
+                    <div className={styles.primaryPositionHeader}>
+                      <h2 id="primary-position-title">주요 직무</h2>
+                      <p>
+                        주요 직무는 1차 팀빌딩에는 영향을 미치지 않으며,
+                        3차 팀빌딩 시 활용될 예정입니다.
+                      </p>
+                    </div>
+        
+                    <div
+                      className={`${styles.formGroup} ${styles.primaryPositionSelect}`}
+                    >
+                      <select
+                        id="primaryPosition"
+                        aria-label="주요 직무"
+                        value={primaryPosition}
+                        onChange={(event) => setPrimaryPosition(event.target.value)}
+                      >
+                        <option value="">직무를 선택해주세요</option>
+        
+                        {PRIMARY_POSITION_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </section>
+                )}
+        
+                <div className={styles.formGroup}>
+                  <label htmlFor="commonPosition">지원 직무</label>
+                  <select
+                    id="commonPosition"
+                    value={formPosition}
+                    onChange={(event) => setFormPosition(event.target.value)}
+                  >
+                    <option value="">직무를 선택해주세요</option>
+        
+                    {POSITION_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
             </div>
-
-            <div
-              className={`${styles.formGroup} ${styles.primaryPositionSelect}`}
-            >
-              <select
-                id="primaryPosition"
-                aria-label="주요 직무"
-                value={primaryPosition}
-                onChange={(event) => setPrimaryPosition(event.target.value)}
-              >
-                <option value="">직무를 선택해주세요</option>
-
-                {PRIMARY_POSITION_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </section>
-        )}
-
-        <div className={styles.formGroup}>
-          <label htmlFor="commonPosition">지원 직무</label>
-          <select
-            id="commonPosition"
-            value={formPosition}
-            onChange={(event) => setFormPosition(event.target.value)}
-          >
-            <option value="">직무를 선택해주세요</option>
-
-            {POSITION_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-    </div>                                                
-
+        
                 <div className={styles.formGroup}>
                   <label htmlFor="commonMessage">자기소개 및 PR 메시지</label>
                   <textarea
@@ -908,140 +905,205 @@ function TeamBuildApplyPage({ round = 1 }) {
               )}
             </div>
 
-          <div className={styles.availableProjectList}>
-            {projects.map((project) => {
-              const applications = projectApplications.filter(
-                (item) => item.projectId === project.projectId
-              );
-              return (
-                <article
-                  key={project.projectId}
-                  className={styles.applicationProjectCard}
-                >
-                  <div className={styles.applicationProjectTop}>
-                    <div className={isSecondRound ? styles.applicationProjectInfo : undefined}>
-                      <div className={styles.applicationProjectTitleRow}>
-                        <h3>{project.title}</h3>
-                        <span
-                          key={project.projectId}
-                          className={styles.summaryChip}
-                        >
-                          {project.title}
-                        </span>
-                        {isSecondRound && (
-                          <span className={styles.recruitCount}>
-                            모집인원 : {project.recruitCount ?? 0}명
-                          </span>
-                        )}
-                      </div>
-                      <p>{project.summary}</p>
+            {!step2Expanded ? (
+              <div className={styles.sectionSummary}>
+                {!canSelectProjects ? (
+                  <div className={styles.summaryText}>1단계 지원서 작성 완료 후 프로젝트를 선택할 수 있습니다.</div>
+                ) : (
+                  <>
+                    <div className={styles.summaryRow}><span>선택한 프로젝트</span><strong>{selectedCount}개</strong></div>
+                    <div className={styles.summaryText}>{summaryPreviewProjects.map((project) => project.title).join(" / ")}{hiddenProjectCount > 0 ? ` / +${hiddenProjectCount}개` : ""}</div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className={styles.sectionBody}>
+                <div className={styles.cartBox}>
+                  {selectedProjects.length === 0 ? (
+                    <div className={styles.cartEmpty}>아직 선택된 프로젝트가 없습니다.<br />프로젝트를 선택해 주세요.</div>
+                  ) : (
+                    <div className={styles.cartItems}>
+                      {selectedProjects.map((project) => (
+                        <div key={project.projectId} className={styles.cartItem}>
+                          <span>{project.title}</span>
+                          <button type="button" className={styles.cartRemove} onClick={() => removeFromCart(project.projectId)}>×</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button type="button" className={styles.modalSubmit} disabled={!canReviewPriority} onClick={() => openStep(3)}>우선순위 설정하고 제출하기</button>
+              </div>
+            )}
+          </section>
+          <section className={`${styles.panel} ${styles.editablePanel} ${step3Expanded ? styles.editablePanelActive : ""} ${!canReviewPriority ? styles.panelLocked : ""}`}>
+            <div className={styles.editableHeader}>
+              <div className={styles.panelTitle}><span className={styles.panelStep}>3</span>우선순위 및 제출</div>
+              <span className={styles.stepChip}>{step3Status}</span>
+            </div>
+            {!step3Expanded ? (
+              <div className={styles.sectionSummary}>
+                {!canReviewPriority ? (
+                  <div className={styles.summaryText}>
+                    Step 2에서 프로젝트를 선택하면 제출 단계가 열립니다.
+                  </div>
+                ) : (
+                  <>
+                    <div className={styles.summaryRow}>
+                      <span>제출 예정 프로젝트</span>
+                      <strong>{selectedCount}개</strong>
+                    </div>
+                    <div className={styles.summaryText}>
+                      {summaryPreviewProjects
+                        .map(
+                          (project, index) => `${index + 1}. ${project.title}`,
+                        )
+                        .join(" / ")}
+                      {hiddenProjectCount > 0
+                        ? ` / +${hiddenProjectCount}개`
+                        : ""}
                     </div>
                   </>
                 )}
               </div>
             ) : (
               <div className={styles.sectionBody}>
-                {!canSelectProjects && (
+                {!canReviewPriority ? (
                   <div className={styles.lockNotice}>
                     <span>
-                      1단계 지원서 작성 완료 후 프로젝트를 선택할 수 있습니다.
+                      먼저 Step 2에서 최소 1개 이상의 프로젝트를 선택해주세요.
                     </span>
                     <button
                       type="button"
                       className={styles.lockAction}
-                      onClick={() => openStep(1)}
+                      onClick={() => openStep(2)}
                     >
-                      Step 1로 이동
+                      Step 2로 이동
                     </button>
                   </div>
-                )}
+                ) : (
+                  <>
+                    <div className={styles.priorityGuide}>
+                      <strong>지원 우선순위 설정</strong>
+                      <span>· 드래그하면 이동될 순서가 미리 반영됩니다.</span>
+                    </div>
 
-                <div className={styles.cartBox}>
-                  {selectedProjects.length === 0 ? (
-                    <div className={styles.cartEmpty}>
-                      {!canSelectProjects ? (
-                        <>
-                          아직 프로젝트를 선택할 수 없습니다.
-                          <br />
-                          위의 1단계를 먼저 진행해 주세요.
-                        </>
-                      ) : (
-                        <>
-                          아직 선택된 프로젝트가 없습니다.
-                          <br />
-                          프로젝트를 선택해 주세요.
-                        </>
-                      )}
-                    </div>
-                  ) : (
-                    <div className={styles.cartItems}>
-                      {selectedProjects.map((project) => (
-                        <div
-                          key={project.projectId}
-                          className={styles.cartItem}
-                        >
-                          <span>{project.title}</span>
-                          <button
-                            type="button"
-                            className={styles.cartRemove}
-                            onClick={() => removeFromCart(project.projectId)}
+                    <ol
+                      className={`${styles.priorityList} ${draggingId ? styles.priorityListDragging : ""}`}
+                      onDragOver={handleListDragOver}
+                      onDrop={handleListDrop}
+                    >
+                      {priorityPreviewProjects.map((project, index) => {
+                        const isDropTarget =
+                          Boolean(draggingId) &&
+                          dragOverId === project.projectId &&
+                          draggingId !== project.projectId;
+                        const dropPlacementClass = isDropTarget
+                          ? dragOverPlacement === "after"
+                            ? styles.dropAfter
+                            : styles.dropBefore
+                          : "";
+
+                        return (
+                          <li
+                            key={project.projectId}
+                            className={`${styles.priorityItem} ${
+                              draggingId === project.projectId
+                                ? styles.dragging
+                                : ""
+                            } ${dragOverId === project.projectId ? styles.dragOver : ""} ${dropPlacementClass}`}
+                            draggable
+                            onDragStart={handleDragStart(project.projectId)}
+                            onDragEnd={handleDragEnd}
+                            onDragOver={handleDragOver(project.projectId)}
+                            onDrop={handleDrop(project.projectId)}
                           >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    {isSecondRound && (
-                      <div className={styles.projectRequirements}>
-                        <p>
-                          {project.requirements || project.requirement || project.condition ||
-                            "등록된 요청 조건이 없습니다."}
-                        </p>
+                            <div className={styles.priorityNumber}>
+                              {index + 1}
+                            </div>
+                            <div className={styles.priorityInfo}>
+                              <div className={styles.priorityTitle}>
+                                {project.title}
+                              </div>
+                              <div className={styles.priorityRole}>
+                                지원 직무:{" "}
+                                {getPositionLabel(commonApplication?.position)}
+                              </div>
+                            </div>
+                            <span className={styles.dragHandle}>⋮⋮</span>
+                          </li>
+                        );
+                      })}
+                    </ol>
+
+                    <button
+                      type="button"
+                      className={styles.modalSubmit}
+                      onClick={submitAllApplications}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting
+                        ? "제출 중..."
+                        : "선택한 프로젝트에 지원하기"}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </section>
+        </section>
+
+        <section className={styles.availableSection} aria-label="지원 가능 프로젝트">
+          <div className={styles.availableHeader}><h2>지원 가능 프로젝트</h2></div>
+          <div className={styles.applicationActions}>
+            <button type="button" className={`${styles.projectTypeChip} ${styles.projectTypeChipAll} ${isAllProjectTypes ? styles.projectTypeChipActive : ""}`} onClick={() => setSelectedProjectTypes([])} aria-pressed={isAllProjectTypes}>모두</button>
+            {PROJECT_TYPE_OPTIONS.map((option) => (
+              <button key={option.value} type="button" className={`${styles.projectTypeChip} ${styles[`projectTypeChip${option.value}`]} ${selectedProjectTypes.includes(option.value) ? styles.projectTypeChipActive : ""}`} onClick={() => toggleProjectTypeFilter(option.value)} aria-pressed={selectedProjectTypes.includes(option.value)}>{option.label}</button>
+            ))}
+          </div>
+          <p>{isAllProjectTypes ? "모든 프로젝트" : selectedProjectTypeLabels.join(" / ")}</p>
+          <div className={styles.availableProjectList}>
+            {filteredProjects.map((project) => {
+              const applications = projectApplications.filter((item) => item.projectId === project.projectId);
+              const availablePositions = project.recruitPositions.filter((position) => !applications.some((application) => application.position === position));
+              return (
+                <article key={project.projectId} className={styles.applicationProjectCard}>
+                  <div className={styles.applicationProjectTop}>
+                    <div className={isSecondRound ? styles.applicationProjectInfo : undefined}>
+                      <div className={styles.applicationProjectTitleRow}>
+                        <h3>{project.title}</h3>
+                        <span className={`${styles.projectTeamBadge} ${styles[`projectTeamBadge${getProjectTypeStyleKey(readProjectType(project))}`]}`}>{getProjectTeamLabel(project)}</span>
+                        {isSecondRound && <span className={styles.recruitCount}>모집인원 : {project.recruitCount ?? 0}명</span>}
                       </div>
-                    )}
+                      <p>{project.summary}</p>
+                    </div>
+                    {isSecondRound && <div className={styles.projectRequirements}><p>{project.requirements || project.requirement || project.condition || "등록된 요청 조건이 없습니다."}</p></div>}
                   </div>
                   <div className={styles.applicationActions}>
                     {applications.map((application) => (
-                      <button
-                        key={application.id}
-                        type="button"
-                        className={styles.modifyApplicationButton}
-                        onClick={() => openProjectApplication(project, application)}
-                      >
-                        지원서 수정하기 ({getPositionLabel(application.position)})
-                      </button>
+                      <button key={application.id} type="button" className={styles.modifyApplicationButton} onClick={() => openProjectApplication(project, application)}>지원서 수정하기 ({getPositionLabel(application.position)})</button>
                     ))}
-                    <button
-                      type="button"
-                      className={`${styles.projectTypeChip} ${styles.projectTypeChipAll} ${
-                        isAllProjectTypes ? styles.projectTypeChipActive : ""
-                      }`}
-                      onClick={() => setSelectedProjectTypes([])}
-                      aria-pressed={isAllProjectTypes}
-                    >
-                      모두
-                    </button>
-                    {PROJECT_TYPE_OPTIONS.map((option) => {
-                      const isActive = selectedProjectTypes.includes(
-                        option.value,
-                      );
-                      return (
-                        <button
-                          key={option.value}
-                          type="button"
-                          className={`${styles.projectTypeChip} ${
-                            styles[`projectTypeChip${option.value}`]
-                          } ${isActive ? styles.projectTypeChipActive : ""}`}
-                          onClick={() => toggleProjectTypeFilter(option.value)}
-                          aria-pressed={isActive}
-                        >
-                          {option.label}
-                        </button>
-                      );
-                    })}
+                    {availablePositions.length > 0 && <button type="button" className={styles.writeApplicationButton} disabled={projectApplications.length >= MAX_SELECTION} onClick={() => openProjectApplication(project)}>지원서 작성하기</button>}
+                    {step2Expanded && <button type="button" className={styles.addApplicationButton} disabled={!canSelectProjects || selectedProjectIds.includes(project.projectId) || selectedCount >= MAX_SELECTION} onClick={() => addToCart(project.projectId)}>{selectedProjectIds.includes(project.projectId) ? "선택됨" : "프로젝트 선택"}</button>}
                   </div>
-                </div>
-
+                </article>
+              );
+            })}
+          </div>
+        </section>
+        <section className={styles.panel} aria-label="작성한 지원서">
+          <h2>작성한 지원서</h2>
+          <ol className={styles.myApplicationList}>
+            {projectApplications.map((application, index) => (
+              <li key={application.id} className={`${styles.myApplicationItem} ${applicationDraggingId === application.id ? styles.dragging : ""} ${applicationDragOverId === application.id ? styles.dragOver : ""}`} draggable onDragStart={handleApplicationDragStart(application.id)} onDragOver={handleApplicationDragOver(application.id)} onDrop={handleApplicationDrop(application.id)} onDragEnd={handleApplicationDragEnd}>
+                <span className={styles.myApplicationPriorityNumber}>{index + 1}</span>
+                <strong>{application.projectTitle} ({getPositionLabel(application.position)})</strong>
+                <button type="button" className={styles.cancelApplicationButton} onClick={() => setCancelTarget(application)}>지원 취소</button>
+              </li>
+            ))}
+          </ol>
+          <button type="button" className={styles.finalSubmitButton} disabled={projectApplications.length < 3 || isSubmitting} onClick={submitProjectApplications}>최종 제출하기</button>
+        </section>
       </div>
       {applicationModal && (
         <div className={styles.applicationModal} onMouseDown={closeProjectApplication}>
@@ -1199,118 +1261,9 @@ function TeamBuildApplyPage({ round = 1 }) {
               </button>
             </div>
 
-            {!step3Expanded ? (
-              <div className={styles.sectionSummary}>
-                {!canReviewPriority ? (
-                  <div className={styles.summaryText}>
-                    Step 2에서 프로젝트를 선택하면 제출 단계가 열립니다.
-                  </div>
-                ) : (
-                  <>
-                    <div className={styles.summaryRow}>
-                      <span>제출 예정 프로젝트</span>
-                      <strong>{selectedCount}개</strong>
-                    </div>
-                    <div className={styles.summaryText}>
-                      {summaryPreviewProjects
-                        .map(
-                          (project, index) => `${index + 1}. ${project.title}`,
-                        )
-                        .join(" / ")}
-                      {hiddenProjectCount > 0
-                        ? ` / +${hiddenProjectCount}개`
-                        : ""}
-                    </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className={styles.sectionBody}>
-                {!canReviewPriority ? (
-                  <div className={styles.lockNotice}>
-                    <span>
-                      먼저 Step 2에서 최소 1개 이상의 프로젝트를 선택해주세요.
-                    </span>
-                    <button
-                      type="button"
-                      className={styles.lockAction}
-                      onClick={() => openStep(2)}
-                    >
-                      Step 2로 이동
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className={styles.priorityGuide}>
-                      <strong>지원 우선순위 설정</strong>
-                      <span>· 드래그하면 이동될 순서가 미리 반영됩니다.</span>
-                    </div>
-
-                    <ol
-                      className={`${styles.priorityList} ${draggingId ? styles.priorityListDragging : ""}`}
-                      onDragOver={handleListDragOver}
-                      onDrop={handleListDrop}
-                    >
-                      {priorityPreviewProjects.map((project, index) => {
-                        const isDropTarget =
-                          Boolean(draggingId) &&
-                          dragOverId === project.projectId &&
-                          draggingId !== project.projectId;
-                        const dropPlacementClass = isDropTarget
-                          ? dragOverPlacement === "after"
-                            ? styles.dropAfter
-                            : styles.dropBefore
-                          : "";
-
-                        return (
-                          <li
-                            key={project.projectId}
-                            className={`${styles.priorityItem} ${
-                              draggingId === project.projectId
-                                ? styles.dragging
-                                : ""
-                            } ${dragOverId === project.projectId ? styles.dragOver : ""} ${dropPlacementClass}`}
-                            draggable
-                            onDragStart={handleDragStart(project.projectId)}
-                            onDragEnd={handleDragEnd}
-                            onDragOver={handleDragOver(project.projectId)}
-                            onDrop={handleDrop(project.projectId)}
-                          >
-                            <div className={styles.priorityNumber}>
-                              {index + 1}
-                            </div>
-                            <div className={styles.priorityInfo}>
-                              <div className={styles.priorityTitle}>
-                                {project.title}
-                              </div>
-                              <div className={styles.priorityRole}>
-                                지원 직무:{" "}
-                                {getPositionLabel(commonApplication?.position)}
-                              </div>
-                            </div>
-                            <span className={styles.dragHandle}>⋮⋮</span>
-                          </li>
-                        );
-                      })}
-                    </ol>
-
-                    <button
-                      type="button"
-                      className={styles.modalSubmit}
-                      onClick={submitAllApplications}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting
-                        ? "제출 중..."
-                        : "선택한 프로젝트에 지원하기"}
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-          </section>
-        </section>
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
