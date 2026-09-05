@@ -155,7 +155,7 @@ const TeamBuildResultPage = () => {
                 </div>
 
                 <div className={styles.footer}>
-                  <div div className={styles.summary}>
+                  <div className={styles.summary}>
                     {team.summary && (
                       <div className={styles.muted}>{team.summary}</div>
                     )}
@@ -193,10 +193,10 @@ const TeamBuildResultPage = () => {
         ) : (
           <div className={styles.grid}>
             {filteredUnassigned.map((m) => (
-              <div className={styles.card} key={m.name}>
+              <div className={styles.card} key={m.id}>
                 <div className={styles.cardHeader}>
                   <div className={styles.notMatched}>
-                    <span>{m.name}</span>
+                    <span>{m.id}</span>
                     <span className={styles.badge}>{m.position}</span>
                   </div>
                   <div style={{ fontSize: "10px" }}>미배정</div>
