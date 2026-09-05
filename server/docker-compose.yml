@@ -78,6 +78,8 @@ services:
       - caddy_config:/config
     networks:
       - waps-network
+    depends_on:
+      - app
 
 networks:
   waps-network:
