@@ -193,10 +193,10 @@ const TeamBuildResultPage = () => {
         ) : (
           <div className={styles.grid}>
             {filteredUnassigned.map((m) => (
-              <div className={styles.card} key={m.id}>
+              <div className={styles.card} key={m.name}>
                 <div className={styles.cardHeader}>
                   <div className={styles.notMatched}>
-                    <span>{m.id}</span>
+                    <span>{m.name}</span>
                     <span className={styles.badge}>{m.position}</span>
                   </div>
                   <div style={{ fontSize: "10px" }}>미배정</div>

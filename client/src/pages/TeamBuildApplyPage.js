@@ -197,46 +197,6 @@ function TeamBuildApplyPage({ round = 1 }) {
     };
   }, []);
 
-  // useEffect(() => {
-  //   setHasApplied(false);
-
-  //   setProjects([
-  //       {
-  //         projectId: 1,
-  //         title: "프로젝트 1",
-  //         projectType: "WEB",
-  //         summary: "사용자 경험을 혁신하는 웹 플랫폼 개발 프로젝트입니다.",
-  //         techStack: ["React", "JavaScript"],
-  //         recruitPositions: ["FRONTEND", "BACKEND", "DESIGN"],
-  //         recruitCount: 3,
-  //         requirements: "주 1회 팀 회의에 참여할 수 있고, 적극적으로 소통하실 분을 찾습니다.",
-  //       },
-  //       {
-  //         projectId: 2,
-  //         title: "프로젝트 2",
-  //         projectType: "APP",
-  //         summary: "데이터 기반 서비스를 구축하는 프로젝트입니다.",
-  //         techStack: ["React Native", "Spring"],
-  //         recruitPositions: ["APP", "BACKEND", "DESIGN"],
-  //         recruitCount: 2,
-  //         requirements: "앱 서비스 개발 경험이 있거나 새로운 기술을 배우는 데 관심 있는 분을 환영합니다.",
-  //       },
-  //       {
-  //         projectId: 3,
-  //         title: "프로젝트 3",
-  //         projectType: "GAME",
-  //         summary: "새로운 게임 서비스를 개발하는 프로젝트입니다.",
-  //         techStack: ["Unity", "C#"],
-  //         recruitPositions: ["GAME", "BACKEND", "DESIGN"],
-  //         recruitCount: 4,
-  //         requirements: "Unity 기반 협업이 가능하고 게임 기획에 관심 있는 분을 찾습니다.",
-  //       },
-  //     ]);
-
-  //     setIsLoading(false);
-  // }, []);
-  // 나중에 제거하기. 임시 내용
-
   const projectsById = useMemo(() => {
     const map = new Map();
     projects.forEach((project) => map.set(project.projectId, project));
