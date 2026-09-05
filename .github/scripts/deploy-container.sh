@@ -63,7 +63,7 @@ rollback() {
 if ! docker run -d \
   --name waps-server \
   --restart unless-stopped \
-  -p 8080:8080 \
+  -p 80:8080 \
   --mount type=bind,src=/home/ubuntu/.oci,dst=/home/ubuntu/.oci,readonly \
   -e SPRING_PROFILES_ACTIVE=oracle \
   -e DB_HOST -e DB_PORT -e DB_NAME -e DB_USER -e DB_PASSWORD \
