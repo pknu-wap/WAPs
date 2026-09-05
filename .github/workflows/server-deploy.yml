@@ -215,6 +215,7 @@ jobs:
             rollback
       - name: Clean up temporary files
         if: ${{ always() }}
+        continue-on-error: true
         timeout-minutes: 2
         shell: bash
         run: |
@@ -222,12 +223,12 @@ jobs:
 
           source .github/scripts/deploy-ssh.sh
 
-          trap 'rm -rf -- "$state"' EXIT
+          trap 'rm -rf -- "$state" || echo "::warning::Could not remove local deployment temporary files"' EXIT
           if [[ -f "$state/remote_dir" ]]; then
             remote_dir=$(cat "$state/remote_dir")
-            valid_remote_dir "$remote_dir"
-            if ! remote "rm -rf -- '$remote_dir'"; then
+            if ! valid_remote_dir "$remote_dir"; then
+              echo "::warning::Invalid deployment temporary directory; skipping remote cleanup"
+            elif ! remote "rm -rf -- '$remote_dir'"; then
               echo "::warning::Could not remove OCI temporary directory: $remote_dir"
-              exit 1
             fi
           fi
