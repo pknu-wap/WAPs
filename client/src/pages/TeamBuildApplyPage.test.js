@@ -41,3 +41,20 @@ test.each([1, 2])("%i차 경력 자동 입력과 개별 수정, 자기소개 120
   form = open();
   expect(form.getByLabelText("경력").value).toBe("앱 개발 경험");
 });
+
+test("단계 전환 시 프로젝트 목록과 우선순위 화면이 올바르게 렌더링된다", async () => {
+  render(<MemoryRouter><TeamBuildApplyPage /></MemoryRouter>);
+  await screen.findAllByRole("button", { name: "지원서 작성하기" });
+  fireEvent.change(screen.getByLabelText("지원 직무"), { target: { value: "BACKEND" } });
+  fireEvent.change(screen.getByLabelText("자기소개 및 PR 메시지"), { target: { value: "백엔드 개발 경험" } });
+  fireEvent.click(screen.getByRole("button", { name: "지원서 저장하고 다음으로" }));
+  fireEvent.click(screen.getAllByRole("button", { name: "프로젝트 선택" })[0]);
+  fireEvent.click(screen.getByRole("button", { name: "우선순위 설정하고 제출하기" }));
+  const steps = within(screen.getByRole("region", { name: "지원 단계" }));
+  expect(steps.getByText("지원 우선순위 설정")).toBeTruthy();
+  expect(steps.getByRole("button", { name: "선택한 프로젝트에 지원하기" })).toBeTruthy();
+  expect(screen.queryByRole("alertdialog")).toBeNull();
+  fireEvent.click(steps.getAllByRole("button", { name: "수정" })[1]);
+  expect(steps.getByRole("button", { name: "전체 삭제" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "선택됨" }).disabled).toBe(true);
+});
