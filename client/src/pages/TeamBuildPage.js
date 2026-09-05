@@ -24,6 +24,7 @@ const normalizeApplies = (applies) =>
     applicantName: item.applicantName ?? item.name ?? "",
     position: item.position ?? "",
     comment: item.comment ?? "",
+    career: item.career ?? "",
   }));
 
 const formatApiError = (err, fallback) => {
@@ -36,7 +37,7 @@ const formatApiError = (err, fallback) => {
   return err?.message || fallback;
 };
 
-function TeamBuildPage() {
+function TeamBuildPage({ round = 1 }) {
   const navigate = useNavigate();
   const [projectIdInput, setProjectIdInput] = useState("");
   const [currentProjectId, setCurrentProjectId] = useState(null);
@@ -303,37 +304,9 @@ function TeamBuildPage() {
     }
   };
 
-  const validatePriorityBeforeSubmit = () => {
-    const missing = [];
-    for (const pos of POSITIONS) {
-      const cap = Number(capacityByPosition[pos] || 0);
-      if (cap <= 0) continue;
-      const total = totalApplicantsOf(pos);
-      const ranked = (rankedByPosition[pos] || []).length;
-      const required = Math.min(total, 4);
-      if (ranked < required) {
-        missing.push({ pos, total, ranked, required });
-      }
-    }
-    return missing;
-  };
-
   const handleSubmit = async () => {
     if (!currentProjectId) {
       alert("먼저 프로젝트를 불러오세요.");
-      return;
-    }
-
-    const incomplete = validatePriorityBeforeSubmit();
-    if (incomplete.length > 0) {
-      const msgLines = incomplete.map(
-        (g) =>
-          `• ${g.pos}: 전체 ${g.total}명 중 ${g.ranked}명 설정 (최소 ${g.required}명 필요)`,
-      );
-      alert(
-        "지원자가 4명 미만이면 전원, 4명 이상이면 최소 4명의 우선순위를 설정해야 제출할 수 있습니다.\n\n" +
-          msgLines.join("\n"),
-      );
       return;
     }
 
@@ -408,8 +381,8 @@ function TeamBuildPage() {
         </div>
 
         <div className={styles.hero}>
-          <h1 className={styles.heroTitle}>RECRUITMENT PAGE_1st</h1>
-          <div className={styles.heroSubtitle}>1차 모집하기 페이지</div>
+          <h1 className={styles.heroTitle}>RECRUITMENT PAGE_{round === 2 ? "2nd" : "1st"}</h1>
+          <div className={styles.heroSubtitle}>{round}차 모집하기 페이지</div>
         </div>
 
         <div className={styles.card}>
@@ -501,13 +474,14 @@ function TeamBuildPage() {
                 <tr>
                   <th>이름</th>
                   <th>분야</th>
-                  <th>지원서 내용</th>
+                  <th>경력</th>
+                  <th>한줄 PR</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredApplies.length === 0 ? (
                   <tr>
-                    <td colSpan="3" className={styles.muted}>
+                    <td colSpan="4" className={styles.muted}>
                       {emptyApplyMessage}
                     </td>
                   </tr>
@@ -521,14 +495,13 @@ function TeamBuildPage() {
                           : ""
                       }
                     >
-                      <td className={styles.applicantNameCell}>
-                        {apply.applicantName || "-"}
-                      </td>
-                      <td className={styles.positionCell}>
-                        {renderPositionBadge(apply.position)}
+                      <td className={styles.applicantNameCell}>{apply.applicantName || "-"}</td>
+                      <td className={styles.positionCell}>{renderPositionBadge(apply.position)}</td>
+                      <td className={styles.careerCell}>
+                        {apply.career || "작성된 경력이 없습니다."}
                       </td>
                       <td className={styles.applicationTextCell}>
-                        {apply.comment || "작성된 지원서 내용이 없습니다."}
+                        {apply.comment || "작성된 한줄 PR이 없습니다."}
                       </td>
                     </tr>
                   ))
@@ -544,46 +517,42 @@ function TeamBuildPage() {
               filteredApplies.map((apply) => {
                 const isExpanded = expandedApplicantIds.has(apply.applicantId);
                 return (
-                  <div
-                    key={apply.applicantId}
-                    className={`${styles.applicantCard} ${isExpanded ? styles.applicantCardExpanded : ""}`}
-                    onMouseEnter={() =>
-                      setHighlightedApplicantId(apply.applicantId)
-                    }
-                    onMouseLeave={() => setHighlightedApplicantId(null)}
-                  >
-                    <div className={styles.cardHeaderRow}>
-                      <span className={styles.cardName}>
-                        {apply.applicantName || "-"}
-                      </span>
-                      {renderPositionBadge(apply.position)}
-                      <button
-                        type="button"
-                        className={`${styles.applicationArrow} ${
-                          isExpanded ? styles.applicationArrowExpanded : ""
-                        }`}
-                        aria-label={`${apply.applicantName || "지원자"} 지원서 ${
-                          isExpanded ? "닫기" : "보기"
-                        }`}
-                        aria-expanded={isExpanded}
-                        onClick={() =>
-                          setExpandedApplicantIds((prev) => {
-                            const next = new Set(prev);
-                            if (next.has(apply.applicantId))
-                              next.delete(apply.applicantId);
-                            else next.add(apply.applicantId);
-                            return next;
-                          })
-                        }
-                      >
-                        &rsaquo;
-                      </button>
+                <div
+                  key={apply.applicantId}
+                  className={`${styles.applicantCard} ${isExpanded ? styles.applicantCardExpanded : ""}`}
+                  onMouseEnter={() => setHighlightedApplicantId(apply.applicantId)}
+                  onMouseLeave={() => setHighlightedApplicantId(null)}
+                >
+                  <div className={styles.cardHeaderRow}>
+                    <span className={styles.cardName}>{apply.applicantName || "-"}</span>
+                    {renderPositionBadge(apply.position)}
+                    <button
+                      type="button"
+                      className={`${styles.applicationArrow} ${
+                        isExpanded ? styles.applicationArrowExpanded : ""
+                      }`}
+                      aria-label={`${apply.applicantName || "지원자"} 지원서 ${
+                        isExpanded ? "닫기" : "보기"
+                      }`}
+                      aria-expanded={isExpanded}
+                      onClick={() =>
+                        setExpandedApplicantIds((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(apply.applicantId)) next.delete(apply.applicantId);
+                          else next.add(apply.applicantId);
+                          return next;
+                        })
+                      }
+                    >
+                      &rsaquo;
+                    </button>
+                  </div>
+                  {isExpanded && (
+                    <div className={styles.applicationContent}>
+                      {apply.career && <>경력: {apply.career}<br /></>}
+                      {apply.comment || "작성된 지원서 내용이 없습니다."}
                     </div>
-                    {isExpanded && (
-                      <div className={styles.applicationContent}>
-                        {apply.comment || "작성된 지원서 내용이 없습니다."}
-                      </div>
-                    )}
+                  )}
                   </div>
                 );
               })
