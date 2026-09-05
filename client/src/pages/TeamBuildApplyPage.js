@@ -688,7 +688,11 @@ function TeamBuildApplyPage({ round = 1 }) {
       <div className={styles.shell}>
         <div className={styles.topBar}>
           <div className={styles.brand}>
-            <img src={wapsLogo} alt="WAPs" className={styles.brandLogo} />
+            <img
+              src={wapsLogo}
+              alt="WAPs"
+              className={styles.brandLogo}
+            />
             <span className={styles.brandText}>WAPs</span>
           </div>
           <button
@@ -729,14 +733,20 @@ function TeamBuildApplyPage({ round = 1 }) {
           </button>
 
           {isNoticeOpen && (
-            <div id="notice-content" className={styles.noticeContent}>
+            <div
+              id="notice-content"
+              className={styles.noticeContent}
+            >
               {!isSecondRound && <p>• 이번 팀빌딩은 총 3차에 걸쳐 진행됩니다.</p>}
               <p>• {isSecondRound ? "2차 팀빌딩도 마찬가지로" : "지원서는"} 최소 3개 - 최대 5개까지 지원할 수 있으며, 동일 프로젝트에도 서로 다른 직무로 지원할 수 있습니다.</p>
             </div>
           )}
         </div>
 
-        <section className={styles.stepStack} aria-label="지원 단계">
+        <section
+          className={styles.stepStack}
+          aria-label="지원 단계"
+        >
           <section
             className={`${styles.panel} ${styles.editablePanel} ${
               step1Expanded ? styles.editablePanelActive : ""
@@ -773,7 +783,7 @@ function TeamBuildApplyPage({ round = 1 }) {
                     {getPositionLabel(commonApplication?.position)}
                   </strong>
                 </div>
-        
+
                 <div className={styles.summaryText}>
                   {getPreviewText(commonApplication?.message, 150)}
                 </div>
@@ -792,7 +802,7 @@ function TeamBuildApplyPage({ round = 1 }) {
                         3차 팀빌딩 시 활용될 예정입니다.
                       </p>
                     </div>
-        
+
                     <div
                       className={`${styles.formGroup} ${styles.primaryPositionSelect}`}
                     >
@@ -803,9 +813,12 @@ function TeamBuildApplyPage({ round = 1 }) {
                         onChange={(event) => setPrimaryPosition(event.target.value)}
                       >
                         <option value="">직무를 선택해주세요</option>
-        
+
                         {PRIMARY_POSITION_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>
+                          <option
+                            key={option.value}
+                            value={option.value}
+                          >
                             {option.label}
                           </option>
                         ))}
@@ -813,7 +826,7 @@ function TeamBuildApplyPage({ round = 1 }) {
                     </div>
                   </section>
                 )}
-        
+
                 <div className={styles.formGroup}>
                   <label htmlFor="commonPosition">지원 직무</label>
                   <select
@@ -822,15 +835,18 @@ function TeamBuildApplyPage({ round = 1 }) {
                     onChange={(event) => setFormPosition(event.target.value)}
                   >
                     <option value="">직무를 선택해주세요</option>
-        
+
                     {POSITION_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
+                      <option
+                        key={option.value}
+                        value={option.value}
+                      >
                         {option.label}
                       </option>
                     ))}
                   </select>
-            </div>
-        
+                </div>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="commonMessage">자기소개 및 PR 메시지</label>
                   <textarea
@@ -924,15 +940,27 @@ function TeamBuildApplyPage({ round = 1 }) {
                   ) : (
                     <div className={styles.cartItems}>
                       {selectedProjects.map((project) => (
-                        <div key={project.projectId} className={styles.cartItem}>
+                        <div
+                          key={project.projectId}
+                          className={styles.cartItem}
+                        >
                           <span>{project.title}</span>
-                          <button type="button" className={styles.cartRemove} onClick={() => removeFromCart(project.projectId)}>×</button>
+                          <button
+                            type="button"
+                            className={styles.cartRemove}
+                            onClick={() => removeFromCart(project.projectId)}
+                          >×</button>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
-                <button type="button" className={styles.modalSubmit} disabled={!canReviewPriority} onClick={() => openStep(3)}>우선순위 설정하고 제출하기</button>
+                <button
+                  type="button"
+                  className={styles.modalSubmit}
+                  disabled={!canReviewPriority}
+                  onClick={() => openStep(3)}
+                >우선순위 설정하고 제출하기</button>
               </div>
             )}
           </section>
@@ -1053,12 +1081,26 @@ function TeamBuildApplyPage({ round = 1 }) {
           </section>
         </section>
 
-        <section className={styles.availableSection} aria-label="지원 가능 프로젝트">
+        <section
+          className={styles.availableSection}
+          aria-label="지원 가능 프로젝트"
+        >
           <div className={styles.availableHeader}><h2>지원 가능 프로젝트</h2></div>
           <div className={styles.applicationActions}>
-            <button type="button" className={`${styles.projectTypeChip} ${styles.projectTypeChipAll} ${isAllProjectTypes ? styles.projectTypeChipActive : ""}`} onClick={() => setSelectedProjectTypes([])} aria-pressed={isAllProjectTypes}>모두</button>
+            <button
+              type="button"
+              className={`${styles.projectTypeChip} ${styles.projectTypeChipAll} ${isAllProjectTypes ? styles.projectTypeChipActive : ""}`}
+              onClick={() => setSelectedProjectTypes([])}
+              aria-pressed={isAllProjectTypes}
+            >모두</button>
             {PROJECT_TYPE_OPTIONS.map((option) => (
-              <button key={option.value} type="button" className={`${styles.projectTypeChip} ${styles[`projectTypeChip${option.value}`]} ${selectedProjectTypes.includes(option.value) ? styles.projectTypeChipActive : ""}`} onClick={() => toggleProjectTypeFilter(option.value)} aria-pressed={selectedProjectTypes.includes(option.value)}>{option.label}</button>
+              <button
+                key={option.value}
+                type="button"
+                className={`${styles.projectTypeChip} ${styles[`projectTypeChip${option.value}`]} ${selectedProjectTypes.includes(option.value) ? styles.projectTypeChipActive : ""}`}
+                onClick={() => toggleProjectTypeFilter(option.value)}
+                aria-pressed={selectedProjectTypes.includes(option.value)}
+              >{option.label}</button>
             ))}
           </div>
           <p>{isAllProjectTypes ? "모든 프로젝트" : selectedProjectTypeLabels.join(" / ")}</p>
@@ -1067,7 +1109,10 @@ function TeamBuildApplyPage({ round = 1 }) {
               const applications = projectApplications.filter((item) => item.projectId === project.projectId);
               const availablePositions = project.recruitPositions.filter((position) => !applications.some((application) => application.position === position));
               return (
-                <article key={project.projectId} className={styles.applicationProjectCard}>
+                <article
+                  key={project.projectId}
+                  className={styles.applicationProjectCard}
+                >
                   <div className={styles.applicationProjectTop}>
                     <div className={isSecondRound ? styles.applicationProjectInfo : undefined}>
                       <div className={styles.applicationProjectTitleRow}>
@@ -1081,32 +1126,70 @@ function TeamBuildApplyPage({ round = 1 }) {
                   </div>
                   <div className={styles.applicationActions}>
                     {applications.map((application) => (
-                      <button key={application.id} type="button" className={styles.modifyApplicationButton} onClick={() => openProjectApplication(project, application)}>지원서 수정하기 ({getPositionLabel(application.position)})</button>
+                      <button
+                        key={application.id}
+                        type="button"
+                        className={styles.modifyApplicationButton}
+                        onClick={() => openProjectApplication(project, application)}
+                      >지원서 수정하기 ({getPositionLabel(application.position)})</button>
                     ))}
-                    {availablePositions.length > 0 && <button type="button" className={styles.writeApplicationButton} disabled={projectApplications.length >= MAX_SELECTION} onClick={() => openProjectApplication(project)}>지원서 작성하기</button>}
-                    {step2Expanded && <button type="button" className={styles.addApplicationButton} disabled={!canSelectProjects || selectedProjectIds.includes(project.projectId) || selectedCount >= MAX_SELECTION} onClick={() => addToCart(project.projectId)}>{selectedProjectIds.includes(project.projectId) ? "선택됨" : "프로젝트 선택"}</button>}
+                    {availablePositions.length > 0 && <button
+                      type="button"
+                      className={styles.writeApplicationButton}
+                      disabled={projectApplications.length >= MAX_SELECTION}
+                      onClick={() => openProjectApplication(project)}
+                    >지원서 작성하기</button>}
+                    {step2Expanded && <button
+                      type="button"
+                      className={styles.addApplicationButton}
+                      disabled={!canSelectProjects || selectedProjectIds.includes(project.projectId) || selectedCount >= MAX_SELECTION}
+                      onClick={() => addToCart(project.projectId)}
+                    >{selectedProjectIds.includes(project.projectId) ? "선택됨" : "프로젝트 선택"}</button>}
                   </div>
                 </article>
               );
             })}
           </div>
         </section>
-        <section className={styles.panel} aria-label="작성한 지원서">
+        <section
+          className={styles.panel}
+          aria-label="작성한 지원서"
+        >
           <h2>작성한 지원서</h2>
           <ol className={styles.myApplicationList}>
             {projectApplications.map((application, index) => (
-              <li key={application.id} className={`${styles.myApplicationItem} ${applicationDraggingId === application.id ? styles.dragging : ""} ${applicationDragOverId === application.id ? styles.dragOver : ""}`} draggable onDragStart={handleApplicationDragStart(application.id)} onDragOver={handleApplicationDragOver(application.id)} onDrop={handleApplicationDrop(application.id)} onDragEnd={handleApplicationDragEnd}>
+              <li
+                key={application.id}
+                className={`${styles.myApplicationItem} ${applicationDraggingId === application.id ? styles.dragging : ""} ${applicationDragOverId === application.id ? styles.dragOver : ""}`}
+                draggable
+                onDragStart={handleApplicationDragStart(application.id)}
+                onDragOver={handleApplicationDragOver(application.id)}
+                onDrop={handleApplicationDrop(application.id)}
+                onDragEnd={handleApplicationDragEnd}
+              >
                 <span className={styles.myApplicationPriorityNumber}>{index + 1}</span>
                 <strong>{application.projectTitle} ({getPositionLabel(application.position)})</strong>
-                <button type="button" className={styles.cancelApplicationButton} onClick={() => setCancelTarget(application)}>지원 취소</button>
+                <button
+                  type="button"
+                  className={styles.cancelApplicationButton}
+                  onClick={() => setCancelTarget(application)}
+                >지원 취소</button>
               </li>
             ))}
           </ol>
-          <button type="button" className={styles.finalSubmitButton} disabled={projectApplications.length < 3 || isSubmitting} onClick={submitProjectApplications}>최종 제출하기</button>
+          <button
+            type="button"
+            className={styles.finalSubmitButton}
+            disabled={projectApplications.length < 3 || isSubmitting}
+            onClick={submitProjectApplications}
+          >최종 제출하기</button>
         </section>
       </div>
       {applicationModal && (
-        <div className={styles.applicationModal} onMouseDown={closeProjectApplication}>
+        <div
+          className={styles.applicationModal}
+          onMouseDown={closeProjectApplication}
+        >
           <div
             className={styles.applicationModalContent}
             role="dialog"
@@ -1135,7 +1218,10 @@ function TeamBuildApplyPage({ round = 1 }) {
               >
                 <option value="">직무를 선택해주세요</option>
                 {applicationModal.project.recruitPositions.map((position) => (
-                  <option key={position} value={position}>{getPositionLabel(position)}</option>
+                  <option
+                    key={position}
+                    value={position}
+                  >{getPositionLabel(position)}</option>
                 ))}
               </select>
             </div>
@@ -1150,7 +1236,10 @@ function TeamBuildApplyPage({ round = 1 }) {
                 aria-describedby="project-career-help"
                 placeholder="프로젝트, 활동 등 관련 경력을 작성해주세요."
               />
-              <p id="project-career-help" className={styles.applicationModalDescription}>
+              <p
+                id="project-career-help"
+                className={styles.applicationModalDescription}
+              >
                 저장한 경력은 새 지원서에 자동 입력되며, 지원서마다 수정할 수 있습니다.
                 없다면 '없음'이라고 작성해주세요
               </p>
@@ -1168,14 +1257,21 @@ function TeamBuildApplyPage({ round = 1 }) {
               />
               <div className={styles.characterCount}>{projectFormMessage.length} / 120</div>
             </div>
-            <button type="button" className={styles.modalSubmit} onClick={saveProjectApplication}>
+            <button
+              type="button"
+              className={styles.modalSubmit}
+              onClick={saveProjectApplication}
+            >
               지원서 저장하기
             </button>
           </div>
         </div>
       )}
       {cancelTarget && (
-        <div className={styles.applicationModal} onMouseDown={() => setCancelTarget(null)}>
+        <div
+          className={styles.applicationModal}
+          onMouseDown={() => setCancelTarget(null)}
+        >
           <div
             className={`${styles.applicationModalContent} ${styles.cancelModalContent}`}
             role="alertdialog"
@@ -1193,7 +1289,10 @@ function TeamBuildApplyPage({ round = 1 }) {
               ×
             </button>
             <h2 id="cancel-application-title">지원을 취소하시겠습니까?</h2>
-            <p id="cancel-application-warning" className={styles.cancelWarning}>
+            <p
+              id="cancel-application-warning"
+              className={styles.cancelWarning}
+            >
               취소한 지원서는 복구할 수 없습니다.
             </p>
             <div className={styles.cancelModalActions}>
@@ -1237,7 +1336,10 @@ function TeamBuildApplyPage({ round = 1 }) {
                 <strong>{getPrimaryPositionLabel(primaryPosition)}</strong>
               </div>
             )}
-            <ol id="submit-application-description" className={styles.submitApplicationList}>
+            <ol
+              id="submit-application-description"
+              className={styles.submitApplicationList}
+            >
               {projectApplications.map((application, index) => (
                 <li key={application.id}>
                   <span className={styles.submitApplicationPriority}>{index + 1}</span>
