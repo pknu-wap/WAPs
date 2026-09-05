@@ -41,7 +41,7 @@ services:
     networks:
       - waps-network
     volumes:
-      - /home/ubuntu/.oci:/home/ubuntu/.oci:ro
+      - ${HOME}/.oci:/home/ubuntu/.oci:ro
     restart: unless-stopped
 
   mysql:
