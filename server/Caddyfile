@@ -1,4 +1,4 @@
-waps-api.duckdns.org {
+{$CADDY_DOMAIN} {
     reverse_proxy app:8080
 
     # Enable compression

@@ -67,6 +67,8 @@ services:
   caddy:
     image: caddy:2.11.4
     container_name: caddy
+    environment:
+      CADDY_DOMAIN: ${CADDY_DOMAIN}
     restart: unless-stopped
     ports:
       - "80:80"
