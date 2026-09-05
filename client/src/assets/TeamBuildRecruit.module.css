@@ -379,11 +379,17 @@
   width: 18%;
 }
 
-.applicationTextCell,
+.careerCell,
 .table th:nth-child(3) {
-  width: 64%;
+  width: 32%;
 }
 
+.applicationTextCell,
+.table th:nth-child(4) {
+  width: 32%;
+}
+
+.careerCell,
 .applicationTextCell {
   text-align: left !important;
   line-height: 1.6;

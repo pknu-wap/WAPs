@@ -41,6 +41,9 @@ public class ProjectApply {
     @Column(nullable = false, length = 255)
     private String comment; // 자율 서술 부분
 
+    @Column(columnDefinition = "TEXT")
+    private String career;
+
     @Column(nullable = false, length = 7)
     private String semester; // "year-semester"
 
