@@ -89,7 +89,7 @@ const ManageVotePage = () => {
             // 투표 종료 요청
             await adminVoteApi.close(semester);
 
-            // 투표 종료 후, 결과를 비공개 상태로 설정
+            // 투표 종료 후, 결과를 비공개 상태로 설정 
             await adminVoteApi.setPublicStatus(semester, false);
 
             // 로컬 상태 업데이트
@@ -134,18 +134,7 @@ const ManageVotePage = () => {
 
     // ENDED 상태일 때 투표 결과 요청하기
     useEffect(() => {
-      if (voteStatus !== "ENDED" || !semester) return;
-
-      // 투표 결과 공개 여부 조회 함수
-      const fetchResultVisibility = async () => {
-          if (!semester) return;
-          try {
-              const data = await adminVoteApi.getIsVoteOpen(semester);
-              setIsResultPublic(data.isPublic || false);
-          } catch (e) {
-              setError("투표 공개 상태 조회 실패");
-          }
-      }
+        if (voteStatus !== "ENDED" || !semester) return;
 
         const fetchVoteResult = async () => {
             try {
