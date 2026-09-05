@@ -49,7 +49,7 @@ spring:
     baseline-version: 1
 
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:local}
+    active: ${SPRING_PROFILES_ACTIVE}
 
 app:
   auth:
