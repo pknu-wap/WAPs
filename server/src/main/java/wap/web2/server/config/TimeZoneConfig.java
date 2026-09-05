@@ -11,5 +11,4 @@ public class TimeZoneConfig {
     public void setTimeZone() {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
     }
-
 }

@@ -64,14 +64,17 @@ const VoteProjectList = ({
           return (
             <div
               key={project.participants}
-              className={`${styles.project_list_box} ${isSelected ? styles.selected : ""
-                }`}
+              className={`${styles.project_list_box} ${
+                isSelected ? styles.selected : ""
+              }`}
               onClick={() =>
                 handleProjectSelect(project.participants, isVotedUser)
               }
             >
               <div className={styles.inform_box}>
-                <div style={{ fontSize: 15, position: "absolute", zIndex: 2 }}>{index + 1}</div>
+                <div style={{ fontSize: 15, position: "absolute", zIndex: 2 }}>
+                  {index + 1}
+                </div>
                 {project.thumbnail && (
                   <div className={styles.project_thumbnail}>
                     <img
@@ -84,8 +87,9 @@ const VoteProjectList = ({
 
                 <div className={styles.project_title_form}>
                   <h2
-                    className={`${styles.title} ${isSelected ? styles.selected_title : ""
-                      }`}
+                    className={`${styles.title} ${
+                      isSelected ? styles.selected_title : ""
+                    }`}
                   >
                     {project.title}
                   </h2>

@@ -4,10 +4,10 @@
  * @returns {string} 예: "2025-01", "2025-02"
  */
 export const getCurrentSemester = () => {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
-    const semesterNum = currentMonth <= 6 ? 1 : 2;
-    return `${currentYear}-${String(semesterNum).padStart(2, '0')}`;
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+  const semesterNum = currentMonth <= 6 ? 1 : 2;
+  return `${currentYear}-${String(semesterNum).padStart(2, "0")}`;
 };
 
 /**
@@ -16,8 +16,8 @@ export const getCurrentSemester = () => {
  * @returns {string} 예: "2025-01"
  */
 export const getSemesterByDate = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const semesterNum = month <= 6 ? 1 : 2;
-    return `${year}-${String(semesterNum).padStart(2, '0')}`;
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const semesterNum = month <= 6 ? 1 : 2;
+  return `${year}-${String(semesterNum).padStart(2, "0")}`;
 };

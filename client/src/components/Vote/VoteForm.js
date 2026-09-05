@@ -25,7 +25,9 @@ const VoteForm = ({ isVotedUser }) => {
 
         // 404일 때만 "투표한 프로젝트가 없음" 경고
         if (error.response?.status === 404) {
-          alert("투표한 프로젝트 정보를 가져오지 못했습니다. 서버 상태를 확인해주세요.");
+          alert(
+            "투표한 프로젝트 정보를 가져오지 못했습니다. 서버 상태를 확인해주세요.",
+          );
         } else {
           alert("투표한 프로젝트 정보를 가져오는데 실패했습니다.");
         }
@@ -92,7 +94,9 @@ const VoteForm = ({ isVotedUser }) => {
             </>
           ) : (
             <>
-              <div className={styles.vote_title}>마음에 드는 프로젝트 3개를 선택해 주세요</div>
+              <div className={styles.vote_title}>
+                마음에 드는 프로젝트 3개를 선택해 주세요
+              </div>
               <p className={styles.title_eng}>Choose 3 projects you like</p>
             </>
           )}

@@ -24,17 +24,19 @@ public class SwaggerConfig {
         server.setDescription("Production Server");
 
         return new OpenAPI()
-                .info(new Info().title("waps").version("v1"))
-                .addSecurityItem(new SecurityRequirement().addList("JWT"))
-                .components(new Components()
-                        .addSecuritySchemes("JWT",
-                                new SecurityScheme()
-                                        .name("JWT")
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")
-                                        .in(SecurityScheme.In.HEADER)))
-                .servers(List.of(server));
+            .info(new Info().title("waps").version("v1"))
+            .addSecurityItem(new SecurityRequirement().addList("JWT"))
+            .components(
+                new Components().addSecuritySchemes(
+                    "JWT",
+                    new SecurityScheme()
+                        .name("JWT")
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                        .in(SecurityScheme.In.HEADER)
+                )
+            )
+            .servers(List.of(server));
     }
-
 }

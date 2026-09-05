@@ -11,5 +11,4 @@ public class TeamResultsResponse {
 
     private List<TeamBuildingResult> results;
     private List<TeamMemberResult> unassigned;
-
 }

@@ -27,7 +27,10 @@ public class UserService {
 
     public UserVoteResponse getUserVotedInfo(UserPrincipal userPrincipal, String semester) {
         User user = findUser(userPrincipal.getId());
-        List<Long> projectIds = ballotRepository.findProjectIdsByUserIdAndSemester(user.getId(), semester);
+        List<Long> projectIds = ballotRepository.findProjectIdsByUserIdAndSemester(
+            user.getId(),
+            semester
+        );
         return new UserVoteResponse(projectIds);
     }
 
@@ -45,7 +48,8 @@ public class UserService {
     }
 
     private User findUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+        return userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
     }
 }

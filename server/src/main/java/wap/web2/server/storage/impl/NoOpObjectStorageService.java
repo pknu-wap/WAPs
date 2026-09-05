@@ -14,22 +14,22 @@ public class NoOpObjectStorageService implements ObjectStorageService {
 
     @Override
     public List<String> uploadImages(
-            String dirName,
-            String semester,
-            String projectName,
-            String imageType,
-            List<MultipartFile> imageFiles
+        String dirName,
+        String semester,
+        String projectName,
+        String imageType,
+        List<MultipartFile> imageFiles
     ) throws IOException {
         return Collections.emptyList();
     }
 
     @Override
     public String uploadImage(
-            String dirName,
-            String semester,
-            String projectName,
-            String imageType,
-            MultipartFile imageFile
+        String dirName,
+        String semester,
+        String projectName,
+        String imageType,
+        MultipartFile imageFile
     ) throws IOException {
         return "";
     }
@@ -40,6 +40,5 @@ public class NoOpObjectStorageService implements ObjectStorageService {
     }
 
     @Override
-    public void deleteImage(String imageUrl) {
-    }
+    public void deleteImage(String imageUrl) {}
 }

@@ -29,12 +29,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(
-        name = "vote_meta",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"semester"})
-        }
-)
+@Table(name = "vote_meta", uniqueConstraints = { @UniqueConstraint(columnNames = { "semester" }) })
 public class VoteMeta {
 
     @Id
@@ -67,9 +62,9 @@ public class VoteMeta {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
-            name = "vote_meta_participants",
-            joinColumns = @JoinColumn(name = "vote_meta_id"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"vote_meta_id", "participants"})
+        name = "vote_meta_participants",
+        joinColumns = @JoinColumn(name = "vote_meta_id"),
+        uniqueConstraints = @UniqueConstraint(columnNames = { "vote_meta_id", "participants" })
     )
     private List<Long> participants = new ArrayList<>();
 
@@ -95,5 +90,4 @@ public class VoteMeta {
     public static VoteMeta of(String semester, Long createdBy, Set<Long> projectIds) {
         return new VoteMeta(semester, createdBy, new ArrayList<>(projectIds));
     }
-
 }

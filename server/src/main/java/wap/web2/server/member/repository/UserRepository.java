@@ -10,29 +10,32 @@ import org.springframework.stereotype.Repository;
 import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 
-
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
     Optional<User> findByEmail(String email);
 
     Boolean existsByEmail(String email);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("""
-            UPDATE User u SET u.role = :role WHERE u.id in :ids
-            """)
+    @Query(
+        """
+        UPDATE User u SET u.role = :role WHERE u.id in :ids
+        """
+    )
     int updateRoleByIds(@Param("role") Role role, @Param("ids") List<Long> ids);
 
-    @Query("""
-            SELECT u
-            FROM User u
-            WHERE (:role IS NULL OR u.role = :role)
-            ORDER BY u.name
-            LIMIT :limit OFFSET :offset
-            """)
-    List<User> findUserByOffset(@Param("limit") Integer limit,
-                                @Param("offset") Integer offset,
-                                @Param("role") Role role);
-
+    @Query(
+        """
+        SELECT u
+        FROM User u
+        WHERE (:role IS NULL OR u.role = :role)
+        ORDER BY u.name
+        LIMIT :limit OFFSET :offset
+        """
+    )
+    List<User> findUserByOffset(
+        @Param("limit") Integer limit,
+        @Param("offset") Integer offset,
+        @Param("role") Role role
+    );
 }

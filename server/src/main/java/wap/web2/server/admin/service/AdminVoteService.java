@@ -29,8 +29,9 @@ public class AdminVoteService {
 
     @Transactional(readOnly = true)
     public VoteStatusResponse getStatus(String semester) {
-        VoteStatus status = voteMetaRepository.findStatusBySemester(semester)
-                .orElse(VoteStatus.NOT_CREATED);
+        VoteStatus status = voteMetaRepository
+            .findStatusBySemester(semester)
+            .orElse(VoteStatus.NOT_CREATED);
 
         return new VoteStatusResponse(status);
     }
@@ -40,8 +41,7 @@ public class AdminVoteService {
         Set<Long> newProjectIds = voteParticipants.projectIds();
         validateProjectIds(newProjectIds);
 
-        VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
-                .orElse(null);
+        VoteMeta voteMeta = voteMetaRepository.findBySemester(semester).orElse(null);
 
         if (voteMeta != null) {
             voteMeta.reopenTo(newProjectIds);
@@ -55,8 +55,11 @@ public class AdminVoteService {
     @CacheEvict(value = "voteResults", allEntries = true)
     @Transactional
     public void closeVote(String semester, Long userId) {
-        VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 학기의 투표를 찾을 수 없습니다."));
+        VoteMeta voteMeta = voteMetaRepository
+            .findBySemester(semester)
+            .orElseThrow(() ->
+                new ResourceNotFoundException("해당 학기의 투표를 찾을 수 없습니다.")
+            );
 
         voteMeta.close(userId);
     }
@@ -72,30 +75,35 @@ public class AdminVoteService {
         List<ProjectVoteCount> projectVoteCounts = ballotRepository.countVotesByProject(semester);
         long totalVotes = calculateTotalVotes(projectVoteCounts);
 
-        return projectVoteCounts.stream().map(pvc -> AdminVoteResultResponse.of(pvc, totalVotes)).toList();
+        return projectVoteCounts
+            .stream()
+            .map(pvc -> AdminVoteResultResponse.of(pvc, totalVotes))
+            .toList();
     }
 
     @Transactional
     public VoteResultsVisibility getVisibility(String semester) {
-        Boolean isPublic = voteMetaRepository.findIsResultPublicBySemester(semester)
-                .orElseThrow(() -> new ResourceNotFoundException("투표가 생성되지 않았습니다."));
+        Boolean isPublic = voteMetaRepository
+            .findIsResultPublicBySemester(semester)
+            .orElseThrow(() -> new ResourceNotFoundException("투표가 생성되지 않았습니다."));
         return new VoteResultsVisibility(isPublic);
     }
 
     private long calculateTotalVotes(List<ProjectVoteCount> projectVoteCounts) {
-        return projectVoteCounts.stream()
-                .mapToLong(ProjectVoteCount::getVoteCount)
-                .sum();
+        return projectVoteCounts.stream().mapToLong(ProjectVoteCount::getVoteCount).sum();
     }
 
     private void validateProjectIds(Set<Long> projectIds) {
-        Set<Long> existingProjectIds = new HashSet<>(projectRepository.findExistingProjectIds(projectIds));
+        Set<Long> existingProjectIds = new HashSet<>(
+            projectRepository.findExistingProjectIds(projectIds)
+        );
         Set<Long> missing = new HashSet<>(projectIds);
         missing.removeAll(existingProjectIds);
 
         if (!missing.isEmpty()) {
-            throw new ResourceNotFoundException("존재하지 않는 프로젝트가 포함되어 있습니다. missingIds=" + missing);
+            throw new ResourceNotFoundException(
+                "존재하지 않는 프로젝트가 포함되어 있습니다. missingIds=" + missing
+            );
         }
     }
-
 }

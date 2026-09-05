@@ -23,17 +23,17 @@ public class SecurityErrorResponseWriter {
     private final ObjectMapper objectMapper;
 
     public void write(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            ErrorCode errorCode,
-            String message
+        HttpServletRequest request,
+        HttpServletResponse response,
+        ErrorCode errorCode,
+        String message
     ) throws IOException {
         ErrorResponse errorResponse = ErrorResponse.of(
-                errorCode,
-                message,
-                request.getRequestURI(),
-                List.<FieldErrorResponse>of(),
-                extractRequestId(request)
+            errorCode,
+            message,
+            request.getRequestURI(),
+            List.<FieldErrorResponse>of(),
+            extractRequestId(request)
         );
 
         response.setStatus(errorCode.getHttpStatus().value());

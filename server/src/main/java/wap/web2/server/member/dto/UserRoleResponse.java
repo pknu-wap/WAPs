@@ -10,5 +10,4 @@ public class UserRoleResponse {
 
     private Role role;
     private boolean isRoleAssigned;
-
 }

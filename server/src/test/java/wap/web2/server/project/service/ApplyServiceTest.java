@@ -32,8 +32,10 @@ class ApplyServiceTest {
 
     @Mock
     UserRepository userRepository;
+
     @Mock
     ProjectRepository projectRepository;
+
     @Mock
     ProjectApplyRepository applyRepository;
 
@@ -58,11 +60,11 @@ class ApplyServiceTest {
         when(projectRepository.findById(30L)).thenReturn(Optional.of(p3));
 
         ProjectAppliesRequest request = new ProjectAppliesRequest(
-                List.of(
-                        new ApplyRequest(10L, Position.BACKEND.name(), "열심히할게요."),
-                        new ApplyRequest(20L, Position.FRONTEND.name(), "열심히할게요."),
-                        new ApplyRequest(30L, Position.AI.name(), "열심히할게요.")
-                )
+            List.of(
+                new ApplyRequest(10L, Position.BACKEND.name(), "열심히할게요."),
+                new ApplyRequest(20L, Position.FRONTEND.name(), "열심히할게요."),
+                new ApplyRequest(30L, Position.AI.name(), "열심히할게요.")
+            )
         );
 
         // when
@@ -73,8 +75,7 @@ class ApplyServiceTest {
         verify(applyRepository, times(3)).save(captor.capture());
 
         List<ProjectApply> saved = captor.getAllValues();
-        assertThat(saved).extracting(ProjectApply::getPriority)
-                .containsExactly(1, 2, 3); // 순서대로 증가했는지 체크
+        assertThat(saved).extracting(ProjectApply::getPriority).containsExactly(1, 2, 3); // 순서대로 증가했는지 체크
     }
 
     @Test
@@ -92,15 +93,15 @@ class ApplyServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(other));
 
         Project project = Project.builder()
-                .projectId(1L)
-                .title("테스트프로젝트")
-                .user(owner)
-                .build();
+            .projectId(1L)
+            .title("테스트프로젝트")
+            .user(owner)
+            .build();
         when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
 
         // when & then
-        assertThatThrownBy(() -> applyService.getApplies(principal, 1L))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> applyService.getApplies(principal, 1L)).isInstanceOf(
+            IllegalArgumentException.class
+        );
     }
-
 }

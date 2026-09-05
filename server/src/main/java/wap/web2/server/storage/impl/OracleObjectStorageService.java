@@ -28,11 +28,11 @@ public class OracleObjectStorageService implements ObjectStorageService {
 
     @Override
     public List<String> uploadImages(
-            String dirName,
-            String semester,
-            String projectName,
-            String imageType,
-            List<MultipartFile> imageFiles
+        String dirName,
+        String semester,
+        String projectName,
+        String imageType,
+        List<MultipartFile> imageFiles
     ) throws IOException {
         List<String> imageUrls = new ArrayList<>();
         for (MultipartFile imageFile : imageFiles) {
@@ -43,29 +43,29 @@ public class OracleObjectStorageService implements ObjectStorageService {
 
     @Override
     public String uploadImage(
-            String dirName,
-            String semester,
-            String projectName,
-            String imageType,
-            MultipartFile imageFile
+        String dirName,
+        String semester,
+        String projectName,
+        String imageType,
+        MultipartFile imageFile
     ) throws IOException {
         String originalFileName = getOriginalFileName(imageFile);
         String objectName = StoragePathUtils.createTimestampFileName(
-                dirName,
-                semester,
-                projectName,
-                imageType,
-                originalFileName
+            dirName,
+            semester,
+            projectName,
+            imageType,
+            originalFileName
         );
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .namespaceName(properties.getNamespace())
-                .bucketName(properties.getBucketName())
-                .objectName(objectName)
-                .contentLength(imageFile.getSize())
-                .contentType(imageFile.getContentType())
-                .putObjectBody(imageFile.getInputStream())
-                .build();
+            .namespaceName(properties.getNamespace())
+            .bucketName(properties.getBucketName())
+            .objectName(objectName)
+            .contentLength(imageFile.getSize())
+            .contentType(imageFile.getContentType())
+            .putObjectBody(imageFile.getInputStream())
+            .build();
         objectStorageClient.putObject(putObjectRequest);
 
         return buildPublicObjectUrl(objectName);
@@ -76,10 +76,10 @@ public class OracleObjectStorageService implements ObjectStorageService {
         String objectName = extractObjectNameFromUrl(imageUrl);
 
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                .namespaceName(properties.getNamespace())
-                .bucketName(properties.getBucketName())
-                .objectName(objectName)
-                .build();
+            .namespaceName(properties.getNamespace())
+            .bucketName(properties.getBucketName())
+            .objectName(objectName)
+            .build();
 
         objectStorageClient.deleteObject(deleteObjectRequest);
     }
@@ -88,8 +88,12 @@ public class OracleObjectStorageService implements ObjectStorageService {
     public boolean supports(String imageUrl) {
         try {
             extractObjectNameFromUrl(imageUrl);
-            return imageUrl.contains("objectstorage." + properties.getRegion() + ".oraclecloud.com")
-                    && imageUrl.contains("/n/" + properties.getNamespace() + "/b/" + properties.getBucketName() + "/o/");
+            return (
+                imageUrl.contains("objectstorage." + properties.getRegion() + ".oraclecloud.com") &&
+                imageUrl.contains(
+                    "/n/" + properties.getNamespace() + "/b/" + properties.getBucketName() + "/o/"
+                )
+            );
         } catch (IllegalArgumentException e) {
             return false;
         }
@@ -105,18 +109,20 @@ public class OracleObjectStorageService implements ObjectStorageService {
 
     private String buildPublicObjectUrl(String objectName) {
         return String.format(
-                "https://objectstorage.%s.oraclecloud.com/n/%s/b/%s/o/%s",
-                properties.getRegion(),
-                properties.getNamespace(),
-                properties.getBucketName(),
-                encodePath(objectName)
+            "https://objectstorage.%s.oraclecloud.com/n/%s/b/%s/o/%s",
+            properties.getRegion(),
+            properties.getNamespace(),
+            properties.getBucketName(),
+            encodePath(objectName)
         );
     }
 
     private String extractObjectNameFromUrl(String imageUrl) {
         int idx = imageUrl.indexOf(ORACLE_OBJECT_PATH_SEGMENT);
         if (idx == -1) {
-            throw new IllegalArgumentException("[ERROR] 올바르지 않은 Oracle Object Storage URL: " + imageUrl);
+            throw new IllegalArgumentException(
+                "[ERROR] 올바르지 않은 Oracle Object Storage URL: " + imageUrl
+            );
         }
 
         String encodedObjectName = imageUrl.substring(idx + ORACLE_OBJECT_PATH_SEGMENT.length());
@@ -125,8 +131,7 @@ public class OracleObjectStorageService implements ObjectStorageService {
 
     private String encodePath(String path) {
         return java.net.URLEncoder.encode(path, StandardCharsets.UTF_8)
-                .replace("+", "%20")
-                .replace("%2F", "/");
+            .replace("+", "%20")
+            .replace("%2F", "/");
     }
-
 }

@@ -1,40 +1,39 @@
 .teckstack_form {
-    width:90%;
-    height: 100%;
-    padding-top: 15px;
-    padding-bottom: 20px;
-    background-color: #2A2A2A;
-    color: #7E7E7E;
-    border-radius: 10px;
-    margin: 0 auto; 
-    text-align: left;
-    margin-top : 20px;
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
+  width: 90%;
+  height: 100%;
+  padding-top: 15px;
+  padding-bottom: 20px;
+  background-color: #2a2a2a;
+  color: #7e7e7e;
+  border-radius: 10px;
+  margin: 0 auto;
+  text-align: left;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.techstack_btn{
-    margin-top: 20px;
-    text-align: center;
+.techstack_btn {
+  margin-top: 20px;
+  text-align: center;
 }
 
-.techstack_select{
-    width: 80%;
-    color: #FFFFFF;
-    display: flex;
-    gap: 15px;
-    padding-top: 15px ;
-    flex-wrap: wrap; /* 아이템이 컨테이너의 너비를 초과할 경우 줄바꿈 */
-    margin: 0 auto;
-    justify-content: center;
+.techstack_select {
+  width: 80%;
+  color: #ffffff;
+  display: flex;
+  gap: 15px;
+  padding-top: 15px;
+  flex-wrap: wrap; /* 아이템이 컨테이너의 너비를 초과할 경우 줄바꿈 */
+  margin: 0 auto;
+  justify-content: center;
 }
 
-.techstack_label{
-    margin-top: 10px;
-    margin-left: 33px;
-    margin-bottom: 10px;
-    font-size: 12px;
-    color: #EBEBEB;
+.techstack_label {
+  margin-top: 10px;
+  margin-left: 33px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #ebebeb;
 }
-

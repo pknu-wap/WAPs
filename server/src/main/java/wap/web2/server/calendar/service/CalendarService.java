@@ -18,11 +18,10 @@ public class CalendarService {
     @Transactional(readOnly = true)
     public List<CalendarEventResponse> getActiveEvents() {
         LocalDateTime now = LocalDateTime.now();
-        List<CalendarEvent> calendarEvents = calendarEventRepository.findByDateAfterOrderByDateAsc(now);
+        List<CalendarEvent> calendarEvents = calendarEventRepository.findByDateAfterOrderByDateAsc(
+            now
+        );
 
-        return calendarEvents.stream()
-                .map(CalendarEventResponse::from)
-                .toList();
+        return calendarEvents.stream().map(CalendarEventResponse::from).toList();
     }
-
 }

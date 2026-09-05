@@ -8,7 +8,7 @@ const useProjectForm = () => {
   const [projectType, setProjectType] = useState("");
   const [content, setContent] = useState("");
   const [summary, setSummary] = useState("");
-  
+
   const [semester, setSemester] = useState("");
   const [password, setPassword] = useState("");
   const [removalList, setRemovalList] = useState([]); // 삭제된 이미지 URL들 저장용
@@ -185,12 +185,12 @@ const useProjectForm = () => {
   const toggleTechStack = (techStack) => {
     setSelectedTechStacks((prevSelected) => {
       const existing = prevSelected.find(
-        (item) => item.techStackName === techStack.techStackName
+        (item) => item.techStackName === techStack.techStackName,
       );
 
       if (existing) {
         return prevSelected.filter(
-          (name) => name.techStackName !== techStack.techStackName
+          (name) => name.techStackName !== techStack.techStackName,
         );
       } else {
         return [...prevSelected, techStack]; // 기술 스택 객체 전체를 추가

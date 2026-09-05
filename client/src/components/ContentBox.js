@@ -21,7 +21,7 @@ const getTypeLabel = (type) => {
     web: "웹",
     app: "앱",
     game: "게임",
-    "기타": "임베디드",
+    기타: "임베디드",
   };
   return typeMap[type?.toLowerCase?.()] || type;
 };
@@ -29,11 +29,12 @@ const getTypeLabel = (type) => {
 /* 색상용 클래스 키 */
 const typeKey = (t) => {
   const key = (t || "").toString().toLowerCase();
-  const map = { web: "web", app: "app", game: "game", "기타": "etc" };
+  const map = { web: "web", app: "app", game: "game", 기타: "etc" };
   return map[key] || "etc";
 };
 
-const toSemester = (year, semester) => `${year}-${String(semester).padStart(2, "0")}`;
+const toSemester = (year, semester) =>
+  `${year}-${String(semester).padStart(2, "0")}`;
 
 const normalizeSemesterParam = (semester, projectYear, fallback) => {
   if (semester?.includes("-")) {
@@ -67,7 +68,7 @@ const ContentBox = () => {
   const initialSemester = normalizeSemesterParam(
     searchParams.get("semester"),
     searchParams.get("projectYear"),
-    semesterString
+    semesterString,
   );
 
   const [semesterFilter, setSemesterFilter] = useState(initialSemester);
@@ -90,7 +91,10 @@ const ContentBox = () => {
           setData(response.projectsResponse);
           setFilteredData(response.projectsResponse);
         } else {
-          console.error("API 응답의 projectsResponse가 배열이 아닙니다:", response);
+          console.error(
+            "API 응답의 projectsResponse가 배열이 아닙니다:",
+            response,
+          );
           setData([]);
           setFilteredData([]);
         }
@@ -113,7 +117,7 @@ const ContentBox = () => {
 
     if (filter !== "All") {
       next = next.filter(
-        (item) => item.projectType?.toLowerCase() === filter.toLowerCase()
+        (item) => item.projectType?.toLowerCase() === filter.toLowerCase(),
       );
     }
 
@@ -148,7 +152,9 @@ const ContentBox = () => {
       <div className="hero">
         <div className="hero__inner">
           <h1 className="hero__title">
-            WAP의<br />다양한 활동들을 만나보세요
+            WAP의
+            <br />
+            다양한 활동들을 만나보세요
           </h1>
           <p className="hero__subtitle">Discover WAP's diverse activities</p>
 
@@ -176,7 +182,11 @@ const ContentBox = () => {
 
           <div className="filter-container">
             {/* 유형: 알약 버튼 그룹 */}
-            <div className="pill-filter" role="tablist" aria-label="project type">
+            <div
+              className="pill-filter"
+              role="tablist"
+              aria-label="project type"
+            >
               {TYPE_OPTIONS.map((t) => (
                 <button
                   key={t.value}
@@ -193,27 +203,29 @@ const ContentBox = () => {
             {/* 연도 + 학기 필터 드롭다운 */}
             <div className="filter-dropdown">
               <button onClick={toggleYearAccordion} className="dropdown-button">
-                {yearAccordionOpen ? "년도/학기 ▲"
+                {yearAccordionOpen
+                  ? "년도/학기 ▲"
                   : `${formatSemesterLabel(semesterFilter)} ▼`}
               </button>
               {yearAccordionOpen && (
                 <div className="dropdown-content">
                   {/* 2025년부터 현재년도까지 역순 표시 */}
-                  {Array.from({ length: currentYear - 2025 + 1 }, (_, i) => currentYear - i).map(
-                    (year) => {
-                      const twoDigitYear = ('0' + (year - 2000)).slice(-2); //연도가 두자릿수로 표시되도록
-                      return (
-                        <div key={year}>
-                          <button onClick={() => handleSemesterChange(year, 2)}>
-                            {twoDigitYear}-2
-                          </button>
-                          <button onClick={() => handleSemesterChange(year, 1)}>
-                            {twoDigitYear}-1
-                          </button>
-                        </div>
-                      )
-                    }
-                  )}
+                  {Array.from(
+                    { length: currentYear - 2025 + 1 },
+                    (_, i) => currentYear - i,
+                  ).map((year) => {
+                    const twoDigitYear = ("0" + (year - 2000)).slice(-2); //연도가 두자릿수로 표시되도록
+                    return (
+                      <div key={year}>
+                        <button onClick={() => handleSemesterChange(year, 2)}>
+                          {twoDigitYear}-2
+                        </button>
+                        <button onClick={() => handleSemesterChange(year, 1)}>
+                          {twoDigitYear}-1
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -235,7 +247,9 @@ const ContentBox = () => {
 
         {isFilteredEmpty && (
           <div className="empty-state">
-            <div className="empty-state__title">조건에 맞는 프로젝트가 없어요</div>
+            <div className="empty-state__title">
+              조건에 맞는 프로젝트가 없어요
+            </div>
             <div className="empty-state__subtitle">
               필터를 변경하거나 검색어를 지워보세요.
             </div>
@@ -263,7 +277,9 @@ const ContentBox = () => {
               <div className="titlebox">
                 <div className="title-row">
                   <h2>{item.title}</h2>
-                  <span className={`project-type-tag tag--${typeKey(item.projectType)}`}>
+                  <span
+                    className={`project-type-tag tag--${typeKey(item.projectType)}`}
+                  >
                     {getTypeLabel(item.projectType)}
                   </span>
                 </div>

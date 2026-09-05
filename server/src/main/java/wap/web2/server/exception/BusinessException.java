@@ -9,7 +9,9 @@ public class BusinessException extends RuntimeException {
     private final ErrorCode errorCode;
 
     public BusinessException(ErrorCode errorCode) {
-        super(Objects.requireNonNull(errorCode, "errorCode는 null일 수 없습니다.").getDefaultMessage());
+        super(
+            Objects.requireNonNull(errorCode, "errorCode는 null일 수 없습니다.").getDefaultMessage()
+        );
         this.errorCode = errorCode;
     }
 
@@ -22,5 +24,4 @@ public class BusinessException extends RuntimeException {
         super(message, cause);
         this.errorCode = Objects.requireNonNull(errorCode, "errorCode는 null일 수 없습니다.");
     }
-
 }

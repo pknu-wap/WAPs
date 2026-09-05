@@ -41,8 +41,10 @@ class SequentialTeamBuilderTest {
     void applicantNumLessThanCapacity() throws Exception {
         //given
         Map<Long, List<ApplyInfo>> applicantWishes = makeApplications();
-        Map<Long, RecruitInfo> leaderWishes = Map.of(1L,
-                new RecruitInfo(1001L, 1L, Position.BACKEND, 3, List.of(1L)));
+        Map<Long, RecruitInfo> leaderWishes = Map.of(
+            1L,
+            new RecruitInfo(1001L, 1L, Position.BACKEND, 3, List.of(1L))
+        );
 
         //then
         assertDoesNotThrow(() -> teamBuilder.allocate(applicantWishes, leaderWishes));
@@ -55,8 +57,10 @@ class SequentialTeamBuilderTest {
         Long ghostTeam = 999L;
         Long ghostProject = 999L;
         Map<Long, List<ApplyInfo>> applicantWishes = makeApplications();
-        Map<Long, RecruitInfo> leaderWishes = Map.of(ghostTeam,
-                new RecruitInfo(1001L, ghostProject, Position.BACKEND, 3, List.of(1L, 2L, 3L, 4L)));
+        Map<Long, RecruitInfo> leaderWishes = Map.of(
+            ghostTeam,
+            new RecruitInfo(1001L, ghostProject, Position.BACKEND, 3, List.of(1L, 2L, 3L, 4L))
+        );
 
         //then
         assertDoesNotThrow(() -> teamBuilder.allocate(applicantWishes, leaderWishes));
@@ -69,14 +73,17 @@ class SequentialTeamBuilderTest {
         Long wishProject = 1L;
         Long applicant = 101L;
         Map<Long, List<ApplyInfo>> applicantWishes = Map.of(
-                applicant, List.of(
-                        new ApplyInfo(1, Position.BACKEND, 1L, wishProject),
-                        new ApplyInfo(2, Position.BACKEND, 1L, 2L)
-                )
+            applicant,
+            List.of(
+                new ApplyInfo(1, Position.BACKEND, 1L, wishProject),
+                new ApplyInfo(2, Position.BACKEND, 1L, 2L)
+            )
         );
         Map<Long, RecruitInfo> duplicateLeaderWishes = Map.of(
-                1L, new RecruitInfo(1001L, 1L, Position.BACKEND, 1, List.of(applicant)),
-                2L, new RecruitInfo(1002L, 2L, Position.BACKEND, 1, List.of(applicant))
+            1L,
+            new RecruitInfo(1001L, 1L, Position.BACKEND, 1, List.of(applicant)),
+            2L,
+            new RecruitInfo(1002L, 2L, Position.BACKEND, 1, List.of(applicant))
         );
 
         //when
@@ -96,19 +103,27 @@ class SequentialTeamBuilderTest {
         // gyun은 2팀, 1팀 순으로 선호
         // 1팀은 gyun, jo 순으로 선호
         // 2팀은 jo, gyun 순으로 선호
-        Long jo = 101L, gyun = 102L;
-        Long team1 = 1L, team2 = 2L;
+        Long jo = 101L,
+            gyun = 102L;
+        Long team1 = 1L,
+            team2 = 2L;
         Map<Long, List<ApplyInfo>> applicantWishes = Map.of(
-                jo, List.of(
-                        new ApplyInfo(1, Position.BACKEND, jo, team1),
-                        new ApplyInfo(2, Position.BACKEND, jo, team2)),
-                gyun, List.of(
-                        new ApplyInfo(1, Position.BACKEND, gyun, team2),
-                        new ApplyInfo(2, Position.BACKEND, gyun, team1))
+            jo,
+            List.of(
+                new ApplyInfo(1, Position.BACKEND, jo, team1),
+                new ApplyInfo(2, Position.BACKEND, jo, team2)
+            ),
+            gyun,
+            List.of(
+                new ApplyInfo(1, Position.BACKEND, gyun, team2),
+                new ApplyInfo(2, Position.BACKEND, gyun, team1)
+            )
         );
         Map<Long, RecruitInfo> leaderWishes = Map.of(
-                team1, new RecruitInfo(1001L, team1, Position.BACKEND, 1, List.of(gyun, jo)),
-                team2, new RecruitInfo(1002L, team2, Position.BACKEND, 1, List.of(jo, gyun))
+            team1,
+            new RecruitInfo(1001L, team1, Position.BACKEND, 1, List.of(gyun, jo)),
+            team2,
+            new RecruitInfo(1002L, team2, Position.BACKEND, 1, List.of(jo, gyun))
         );
         //when
         Map<Long, Set<Long>> results = teamBuilder.allocate(applicantWishes, leaderWishes);
@@ -122,19 +137,27 @@ class SequentialTeamBuilderTest {
     @DisplayName("팀 크기를 0으로 두면 어떤 인원도 할당되지 않는다.")
     void denyIfZeroCapacity() throws Exception {
         //given
-        Long jo = 101L, gyun = 102L;
-        Long team1 = 1L, team2 = 2L;
+        Long jo = 101L,
+            gyun = 102L;
+        Long team1 = 1L,
+            team2 = 2L;
         Map<Long, List<ApplyInfo>> applicantWishes = Map.of(
-                jo, List.of(
-                        new ApplyInfo(1, Position.BACKEND, jo, team1),
-                        new ApplyInfo(2, Position.BACKEND, jo, team2)),
-                gyun, List.of(
-                        new ApplyInfo(1, Position.BACKEND, gyun, team2),
-                        new ApplyInfo(2, Position.BACKEND, gyun, team1))
+            jo,
+            List.of(
+                new ApplyInfo(1, Position.BACKEND, jo, team1),
+                new ApplyInfo(2, Position.BACKEND, jo, team2)
+            ),
+            gyun,
+            List.of(
+                new ApplyInfo(1, Position.BACKEND, gyun, team2),
+                new ApplyInfo(2, Position.BACKEND, gyun, team1)
+            )
         );
         Map<Long, RecruitInfo> leaderWishes = Map.of(
-                team1, new RecruitInfo(1001L, team1, Position.BACKEND, 0, Collections.emptyList()),
-                team2, new RecruitInfo(1002L, team2, Position.BACKEND, 2, List.of(gyun, jo))
+            team1,
+            new RecruitInfo(1001L, team1, Position.BACKEND, 0, Collections.emptyList()),
+            team2,
+            new RecruitInfo(1002L, team2, Position.BACKEND, 2, List.of(gyun, jo))
         );
 
         //when
@@ -192,30 +215,54 @@ class SequentialTeamBuilderTest {
         Map<Long, List<ApplyInfo>> applyMap = new HashMap<>();
         Position position = Position.BACKEND;
 
-        applyMap.put(1L, List.of(
+        applyMap.put(
+            1L,
+            List.of(
                 new ApplyInfo(1, position, 1L, 1L),
                 new ApplyInfo(2, position, 1L, 4L),
-                new ApplyInfo(3, position, 1L, 2L)));
-        applyMap.put(2L, List.of(
+                new ApplyInfo(3, position, 1L, 2L)
+            )
+        );
+        applyMap.put(
+            2L,
+            List.of(
                 new ApplyInfo(1, position, 2L, 2L),
                 new ApplyInfo(2, position, 2L, 3L),
-                new ApplyInfo(3, position, 2L, 1L)));
-        applyMap.put(3L, List.of(
+                new ApplyInfo(3, position, 2L, 1L)
+            )
+        );
+        applyMap.put(
+            3L,
+            List.of(
                 new ApplyInfo(1, position, 3L, 1L),
                 new ApplyInfo(2, position, 3L, 4L),
-                new ApplyInfo(3, position, 3L, 3L)));
-        applyMap.put(4L, List.of(
+                new ApplyInfo(3, position, 3L, 3L)
+            )
+        );
+        applyMap.put(
+            4L,
+            List.of(
                 new ApplyInfo(1, position, 4L, 3L),
                 new ApplyInfo(2, position, 4L, 1L),
-                new ApplyInfo(3, position, 4L, 2L)));
-        applyMap.put(5L, List.of(
+                new ApplyInfo(3, position, 4L, 2L)
+            )
+        );
+        applyMap.put(
+            5L,
+            List.of(
                 new ApplyInfo(1, position, 5L, 1L),
                 new ApplyInfo(2, position, 5L, 4L),
-                new ApplyInfo(3, position, 5L, 3L)));
-        applyMap.put(6L, List.of(
+                new ApplyInfo(3, position, 5L, 3L)
+            )
+        );
+        applyMap.put(
+            6L,
+            List.of(
                 new ApplyInfo(1, position, 6L, 4L),
                 new ApplyInfo(2, position, 6L, 2L),
-                new ApplyInfo(3, position, 6L, 1L)));
+                new ApplyInfo(3, position, 6L, 1L)
+            )
+        );
 
         return applyMap;
     }
@@ -224,7 +271,10 @@ class SequentialTeamBuilderTest {
         Map<Long, RecruitInfo> leaderPriorityMap = new HashMap<>();
         Position position = Position.BACKEND;
 
-        leaderPriorityMap.put(1L, new RecruitInfo(1001L, 1L, position, 3, List.of(1L, 2L, 3L, 4L, 5L, 6L)));
+        leaderPriorityMap.put(
+            1L,
+            new RecruitInfo(1001L, 1L, position, 3, List.of(1L, 2L, 3L, 4L, 5L, 6L))
+        );
         leaderPriorityMap.put(2L, new RecruitInfo(1002L, 2L, position, 3, List.of(4L, 2L, 1L)));
         leaderPriorityMap.put(3L, new RecruitInfo(1003L, 3L, position, 2, List.of(2L, 3L, 5L, 4L)));
         leaderPriorityMap.put(4L, new RecruitInfo(1004L, 4L, position, 2, List.of(1L, 6L, 3L, 5L)));

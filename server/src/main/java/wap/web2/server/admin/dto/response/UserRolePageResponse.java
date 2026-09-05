@@ -2,8 +2,4 @@ package wap.web2.server.admin.dto.response;
 
 import java.util.List;
 
-public record UserRolePageResponse(
-        List<UserRoleResponse> content,
-        boolean hasNext
-) {
-}
+public record UserRolePageResponse(List<UserRoleResponse> content, boolean hasNext) {}

@@ -48,7 +48,7 @@ public class ProjectRecruit {
     private Integer capacity;
 
     @Column(nullable = false, length = 7)
-    private String semester;     // "year-semester"
+    private String semester; // "year-semester"
 
     // 희망 지원자 목록
     @Setter
@@ -62,5 +62,4 @@ public class ProjectRecruit {
             this.semester = generateSemester();
         }
     }
-
 }

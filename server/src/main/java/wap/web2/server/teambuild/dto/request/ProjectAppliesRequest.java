@@ -25,6 +25,7 @@ public class ProjectAppliesRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ApplyRequest {
+
         @NotNull
         private Long projectId;
 
@@ -36,5 +37,4 @@ public class ProjectAppliesRequest {
         @Size(max = 255)
         private String comment;
     }
-
 }

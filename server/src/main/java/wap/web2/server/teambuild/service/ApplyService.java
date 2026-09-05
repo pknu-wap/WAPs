@@ -57,16 +57,21 @@ public class ApplyService {
 
         for (ApplyRequest applyRequest : applies) {
             Project project = findProject(applyRequest.getProjectId());
-            log.info("apply-user:{},priority:{},project:{}", userPrincipal.getName(), priority, project.getTitle());
+            log.info(
+                "apply-user:{},priority:{},project:{}",
+                userPrincipal.getName(),
+                priority,
+                project.getTitle()
+            );
 
             applyRepository.save(
-                    ProjectApply.builder()
-                            .priority(priority++)
-                            .position(parsePosition(applyRequest.getPosition()))
-                            .comment(applyRequest.getComment())
-                            .user(user)
-                            .project(project)
-                            .build()
+                ProjectApply.builder()
+                    .priority(priority++)
+                    .position(parsePosition(applyRequest.getPosition()))
+                    .comment(applyRequest.getComment())
+                    .user(user)
+                    .project(project)
+                    .build()
             );
         }
     }
@@ -125,23 +130,23 @@ public class ApplyService {
         List<RecruitmentInfo> roasters = request.getRoasters();
         for (RecruitmentInfo roaster : roasters) {
             ProjectRecruit recruit = recruitRepository.save(
-                    ProjectRecruit.builder()
-                            .leaderId(user.getId())
-                            .projectId(project.getProjectId())
-                            .position(parsePosition(roaster.getPosition()))
-                            .capacity(roaster.getCapacity())
-                            .build()
+                ProjectRecruit.builder()
+                    .leaderId(user.getId())
+                    .projectId(project.getProjectId())
+                    .position(parsePosition(roaster.getPosition()))
+                    .capacity(roaster.getCapacity())
+                    .build()
             );
 
             int priority = 1;
             List<ProjectRecruitWish> wishes = new ArrayList<>();
             for (long applicantId : roaster.getApplicantIds()) {
                 ProjectRecruitWish wish = recruitWishRepository.save(
-                        ProjectRecruitWish.builder()
-                                .priority(priority++)
-                                .applicantId(applicantId)
-                                .recruit(recruit)
-                                .build()
+                    ProjectRecruitWish.builder()
+                        .priority(priority++)
+                        .applicantId(applicantId)
+                        .recruit(recruit)
+                        .build()
                 );
                 wishes.add(wish);
             }
@@ -158,28 +163,36 @@ public class ApplyService {
 
     private boolean isTeamApplyOpen() {
         String semester = generateSemester();
-        TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+        TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository
+            .findBySemester(semester)
+            .orElseThrow(() ->
+                new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다.")
+            );
 
         return teamBuildingMeta.getStatus() == TeamBuildingStatus.APPLY;
     }
 
     private boolean isTeamRecruitOpen() {
         String semester = generateSemester();
-        TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+        TeamBuildingMeta teamBuildingMeta = teamBuildingMetaRepository
+            .findBySemester(semester)
+            .orElseThrow(() ->
+                new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다.")
+            );
 
         return teamBuildingMeta.getStatus() == TeamBuildingStatus.RECRUIT;
     }
 
     private User findUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+        return userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
     private Project findProject(Long projectId) {
-        return projectRepository.findById(projectId)
-                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
+        return projectRepository
+            .findById(projectId)
+            .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
     }
 
     private Position parsePosition(String position) {

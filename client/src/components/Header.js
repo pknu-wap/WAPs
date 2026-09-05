@@ -28,13 +28,11 @@ const Header = () => {
     navigate("/login", { state: { from: window.location.pathname } });
   };
 
-
   return (
     <>
       <header className="App-header">
         <div className="header-inner">
           <div>
-
             <p
               className="waplogo"
               alt="wap"
@@ -49,7 +47,7 @@ const Header = () => {
                 style={{ cursor: "pointer", height: "15px" }} // 크기 조절
               />
             </p>
-          </div> 
+          </div>
 
           {/* 아이콘은 CSS에서 absolute로 오른쪽 고정 */}
           <div className="menu-icon" onClick={toggleMenu}>

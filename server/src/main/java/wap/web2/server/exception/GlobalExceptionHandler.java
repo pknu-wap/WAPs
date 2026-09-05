@@ -24,16 +24,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(
-            BusinessException exception,
-            HttpServletRequest request
+        BusinessException exception,
+        HttpServletRequest request
     ) {
         ErrorCode errorCode = exception.getErrorCode();
         ErrorResponse response = ErrorResponse.of(
-                errorCode,
-                exception.getMessage(),
-                request.getRequestURI(),
-                List.of(),
-                extractRequestId(request)
+            errorCode,
+            exception.getMessage(),
+            request.getRequestURI(),
+            List.of(),
+            extractRequestId(request)
         );
 
         return ResponseEntity.status(errorCode.getHttpStatus()).body(response);
@@ -41,15 +41,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(
-            AuthenticationException exception,
-            HttpServletRequest request
+        AuthenticationException exception,
+        HttpServletRequest request
     ) {
         ErrorResponse response = ErrorResponse.of(
-                ErrorCode.AUTH_UNAUTHORIZED,
-                "이메일 또는 비밀번호를 확인해 주세요.",
-                request.getRequestURI(),
-                List.of(),
-                extractRequestId(request)
+            ErrorCode.AUTH_UNAUTHORIZED,
+            "이메일 또는 비밀번호를 확인해 주세요.",
+            request.getRequestURI(),
+            List.of(),
+            extractRequestId(request)
         );
 
         return ResponseEntity.status(ErrorCode.AUTH_UNAUTHORIZED.getHttpStatus()).body(response);
@@ -57,58 +57,64 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException exception,
-            HttpServletRequest request
+        MethodArgumentNotValidException exception,
+        HttpServletRequest request
     ) {
-        List<FieldErrorResponse> errors = exception.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(this::toFieldErrorResponse)
-                .toList();
+        List<FieldErrorResponse> errors = exception
+            .getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(this::toFieldErrorResponse)
+            .toList();
 
         return badRequest("입력값을 확인해 주세요.", request, errors);
     }
 
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ErrorResponse> handleBindException(
-            BindException exception,
-            HttpServletRequest request
+        BindException exception,
+        HttpServletRequest request
     ) {
-        List<FieldErrorResponse> errors = exception.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(this::toFieldErrorResponse)
-                .toList();
+        List<FieldErrorResponse> errors = exception
+            .getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(this::toFieldErrorResponse)
+            .toList();
 
         return badRequest("요청 값을 확인해 주세요.", request, errors);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(
-            ConstraintViolationException exception,
-            HttpServletRequest request
+        ConstraintViolationException exception,
+        HttpServletRequest request
     ) {
-        List<FieldErrorResponse> errors = exception.getConstraintViolations()
-                .stream()
-                .map(this::toFieldErrorResponse)
-                .toList();
+        List<FieldErrorResponse> errors = exception
+            .getConstraintViolations()
+            .stream()
+            .map(this::toFieldErrorResponse)
+            .toList();
 
         return badRequest("요청 값을 확인해 주세요.", request, errors);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
-            MissingServletRequestParameterException exception,
-            HttpServletRequest request
+        MissingServletRequestParameterException exception,
+        HttpServletRequest request
     ) {
-        String message = String.format("필수 요청 파라미터 '%s'가 없습니다.", exception.getParameterName());
+        String message = String.format(
+            "필수 요청 파라미터 '%s'가 없습니다.",
+            exception.getParameterName()
+        );
         return badRequest(message, request, List.of());
     }
 
     @ExceptionHandler(MissingRequestCookieException.class)
     public ResponseEntity<ErrorResponse> handleMissingRequestCookieException(
-            MissingRequestCookieException exception,
-            HttpServletRequest request
+        MissingRequestCookieException exception,
+        HttpServletRequest request
     ) {
         String message = String.format("필수 쿠키 '%s'가 없습니다.", exception.getCookieName());
         return badRequest(message, request, List.of());
@@ -116,50 +122,53 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
-            MethodArgumentTypeMismatchException exception,
-            HttpServletRequest request
+        MethodArgumentTypeMismatchException exception,
+        HttpServletRequest request
     ) {
-        String message = String.format("요청 파라미터 '%s'의 형식이 올바르지 않습니다.", exception.getName());
+        String message = String.format(
+            "요청 파라미터 '%s'의 형식이 올바르지 않습니다.",
+            exception.getName()
+        );
         return badRequest(message, request, List.of());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException exception,
-            HttpServletRequest request
+        HttpMessageNotReadableException exception,
+        HttpServletRequest request
     ) {
         return badRequest("요청 본문을 올바르게 읽을 수 없습니다.", request, List.of());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(
-            Exception exception,
-            HttpServletRequest request
+        Exception exception,
+        HttpServletRequest request
     ) {
         log.error("처리되지 않은 예외가 발생했습니다. path={}", request.getRequestURI(), exception);
 
         ErrorResponse response = ErrorResponse.of(
-                ErrorCode.COMMON_INTERNAL_SERVER_ERROR,
-                ErrorCode.COMMON_INTERNAL_SERVER_ERROR.getDefaultMessage(),
-                request.getRequestURI(),
-                List.of(),
-                extractRequestId(request)
+            ErrorCode.COMMON_INTERNAL_SERVER_ERROR,
+            ErrorCode.COMMON_INTERNAL_SERVER_ERROR.getDefaultMessage(),
+            request.getRequestURI(),
+            List.of(),
+            extractRequestId(request)
         );
 
         return ResponseEntity.internalServerError().body(response);
     }
 
     private ResponseEntity<ErrorResponse> badRequest(
-            String message,
-            HttpServletRequest request,
-            List<FieldErrorResponse> errors
+        String message,
+        HttpServletRequest request,
+        List<FieldErrorResponse> errors
     ) {
         ErrorResponse response = ErrorResponse.of(
-                ErrorCode.COMMON_INVALID_INPUT,
-                message,
-                request.getRequestURI(),
-                errors,
-                extractRequestId(request)
+            ErrorCode.COMMON_INVALID_INPUT,
+            message,
+            request.getRequestURI(),
+            errors,
+            extractRequestId(request)
         );
 
         return ResponseEntity.badRequest().body(response);
@@ -167,17 +176,17 @@ public class GlobalExceptionHandler {
 
     private FieldErrorResponse toFieldErrorResponse(FieldError fieldError) {
         return new FieldErrorResponse(
-                fieldError.getField(),
-                Objects.requireNonNullElse(fieldError.getDefaultMessage(), "입력값을 확인해 주세요."),
-                fieldError.getRejectedValue()
+            fieldError.getField(),
+            Objects.requireNonNullElse(fieldError.getDefaultMessage(), "입력값을 확인해 주세요."),
+            fieldError.getRejectedValue()
         );
     }
 
     private FieldErrorResponse toFieldErrorResponse(ConstraintViolation<?> violation) {
         return new FieldErrorResponse(
-                extractFieldName(violation),
-                violation.getMessage(),
-                violation.getInvalidValue()
+            extractFieldName(violation),
+            violation.getMessage(),
+            violation.getInvalidValue()
         );
     }
 
@@ -194,5 +203,4 @@ public class GlobalExceptionHandler {
         String requestId = request.getHeader("X-Request-Id");
         return requestId == null || requestId.isBlank() ? null : requestId;
     }
-    
 }

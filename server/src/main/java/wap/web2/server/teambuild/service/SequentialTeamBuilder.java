@@ -19,8 +19,10 @@ import wap.web2.server.teambuild.dto.RecruitInfo;
 public class SequentialTeamBuilder implements TeamBuilder {
 
     @Override
-    public Map<Long, Set<Long>> allocate(Map<Long, List<ApplyInfo>> applicantWishes,
-                                         Map<Long, RecruitInfo> leaderWishes) {
+    public Map<Long, Set<Long>> allocate(
+        Map<Long, List<ApplyInfo>> applicantWishes,
+        Map<Long, RecruitInfo> leaderWishes
+    ) {
         // teamId -> {members}
         Map<Long, Set<Long>> teams = initTeam(leaderWishes);
 
@@ -68,7 +70,11 @@ public class SequentialTeamBuilder implements TeamBuilder {
         return teams;
     }
 
-    private void addAcceptableMember(Entry<Long, RecruitInfo> team, Integer capacity, Set<Long> temporaryTeam) {
+    private void addAcceptableMember(
+        Entry<Long, RecruitInfo> team,
+        Integer capacity,
+        Set<Long> temporaryTeam
+    ) {
         for (int i = 0; i < capacity; i++) {
             Set<Long> userIds = team.getValue().getUserIds();
             if (userIds.isEmpty()) {
@@ -109,10 +115,12 @@ public class SequentialTeamBuilder implements TeamBuilder {
      * @param applicantWishes: 모든 동아리원의 지원서를 담는 Map
      * @param leaderWishes:    팀장이 희망하는 팀원 명단
      */
-    private void traceToMaxPriority(Long memberId,
-                                    Map<Long, Set<Long>> teams,
-                                    Map<Long, List<ApplyInfo>> applicantWishes,
-                                    Map<Long, RecruitInfo> leaderWishes) {
+    private void traceToMaxPriority(
+        Long memberId,
+        Map<Long, Set<Long>> teams,
+        Map<Long, List<ApplyInfo>> applicantWishes,
+        Map<Long, RecruitInfo> leaderWishes
+    ) {
         List<ApplyInfo> applyInfos = applicantWishes.get(memberId); // 한 명의 중복되는 멤버가 가지는 모든 지원서
 
         boolean isJoin = false;
@@ -122,14 +130,20 @@ public class SequentialTeamBuilder implements TeamBuilder {
         }
 
         for (ApplyInfo apply : applyInfos) {
-            Long teamId = apply.getProjectId();     // 어떤 프로젝트에 지원했는지
-            Set<Long> members = teams.get(teamId);  // 그 프로젝트의 현재 멤버
+            Long teamId = apply.getProjectId(); // 어떤 프로젝트에 지원했는지
+            Set<Long> members = teams.get(teamId); // 그 프로젝트의 현재 멤버
 
             if (members == null) {
-                log.info("[TeamBuilder] {}팀에 멤버 리스트가 초기화되지 않았습니다: member's apply={}, memberId={}, teams={}",
-                        teamId, apply.toString(), memberId, teams.toString());
+                log.info(
+                    "[TeamBuilder] {}팀에 멤버 리스트가 초기화되지 않았습니다: member's apply={}, memberId={}, teams={}",
+                    teamId,
+                    apply.toString(),
+                    memberId,
+                    teams.toString()
+                );
             }
-            if (!members.contains(memberId)) {      // 멤버가 초기에 new 설정되었고 remove 하기에 null 검사 필요없음
+            if (!members.contains(memberId)) {
+                // 멤버가 초기에 new 설정되었고 remove 하기에 null 검사 필요없음
                 continue;
             }
 
@@ -137,8 +151,8 @@ public class SequentialTeamBuilder implements TeamBuilder {
             if (!isJoin) {
                 isJoin = true;
             } else {
-                members.remove(memberId);                       // 중복되는 인원를 팀에서 제거
-                addNewMember(teamId, members, leaderWishes);    // 새로운 지원자를 팀으로 합류
+                members.remove(memberId); // 중복되는 인원를 팀에서 제거
+                addNewMember(teamId, members, leaderWishes); // 새로운 지원자를 팀으로 합류
             }
         }
     }
@@ -157,5 +171,4 @@ public class SequentialTeamBuilder implements TeamBuilder {
         applicants.remove(newMember);
         members.add(newMember);
     }
-
 }

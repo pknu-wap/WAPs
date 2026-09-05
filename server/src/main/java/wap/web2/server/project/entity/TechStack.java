@@ -37,5 +37,4 @@ public class TechStack {
     public void updateTechStack(Project project) {
         this.project = project;
     }
-
 }

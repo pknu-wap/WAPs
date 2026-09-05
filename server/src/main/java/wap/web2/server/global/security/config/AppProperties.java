@@ -18,14 +18,15 @@ public class AppProperties {
     @Setter
     @Getter
     public static class Auth {
+
         private String tokenSecret;
         private long tokenExpirationMsec;
         private long refreshTokenExpirationMsec;
-
     }
 
     @Getter
     public static final class OAuth2 {
+
         private List<String> authorizedRedirectUris = new ArrayList<>();
 
         public OAuth2 authorizedRedirectUris(List<String> authorizedRedirectUris) {
@@ -33,5 +34,4 @@ public class AppProperties {
             return this;
         }
     }
-
 }

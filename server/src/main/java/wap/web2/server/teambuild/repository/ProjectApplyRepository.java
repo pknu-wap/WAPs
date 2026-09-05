@@ -12,15 +12,14 @@ import wap.web2.server.teambuild.entity.ProjectApply;
 
 @Repository
 public interface ProjectApplyRepository extends JpaRepository<ProjectApply, Long> {
-
     List<ProjectApply> findAllByProject(Project project);
 
     List<ProjectApply> findAllBySemesterAndPosition(String semester, Position position);
 
     List<ProjectApply> findByProject_ProjectIdAndSemesterAndUser_IdInOrderByPriorityAsc(
-            Long projectId,
-            String semester,
-            Collection<Long> userIds
+        Long projectId,
+        String semester,
+        Collection<Long> userIds
     );
 
     boolean existsByUserIdAndSemester(Long userId, String semester);
@@ -28,5 +27,4 @@ public interface ProjectApplyRepository extends JpaRepository<ProjectApply, Long
     Page<ProjectApply> findAllBySemester(String semester, Pageable pageable);
 
     List<ProjectApply> findAllBySemester(String semester);
-
 }
