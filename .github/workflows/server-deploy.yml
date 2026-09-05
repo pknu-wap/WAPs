@@ -23,7 +23,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          sparse-checkout: server
+          sparse-checkout: |
+            server
+            .github/scripts
       - name: Verify SSH host and detect OCI architecture
         id: target
         env:
@@ -33,18 +35,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          state="${RUNNER_TEMP:?}/waps-deploy"
-          valid_remote_dir() {
-            [[ "$1" =~ ^/tmp/waps-deploy\.[A-Za-z0-9]{8}$ ]]
-          }
-
-          remote() {
-            ssh -F /dev/null -i "$state/key" \
-              -o "UserKnownHostsFile=$state/known_hosts" -o GlobalKnownHostsFile=/dev/null \
-              -o StrictHostKeyChecking=yes -o BatchMode=yes -o IdentitiesOnly=yes \
-              -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 \
-              -p "$OCI_SSH_PORT" "$OCI_USER@$OCI_HOST" "$@"
-          }
+          source .github/scripts/deploy-ssh.sh
 
           : "${OCI_SSH_KEY:?}" "${OCI_SSH_FINGERPRINT:?}"
           [[ "$OCI_HOST" =~ ^[A-Za-z0-9][A-Za-z0-9.:-]*$ ]]
@@ -103,29 +94,14 @@ jobs:
         run: |
           set -euo pipefail
 
-          state="${RUNNER_TEMP:?}/waps-deploy"
-          valid_remote_dir() {
-            [[ "$1" =~ ^/tmp/waps-deploy\.[A-Za-z0-9]{8}$ ]]
-          }
-
-          remote() {
-            ssh -F /dev/null -i "$state/key" \
-              -o "UserKnownHostsFile=$state/known_hosts" -o GlobalKnownHostsFile=/dev/null \
-              -o StrictHostKeyChecking=yes -o BatchMode=yes -o IdentitiesOnly=yes \
-              -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 \
-              -p "$OCI_SSH_PORT" "$OCI_USER@$OCI_HOST" "$@"
-          }
+          source .github/scripts/deploy-ssh.sh
 
           remote_dir=$(remote 'mktemp -d /tmp/waps-deploy.XXXXXXXX')
           valid_remote_dir "$remote_dir"
           # Save before SCP so the always() step can clean up even a partial transfer.
           printf '%s\n' "$remote_dir" > "$state/remote_dir"
           printf 'remote_dir=%s\n' "$remote_dir" >> "$GITHUB_OUTPUT"
-          scp -F /dev/null -i "$state/key" \
-            -o "UserKnownHostsFile=$state/known_hosts" -o GlobalKnownHostsFile=/dev/null \
-            -o StrictHostKeyChecking=yes -o BatchMode=yes -o IdentitiesOnly=yes \
-            -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 \
-            -P "$OCI_SSH_PORT" \
+          scp "${ssh_options[@]}" -P "$OCI_SSH_PORT" \
             "$state/image.tar.gz" "$state/image.tar.gz.sha256" \
             "$OCI_USER@[$OCI_HOST]:$remote_dir/"
       - name: Deploy via SSH
@@ -244,18 +220,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          state="${RUNNER_TEMP:?}/waps-deploy"
-          valid_remote_dir() {
-            [[ "$1" =~ ^/tmp/waps-deploy\.[A-Za-z0-9]{8}$ ]]
-          }
-
-          remote() {
-            ssh -F /dev/null -i "$state/key" \
-              -o "UserKnownHostsFile=$state/known_hosts" -o GlobalKnownHostsFile=/dev/null \
-              -o StrictHostKeyChecking=yes -o BatchMode=yes -o IdentitiesOnly=yes \
-              -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 \
-              -p "$OCI_SSH_PORT" "$OCI_USER@$OCI_HOST" "$@"
-          }
+          source .github/scripts/deploy-ssh.sh
 
           trap 'rm -rf -- "$state"' EXIT
           if [[ -f "$state/remote_dir" ]]; then
