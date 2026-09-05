@@ -56,7 +56,6 @@ const formatSemesterLabel = (semester) => {
 const ContentBox = () => {
   const [filter, setFilter] = useState("All");
   const [yearAccordionOpen, setYearAccordionOpen] = useState(false);
-  const [typeAccordionOpen, setTypeAccordionOpen] = useState(false);
   const currentYear = new Date().getFullYear();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -76,13 +75,10 @@ const ContentBox = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMounted, setIsMounted] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => setIsMounted(true), 700);
-
     const fetchData = async () => {
       try {
         const response = await projectApi.getProjectList(semesterFilter);
@@ -108,7 +104,6 @@ const ContentBox = () => {
     };
 
     fetchData();
-    return () => clearTimeout(timeoutId);
   }, [semesterFilter]);
 
   // 유형+검색어 필터
@@ -130,7 +125,6 @@ const ContentBox = () => {
   }, [filter, data, searchTerm]);
 
   const toggleYearAccordion = () => setYearAccordionOpen(!yearAccordionOpen);
-  const toggleTypeAccordion = () => setTypeAccordionOpen(!typeAccordionOpen);
 
   const handleSemesterChange = (year, semester) => {
     const nextSemester = toSemester(year, semester);
