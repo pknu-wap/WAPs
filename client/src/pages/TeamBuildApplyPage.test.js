@@ -3,10 +3,21 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TeamBuildApplyPage from "./TeamBuildApplyPage";
 
-jest.mock("../api/team-build", () => ({ teamBuildApi: {} }));
+jest.mock("js-cookie", () => ({ get: () => "test-token" }));
+jest.mock("../api/team-build", () => ({
+  teamBuildApi: {
+    getApplyStatus: async () => ({ hasApplied: false }),
+    getApplyProjects: async () => ([
+      { projectId: 1, title: "웹 프로젝트", projectType: "WEB", recruitPositions: ["BACKEND"] },
+      { projectId: 2, title: "앱 프로젝트", projectType: "APP", recruitPositions: ["APP"] },
+      { projectId: 3, title: "게임 프로젝트", projectType: "GAME", recruitPositions: ["GAME"] },
+    ]),
+  },
+}));
 
-test.each([1, 2])("%i차 경력 자동 입력과 개별 수정, 자기소개 120자 제한", (round) => {
+test.each([1, 2])("%i차 경력 자동 입력과 개별 수정, 자기소개 120자 제한", async (round) => {
   render(<MemoryRouter><TeamBuildApplyPage round={round} /></MemoryRouter>);
+  await screen.findAllByRole("button", { name: "지원서 작성하기" });
   const open = () => {
     fireEvent.click(screen.getAllByRole("button", { name: "지원서 작성하기" })[0]);
     return within(screen.getByRole("dialog"));
