@@ -550,13 +550,9 @@ function TeamBuildPage({ round = 1 }) {
                   {isExpanded && (
                     <div className={styles.applicationContent}>
                       {apply.career && <>경력: {apply.career}<br /></>}
-                        {apply.comment || "작성된 지원서 내용이 없습니다."}
+                      {apply.comment || "작성된 지원서 내용이 없습니다."}
                     </div>
-                    {isExpanded && (
-                      <div className={styles.applicationContent}>
-                        {apply.comment || "작성된 지원서 내용이 없습니다."}
-                      </div>
-                    )}
+                  )}
                   </div>
                 );
               })
