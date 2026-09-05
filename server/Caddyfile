@@ -1,0 +1,6 @@
+waps-api.duckdns.org {
+    reverse_proxy app:8080
+
+    # Enable compression
+    encode ztsd gzip
+}
