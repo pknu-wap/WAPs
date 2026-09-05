@@ -30,16 +30,18 @@ services:
       OCI_NAMESPACE: ${OCI_NAMESPACE}
       OCI_BUCKET_NAME: ${OCI_BUCKET_NAME}
       OCI_REGION: ${OCI_REGION}
-      OCI_CONFIG_PATH: /home/app/.oci/config
+      OCI_CONFIG_PATH: /home/ubuntu/.oci/config
       # Swagger
       SWAGGER_SERVER_URL: ${SWAGGER_SERVER_URL:-http://localhost:8080}
+      # Spring
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - waps-network
     volumes:
-      - ${HOME:-/home/ubuntu}/.oci:/home/app/.oci:ro
+      - ${HOME}/.oci:/home/ubuntu/.oci:ro
     restart: unless-stopped
 
   mysql:
