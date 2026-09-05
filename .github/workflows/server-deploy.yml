@@ -168,8 +168,13 @@ jobs:
 
             had_previous=false
             if docker container inspect waps-server > /dev/null 2>&1; then
-              docker stop waps-server
-              docker rename waps-server waps-server-previous
+              if ! docker stop waps-server || ! docker rename waps-server waps-server-previous; then
+                echo 'Could not prepare previous container; attempting to restart it.' >&2
+                if ! docker start waps-server; then
+                  echo 'Could not restart previous container; manual recovery required.' >&2
+                fi
+                exit 1
+              fi
               had_previous=true
             fi
 
