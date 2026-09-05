@@ -9,16 +9,14 @@ import wap.web2.server.admin.entity.TeamBuildingMeta;
 import wap.web2.server.admin.entity.TeamBuildingStatus;
 
 public interface TeamBuildingMetaRepository extends JpaRepository<TeamBuildingMeta, Long> {
-
     @Modifying
     @Query("UPDATE TeamBuildingMeta t SET t.status = :status WHERE t.semester = :semester")
     int updateTeamBuildingMetaStatus(
-            @Param("semester") String semester,
-            @Param("status") TeamBuildingStatus status
+        @Param("semester") String semester,
+        @Param("status") TeamBuildingStatus status
     );
 
     Optional<TeamBuildingMeta> findBySemester(String semester);
 
     boolean existsTeamBuildingMetaBySemester(String semester);
-
 }

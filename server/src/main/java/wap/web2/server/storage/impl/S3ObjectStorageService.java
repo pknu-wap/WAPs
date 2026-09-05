@@ -26,11 +26,11 @@ public class S3ObjectStorageService implements ObjectStorageService {
 
     @Override
     public List<String> uploadImages(
-            String dirName,
-            String semester,
-            String projectName,
-            String imageType,
-            List<MultipartFile> imageFiles
+        String dirName,
+        String semester,
+        String projectName,
+        String imageType,
+        List<MultipartFile> imageFiles
     ) throws IOException {
         List<String> imageUrls = new ArrayList<>();
         for (MultipartFile imageFile : imageFiles) {
@@ -41,39 +41,44 @@ public class S3ObjectStorageService implements ObjectStorageService {
 
     @Override
     public String uploadImage(
-            String dirName,
-            String semester,
-            String projectName,
-            String imageType,
-            MultipartFile imageFile
+        String dirName,
+        String semester,
+        String projectName,
+        String imageType,
+        MultipartFile imageFile
     ) throws IOException {
         String originalFileName = getOriginalFileName(imageFile);
         String fileName = StoragePathUtils.createTimestampFileName(
-                dirName, semester, projectName, imageType, originalFileName
+            dirName,
+            semester,
+            projectName,
+            imageType,
+            originalFileName
         );
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(s3Properties.getS3().getBucketName())
-                .key(fileName)
-                .contentType(imageFile.getContentType())
-                .build();
+            .bucket(s3Properties.getS3().getBucketName())
+            .key(fileName)
+            .contentType(imageFile.getContentType())
+            .build();
 
         s3Client.putObject(
-                putObjectRequest,
-                RequestBody.fromInputStream(imageFile.getInputStream(), imageFile.getSize())
+            putObjectRequest,
+            RequestBody.fromInputStream(imageFile.getInputStream(), imageFile.getSize())
         );
 
-        return s3Client.utilities()
-                .getUrl(builder -> builder.bucket(s3Properties.getS3().getBucketName()).key(fileName))
-                .toExternalForm();
+        return s3Client
+            .utilities()
+            .getUrl(builder -> builder.bucket(s3Properties.getS3().getBucketName()).key(fileName))
+            .toExternalForm();
     }
 
     @Override
     public void deleteImage(String imageUrl) {
         DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-                .bucket(s3Properties.getS3().getBucketName())
-                .key(extractKeyFromUrl(imageUrl))
-                .build();
+            .bucket(s3Properties.getS3().getBucketName())
+            .key(extractKeyFromUrl(imageUrl))
+            .build();
 
         s3Client.deleteObject(deleteRequest);
     }
@@ -106,5 +111,4 @@ public class S3ObjectStorageService implements ObjectStorageService {
         }
         return originalFilename;
     }
-
 }

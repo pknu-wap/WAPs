@@ -63,22 +63,22 @@ public class ProjectService {
         List<String> imageUrls = Collections.emptyList();
         if (!imageFiles.isEmpty()) {
             imageUrls = objectStorageService.uploadImages(
-                    PROJECT_DIR,
-                    semester,
-                    request.getTitle(),
-                    IMAGES,
-                    imageFiles
+                PROJECT_DIR,
+                semester,
+                request.getTitle(),
+                IMAGES,
+                imageFiles
             );
         }
 
         String thumbnailUrl = "";
         if (hasFile(request.getThumbnailFiles())) {
             thumbnailUrl = objectStorageService.uploadImage(
-                    PROJECT_DIR,
-                    semester,
-                    request.getTitle(),
-                    THUMBNAIL,
-                    request.getThumbnailFiles()
+                PROJECT_DIR,
+                semester,
+                request.getTitle(),
+                THUMBNAIL,
+                request.getThumbnailFiles()
             );
         }
 
@@ -102,15 +102,19 @@ public class ProjectService {
     @Cacheable(value = "projectList", key = "#semester")
     @Transactional(readOnly = true)
     public List<ProjectInfoResponse> getProjects(String semester) {
-        return projectRepository.findProjectsBySemesterOrderByProjectIdDesc(semester).stream()
-                .map(ProjectInfoResponse::from)
-                .toList();
+        return projectRepository
+            .findProjectsBySemesterOrderByProjectIdDesc(semester)
+            .stream()
+            .map(ProjectInfoResponse::from)
+            .toList();
     }
 
     public List<ProjectTemplate> getCurrentProjectRecruits() {
-        return projectRepository.findProjectsBySemester(generateSemester()).stream()
-                .map(ProjectTemplate::from)
-                .toList();
+        return projectRepository
+            .findProjectsBySemester(generateSemester())
+            .stream()
+            .map(ProjectTemplate::from)
+            .toList();
     }
 
     public ProjectDetailsResponse getProjectDetails(Long projectId, UserPrincipal userPrincipal) {
@@ -132,13 +136,21 @@ public class ProjectService {
     }
 
     @CacheEvict(value = "projectList", allEntries = true)
-    public ProjectDetailsResponse getProjectDetailsForUpdate(Long projectId, UserPrincipal userPrincipal) {
+    public ProjectDetailsResponse getProjectDetailsForUpdate(
+        Long projectId,
+        UserPrincipal userPrincipal
+    ) {
         if (userPrincipal == null) {
             throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
         }
 
         User user = findUser(userPrincipal.getId());
-        log.info("[수정 요청] - 유저ID: {}, 유저명: {}, 프로젝트ID: {}", user.getId(), user.getName(), projectId);
+        log.info(
+            "[수정 요청] - 유저ID: {}, 유저명: {}, 프로젝트ID: {}",
+            user.getId(),
+            user.getName(),
+            projectId
+        );
         Project project = findProject(projectId);
 
         if (!project.isOwner(user)) {
@@ -150,7 +162,8 @@ public class ProjectService {
 
     @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
-    public String update(Long projectId, ProjectRequest request, UserPrincipal userPrincipal) throws IOException {
+    public String update(Long projectId, ProjectRequest request, UserPrincipal userPrincipal)
+        throws IOException {
         if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
             throw new ProjectPasswordInvalidException();
         }
@@ -166,11 +179,11 @@ public class ProjectService {
         if (hasFile(request.getThumbnailFiles())) {
             log.info("[프로젝트 수정] ({})의 thumbnail 이미지 변경", project.getTitle());
             String thumbnailUrl = objectStorageService.uploadImage(
-                    PROJECT_DIR,
-                    project.getSemester(),
-                    request.getTitle(),
-                    THUMBNAIL,
-                    request.getThumbnailFiles()
+                PROJECT_DIR,
+                project.getSemester(),
+                request.getTitle(),
+                THUMBNAIL,
+                request.getThumbnailFiles()
             );
             project.updateThumbnail(thumbnailUrl);
         }
@@ -181,7 +194,10 @@ public class ProjectService {
         for (String imageUrl : removedImageUrls) {
             log.info("[프로젝트 수정] 삭제하려는 image url: {}", imageUrl);
             if (!objectStorageService.supports(imageUrl)) {
-                log.info("[프로젝트 수정] 현재 스토리지에서 관리하지 않는 image url 이므로 물리 삭제를 건너뜁니다: {}", imageUrl);
+                log.info(
+                    "[프로젝트 수정] 현재 스토리지에서 관리하지 않는 image url 이므로 물리 삭제를 건너뜁니다: {}",
+                    imageUrl
+                );
                 continue;
             }
             objectStorageService.deleteImage(imageUrl);
@@ -192,11 +208,11 @@ public class ProjectService {
         if (!imageFiles.isEmpty()) {
             log.info("[프로젝트 수정] ({})에 이미지 추가", project.getTitle());
             List<String> imageUrls = objectStorageService.uploadImages(
-                    PROJECT_DIR,
-                    project.getSemester(),
-                    request.getTitle(),
-                    IMAGES,
-                    imageFiles
+                PROJECT_DIR,
+                project.getSemester(),
+                request.getTitle(),
+                IMAGES,
+                imageFiles
             );
             List<Image> images = Image.listOf(imageUrls);
             project.addAllImage(images);
@@ -224,18 +240,22 @@ public class ProjectService {
         User user = findUser(userId);
 
         // 이번 학기 모든 프로젝트를 찾아서 내가 주인인 프로젝트가 하나라도 있으면 true
-        return projectRepository.findProjectsBySemester(generateSemester()).stream()
-                .anyMatch(project -> project.isOwner(user));
+        return projectRepository
+            .findProjectsBySemester(generateSemester())
+            .stream()
+            .anyMatch(project -> project.isOwner(user));
     }
 
     private User findUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+        return userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
     private Project findProject(Long projectId) {
-        return projectRepository.findById(projectId)
-                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
+        return projectRepository
+            .findById(projectId)
+            .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
     }
 
     private List<String> getRemovalTargets(ProjectRequest request) {
@@ -251,13 +271,10 @@ public class ProjectService {
             return Collections.emptyList();
         }
 
-        return request.getImageFiles().stream()
-                .filter(this::hasFile)
-                .toList();
+        return request.getImageFiles().stream().filter(this::hasFile).toList();
     }
 
     private boolean hasFile(MultipartFile file) {
         return file != null && !file.isEmpty();
     }
-
 }

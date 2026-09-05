@@ -20,9 +20,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(indexes = {
-        @Index(name = "idx_calendar_event_date", columnList = "date")
-})
+@Table(indexes = { @Index(name = "idx_calendar_event_date", columnList = "date") })
 public class CalendarEvent {
 
     @Id
@@ -36,7 +34,7 @@ public class CalendarEvent {
     private String content;
 
     @Column
-    private String target;  // 참여 대상을 String으로 유연하게 저장
+    private String target; // 참여 대상을 String으로 유연하게 저장
 
     @Column
     private LocalDateTime date;
@@ -46,5 +44,4 @@ public class CalendarEvent {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
 }

@@ -5,7 +5,11 @@
   min-height: 100vh;
   color: #f5f5f5;
   background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(140, 176, 205, 0.6), transparent 60%),
+    radial-gradient(
+      1200px 600px at 50% -10%,
+      rgba(140, 176, 205, 0.6),
+      transparent 60%
+    ),
     linear-gradient(180deg, #8baeca 0%, #4c6474 22%, #1b242b 48%, #070708 100%);
   overflow-x: hidden;
 }
@@ -15,8 +19,16 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(500px 300px at 10% 20%, rgba(255, 255, 255, 0.07), transparent 60%),
-    radial-gradient(420px 240px at 90% 10%, rgba(255, 255, 255, 0.05), transparent 60%);
+    radial-gradient(
+      500px 300px at 10% 20%,
+      rgba(255, 255, 255, 0.07),
+      transparent 60%
+    ),
+    radial-gradient(
+      420px 240px at 90% 10%,
+      rgba(255, 255, 255, 0.05),
+      transparent 60%
+    );
   pointer-events: none;
 }
 
@@ -394,7 +406,9 @@
   font-size: 28px;
   line-height: 1;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .applicationArrow:hover {
@@ -746,7 +760,6 @@
   .heroTitle {
     font-size: 30px;
     letter-spacing: -1px;
-
   }
 
   .card {

@@ -40,12 +40,12 @@ public class ProjectController {
     //  또는 컨트롤러에서는 try catch를 두고 ProjectResponse안에서 throw 하는 것은?
     @GetMapping("/list")
     public ResponseEntity<ProjectsResponse> getProjects(
-            @RequestParam("semester") @Semester String semester
+        @RequestParam("semester") @Semester String semester
     ) {
         List<ProjectInfoResponse> projects = projectService.getProjects(semester);
         ProjectsResponse projectsResponse = ProjectsResponse.builder()
-                .projectsResponse(projects)
-                .build();
+            .projectsResponse(projects)
+            .build();
 
         if (projectsResponse.getProjectsResponse().isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -56,37 +56,39 @@ public class ProjectController {
     @GetMapping("/semester/current")
     public ResponseEntity<ProjectCurrentSemesterResponse> getCurrentSemester() {
         ProjectCurrentSemesterResponse response = new ProjectCurrentSemesterResponse(
-                projectService.getCurrentSemester()
+            projectService.getCurrentSemester()
         );
         return ResponseEntity.ok(response);
     }
 
     // TODO: 파일과 객체가 같이 생성되고 있음
     // TODO: 입력 값 변경해야함
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+        content = @Content(
             encoding = @Encoding(name = "project", contentType = MediaType.APPLICATION_JSON_VALUE)
-    ))
+        )
+    )
     public ResponseEntity<String> createProject(
-            @CurrentUser UserPrincipal userPrincipal,
-            @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
-            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
-            @RequestPart("project") ProjectRequest request
+        @CurrentUser UserPrincipal userPrincipal,
+        @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
+        @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
+        @RequestPart("project") ProjectRequest request
     ) throws IOException {
         // RequestPart 중 ContentType 형식이 서로 다른 file 2종류를 ProjectCreateRequest 에 할당하여 새로운 RequestDto 객체 생성
         ProjectRequest fullRequest = ProjectRequest.builder()
-                .title(request.getTitle())
-                .projectType(request.getProjectType())
-                .content(request.getContent())
-                .summary(request.getSummary())
-                .password(request.getPassword())
-                .teamMember(request.getTeamMember())
-                .techStack(request.getTechStack())
-                .image(request.getImage())
-                .imageFiles(imageFiles)
-                .thumbnail(request.getThumbnail())
-                .thumbnailFiles(thumbnailFile)
-                .build();
+            .title(request.getTitle())
+            .projectType(request.getProjectType())
+            .content(request.getContent())
+            .summary(request.getSummary())
+            .password(request.getPassword())
+            .teamMember(request.getTeamMember())
+            .techStack(request.getTechStack())
+            .image(request.getImage())
+            .imageFiles(imageFiles)
+            .thumbnail(request.getThumbnail())
+            .thumbnailFiles(thumbnailFile)
+            .build();
 
         // 비밀번호가 null 인지 체크
         validatePassword(fullRequest.getPassword());
@@ -97,30 +99,36 @@ public class ProjectController {
 
     @GetMapping("/{projectId}")
     public ResponseEntity<ProjectDetailsResponse> getProject(
-            @PathVariable("projectId") Long projectId,
-            @CurrentUser UserPrincipal userPrincipal
+        @PathVariable("projectId") Long projectId,
+        @CurrentUser UserPrincipal userPrincipal
     ) {
-        ProjectDetailsResponse projectDetails = projectService.getProjectDetails(projectId, userPrincipal);
+        ProjectDetailsResponse projectDetails = projectService.getProjectDetails(
+            projectId,
+            userPrincipal
+        );
         return ResponseEntity.ok(projectDetails);
     }
 
     @GetMapping("/{projectId}/update")
     public ResponseEntity<ProjectDetailsResponse> getProjectDetailsForUpdate(
-            @PathVariable("projectId") Long projectId,
-            @CurrentUser UserPrincipal userPrincipal
+        @PathVariable("projectId") Long projectId,
+        @CurrentUser UserPrincipal userPrincipal
     ) {
         // 프로젝트 상세 정보를 가져오는 서비스 호출
-        ProjectDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
+        ProjectDetailsResponse response = projectService.getProjectDetailsForUpdate(
+            projectId,
+            userPrincipal
+        );
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("{projectId}")
     public ResponseEntity<String> updateProject(
-            @PathVariable("projectId") Long projectId,
-            @CurrentUser UserPrincipal userPrincipal,
-            @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
-            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
-            @RequestPart("project") ProjectRequest request
+        @PathVariable("projectId") Long projectId,
+        @CurrentUser UserPrincipal userPrincipal,
+        @RequestPart(value = "image", required = false) List<MultipartFile> imageFiles,
+        @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile,
+        @RequestPart("project") ProjectRequest request
     ) throws IOException {
         // RequestPart 중 ContentType 형식이 서로 다른 file 2종류를 ProjectRequest 에 할당
         request.setMultipartFiles(thumbnailFile, imageFiles);
@@ -134,8 +142,8 @@ public class ProjectController {
 
     @DeleteMapping("{projectId}")
     public ResponseEntity<Void> deleteProject(
-            @PathVariable("projectId") Long projectId,
-            @CurrentUser UserPrincipal user
+        @PathVariable("projectId") Long projectId,
+        @CurrentUser UserPrincipal user
     ) {
         projectService.delete(projectId, user);
         return ResponseEntity.noContent().build();

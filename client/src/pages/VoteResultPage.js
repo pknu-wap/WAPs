@@ -7,7 +7,12 @@ import Menu from "../components/Menu";
 import FloatingButton from "../components/FloatingButton";
 
 // D 모양 아이콘 SVG 컴포넌트
-const VoteIcon = ({ size = 20, color = "#b8ecff", className = "", ...props }) => (
+const VoteIcon = ({
+  size = 20,
+  color = "#b8ecff",
+  className = "",
+  ...props
+}) => (
   <svg
     width={size}
     height={size}
@@ -175,26 +180,34 @@ const VoteResultPage = () => {
                 }}
               >
                 <div className="filter-dropdown">
-                  <button onClick={toggleYearAccordion} className="dropdown-button">
+                  <button
+                    onClick={toggleYearAccordion}
+                    className="dropdown-button"
+                  >
                     {semesterFilter.open
                       ? "년도/학기 ▲"
-                      : `${("0" + (semesterFilter.year - 2000)).slice(-2)}년 ${semesterFilter.semester
-                      }학기 ▼`}
+                      : `${("0" + (semesterFilter.year - 2000)).slice(-2)}년 ${
+                          semesterFilter.semester
+                        }학기 ▼`}
                   </button>
 
                   {semesterFilter.open && (
                     <div className="dropdown-content">
                       {Array.from(
                         { length: currentYear - 2025 + 1 },
-                        (_, i) => currentYear - i
+                        (_, i) => currentYear - i,
                       ).map((year) => {
                         const y = ("0" + (year - 2000)).slice(-2);
                         return (
                           <div key={year}>
-                            <button onClick={() => handleSemesterChange(year, 2)}>
+                            <button
+                              onClick={() => handleSemesterChange(year, 2)}
+                            >
                               {y}-2
                             </button>
-                            <button onClick={() => handleSemesterChange(year, 1)}>
+                            <button
+                              onClick={() => handleSemesterChange(year, 1)}
+                            >
                               {y}-1
                             </button>
                           </div>
@@ -221,8 +234,9 @@ const VoteResultPage = () => {
 
                 return (
                   <div
-                    className={`${styles.project_list_box} ${isTop3 ? styles.selected_result : ""
-                      }`}
+                    className={`${styles.project_list_box} ${
+                      isTop3 ? styles.selected_result : ""
+                    }`}
                     key={`${project.projectId}-${index}`}
                   >
                     <div className={styles.inform_box}>
@@ -234,7 +248,11 @@ const VoteResultPage = () => {
                           <div className={styles.project_thumbnail}>
                             <img
                               className={styles.thumbnail_image}
-                              alt={project.projectName || project.title || "thumbnail"}
+                              alt={
+                                project.projectName ||
+                                project.title ||
+                                "thumbnail"
+                              }
                               src={project.thumbnail}
                               loading="lazy"
                             />

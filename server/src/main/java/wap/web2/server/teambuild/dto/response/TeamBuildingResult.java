@@ -22,13 +22,17 @@ public class TeamBuildingResult {
     private TeamMemberResult leader;
     private List<TeamMemberResult> members;
 
-    public static TeamBuildingResult of(Project project, TeamMemberResult leader, List<TeamMemberResult> members) {
-        return new TeamBuildingResult(project.getProjectId(),
-                project.getTitle(),
-                project.getSummary(),
-                leader,
-                members
+    public static TeamBuildingResult of(
+        Project project,
+        TeamMemberResult leader,
+        List<TeamMemberResult> members
+    ) {
+        return new TeamBuildingResult(
+            project.getProjectId(),
+            project.getTitle(),
+            project.getSummary(),
+            leader,
+            members
         );
     }
-
 }

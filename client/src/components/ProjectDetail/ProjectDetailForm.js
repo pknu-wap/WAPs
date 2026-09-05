@@ -41,10 +41,9 @@ const ProjectDetailForm = () => {
         setIsOwner(data.isOwner === true);
 
         // 일정 시간 후 데이터 렌더링을 완료하도록 설정
-        new Promise((resolve) => setTimeout(resolve, 400))
-          .then(() => {
-            setIsDataLoaded(true);
-          });
+        new Promise((resolve) => setTimeout(resolve, 400)).then(() => {
+          setIsDataLoaded(true);
+        });
       } catch (error) {
         alert("프로젝트 정보를 불러오는 데 실패했습니다.");
         navigate("/");
@@ -78,9 +77,7 @@ const ProjectDetailForm = () => {
   };
 
   if (!projectData || !isDataLoaded) {
-    return (
-      <LoadingPage />
-    );
+    return <LoadingPage />;
   }
 
   const semesterInfo = formatSemester(projectData.semester);
@@ -100,13 +97,9 @@ const ProjectDetailForm = () => {
           <div className={styles.title}>{projectData.title || "제목 없음"}</div>
           <div className={styles.project_info}>
             <div className={styles.project_year_info}>
-              <div className={styles.projectYear}>
-                {semesterInfo.year}
-              </div>
+              <div className={styles.projectYear}>{semesterInfo.year}</div>
               <div>-</div>
-              <div className={styles.semester}>
-                {semesterInfo.semester}
-              </div>
+              <div className={styles.semester}>{semesterInfo.semester}</div>
             </div>
             <div className={styles.project_type_info}>
               {projectData.projectType || "프로젝트 타입 없음"}
@@ -158,7 +151,7 @@ const ProjectDetailForm = () => {
                         {member.memberRole}
                       </div>
                     </div>
-                  ) : null // 이름이나 역할이 없는 경우 렌더링하지 않음
+                  ) : null, // 이름이나 역할이 없는 경우 렌더링하지 않음
               )
             ) : (
               <p>팀원 정보가 없습니다.</p>

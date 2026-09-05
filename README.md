@@ -8,36 +8,41 @@ WAP은 프로젝트, 팀 빌딩, 발표, 행사 등 다양한 활동이 이루�
 WAPs는 동아리의 모든 활동을 ‘프로젝트 데이터 중심’으로 묶어주는 플랫폼으로,<br>
 WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수 있도록 돕는다.<br>
 
-
 ## 🖼️ WAPs 핵심 기능 소개
 
 🔍 프로젝트 탐색 & 아카이빙
+
 - 프로젝트 설명, 썸네일, 참여 인원 등 한 학기의 프로젝트를 한 화면에서 파악할 수 있다.
 - 이전 학기 작품도 쉽게 찾아볼 수 있는 데이터 기반 아카이빙 기능을 제공한다.
 
 🗳️ 프로젝트 투표
+
 - 투표 집계 및 학기별 인기 프로젝트를 확인할 수 있다.
 
 👥 팀 빌딩
+
 - 학기별 팀 편성 서비스를 제공한다.
 - 지원과 모집을 우선순위 기반 알고리즘으로 팀 편성을 진행한다.
 
 📅 캘린더 기능
+
 - 행사, 일정, 발표 등 WAP의 모든 중요한 이벤트를 보여준다.
 
 ## 🛠️ 사용 기술 스택
-| 구분       | 기술 |
-|------------|------|
-| **Frontend** | React, JavaScript, CSS |
-| **Backend**  | Java, Spring Boot, Spring Security, JPA |
-| **Database** | MySQL |
-| **Infrastructure**   | Oracle Cloud, Grafana, Prometheus |
 
+| 구분               | 기술                                    |
+| ------------------ | --------------------------------------- |
+| **Frontend**       | React, JavaScript, CSS                  |
+| **Backend**        | Java, Spring Boot, Spring Security, JPA |
+| **Database**       | MySQL                                   |
+| **Infrastructure** | Oracle Cloud, Grafana, Prometheus       |
 
 ## 🚀 WAPs service
+
 [Waps 보러가기](https://waps.im)
 
 ## 👤 참여 인원
+
 <table>
   <tr>
   <td align="center">

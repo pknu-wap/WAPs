@@ -11,8 +11,7 @@ public class SemesterGenerator {
     public static String generateSemester() {
         YearMonth now = YearMonth.now();
         return now.getMonthValue() <= SECOND_SEMESTER_MONTH
-                ? now.getYear() + FIRST_SEMESTER
-                : now.getYear() + SECOND_SEMESTER;
+            ? now.getYear() + FIRST_SEMESTER
+            : now.getYear() + SECOND_SEMESTER;
     }
-
 }

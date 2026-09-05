@@ -78,7 +78,7 @@ const ProjectPage = () => {
       navigate("/projects"); // 프로젝트 리스트 페이지로 이동
     } catch (error) {
       alert(
-        `프로젝트 ${isEditMode ? "수정" : "생성"}에 실패했습니다. 다시 시도해 주세요.`
+        `프로젝트 ${isEditMode ? "수정" : "생성"}에 실패했습니다. 다시 시도해 주세요.`,
       );
     }
   };

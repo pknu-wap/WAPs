@@ -17,11 +17,6 @@ public class CommentCreateRequest {
     private String commentContent;
 
     public Comment toEntity(Project project, User user) {
-        return Comment.builder()
-                .commentContent(commentContent)
-                .project(project)
-                .user(user)
-                .build();
+        return Comment.builder().commentContent(commentContent).project(project).user(user).build();
     }
-
 }

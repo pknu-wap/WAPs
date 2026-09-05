@@ -20,16 +20,16 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AccessDeniedException accessDeniedException
+        HttpServletRequest request,
+        HttpServletResponse response,
+        AccessDeniedException accessDeniedException
     ) throws IOException, ServletException {
         log.warn("인가에 실패했습니다. path={}", request.getRequestURI(), accessDeniedException);
         securityErrorResponseWriter.write(
-                request,
-                response,
-                ErrorCode.AUTH_FORBIDDEN,
-                ErrorCode.AUTH_FORBIDDEN.getDefaultMessage()
+            request,
+            response,
+            ErrorCode.AUTH_FORBIDDEN,
+            ErrorCode.AUTH_FORBIDDEN.getDefaultMessage()
         );
     }
 }

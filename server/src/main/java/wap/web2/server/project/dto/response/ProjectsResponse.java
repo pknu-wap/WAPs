@@ -12,5 +12,4 @@ import lombok.Getter;
 public class ProjectsResponse {
 
     private List<ProjectInfoResponse> projectsResponse;
-
 }

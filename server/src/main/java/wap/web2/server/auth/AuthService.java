@@ -51,8 +51,9 @@ public class AuthService {
 
     private void handleTokenTheft(String token) {
         Long userId = tokenProvider.getUserIdFromToken(token);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+        User user = userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
 
         refreshTokenRepository.deleteByUser(user);
     }
@@ -66,7 +67,11 @@ public class AuthService {
     private Authentication createAuthentication(RefreshToken token) {
         User user = token.getUser();
         UserPrincipal userPrincipal = UserPrincipal.create(user);
-        return new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(
+            userPrincipal,
+            null,
+            userPrincipal.getAuthorities()
+        );
     }
 
     private void validateToken(RefreshToken token) {

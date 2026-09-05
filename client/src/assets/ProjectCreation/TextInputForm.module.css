@@ -1,49 +1,46 @@
 @font-face {
-    font-family: 'Pretendard-Regular';
-    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
-    font-weight: 400;
-    font-style: normal;
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
 }
-
 
 /*textarea 기본 스타일 설정*/
-textarea{
-    width: 100%;
-    background-color: #2A2A2A;
-    color: #ffffff;
-    font-size: 14px;
-    font-family: 'pretendard-regular';
-    border: none;
-    resize: none;
-    overflow: hidden;
-
+textarea {
+  width: 100%;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  font-size: 14px;
+  font-family: "pretendard-regular";
+  border: none;
+  resize: none;
+  overflow: hidden;
 }
-textarea:focus{
-    outline: none;
-    border: none;
+textarea:focus {
+  outline: none;
+  border: none;
 }
 
 .text_input_field {
-    width: 90%;
-    height: auto; /* 높이 자동 조정 */
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    resize: none; /* 사용자 크기 조정 방지 */
-    font-size: 14px;
-    line-height: 1.2;
+  width: 90%;
+  height: auto; /* 높이 자동 조정 */
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  resize: none; /* 사용자 크기 조정 방지 */
+  font-size: 14px;
+  line-height: 1.2;
 }
 
 .text_input_form {
-    width: 90%;
-    height: 100%;
-    padding-top: 22px;
-    padding-bottom: 22px;
-    background-color: #2A2A2A;
-    color: #7E7E7E;
-    border-radius: 10px;
-    margin: 0 auto; 
-    margin-top: 10px;
+  width: 90%;
+  height: 100%;
+  padding-top: 22px;
+  padding-bottom: 22px;
+  background-color: #2a2a2a;
+  color: #7e7e7e;
+  border-radius: 10px;
+  margin: 0 auto;
+  margin-top: 10px;
 }
-
-

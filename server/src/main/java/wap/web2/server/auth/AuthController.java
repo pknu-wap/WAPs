@@ -44,13 +44,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticateUser(
-            @Valid @RequestBody LoginRequest loginRequest
+        @Valid @RequestBody LoginRequest loginRequest
     ) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
+            new UsernamePasswordAuthenticationToken(
+                loginRequest.getEmail(),
+                loginRequest.getPassword()
+            )
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -61,7 +61,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse> registerUser(
-            @Valid @RequestBody SignUpRequest signUpRequest
+        @Valid @RequestBody SignUpRequest signUpRequest
     ) {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("이미 사용 중인 이메일입니다.");
@@ -78,19 +78,19 @@ public class AuthController {
 
         User result = userRepository.save(user);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/user/me")
-                .buildAndExpand(result.getId())
-                .toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path("/user/me")
+            .buildAndExpand(result.getId())
+            .toUri();
 
-        return ResponseEntity.created(location)
-                .body(new ApiResponse(true, "회원가입이 완료되었습니다."));
+        return ResponseEntity.created(location).body(
+            new ApiResponse(true, "회원가입이 완료되었습니다.")
+        );
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refreshToken(
-            @CookieValue(name = "refresh_token") String refreshToken
+        @CookieValue(name = "refresh_token") String refreshToken
     ) {
         Tokens newTokens = authService.createNewToken(refreshToken);
 
@@ -98,15 +98,15 @@ public class AuthController {
         int cookieMaxAge = (int) refreshTokenExpiry / 1000;
 
         ResponseCookie cookie = ResponseCookie.from("refresh_token", newTokens.refreshToken())
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(cookieMaxAge)
-                .sameSite("None")
-                .build();
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(cookieMaxAge)
+            .sameSite("None")
+            .build();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new AuthResponse(newTokens.accessToken()));
+            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(new AuthResponse(newTokens.accessToken()));
     }
 }

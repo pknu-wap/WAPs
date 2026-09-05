@@ -33,13 +33,13 @@ public class Image {
     private Project project;
 
     public static List<Image> listOf(List<String> imageUrls) {
-        return imageUrls.stream()
-                .map(url -> Image.builder().imageFile(url).build())
-                .toList();
+        return imageUrls
+            .stream()
+            .map(url -> Image.builder().imageFile(url).build())
+            .toList();
     }
 
     public void updateImage(Project project) {
         this.project = project;
     }
-
 }

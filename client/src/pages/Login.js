@@ -12,7 +12,7 @@ const Login = () => {
   const handleKakaoLogin = () => {
     try {
       const redirectUri = encodeURIComponent(
-        `${window.location.origin}/oauth/callback`
+        `${window.location.origin}/oauth/callback`,
       );
       const kakaoLoginUrl = authApi.getKakaoLoginUrl(redirectUri);
       window.location.href = kakaoLoginUrl;
@@ -67,7 +67,9 @@ const Login = () => {
             >
               <span>로그인 없이 진행</span>
             </button>
-            <div className="login-mini-caption">WAPs는 카카오로 로그인이 가능합니다.</div>
+            <div className="login-mini-caption">
+              WAPs는 카카오로 로그인이 가능합니다.
+            </div>
           </>
         )}
       </div>

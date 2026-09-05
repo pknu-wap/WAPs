@@ -23,7 +23,7 @@ public class AdminUserController {
 
     @PatchMapping("/user")
     public ResponseEntity<RoleChangeResponse> changeUserRole(
-            @RequestBody RoleChangeRequest roleChangeRequest
+        @RequestBody RoleChangeRequest roleChangeRequest
     ) {
         RoleChangeResponse response = userRoleService.change(roleChangeRequest);
         return ResponseEntity.ok(response);
@@ -31,12 +31,11 @@ public class AdminUserController {
 
     @GetMapping
     public ResponseEntity<UserRolePageResponse> getAllUserInfos(
-            @RequestParam("size") Integer size,
-            @RequestParam("page") Integer page,
-            @RequestParam(value = "role", required = false) Role role
+        @RequestParam("size") Integer size,
+        @RequestParam("page") Integer page,
+        @RequestParam(value = "role", required = false) Role role
     ) {
         UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page, role);
         return ResponseEntity.ok(response);
     }
-
 }

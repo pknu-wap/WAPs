@@ -17,6 +17,7 @@ public class ProjectAppliesResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ApplyResponse {
+
         private Long projectId;
         private String position;
         private String comment;
@@ -25,17 +26,19 @@ public class ProjectAppliesResponse {
     }
 
     public static ProjectAppliesResponse fromEntities(List<ProjectApply> entities) {
-        List<ApplyResponse> responses = entities.stream()
-                .map(apply -> new ApplyResponse(
-                        apply.getProject().getProjectId(),
-                        apply.getPosition().toString(),
-                        apply.getComment(),
-                        apply.getUser().getName(),
-                        apply.getUser().getId()
-                ))
-                .toList();
+        List<ApplyResponse> responses = entities
+            .stream()
+            .map(apply ->
+                new ApplyResponse(
+                    apply.getProject().getProjectId(),
+                    apply.getPosition().toString(),
+                    apply.getComment(),
+                    apply.getUser().getName(),
+                    apply.getUser().getId()
+                )
+            )
+            .toList();
 
         return new ProjectAppliesResponse(responses);
     }
-
 }

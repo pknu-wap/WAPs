@@ -43,41 +43,51 @@ public class ProjectRequest {
     private String thumbnail; // toEntity
     private MultipartFile thumbnailFiles; // s3 처리용, 이미지가 url 로 변경된 이후에 stream 적용
 
-    public Project toEntity(ProjectRequest request, String semester, List<String> imageUrls, String thumbnailUrl, User user) {
-        List<Image> imagesEntities = imageUrls.stream()
-                .map(ImageDto::toEntity)
-                .collect(Collectors.toList());
+    public Project toEntity(
+        ProjectRequest request,
+        String semester,
+        List<String> imageUrls,
+        String thumbnailUrl,
+        User user
+    ) {
+        List<Image> imagesEntities = imageUrls
+            .stream()
+            .map(ImageDto::toEntity)
+            .collect(Collectors.toList());
 
-        List<TechStack> techStacksEntities = request.getTechStack().stream()
-                .map(TechStackDto::toEntity)
-                .collect(Collectors.toList());
+        List<TechStack> techStacksEntities = request
+            .getTechStack()
+            .stream()
+            .map(TechStackDto::toEntity)
+            .collect(Collectors.toList());
 
         List<TeamMember> teamMemberEntities;
         if (request.getTeamMember() == null) {
             teamMemberEntities = Collections.emptyList();
         } else {
-            teamMemberEntities = request.getTeamMember().stream()
-                    .map(TeamMemberDto::toEntity)
-                    .collect(Collectors.toList());
+            teamMemberEntities = request
+                .getTeamMember()
+                .stream()
+                .map(TeamMemberDto::toEntity)
+                .collect(Collectors.toList());
         }
 
         return Project.builder()
-                .user(user)
-                .title(request.getTitle())
-                .projectType(request.getProjectType())
-                .content(request.getContent())
-                .summary(request.getSummary())
-                .semester(semester)
-                .images(imagesEntities)
-                .techStacks(techStacksEntities)
-                .teamMembers(teamMemberEntities)
-                .thumbnail(thumbnailUrl)
-                .build();
+            .user(user)
+            .title(request.getTitle())
+            .projectType(request.getProjectType())
+            .content(request.getContent())
+            .summary(request.getSummary())
+            .semester(semester)
+            .images(imagesEntities)
+            .techStacks(techStacksEntities)
+            .teamMembers(teamMemberEntities)
+            .thumbnail(thumbnailUrl)
+            .build();
     }
 
     public void setMultipartFiles(MultipartFile thumbnail, List<MultipartFile> images) {
         this.thumbnailFiles = thumbnail;
         this.imageFiles = images;
     }
-
 }

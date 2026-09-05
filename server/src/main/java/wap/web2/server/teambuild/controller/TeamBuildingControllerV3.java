@@ -35,16 +35,14 @@ public class TeamBuildingControllerV3 {
     private final ApplyService applyService;
 
     @GetMapping("/role")
-    public ResponseEntity<RoleResponse> getMyRole(
-            @CurrentUser UserPrincipal userPrincipal
-    ) {
+    public ResponseEntity<RoleResponse> getMyRole(@CurrentUser UserPrincipal userPrincipal) {
         boolean isLeader = projectService.isLeader(userPrincipal.getId());
         return ResponseEntity.ok(new RoleResponse(isLeader ? "leader" : "member"));
     }
 
     @GetMapping("/apply/status")
     public ResponseEntity<ApplyStatusResponse> getApplyStatus(
-            @CurrentUser UserPrincipal userPrincipal
+        @CurrentUser UserPrincipal userPrincipal
     ) {
         boolean hasApplied = applyService.hasAppliedThisSemester(userPrincipal.getId());
         return ResponseEntity.ok(new ApplyStatusResponse(hasApplied));
@@ -52,7 +50,7 @@ public class TeamBuildingControllerV3 {
 
     @GetMapping("/projects")
     public ResponseEntity<List<ProjectTemplate>> getCurrentProjects(
-            @CurrentUser UserPrincipal userPrincipal
+        @CurrentUser UserPrincipal userPrincipal
     ) {
         List<ProjectTemplate> projects = projectService.getCurrentProjectRecruits();
         return ResponseEntity.ok(projects);
@@ -60,8 +58,8 @@ public class TeamBuildingControllerV3 {
 
     @PostMapping("/apply/submit")
     public ResponseEntity<String> apply(
-            @CurrentUser UserPrincipal userPrincipal,
-            @Valid @RequestBody ProjectAppliesRequest request
+        @CurrentUser UserPrincipal userPrincipal,
+        @Valid @RequestBody ProjectAppliesRequest request
     ) {
         applyService.apply(userPrincipal, request);
         return ResponseEntity.ok("지원이 완료되었습니다.");
@@ -69,8 +67,8 @@ public class TeamBuildingControllerV3 {
 
     @PostMapping("/recruit/submit")
     public ResponseEntity<String> setPreference(
-            @CurrentUser UserPrincipal userPrincipal,
-            @Valid @RequestBody RecruitmentDto request
+        @CurrentUser UserPrincipal userPrincipal,
+        @Valid @RequestBody RecruitmentDto request
     ) {
         applyService.setPreference(userPrincipal, request);
         return ResponseEntity.ok("모집 정보가 등록되었습니다.");
@@ -78,8 +76,8 @@ public class TeamBuildingControllerV3 {
 
     @GetMapping("/{projectId}/applies")
     public ResponseEntity<ProjectAppliesResponse> getRecruitPageData(
-            @CurrentUser UserPrincipal userPrincipal,
-            @PathVariable("projectId") Long projectId
+        @CurrentUser UserPrincipal userPrincipal,
+        @PathVariable("projectId") Long projectId
     ) {
         ProjectAppliesResponse response = applyService.getRecruitPageData(userPrincipal, projectId);
         return ResponseEntity.ok(response);

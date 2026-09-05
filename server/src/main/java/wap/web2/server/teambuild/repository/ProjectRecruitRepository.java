@@ -10,11 +10,9 @@ import wap.web2.server.teambuild.entity.ProjectRecruit;
 
 @Repository
 public interface ProjectRecruitRepository extends JpaRepository<ProjectRecruit, Long> {
-
     Boolean existsByProjectIdAndSemester(Long projectId, String semester);
 
     List<ProjectRecruit> findAllBySemesterAndPosition(String semester, Position position);
 
     Page<ProjectRecruit> findAllBySemester(String semester, PageRequest of);
-
 }

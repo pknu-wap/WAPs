@@ -13,5 +13,4 @@ public class AuthResponse {
     public AuthResponse(String accessToken) {
         this.accessToken = accessToken;
     }
-
 }

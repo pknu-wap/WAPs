@@ -14,8 +14,13 @@ public class ResourceNotFoundException extends BusinessException {
 
     public ResourceNotFoundException(String resourceName, String fieldName, Object fieldValue) {
         super(
-                ErrorCode.COMMON_RESOURCE_NOT_FOUND,
-                String.format("%s의 %s가 '%s'인 리소스를 찾을 수 없습니다.", resourceName, fieldName, fieldValue)
+            ErrorCode.COMMON_RESOURCE_NOT_FOUND,
+            String.format(
+                "%s의 %s가 '%s'인 리소스를 찾을 수 없습니다.",
+                resourceName,
+                fieldName,
+                fieldValue
+            )
         );
         this.resourceName = resourceName;
         this.fieldName = fieldName;
@@ -28,5 +33,4 @@ public class ResourceNotFoundException extends BusinessException {
         this.fieldName = null;
         this.fieldValue = null;
     }
-
 }

@@ -16,5 +16,4 @@ public class OracleObjectStorageProperties {
     private String region;
     private String configPath;
     private String profile = "DEFAULT";
-
 }

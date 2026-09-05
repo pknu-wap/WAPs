@@ -25,32 +25,58 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain filterChain
+    ) throws ServletException, IOException {
         String jwt = getJwtFromRequest(request);
 
         if (StringUtils.hasText(jwt)) {
             ErrorCode tokenErrorCode = tokenProvider.getAccessTokenErrorCode(jwt);
             if (tokenErrorCode != null) {
-                log.warn("JWT 인증에 실패했습니다. path={}, code={}", request.getRequestURI(), tokenErrorCode.getCode());
-                request.setAttribute(SecurityErrorResponseWriter.ERROR_CODE_REQUEST_ATTRIBUTE, tokenErrorCode);
-                request.setAttribute(SecurityErrorResponseWriter.ERROR_MESSAGE_REQUEST_ATTRIBUTE, tokenErrorCode.getDefaultMessage());
+                log.warn(
+                    "JWT 인증에 실패했습니다. path={}, code={}",
+                    request.getRequestURI(),
+                    tokenErrorCode.getCode()
+                );
+                request.setAttribute(
+                    SecurityErrorResponseWriter.ERROR_CODE_REQUEST_ATTRIBUTE,
+                    tokenErrorCode
+                );
+                request.setAttribute(
+                    SecurityErrorResponseWriter.ERROR_MESSAGE_REQUEST_ATTRIBUTE,
+                    tokenErrorCode.getDefaultMessage()
+                );
                 SecurityContextHolder.clearContext();
             } else {
                 try {
                     Long userId = tokenProvider.getUserIdFromToken(jwt);
                     UserDetails userDetails = customUserDetailsService.loadUserById(userId);
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                        );
+                    authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (Exception exception) {
-                    log.error("JWT 인증 처리 중 오류가 발생했습니다. path={}", request.getRequestURI(), exception);
-                    request.setAttribute(SecurityErrorResponseWriter.ERROR_CODE_REQUEST_ATTRIBUTE, ErrorCode.AUTH_UNAUTHORIZED);
+                    log.error(
+                        "JWT 인증 처리 중 오류가 발생했습니다. path={}",
+                        request.getRequestURI(),
+                        exception
+                    );
                     request.setAttribute(
-                            SecurityErrorResponseWriter.ERROR_MESSAGE_REQUEST_ATTRIBUTE,
-                            ErrorCode.AUTH_UNAUTHORIZED.getDefaultMessage()
+                        SecurityErrorResponseWriter.ERROR_CODE_REQUEST_ATTRIBUTE,
+                        ErrorCode.AUTH_UNAUTHORIZED
+                    );
+                    request.setAttribute(
+                        SecurityErrorResponseWriter.ERROR_MESSAGE_REQUEST_ATTRIBUTE,
+                        ErrorCode.AUTH_UNAUTHORIZED.getDefaultMessage()
                     );
                     SecurityContextHolder.clearContext();
                 }

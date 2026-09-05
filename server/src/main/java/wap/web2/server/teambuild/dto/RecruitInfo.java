@@ -23,12 +23,17 @@ public class RecruitInfo {
     private Integer capacity;
     private Set<Long> userIds;
 
-    public RecruitInfo(Long leaderId, Long projectId, Position position, Integer capacity, List<Long> userIds) {
+    public RecruitInfo(
+        Long leaderId,
+        Long projectId,
+        Position position,
+        Integer capacity,
+        List<Long> userIds
+    ) {
         this.leaderId = leaderId;
         this.projectId = projectId;
         this.position = position;
         this.capacity = capacity;
         this.userIds = new LinkedHashSet<>(userIds);
     }
-
 }

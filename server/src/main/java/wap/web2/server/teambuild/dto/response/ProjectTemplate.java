@@ -23,12 +23,11 @@ public class ProjectTemplate {
         List<String> techStackNames = techStacks.stream().map(TechStack::getTechStackName).toList();
 
         return new ProjectTemplate(
-                project.getProjectId(),
-                project.getTitle(),
-                project.getSummary(),
-                project.getProjectType(),
-                techStackNames
+            project.getProjectId(),
+            project.getTitle(),
+            project.getSummary(),
+            project.getProjectType(),
+            techStackNames
         );
     }
-
 }

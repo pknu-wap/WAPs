@@ -32,9 +32,10 @@ public class TeamBuildingExportService {
     public byte[] generateAppliesCsvBytes() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(64 * 1024);
 
-        try (OutputStreamWriter w = new OutputStreamWriter(baos, StandardCharsets.UTF_8);
-             CSVPrinter csv = new CSVPrinter(w, CSVFormat.DEFAULT)) {
-
+        try (
+            OutputStreamWriter w = new OutputStreamWriter(baos, StandardCharsets.UTF_8);
+            CSVPrinter csv = new CSVPrinter(w, CSVFormat.DEFAULT)
+        ) {
             // Excel 한글 호환 BOM
             w.write('\uFEFF');
 
@@ -44,20 +45,22 @@ public class TeamBuildingExportService {
             int page = 0;
             Page<ProjectApply> p;
             do {
-                p = applyRepository.findAllBySemester(generateSemester(), PageRequest.of(page++, 1000));
+                p = applyRepository.findAllBySemester(
+                    generateSemester(),
+                    PageRequest.of(page++, 1000)
+                );
                 for (ProjectApply a : p.getContent()) {
                     csv.printRecord(
-                            a.getId(),
-                            a.getUser().getId(),
-                            a.getProject().getProjectId(),
-                            a.getPosition(),
-                            a.getPriority(),
-                            a.getSemester()
+                        a.getId(),
+                        a.getUser().getId(),
+                        a.getProject().getProjectId(),
+                        a.getPosition(),
+                        a.getPriority(),
+                        a.getSemester()
                     );
                 }
                 csv.flush(); // 메모리 내 flush
             } while (!p.isLast());
-
         } catch (IOException e) {
             throw new InternalServerException("지원 CSV 생성 중 오류가 발생했습니다.", e);
         }
@@ -72,53 +75,57 @@ public class TeamBuildingExportService {
     public byte[] generateRecruitsCsvBytes() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(64 * 1024);
 
-        try (OutputStreamWriter w = new OutputStreamWriter(baos, StandardCharsets.UTF_8);
-             CSVPrinter csv = new CSVPrinter(w, CSVFormat.DEFAULT)) {
-
+        try (
+            OutputStreamWriter w = new OutputStreamWriter(baos, StandardCharsets.UTF_8);
+            CSVPrinter csv = new CSVPrinter(w, CSVFormat.DEFAULT)
+        ) {
             // Excel 한글 호환 BOM
             w.write('\uFEFF');
 
             // 헤더
             csv.printRecord(
-                    "recruitId",
-                    "projectId",
-                    "leaderId",
-                    "position",
-                    "capacity",
-                    "semester",
-                    "wishApplicantId",
-                    "wishPriority"
+                "recruitId",
+                "projectId",
+                "leaderId",
+                "position",
+                "capacity",
+                "semester",
+                "wishApplicantId",
+                "wishPriority"
             );
 
             int page = 0;
             Page<ProjectRecruit> p;
             do {
-                p = projectRecruitRepository.findAllBySemester(generateSemester(), PageRequest.of(page++, 1000));
+                p = projectRecruitRepository.findAllBySemester(
+                    generateSemester(),
+                    PageRequest.of(page++, 1000)
+                );
 
                 for (ProjectRecruit r : p.getContent()) {
                     if (r.getWishList() == null || r.getWishList().isEmpty()) {
                         // wish가 전혀 없으면 빈 wish로 1행
                         csv.printRecord(
+                            r.getId(),
+                            r.getProjectId(),
+                            r.getLeaderId(),
+                            r.getPosition(),
+                            r.getCapacity(),
+                            r.getSemester(),
+                            "", // wishApplicantId
+                            "" // wishPriority
+                        );
+                    } else {
+                        for (ProjectRecruitWish wsh : r.getWishList()) {
+                            csv.printRecord(
                                 r.getId(),
                                 r.getProjectId(),
                                 r.getLeaderId(),
                                 r.getPosition(),
                                 r.getCapacity(),
                                 r.getSemester(),
-                                "",                  // wishApplicantId
-                                ""                   // wishPriority
-                        );
-                    } else {
-                        for (ProjectRecruitWish wsh : r.getWishList()) {
-                            csv.printRecord(
-                                    r.getId(),
-                                    r.getProjectId(),
-                                    r.getLeaderId(),
-                                    r.getPosition(),
-                                    r.getCapacity(),
-                                    r.getSemester(),
-                                    wsh.getApplicantId(),
-                                    wsh.getPriority()
+                                wsh.getApplicantId(),
+                                wsh.getPriority()
                             );
                         }
                     }
@@ -126,12 +133,10 @@ public class TeamBuildingExportService {
 
                 csv.flush(); // 메모리 내 flush
             } while (!p.isLast());
-
         } catch (IOException e) {
             throw new InternalServerException("모집 CSV 생성 중 오류가 발생했습니다.", e);
         }
 
         return baos.toByteArray();
     }
-
 }

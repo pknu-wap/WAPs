@@ -5,8 +5,16 @@
   min-height: 100vh;
   color: #f7f7f7;
   background:
-    radial-gradient(900px 480px at 15% 0%, rgba(150, 170, 210, 0.65), transparent 60%),
-    radial-gradient(720px 520px at 100% 10%, rgba(120, 190, 210, 0.45), transparent 55%),
+    radial-gradient(
+      900px 480px at 15% 0%,
+      rgba(150, 170, 210, 0.65),
+      transparent 60%
+    ),
+    radial-gradient(
+      720px 520px at 100% 10%,
+      rgba(120, 190, 210, 0.45),
+      transparent 55%
+    ),
     linear-gradient(180deg, #8ea1bf 0%, #5c6d84 28%, #2b333b 58%, #0b0b0d 100%);
   overflow-x: hidden;
 }
@@ -16,8 +24,16 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(460px 240px at 12% 30%, rgba(255, 255, 255, 0.08), transparent 60%),
-    radial-gradient(520px 320px at 85% 40%, rgba(255, 255, 255, 0.06), transparent 60%);
+    radial-gradient(
+      460px 240px at 12% 30%,
+      rgba(255, 255, 255, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      520px 320px at 85% 40%,
+      rgba(255, 255, 255, 0.06),
+      transparent 60%
+    );
   pointer-events: none;
 }
 
@@ -212,12 +228,16 @@
 
 .editablePanel {
   margin-bottom: 0;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .editablePanelActive {
   border-color: rgba(159, 199, 242, 0.48);
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(159, 199, 242, 0.2) inset;
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(159, 199, 242, 0.2) inset;
 }
 
 .editableHeader {
@@ -570,8 +590,12 @@
   justify-content: center;
   cursor: pointer;
   touch-action: manipulation;
-  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease,
-    transform 0.18s ease, color 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease,
+    color 0.18s ease;
 }
 
 .projectTypeChip:hover {
@@ -609,7 +633,9 @@
 
 .projectTypeChipActive {
   border-color: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 8px 18px rgba(0, 0, 0, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+    0 8px 18px rgba(0, 0, 0, 0.28);
   color: #ffffff;
   transform: translateY(-1px);
 }
@@ -617,25 +643,33 @@
 .projectTypeChipWEB.projectTypeChipActive {
   background: rgba(98, 183, 255, 0.32);
   border-color: rgba(98, 183, 255, 0.85);
-  box-shadow: 0 0 0 1px rgba(98, 183, 255, 0.45) inset, 0 0 16px rgba(98, 183, 255, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(98, 183, 255, 0.45) inset,
+    0 0 16px rgba(98, 183, 255, 0.35);
 }
 
 .projectTypeChipAPP.projectTypeChipActive {
   background: rgba(106, 225, 180, 0.3);
   border-color: rgba(106, 225, 180, 0.84);
-  box-shadow: 0 0 0 1px rgba(106, 225, 180, 0.44) inset, 0 0 16px rgba(106, 225, 180, 0.32);
+  box-shadow:
+    0 0 0 1px rgba(106, 225, 180, 0.44) inset,
+    0 0 16px rgba(106, 225, 180, 0.32);
 }
 
 .projectTypeChipGAME.projectTypeChipActive {
   background: rgba(255, 193, 111, 0.34);
   border-color: rgba(255, 193, 111, 0.88);
-  box-shadow: 0 0 0 1px rgba(255, 193, 111, 0.45) inset, 0 0 16px rgba(255, 193, 111, 0.3);
+  box-shadow:
+    0 0 0 1px rgba(255, 193, 111, 0.45) inset,
+    0 0 16px rgba(255, 193, 111, 0.3);
 }
 
 .projectTypeChipEMBEDDED.projectTypeChipActive {
   background: rgba(176, 200, 235, 0.34);
   border-color: rgba(176, 200, 235, 0.9);
-  box-shadow: 0 0 0 1px rgba(176, 200, 235, 0.46) inset, 0 0 16px rgba(176, 200, 235, 0.32);
+  box-shadow:
+    0 0 0 1px rgba(176, 200, 235, 0.46) inset,
+    0 0 16px rgba(176, 200, 235, 0.32);
 }
 
 .projectTypeChipAll.projectTypeChipActive {
@@ -973,7 +1007,11 @@
 }
 
 .priorityListDragging .priorityItem {
-  transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease, opacity 0.16s ease;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    transform 0.16s ease,
+    opacity 0.16s ease;
 }
 
 .priorityItem {
@@ -986,7 +1024,10 @@
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   cursor: grab;
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .priorityItem:hover {
@@ -1090,7 +1131,9 @@
 .dragHandle {
   font-size: 18px;
   color: rgba(255, 255, 255, 0.4);
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .priorityItem:hover .dragHandle {

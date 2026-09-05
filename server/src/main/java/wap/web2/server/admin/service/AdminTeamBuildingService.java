@@ -59,7 +59,9 @@ public class AdminTeamBuildingService {
         TeamBuildingStatus status = statusRequest.status();
         int updated = teamBuildingMetaRepository.updateTeamBuildingMetaStatus(semester, status);
         if (updated == 0) {
-            throw new ResourceNotFoundException(String.format("%s 학기의 팀빌딩을 찾을 수 없습니다.", semester));
+            throw new ResourceNotFoundException(
+                String.format("%s 학기의 팀빌딩을 찾을 수 없습니다.", semester)
+            );
         }
     }
 
@@ -105,8 +107,9 @@ public class AdminTeamBuildingService {
                 Set<Long> userIds = entry.getValue();
 
                 // 프로젝트별 Position Map (EnumMap 메모리/성능 유리)
-                Map<Position, Set<Long>> byPosition
-                        = results.computeIfAbsent(projectId, k -> new EnumMap<>(Position.class));
+                Map<Position, Set<Long>> byPosition = results.computeIfAbsent(projectId, k ->
+                    new EnumMap<>(Position.class)
+                );
 
                 // 해당 포지션의 Member Set
                 Set<Long> members = byPosition.computeIfAbsent(position, k -> new HashSet<>());
@@ -119,7 +122,10 @@ public class AdminTeamBuildingService {
 
     // TODO: 내부 객체에 position 빼기
     private Map<Long, List<ApplyInfo>> getApplies(Position pos) {
-        List<ProjectApply> applyEntities = applyRepository.findAllBySemesterAndPosition(generateSemester(), pos);
+        List<ProjectApply> applyEntities = applyRepository.findAllBySemesterAndPosition(
+            generateSemester(),
+            pos
+        );
         if (applyEntities.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -128,8 +134,11 @@ public class AdminTeamBuildingService {
         for (ProjectApply applyEntity : applyEntities) {
             long memberId = applyEntity.getUser().getId();
             long projectId = applyEntity.getProject().getProjectId();
-            List<ApplyInfo> applyInfos = applyMap.computeIfAbsent(memberId, key -> new ArrayList<>());
-            applyInfos.add(ApplyInfo.builder()
+            List<ApplyInfo> applyInfos = applyMap.computeIfAbsent(memberId, key ->
+                new ArrayList<>()
+            );
+            applyInfos.add(
+                ApplyInfo.builder()
                     .userId(memberId)
                     .projectId(projectId)
                     .priority(applyEntity.getPriority())
@@ -142,7 +151,10 @@ public class AdminTeamBuildingService {
     }
 
     private Map<Long, RecruitInfo> getRecruits(Position pos, List<Project> projects) {
-        List<ProjectRecruit> recruitEntities = recruitRepository.findAllBySemesterAndPosition(generateSemester(), pos);
+        List<ProjectRecruit> recruitEntities = recruitRepository.findAllBySemesterAndPosition(
+            generateSemester(),
+            pos
+        );
         if (recruitEntities.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -155,7 +167,9 @@ public class AdminTeamBuildingService {
                 userIds.add(wishEntity.getApplicantId());
             }
 
-            recruitMap.put(projectId, RecruitInfo.builder()
+            recruitMap.put(
+                projectId,
+                RecruitInfo.builder()
                     .leaderId(recruitEntity.getLeaderId())
                     .projectId(projectId)
                     .position(recruitEntity.getPosition())
@@ -169,13 +183,16 @@ public class AdminTeamBuildingService {
         for (Project project : projects) {
             long projectId = project.getProjectId();
             if (!recruitMap.containsKey(projectId)) {
-                recruitMap.put(projectId, RecruitInfo.builder()
+                recruitMap.put(
+                    projectId,
+                    RecruitInfo.builder()
                         .leaderId(project.getUser().getId())
                         .projectId(projectId)
                         .position(pos)
                         .capacity(0)
                         .userIds(new LinkedHashSet<>()) // 불변이 보장된다면 Collections.emptySet() 가능
-                        .build());
+                        .build()
+                );
             }
         }
 
@@ -184,8 +201,11 @@ public class AdminTeamBuildingService {
 
     private TeamBuildingMeta findCurrentMeta() {
         String semester = generateSemester();
-        return teamBuildingMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다."));
+        return teamBuildingMetaRepository
+            .findBySemester(semester)
+            .orElseThrow(() ->
+                new ConflictException("현재 학기의 팀빌딩이 초기화되지 않았습니다.")
+            );
     }
 
     private void validateTeamBuildingStatus(TeamBuildingMeta current) {
@@ -199,27 +219,29 @@ public class AdminTeamBuildingService {
         List<Team> teams = new ArrayList<>();
         for (Map.Entry<Long, Map<Position, Set<Long>>> projectEntry : results.entrySet()) {
             Long projectId = projectEntry.getKey();
-            Long leaderId = projectRepository.findById(projectId)
-                    .map(project -> project.getUser().getId()) // leader id 찾기
-                    .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
+            Long leaderId = projectRepository
+                .findById(projectId)
+                .map(project -> project.getUser().getId()) // leader id 찾기
+                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
 
             Map<Position, Set<Long>> byPosition = projectEntry.getValue();
             for (Map.Entry<Position, Set<Long>> posEntry : byPosition.entrySet()) {
                 Position position = posEntry.getKey();
                 Set<Long> memberIds = posEntry.getValue();
                 for (Long memberId : memberIds) {
-                    teams.add(Team.builder()
+                    teams.add(
+                        Team.builder()
                             .projectId(projectId)
                             .leaderId(leaderId)
                             .position(position)
                             .memberId(memberId)
                             .semester(generateSemester())
-                            .build());
+                            .build()
+                    );
                 }
             }
         }
 
         teamRepository.saveAll(teams);
     }
-
 }

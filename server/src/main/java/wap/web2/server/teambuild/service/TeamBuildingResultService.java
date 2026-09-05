@@ -42,18 +42,24 @@ public class TeamBuildingResultService {
         List<Team> teams = teamRepository.findAllBySemester(semester);
 
         // 3) 프로젝트별 팀원 ID 묶기
-        Map<Long, List<Long>> memberIdsByProject = teams.stream()
-                .collect(Collectors.groupingBy(
-                        Team::getProjectId,
-                        Collectors.mapping(Team::getMemberId, Collectors.toList())
-                ));
+        Map<Long, List<Long>> memberIdsByProject = teams
+            .stream()
+            .collect(
+                Collectors.groupingBy(
+                    Team::getProjectId,
+                    Collectors.mapping(Team::getMemberId, Collectors.toList())
+                )
+            );
 
         // 4) 결과 조립 (팀원이 없으면 빈 배열)
         TeamBuildingResults results = new TeamBuildingResults();
 
         for (Project project : projects) {
             Long projectId = project.getProjectId();
-            List<Long> memberIds = memberIdsByProject.getOrDefault(projectId, Collections.emptyList());
+            List<Long> memberIds = memberIdsByProject.getOrDefault(
+                projectId,
+                Collections.emptyList()
+            );
             List<TeamMemberResult> members = buildAssignedMembers(projectId, semester, memberIds);
 
             // 리더 정보
@@ -67,21 +73,23 @@ public class TeamBuildingResultService {
         return results;
     }
 
-    private List<TeamMemberResult> buildAssignedMembers(Long projectId, String semester, List<Long> memberIds) {
+    private List<TeamMemberResult> buildAssignedMembers(
+        Long projectId,
+        String semester,
+        List<Long> memberIds
+    ) {
         if (memberIds.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<ProjectApply> assignedApplies
-                = projectApplyRepository.findByProject_ProjectIdAndSemesterAndUser_IdInOrderByPriorityAsc(
+        List<ProjectApply> assignedApplies =
+            projectApplyRepository.findByProject_ProjectIdAndSemesterAndUser_IdInOrderByPriorityAsc(
                 projectId,
                 semester,
                 memberIds
-        );
+            );
 
-        return assignedApplies.stream()
-                .map(TeamMemberResult::from)
-                .toList();
+        return assignedApplies.stream().map(TeamMemberResult::from).toList();
     }
 
     @Transactional(readOnly = true)
@@ -90,15 +98,17 @@ public class TeamBuildingResultService {
 
         // 1. 이미 배정된 유저 ID 수집
         Set<Long> allocatedUserIds = new HashSet<>();
-        results.getResults().forEach(result -> {
-            if (result.getMembers() != null) {
-                result.getMembers().forEach(m -> allocatedUserIds.add(m.getId()));
-            }
-            // 팀장을 포함해서 배정자로 볼지 여부는 정책에 따라 결정
-            if (result.getLeader() != null && result.getLeader().getId() != null) {
-                allocatedUserIds.add(result.getLeader().getId());
-            }
-        });
+        results
+            .getResults()
+            .forEach(result -> {
+                if (result.getMembers() != null) {
+                    result.getMembers().forEach(m -> allocatedUserIds.add(m.getId()));
+                }
+                // 팀장을 포함해서 배정자로 볼지 여부는 정책에 따라 결정
+                if (result.getLeader() != null && result.getLeader().getId() != null) {
+                    allocatedUserIds.add(result.getLeader().getId());
+                }
+            });
 
         // 2. 이번 학기 전체 지원 내역 조회
         List<ProjectApply> applies = projectApplyRepository.findAllBySemester(semester);
@@ -119,16 +129,15 @@ public class TeamBuildingResultService {
         for (ProjectApply apply : bestApplyByUser.values()) {
             if (!allocatedUserIds.contains(apply.getUser().getId())) {
                 unassigned.add(
-                        TeamMemberResult.builder()
-                                .id(apply.getUser().getId())
-                                .name(apply.getUser().getName())
-                                .position(apply.getPosition())
-                                .build()
+                    TeamMemberResult.builder()
+                        .id(apply.getUser().getId())
+                        .name(apply.getUser().getName())
+                        .position(apply.getPosition())
+                        .build()
                 );
             }
         }
 
         return unassigned;
     }
-
 }

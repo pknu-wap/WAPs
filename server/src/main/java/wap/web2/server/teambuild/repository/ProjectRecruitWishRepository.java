@@ -5,6 +5,4 @@ import org.springframework.stereotype.Repository;
 import wap.web2.server.teambuild.entity.ProjectRecruitWish;
 
 @Repository
-public interface ProjectRecruitWishRepository extends JpaRepository<ProjectRecruitWish, Long> {
-
-}
+public interface ProjectRecruitWishRepository extends JpaRepository<ProjectRecruitWish, Long> {}

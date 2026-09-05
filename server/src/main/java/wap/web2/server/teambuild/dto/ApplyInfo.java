@@ -26,5 +26,4 @@ public class ApplyInfo {
         this.priority = priority;
         this.position = position;
     }
-
 }

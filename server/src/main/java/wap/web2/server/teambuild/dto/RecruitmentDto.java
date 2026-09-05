@@ -26,6 +26,7 @@ public class RecruitmentDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static final class RecruitmentInfo {
+
         private Integer capacity;
 
         @NotBlank
@@ -33,5 +34,4 @@ public class RecruitmentDto {
 
         private List<Long> applicantIds;
     }
-
 }

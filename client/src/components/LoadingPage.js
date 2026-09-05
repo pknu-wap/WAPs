@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import wapsLogo from "../assets/img/waps_logo.png";
 import "../assets/LoadingPage.css";
 

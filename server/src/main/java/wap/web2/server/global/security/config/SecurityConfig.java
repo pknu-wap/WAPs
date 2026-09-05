@@ -57,7 +57,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
+        throws Exception {
         return configuration.getAuthenticationManager();
     }
 
@@ -66,9 +67,7 @@ public class SecurityConfig {
     public RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl rh = new RoleHierarchyImpl();
         rh.setHierarchy(
-                "ROLE_ADMIN > ROLE_MEMBER\n" +
-                        "ROLE_MEMBER > ROLE_USER\n" +
-                        "ROLE_USER > ROLE_GUEST"
+            "ROLE_ADMIN > ROLE_MEMBER\n" + "ROLE_MEMBER > ROLE_USER\n" + "ROLE_USER > ROLE_GUEST"
         );
         return rh;
     }
@@ -76,63 +75,84 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(withDefaults()) // CORS 설정
-                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(restAuthenticationEntryPoint)
-                        .accessDeniedHandler(restAccessDeniedHandler))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(staticResources()).permitAll()
+            .cors(withDefaults()) // CORS 설정
+            .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .exceptionHandling(exception ->
+                exception
+                    .authenticationEntryPoint(restAuthenticationEntryPoint)
+                    .accessDeniedHandler(restAccessDeniedHandler)
+            )
+            .authorizeHttpRequests(auth ->
+                auth
+                    .requestMatchers(staticResources())
+                    .permitAll()
+                    // swagger
+                    .requestMatchers(
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/swagger-resources",
+                        "/webjars/**"
+                    )
+                    .permitAll()
+                    // actuator
+                    .requestMatchers("/actuator/**")
+                    .permitAll()
+                    // admin
+                    .requestMatchers("/admin/**")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/project/list", "/project/*")
+                    .permitAll()
+                    .requestMatchers("/vote/result/**", "/techStack/**", "/calendar/**")
+                    .permitAll()
+                    .requestMatchers("/team-build", "team-build/results")
+                    .permitAll()
+                    .requestMatchers("/auth/**", "/oauth2/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated()
+            )
+            .oauth2Login(oauth2 ->
+                oauth2
+                    .authorizationEndpoint(endpoint ->
+                        endpoint
+                            .baseUri("/oauth2/authorization")
+                            .authorizationRequestRepository(
+                                httpCookieOAuth2AuthorizationRequestRepository
+                            )
+                    )
+                    .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
+                    .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                    .successHandler(oAuth2AuthenticationSuccessHandler)
+                    .failureHandler(oAuth2AuthenticationFailureHandler)
+            );
 
-                        // swagger
-                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
-                                "/swagger-resources/**", "/swagger-resources", "/webjars/**").permitAll()
-
-                        // actuator
-                        .requestMatchers("/actuator/**").permitAll()
-
-                        // admin
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.GET, "/project/list", "/project/*").permitAll()
-                        .requestMatchers("/vote/result/**", "/techStack/**", "/calendar/**").permitAll()
-                        .requestMatchers("/team-build", "team-build/results").permitAll()
-                        .requestMatchers("/auth/**", "/oauth2/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(endpoint -> endpoint
-                                .baseUri("/oauth2/authorization")
-                                .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
-                        .redirectionEndpoint(endpoint -> endpoint
-                                .baseUri("/oauth2/callback/*"))
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService))
-                        .successHandler(oAuth2AuthenticationSuccessHandler)
-                        .failureHandler(oAuth2AuthenticationFailureHandler)
-                );
-
-        http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(
+            tokenAuthenticationFilter(),
+            UsernamePasswordAuthenticationFilter.class
+        );
 
         return http.build();
     }
 
     private RequestMatcher[] staticResources() {
-        return new RequestMatcher[]{
-                new AntPathRequestMatcher("/"),
-                new AntPathRequestMatcher("/error"),
-                new AntPathRequestMatcher("/favicon.ico"),
-                new AntPathRequestMatcher("/**.png"),
-                new AntPathRequestMatcher("/**.gif"),
-                new AntPathRequestMatcher("/**.svg"),
-                new AntPathRequestMatcher("/**.jpg"),
-                new AntPathRequestMatcher("/**.html"),
-                new AntPathRequestMatcher("/**.css"),
-                new AntPathRequestMatcher("/**.js")
+        return new RequestMatcher[] {
+            new AntPathRequestMatcher("/"),
+            new AntPathRequestMatcher("/error"),
+            new AntPathRequestMatcher("/favicon.ico"),
+            new AntPathRequestMatcher("/**.png"),
+            new AntPathRequestMatcher("/**.gif"),
+            new AntPathRequestMatcher("/**.svg"),
+            new AntPathRequestMatcher("/**.jpg"),
+            new AntPathRequestMatcher("/**.html"),
+            new AntPathRequestMatcher("/**.css"),
+            new AntPathRequestMatcher("/**.js")
         };
     }
-
 }

@@ -23,17 +23,24 @@ public class AzureStorageService implements ObjectStorageService {
 
     private static final String AZURE_BLOB_HOST_SUFFIX = ".blob.core.windows.net";
     private static final long MAX_FILE_SIZE = 100L * 1024 * 1024;
-    private static final Set<String> ALLOWED_EXTENSIONS = Set.of("jpg", "jpeg", "png", "gif", "webp", "bmp");
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "webp",
+        "bmp"
+    );
 
     private final BlobContainerClient blobContainerClient;
 
     @Override
     public List<String> uploadImages(
-            String dirName,
-            String semester,
-            String projectName,
-            String imageType,
-            List<MultipartFile> imageFiles
+        String dirName,
+        String semester,
+        String projectName,
+        String imageType,
+        List<MultipartFile> imageFiles
     ) throws IOException {
         List<String> imageUrls = new ArrayList<>();
         for (MultipartFile imageFile : imageFiles) {
@@ -44,27 +51,30 @@ public class AzureStorageService implements ObjectStorageService {
 
     @Override
     public String uploadImage(
-            String dirName,
-            String semester,
-            String projectName,
-            String imageType,
-            MultipartFile imageFile
+        String dirName,
+        String semester,
+        String projectName,
+        String imageType,
+        MultipartFile imageFile
     ) throws IOException {
         validateImage(imageFile);
 
         String originalFileName = getOriginalFileName(imageFile);
         String blobName = StoragePathUtils.createTimestampFileName(
-                dirName, semester, projectName, imageType, originalFileName
+            dirName,
+            semester,
+            projectName,
+            imageType,
+            originalFileName
         );
 
         BlobClient blobClient = blobContainerClient.getBlobClient(blobName);
 
         BlobHttpHeaders headers = new BlobHttpHeaders().setContentType(imageFile.getContentType());
         blobClient.uploadWithResponse(
-                new BlobParallelUploadOptions(imageFile.getInputStream())
-                        .setHeaders(headers),
-                null,
-                null
+            new BlobParallelUploadOptions(imageFile.getInputStream()).setHeaders(headers),
+            null,
+            null
         );
 
         return blobClient.getBlobUrl();
@@ -96,11 +106,15 @@ public class AzureStorageService implements ObjectStorageService {
         String originalFilename = getOriginalFileName(imageFile);
         int dotIdx = originalFilename.lastIndexOf('.');
         if (dotIdx == -1) {
-            throw new IllegalArgumentException("[ERROR] 파일 확장자가 없습니다: " + originalFilename);
+            throw new IllegalArgumentException(
+                "[ERROR] 파일 확장자가 없습니다: " + originalFilename
+            );
         }
         String extension = originalFilename.substring(dotIdx + 1).toLowerCase();
         if (!ALLOWED_EXTENSIONS.contains(extension)) {
-            throw new IllegalArgumentException("[ERROR] 지원하지 않는 이미지 확장자입니다: " + extension);
+            throw new IllegalArgumentException(
+                "[ERROR] 지원하지 않는 이미지 확장자입니다: " + extension
+            );
         }
     }
 

@@ -1,6 +1,7 @@
 @font-face {
-  font-family: 'Pretendard-Regular';
-  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
   font-weight: 400;
   font-style: normal;
 }
@@ -10,7 +11,7 @@
   max-width: 400px;
   height: 100vh;
   margin: 0 auto;
-  background: linear-gradient(180deg, #A0AFFF 0%, #B4EDFE 100%);
+  background: linear-gradient(180deg, #a0afff 0%, #b4edfe 100%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,7 +23,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
   z-index: -1;
 }
 
@@ -49,7 +54,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: 'Pretendard-Regular';
+  font-family: "Pretendard-Regular";
   width: 100%; /* 이 줄 추가 */
   padding: 0 20px; /* 좌우 여백 추가 (선택사항) */
   box-sizing: border-box; /* padding 포함한 너비 계산 */
@@ -86,7 +91,9 @@
   background-color: transparent;
   border: 2px solid #ffffff;
   color: #ffffff;
-  transition: background-color 0.3s ease, opacity 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .roleButton:hover {

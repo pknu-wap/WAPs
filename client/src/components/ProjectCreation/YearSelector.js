@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from "react";
 // 스크롤 이벤트를 등록하기 위해 useEffect, useRef 사용
 import "../../assets/ProjectCreation/YearSelector.css"; // External CSS file
 
-const toSemester = (year, semester) => `${year}-${String(semester).padStart(2, "0")}`;
+const toSemester = (year, semester) =>
+  `${year}-${String(semester).padStart(2, "0")}`;
 
 const formatSemester = (semester) => {
   const [year, semesterValue] = semester.split("-");
@@ -67,7 +68,9 @@ const YearSelector = ({ selectedSemester, setSelectedSemester }) => {
   // 만약 이미 연도/학기가 선택되어 있다면 해당 연도/학기로 스크롤 이동
   useEffect(() => {
     if (scrollRef.current && selectedSemester) {
-      const index = semesters.findIndex((semester) => semester === selectedSemester);
+      const index = semesters.findIndex(
+        (semester) => semester === selectedSemester,
+      );
       if (index !== -1) {
         const itemHeight = 26;
         scrollRef.current.scrollTop = index * itemHeight;

@@ -5,5 +5,4 @@ public class ConflictException extends BusinessException {
     public ConflictException(String message) {
         super(ErrorCode.COMMON_CONFLICT, message);
     }
-
 }

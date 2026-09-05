@@ -109,7 +109,9 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   }}
                 >
                   <span>프로젝트 Projects</span>
-                  <span className="arrow"><FaChevronRight /></span>
+                  <span className="arrow">
+                    <FaChevronRight />
+                  </span>
                 </button>
 
                 <button
@@ -117,7 +119,9 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   onClick={() => handleNavigationWithAuth("/project/create")}
                 >
                   <span>프로젝트 만들기 Create Project</span>
-                  <span className="arrow"><FaChevronRight /></span>
+                  <span className="arrow">
+                    <FaChevronRight />
+                  </span>
                 </button>
               </div>
             </div>
@@ -133,7 +137,9 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   }}
                 >
                   <span>캘린더 Calendar</span>
-                  <span className="arrow"><FaChevronRight /></span>
+                  <span className="arrow">
+                    <FaChevronRight />
+                  </span>
                 </button>
               </div>
             </div>
@@ -146,7 +152,9 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   onClick={() => handleNavigationWithAuth("/team-build")}
                 >
                   <span>팀빌딩 Team Building</span>
-                  <span className="arrow"><FaChevronRight /></span>
+                  <span className="arrow">
+                    <FaChevronRight />
+                  </span>
                 </button>
 
                 <button
@@ -154,7 +162,9 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   onClick={() => navigate("/team-build/result")}
                 >
                   <span>팀빌딩 결과 Team Building Result</span>
-                  <span className="arrow"><FaChevronRight /></span>
+                  <span className="arrow">
+                    <FaChevronRight />
+                  </span>
                 </button>
               </div>
             </div>
@@ -163,12 +173,11 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
               <div className="menu-section">
                 <h3 className="section-title">ADMINISTRATOR</h3>
                 <div className="menu-items">
-                  <button
-                    className="menu-item"
-                    onClick={handleAdminNavigate}
-                  >
+                  <button className="menu-item" onClick={handleAdminNavigate}>
                     <span>임원진 페이지 Administrator Page</span>
-                    <span className="arrow"><FaChevronRight /></span>
+                    <span className="arrow">
+                      <FaChevronRight />
+                    </span>
                   </button>
                 </div>
               </div>
@@ -177,12 +186,11 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
             <div className="menu-section">
               <h3 className="section-title">VOTE</h3>
               <div className="menu-items">
-                <button
-                  className="menu-item"
-                  onClick={handleVotePageNavigate}
-                >
+                <button className="menu-item" onClick={handleVotePageNavigate}>
                   <span>투표 Vote</span>
-                  <span className="arrow"><FaChevronRight /></span>
+                  <span className="arrow">
+                    <FaChevronRight />
+                  </span>
                 </button>
                 <button
                   className="menu-item"
@@ -192,7 +200,9 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   }}
                 >
                   <span>투표 결과 Vote Result</span>
-                  <span className="arrow"><FaChevronRight /></span>
+                  <span className="arrow">
+                    <FaChevronRight />
+                  </span>
                 </button>
               </div>
             </div>
