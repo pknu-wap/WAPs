@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "../../assets/Admin/ManagePlan.module.css";
-import { adminPermissonApi, adminPlanApi } from "../../api/admin";
+import { adminPlanApi } from "../../api/admin";
 
 const ManagePlanPage = () => {
   const [title, setTitle] = useState("");
