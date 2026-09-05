@@ -33,8 +33,10 @@ class ProjectServiceTest {
 
     @Mock
     ProjectRepository projectRepository;
+
     @Mock
     UserRepository userRepository;
+
     @Mock
     ObjectStorageService objectStorageService;
 
@@ -56,9 +58,7 @@ class ProjectServiceTest {
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
 
-        ProjectRequest request = baseRequestBuilder()
-                .removal(null)
-                .build();
+        ProjectRequest request = baseRequestBuilder().removal(null).build();
 
         // when
         String result = projectService.update(project.getProjectId(), request, principal);
@@ -79,12 +79,10 @@ class ProjectServiceTest {
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
 
-        ProjectRequest request = baseRequestBuilder()
-                .removal(null)
-                .build();
+        ProjectRequest request = baseRequestBuilder().removal(null).build();
         request.setMultipartFiles(
-                new MockMultipartFile("thumbnail", "", "image/png", new byte[0]),
-                List.of(new MockMultipartFile("image", "", "image/png", new byte[0]))
+            new MockMultipartFile("thumbnail", "", "image/png", new byte[0]),
+            List.of(new MockMultipartFile("image", "", "image/png", new byte[0]))
         );
 
         // when
@@ -92,64 +90,69 @@ class ProjectServiceTest {
 
         // then
         verify(objectStorageService, never()).uploadImage(
-                org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.any()
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.any()
         );
         verify(objectStorageService, never()).uploadImages(
-                org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyString(),
-                org.mockito.ArgumentMatchers.anyList()
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.anyString(),
+            org.mockito.ArgumentMatchers.anyList()
         );
     }
 
     @Test
-    void 삭제_요청된_이미지는_프로젝트_컬렉션에서_제거하고_스토리지에서도_삭제한다() throws Exception {
+    void 삭제_요청된_이미지는_프로젝트_컬렉션에서_제거하고_스토리지에서도_삭제한다()
+        throws Exception {
         // given
         User owner = owner();
         UserPrincipal principal = principal(owner.getId());
         Project project = project(owner);
-        project.addAllImage(Image.listOf(List.of("https://cdn.example.com/a.png", "https://cdn.example.com/b.png")));
+        project.addAllImage(
+            Image.listOf(List.of("https://cdn.example.com/a.png", "https://cdn.example.com/b.png"))
+        );
 
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
         when(objectStorageService.supports("https://cdn.example.com/a.png")).thenReturn(true);
 
         ProjectRequest request = baseRequestBuilder()
-                .removal(List.of("https://cdn.example.com/a.png", "https://cdn.example.com/missing.png"))
-                .build();
+            .removal(
+                List.of("https://cdn.example.com/a.png", "https://cdn.example.com/missing.png")
+            )
+            .build();
 
         // when
         projectService.update(project.getProjectId(), request, principal);
 
         // then
         assertThat(project.getImages())
-                .extracting(Image::getImageFile)
-                .containsExactly("https://cdn.example.com/b.png");
+            .extracting(Image::getImageFile)
+            .containsExactly("https://cdn.example.com/b.png");
         verify(objectStorageService).deleteImage("https://cdn.example.com/a.png");
         verify(objectStorageService, never()).deleteImage("https://cdn.example.com/missing.png");
     }
 
     @Test
-    void 현재_스토리지에서_관리하지_않는_이미지는_프로젝트_컬렉션에서만_제거한다() throws Exception {
+    void 현재_스토리지에서_관리하지_않는_이미지는_프로젝트_컬렉션에서만_제거한다()
+        throws Exception {
         // given
         User owner = owner();
         UserPrincipal principal = principal(owner.getId());
         Project project = project(owner);
-        String legacyS3Url = "https://waps-bucket.s3.ap-northeast-2.amazonaws.com/projects/2025-2/test/image.png";
+        String legacyS3Url =
+            "https://waps-bucket.s3.ap-northeast-2.amazonaws.com/projects/2025-2/test/image.png";
         project.addAllImage(Image.listOf(List.of(legacyS3Url)));
 
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
         when(objectStorageService.supports(legacyS3Url)).thenReturn(false);
 
-        ProjectRequest request = baseRequestBuilder()
-                .removal(List.of(legacyS3Url))
-                .build();
+        ProjectRequest request = baseRequestBuilder().removal(List.of(legacyS3Url)).build();
 
         // when
         projectService.update(project.getProjectId(), request, principal);
@@ -161,19 +164,19 @@ class ProjectServiceTest {
 
     private ProjectRequest.ProjectRequestBuilder baseRequestBuilder() {
         return ProjectRequest.builder()
-                .title("updated title")
-                .projectType("WEB")
-                .content("updated content")
-                .summary("updated summary")
-                .password("pw")
-                .teamMember(List.of(TeamMemberDto.builder()
-                        .memberName("member")
-                        .memberRole("backend")
-                        .build()))
-                .techStack(List.of(TechStackDto.builder()
-                        .techStackName("Spring")
-                        .techStackType("BACKEND")
-                        .build()));
+            .title("updated title")
+            .projectType("WEB")
+            .content("updated content")
+            .summary("updated summary")
+            .password("pw")
+            .teamMember(
+                List.of(TeamMemberDto.builder().memberName("member").memberRole("backend").build())
+            )
+            .techStack(
+                List.of(
+                    TechStackDto.builder().techStackName("Spring").techStackType("BACKEND").build()
+                )
+            );
     }
 
     private User owner() {
@@ -191,16 +194,16 @@ class ProjectServiceTest {
 
     private Project project(User owner) {
         return Project.builder()
-                .projectId(10L)
-                .user(owner)
-                .title("old title")
-                .projectType("WEB")
-                .content("old content")
-                .summary("old summary")
-                .semester("2026-01")
-                .images(new ArrayList<>())
-                .teamMembers(new ArrayList<>())
-                .techStacks(new ArrayList<>())
-                .build();
+            .projectId(10L)
+            .user(owner)
+            .title("old title")
+            .projectType("WEB")
+            .content("old content")
+            .summary("old summary")
+            .semester("2026-01")
+            .images(new ArrayList<>())
+            .teamMembers(new ArrayList<>())
+            .techStacks(new ArrayList<>())
+            .build();
     }
 }

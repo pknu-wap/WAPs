@@ -38,5 +38,4 @@ public class Team {
 
     @Column(nullable = false, length = 7)
     private String semester;
-
 }

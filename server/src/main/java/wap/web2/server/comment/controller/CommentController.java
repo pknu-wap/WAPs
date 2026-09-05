@@ -22,9 +22,9 @@ public class CommentController {
 
     @PostMapping("/{projectId}")
     public ResponseEntity<Void> createComment(
-            @PathVariable("projectId") Long projectId,
-            @RequestBody CommentCreateRequest request,
-            @CurrentUser UserPrincipal userPrincipal
+        @PathVariable("projectId") Long projectId,
+        @RequestBody CommentCreateRequest request,
+        @CurrentUser UserPrincipal userPrincipal
     ) {
         commentService.save(projectId, request, userPrincipal);
         return ResponseEntity.ok().build();
@@ -32,11 +32,10 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}")
     public ResponseEntity<String> deleteComment(
-            @PathVariable("commentId") Long commentId,
-            @CurrentUser UserPrincipal userPrincipal
+        @PathVariable("commentId") Long commentId,
+        @CurrentUser UserPrincipal userPrincipal
     ) {
         commentService.delete(commentId, userPrincipal);
         return ResponseEntity.ok("댓글이 삭제되었습니다.");
     }
-
 }

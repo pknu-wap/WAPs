@@ -18,8 +18,8 @@ public class S3Properties {
     @Getter
     @Setter
     public static class S3 {
+
         private String region;
         private String bucketName;
     }
-
 }

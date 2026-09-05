@@ -50,7 +50,11 @@ const SplashPage = () => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path d="M0 4H25.5L20.5 0M25.5 4L20.5 8" stroke="white" strokeWidth="2" />
+                  <path
+                    d="M0 4H25.5L20.5 0M25.5 4L20.5 8"
+                    stroke="white"
+                    strokeWidth="2"
+                  />
                 </svg>
               </button>
             </div>

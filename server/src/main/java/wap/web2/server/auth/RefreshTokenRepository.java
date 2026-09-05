@@ -8,7 +8,6 @@ import wap.web2.server.member.entity.User;
 
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-
     Optional<RefreshToken> findByToken(String token);
 
     Optional<RefreshToken> findByUser(User user);

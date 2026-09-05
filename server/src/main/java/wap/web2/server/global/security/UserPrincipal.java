@@ -19,7 +19,12 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(
+        Long id,
+        String email,
+        String password,
+        Collection<? extends GrantedAuthority> authorities
+    ) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -27,23 +32,20 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     }
 
     public Optional<String> getUserRole() {
-        return this.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .filter(auth -> auth.startsWith("ROLE_"))
-                .findFirst();
+        return this.getAuthorities()
+            .stream()
+            .map(GrantedAuthority::getAuthority)
+            .filter(auth -> auth.startsWith("ROLE_"))
+            .findFirst();
     }
 
     public static UserPrincipal create(User user) {
         // TODO: 의논 후 변경 (null or GUEST default val) -> null 이면 collection에 넣기 전에 다른 처리 해야할듯
-        List<GrantedAuthority> authorities = Collections.
-                singletonList(new SimpleGrantedAuthority(user.getRole().toString()));
-
-        return new UserPrincipal(
-                user.getId(),
-                user.getEmail(),
-                user.getPassword(),
-                authorities
+        List<GrantedAuthority> authorities = Collections.singletonList(
+            new SimpleGrantedAuthority(user.getRole().toString())
         );
+
+        return new UserPrincipal(user.getId(), user.getEmail(), user.getPassword(), authorities);
     }
 
     public static UserPrincipal create(User user, Map<String, Object> attributes) {
@@ -108,5 +110,4 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     public String getName() {
         return String.valueOf(id);
     }
-
 }

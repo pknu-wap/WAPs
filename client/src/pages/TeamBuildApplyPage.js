@@ -5,9 +5,6 @@ import { teamBuildApi } from "../api/team-build";
 import LoadingPage from "../components/LoadingPage";
 import wapsLogo from "../assets/img/waps_logo.png";
 import styles from "../assets/TeamBuildApply.module.css";
-import noticeIcon from "../assets/img/noticeIcon.svg";
-import noticeArrow from "../assets/img/noticeArrow.svg";
-import emptyFolder from "../assets/img/folder.svg";
 
 const MAX_SELECTION = 5;
 const POSITION_OPTIONS = [
@@ -18,17 +15,6 @@ const POSITION_OPTIONS = [
   { value: "APP", label: "앱" },
   { value: "GAME", label: "게임" },
   { value: "EMBEDDED", label: "임베디드" },
-];
-
-const PRIMARY_POSITION_OPTIONS = [
-  { value: "BACKEND", label: "백엔드" },
-  { value: "FRONTEND", label: "프론트엔드" },
-  { value: "DESIGN", label: "디자이너" },
-  { value: "GAME", label: "게임" },
-  { value: "APP", label: "앱" },
-  { value: "EMBEDDED", label: "임베디드" },
-  { value: "AI", label: "AI" },
-  { value: "OTHER", label: "기타" },
 ];
 
 const POSITION_LABELS = POSITION_OPTIONS.reduce((acc, item) => {
@@ -52,33 +38,25 @@ const normalizeProjectType = (projectType) => {
   if (lower === "web") return "WEB";
   if (lower === "app") return "APP";
   if (lower === "game") return "GAME";
-  if (lower === "embedded" || lower === "etc" || lower === "기타") return "EMBEDDED";
+  if (lower === "embedded" || lower === "etc" || lower === "기타")
+    return "EMBEDDED";
   return raw.toUpperCase();
 };
 
 const getProjectTypeLabel = (projectType) => {
   const normalized = normalizeProjectType(projectType);
-  const matched = PROJECT_TYPE_OPTIONS.find((option) => option.value === normalized);
+  const matched = PROJECT_TYPE_OPTIONS.find(
+    (option) => option.value === normalized,
+  );
   if (matched) return matched.label;
   return projectType || "기타";
 };
 
 const getProjectTypeStyleKey = (projectType) => {
   const normalized = normalizeProjectType(projectType);
-  return PROJECT_TYPE_OPTIONS.some((option) => option.value === normalized) ? normalized : "EMBEDDED";
-};
-
-const getProjectTeamType = (projectType) => {
-  const raw = String(projectType || "").trim();
-  const lower = raw.toLowerCase();
-
-  if (lower === "기타" || lower === "etc") return "OTHER";
-  return normalizeProjectType(raw) || "OTHER";
-};
-
-const getProjectTeamTypeLabel = (projectType) => {
-  const type = getProjectTeamType(projectType);
-  return type === "OTHER" ? "기타" : type;
+  return PROJECT_TYPE_OPTIONS.some((option) => option.value === normalized)
+    ? normalized
+    : "EMBEDDED";
 };
 
 const formatApiError = (err, fallback) => {
@@ -91,7 +69,12 @@ const formatApiError = (err, fallback) => {
   return err?.message || fallback;
 };
 
-const reorderProjectIds = (projectIds, movingId, targetId, placement = "before") => {
+const reorderProjectIds = (
+  projectIds,
+  movingId,
+  targetId,
+  placement = "before",
+) => {
   const next = [...projectIds];
   const fromIndex = next.indexOf(movingId);
   const targetIndex = next.indexOf(targetId);
@@ -112,7 +95,12 @@ const reorderProjectIds = (projectIds, movingId, targetId, placement = "before")
   return next;
 };
 
-const calculateDropInsertIndex = (projectIds, movingId, targetId, placement = "before") => {
+const calculateDropInsertIndex = (
+  projectIds,
+  movingId,
+  targetId,
+  placement = "before",
+) => {
   if (!movingId || !targetId) return null;
   const withoutMoving = projectIds.filter((id) => id !== movingId);
   const targetIndex = withoutMoving.indexOf(targetId);
@@ -205,27 +193,29 @@ function TeamBuildApplyPage({ round = 1 }) {
   }, [projects]);
 
   const selectedProjects = useMemo(() => {
-    return selectedProjectIds
-      .map((id) => projectsById.get(id))
-      .filter(Boolean);
+    return selectedProjectIds.map((id) => projectsById.get(id)).filter(Boolean);
   }, [selectedProjectIds, projectsById]);
 
   const dropInsertIndex = useMemo(() => {
-    return calculateDropInsertIndex(selectedProjectIds, draggingId, dragOverId, dragOverPlacement);
+    return calculateDropInsertIndex(
+      selectedProjectIds,
+      draggingId,
+      dragOverId,
+      dragOverPlacement,
+    );
   }, [selectedProjectIds, draggingId, dragOverId, dragOverPlacement]);
 
   const priorityPreviewProjects = useMemo(() => {
-    if (!draggingId || !dragOverId || dropInsertIndex === null) return selectedProjects;
+    if (!draggingId || !dragOverId || dropInsertIndex === null)
+      return selectedProjects;
 
     const previewProjectIds = reorderProjectIds(
       selectedProjectIds,
       draggingId,
       dragOverId,
-      dragOverPlacement
+      dragOverPlacement,
     );
-    return previewProjectIds
-      .map((id) => projectsById.get(id))
-      .filter(Boolean);
+    return previewProjectIds.map((id) => projectsById.get(id)).filter(Boolean);
   }, [
     selectedProjects,
     selectedProjectIds,
@@ -239,7 +229,9 @@ function TeamBuildApplyPage({ round = 1 }) {
   const filteredProjects = useMemo(() => {
     if (selectedProjectTypes.length === 0) return projects;
     const selectedTypeSet = new Set(selectedProjectTypes);
-    return projects.filter((project) => selectedTypeSet.has(normalizeProjectType(readProjectType(project))));
+    return projects.filter((project) =>
+      selectedTypeSet.has(normalizeProjectType(readProjectType(project))),
+    );
   }, [projects, selectedProjectTypes]);
 
   const canSelectProjects = Boolean(commonApplication);
@@ -408,7 +400,9 @@ function TeamBuildApplyPage({ round = 1 }) {
 
   const toggleProjectTypeFilter = (type) => {
     setSelectedProjectTypes((prev) =>
-      prev.includes(type) ? prev.filter((item) => item !== type) : [...prev, type]
+      prev.includes(type)
+        ? prev.filter((item) => item !== type)
+        : [...prev, type],
     );
   };
 
@@ -517,11 +511,13 @@ function TeamBuildApplyPage({ round = 1 }) {
   const finalizeReorder = (targetProjectId) => {
     if (!draggingId) return;
     const targetId =
-      targetProjectId && targetProjectId !== draggingId ? targetProjectId : dragOverId;
+      targetProjectId && targetProjectId !== draggingId
+        ? targetProjectId
+        : dragOverId;
 
     if (!targetId || targetId === draggingId) return;
     setSelectedProjectIds((prev) =>
-      reorderProjectIds(prev, draggingId, targetId, dragOverPlacement)
+      reorderProjectIds(prev, draggingId, targetId, dragOverPlacement),
     );
   };
 
@@ -578,7 +574,9 @@ function TeamBuildApplyPage({ round = 1 }) {
     const confirmMessage =
       `다음 순서로 ${selectedProjectIds.length}개 프로젝트에 지원하시겠습니까?\n\n` +
       `지원 직무: ${getPositionLabel(commonApplication.position)}\n\n` +
-      projectTitles.map((title, index) => `${index + 1}순위: ${title}`).join("\n");
+      projectTitles
+        .map((title, index) => `${index + 1}순위: ${title}`)
+        .join("\n");
 
     if (!window.confirm(confirmMessage)) return;
 
@@ -591,7 +589,9 @@ function TeamBuildApplyPage({ round = 1 }) {
     setIsSubmitting(true);
     try {
       await teamBuildApi.submitApply({ applies });
-      alert(`${selectedProjectIds.length}개 프로젝트에 우선순위대로 지원이 완료되었습니다!`);
+      alert(
+        `${selectedProjectIds.length}개 프로젝트에 우선순위대로 지원이 완료되었습니다!`,
+      );
       setHasApplied(true);
       setSelectedProjectIds([]);
       navigate(-1);
@@ -612,13 +612,29 @@ function TeamBuildApplyPage({ round = 1 }) {
   const step1Expanded = activeStep === 1;
   const step2Expanded = activeStep === 2;
   const step3Expanded = activeStep === 3;
-  const step1Status = !canSelectProjects ? "진행 중" : step1Expanded ? "수정 중" : "완료";
-  const step2Status = !canSelectProjects ? "잠김" : step2Expanded ? "진행 중" : canReviewPriority ? "완료" : "대기 중";
-  const step3Status = !canReviewPriority ? "잠김" : step3Expanded ? "진행 중" : "대기 중";
+  const step1Status = !canSelectProjects
+    ? "진행 중"
+    : step1Expanded
+      ? "수정 중"
+      : "완료";
+  const step2Status = !canSelectProjects
+    ? "잠김"
+    : step2Expanded
+      ? "진행 중"
+      : canReviewPriority
+        ? "완료"
+        : "대기 중";
+  const step3Status = !canReviewPriority
+    ? "잠김"
+    : step3Expanded
+      ? "진행 중"
+      : "대기 중";
   const summaryPreviewProjects = selectedProjects.slice(0, 3);
   const hiddenProjectCount = selectedCount - summaryPreviewProjects.length;
   const selectedProjectTypeLabels = selectedProjectTypes.map(
-    (type) => PROJECT_TYPE_OPTIONS.find((option) => option.value === type)?.label || type
+    (type) =>
+      PROJECT_TYPE_OPTIONS.find((option) => option.value === type)?.label ||
+      type,
   );
 
   if (isLoading) {
@@ -649,36 +665,17 @@ function TeamBuildApplyPage({ round = 1 }) {
     return (
       <div className={styles.page}>
         <div className={styles.shell}>
-          <section className={`${styles.myApply} ${styles.completedApply}`}>
-            <div className={styles.myApplyHeader}>
-              <div className={styles.myApplyTitle}>
-                <div className={styles.myApplyTitleRow}>
-                  <h2>지원이 완료되었습니다.</h2>
-                  <div
-                    className={`${styles.myApplyCount} ${styles.myApplyCountActive}`}
-                    aria-label={`제출한 지원서 ${projectApplications.length}개`}
-                  >
-                    {projectApplications.length}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.myApplicationList}>
-              {projectApplications.map((application, index) => (
-                <div key={application.id} className={styles.myApplicationItem}>
-                  <div className={`${styles.priorityNumber} ${styles.myApplicationPriorityNumber}`}>
-                    {index + 1}
-                  </div>
-                  <div className={styles.myApplicationName}>
-                    <strong>{application.projectTitle}</strong>
-                    <span>·</span>
-                    <span>{getPositionLabel(application.position)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+          <div className={styles.appliedCard}>
+            <h1>이미 지원하셨습니다</h1>
+            <p>이번 학기에는 추가 지원이 불가합니다.</p>
+            <button
+              type="button"
+              className={styles.primaryButton}
+              onClick={() => navigate(-1)}
+            >
+              뒤로가기
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -692,7 +689,11 @@ function TeamBuildApplyPage({ round = 1 }) {
             <img src={wapsLogo} alt="WAPs" className={styles.brandLogo} />
             <span className={styles.brandText}>WAPs</span>
           </div>
-          <button type="button" className={styles.closeButton} onClick={() => navigate(-1)}>
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={() => navigate(-1)}
+          >
             ×
           </button>
         </div>
@@ -700,7 +701,7 @@ function TeamBuildApplyPage({ round = 1 }) {
         <div className={styles.hero}>
           <div className={styles.heroTitle}>TEAM BUILDING_{isSecondRound ? "2ND" : "1ST"}</div>
           <div className={styles.heroSubtitle}>
-            함께할 팀을 찾고, 원하는 프로젝트에 도전해보세요
+            지원서를 작성하고 원하는 프로젝트들에 한 번에 지원하세요!
           </div>
         </div>
 
@@ -738,121 +739,174 @@ function TeamBuildApplyPage({ round = 1 }) {
           )}
         </div>
 
-        <section className={styles.myApply}>
-          <div className={styles.myApplyHeader}>
-            <div className={styles.myApplyTitle}>
-              <div className={styles.myApplyTitleRow}>
-                <h2>내 지원서</h2>
-                <div
-                  className={`${styles.myApplyCount} ${
-                    projectApplications.length >= 3 ? styles.myApplyCountActive : ""
-                  }`}
-                  aria-label={`현재 지원서 ${projectApplications.length}개`}
-                >
-                  {projectApplications.length}
+        <section className={styles.stepStack} aria-label="지원 단계">
+          <section
+            className={`${styles.panel} ${styles.editablePanel} ${
+              step1Expanded ? styles.editablePanelActive : ""
+            }`}
+          >
+            <div className={styles.editableHeader}>
+              <div className={styles.editableTitleWrap}>
+                <div className={styles.panelTitle}>
+                  <span className={styles.panelStep}>1</span>
+                  지원서 작성
                 </div>
-              </div>
-              <p>지원한 프로젝트를 한눈에 확인하고, 우선순위를 조정하세요</p>
-              <p>(우선순위는 드래그로 조정이 가능합니다)</p>
-            </div>
-          </div>
-
-          {!isSecondRound && (
-            <section className={styles.primaryPositionCard} aria-labelledby="primary-position-title">
-              <div className={styles.primaryPositionHeader}>
-                <h2 id="primary-position-title">주요 직무</h2>
-                <p>주요 직무는 1차 팀빌딩에는 영향을 미치지 않으며, 3차 팀빌딩 시 활용될 예정입니다.</p>
-              </div>
-              <div className={`${styles.formGroup} ${styles.primaryPositionSelect}`}>
-                <select
-                  id="primaryPosition"
-                  aria-label="주요 직무"
-                  value={primaryPosition}
-                  onChange={(event) => setPrimaryPosition(event.target.value)}
+                <span
+                  className={`${styles.stepChip} ${canSelectProjects ? styles.stepChipDone : styles.stepChipCurrent}`}
                 >
-                  <option value="">직무를 선택해주세요</option>
-                  {PRIMARY_POSITION_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  {step1Status}
+                </span>
               </div>
-            </section>
-          )}
-
-          {projectApplications.length === 0 ? (
-            <div className={styles.emptyApply}>
-              <img src={emptyFolder} alt="" className={styles.emptyFolder} />
-              <p>아직 지원한 프로젝트가 없습니다</p>
-            </div>
-          ) : (
-            <>
-              <div className={styles.myApplicationList}>
-                {projectApplications.map((application, index) => {
-                const isDropTarget =
-                  applicationDragOverId === application.id &&
-                  applicationDraggingId !== application.id;
-                const dropPlacementClass = isDropTarget
-                  ? applicationDragOverPlacement === "after"
-                    ? styles.dropAfter
-                    : styles.dropBefore
-                  : "";
-
-                return (
-                <div
-                  key={application.id}
-                  className={`${styles.myApplicationItem} ${
-                    applicationDraggingId === application.id ? styles.dragging : ""
-                  } ${isDropTarget ? styles.dragOver : ""} ${dropPlacementClass}`}
-                  draggable
-                  onDragStart={handleApplicationDragStart(application.id)}
-                  onDragEnd={handleApplicationDragEnd}
-                  onDragOver={handleApplicationDragOver(application.id)}
-                  onDrop={handleApplicationDrop(application.id)}
-                >
-                  <div className={`${styles.priorityNumber} ${styles.myApplicationPriorityNumber}`}>
-                    {index + 1}
-                  </div>
-                  <div className={styles.myApplicationName}>
-                    <strong>{application.projectTitle}</strong>
-                    <span>·</span>
-                    <span>{getPositionLabel(application.position)}</span>
-                  </div>
-                  <button
-                    type="button"
-                    className={styles.cancelApplicationButton}
-                    onClick={() => setCancelTarget(application)}
-                    aria-label={`${application.projectTitle} 지원 취소`}
-                    title="지원 취소"
-                  >
-                    ×
-                  </button>
-                </div>
-                );
-                })}
-              </div>
-              {projectApplications.length >= 3 && (
+              {!step1Expanded && canSelectProjects && (
                 <button
                   type="button"
-                  className={`${styles.modifyApplicationButton} ${styles.finalSubmitButton}`}
-                  onClick={submitProjectApplications}
-                  disabled={isSubmitting}
+                  className={styles.editButton}
+                  onClick={() => openStep(1)}
                 >
-                  {isSubmitting ? "제출 중..." : "최종 제출하기"}
+                  수정
                 </button>
               )}
-            </>
-          )}
-        </section>
-
-        <section className={styles.availableSection}>
-          <div className={styles.availableHeader}>
-            <div>
-              <h2>지원가능한 프로젝트</h2>
-              <p></p>
             </div>
-          </div>
+
+    {!step1Expanded ? (
+      <div className={styles.sectionSummary}>
+        <div className={styles.summaryRow}>
+          <span>지원 직무</span>
+          <strong>
+            {getPositionLabel(commonApplication?.position)}
+          </strong>
+        </div>
+
+        <div className={styles.summaryText}>
+          {getPreviewText(commonApplication?.message, 150)}
+        </div>
+      </div>
+    ) : (
+      <div className={styles.sectionBody}>
+        {!isSecondRound && (
+          <section
+            className={styles.primaryPositionCard}
+            aria-labelledby="primary-position-title"
+          >
+            <div className={styles.primaryPositionHeader}>
+              <h2 id="primary-position-title">주요 직무</h2>
+              <p>
+                주요 직무는 1차 팀빌딩에는 영향을 미치지 않으며,
+                3차 팀빌딩 시 활용될 예정입니다.
+              </p>
+            </div>
+
+            <div
+              className={`${styles.formGroup} ${styles.primaryPositionSelect}`}
+            >
+              <select
+                id="primaryPosition"
+                aria-label="주요 직무"
+                value={primaryPosition}
+                onChange={(event) => setPrimaryPosition(event.target.value)}
+              >
+                <option value="">직무를 선택해주세요</option>
+
+                {PRIMARY_POSITION_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </section>
+        )}
+
+        <div className={styles.formGroup}>
+          <label htmlFor="commonPosition">지원 직무</label>
+          <select
+            id="commonPosition"
+            value={formPosition}
+            onChange={(event) => setFormPosition(event.target.value)}
+          >
+            <option value="">직무를 선택해주세요</option>
+
+            {POSITION_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+    </div>                                                
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="commonMessage">자기소개 및 PR 메시지</label>
+                  <textarea
+                    id="commonMessage"
+                    value={formMessage}
+                    onChange={handleMessageChange}
+                    placeholder="자신의 경험, 기술 스택, 프로젝트에 기여할 수 있는 부분 등을 작성해주세요. 이 메시지는 선택한 모든 프로젝트에 동일하게 전송됩니다."
+                    maxLength={255}
+                    className={messageLimitReached ? styles.textareaError : ""}
+                  />
+                  {messageLimitReached && (
+                    <div className={styles.messageError}>
+                      최대 255자까지만 작성할 수 있습니다.
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  className={styles.modalSubmit}
+                  onClick={saveCommonApplication}
+                >
+                  지원서 저장하고 다음으로
+                </button>
+              </div>
+            )}
+          </section>
+
+          <section
+            className={`${styles.panel} ${styles.editablePanel} ${
+              step2Expanded ? styles.editablePanelActive : ""
+            } ${!canSelectProjects ? styles.panelLocked : ""}`}
+          >
+            <div className={styles.editableHeader}>
+              <div className={styles.editableTitleWrap}>
+                <div className={styles.panelTitle}>
+                  <span className={styles.panelStep}>2</span>
+                  프로젝트 선택
+                  <span className={styles.badge}>{selectedCount}</span>
+                </div>
+                <span
+                  className={`${styles.stepChip} ${
+                    !canSelectProjects
+                      ? styles.stepChipLocked
+                      : canReviewPriority
+                        ? styles.stepChipDone
+                        : styles.stepChipCurrent
+                  }`}
+                >
+                  {step2Status}
+                </span>
+              </div>
+              {step2Expanded && selectedCount > 0 ? (
+                <button
+                  type="button"
+                  className={styles.clearButton}
+                  onClick={clearCart}
+                >
+                  전체 삭제
+                </button>
+              ) : (
+                !step2Expanded &&
+                canSelectProjects && (
+                  <button
+                    type="button"
+                    className={styles.editButton}
+                    onClick={() => openStep(2)}
+                  >
+                    수정
+                  </button>
+                )
+              )}
+            </div>
 
           <div className={styles.availableProjectList}>
             {projects.map((project) => {
@@ -869,11 +923,10 @@ function TeamBuildApplyPage({ round = 1 }) {
                       <div className={styles.applicationProjectTitleRow}>
                         <h3>{project.title}</h3>
                         <span
-                          className={`${styles.projectTeamBadge} ${
-                            styles[`projectTeamBadge${getProjectTeamType(readProjectType(project))}`]
-                          }`}
+                          key={project.projectId}
+                          className={styles.summaryChip}
                         >
-                          {getProjectTeamLabel(project)}
+                          {project.title}
                         </span>
                         {isSecondRound && (
                           <span className={styles.recruitCount}>
@@ -883,20 +936,59 @@ function TeamBuildApplyPage({ round = 1 }) {
                       </div>
                       <p>{project.summary}</p>
                     </div>
-                    {applications.length > 0 && <span className={styles.appliedMark}></span>}
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className={styles.sectionBody}>
+                {!canSelectProjects && (
+                  <div className={styles.lockNotice}>
+                    <span>
+                      1단계 지원서 작성 완료 후 프로젝트를 선택할 수 있습니다.
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.lockAction}
+                      onClick={() => openStep(1)}
+                    >
+                      Step 1로 이동
+                    </button>
                   </div>
-                  <div className={styles.recruitBlock}>
-                    <div className={styles.recruitPositions}>
-                      {project.recruitPositions.map((position) => (
-                        <span
-                          key={position}
-                          className={`${styles.recruitPosition} ${
-                            applications.some((item) => item.position === position)
-                              ? styles.recruitPositionApplied : ""
-                          }`}
+                )}
+
+                <div className={styles.cartBox}>
+                  {selectedProjects.length === 0 ? (
+                    <div className={styles.cartEmpty}>
+                      {!canSelectProjects ? (
+                        <>
+                          아직 프로젝트를 선택할 수 없습니다.
+                          <br />
+                          위의 1단계를 먼저 진행해 주세요.
+                        </>
+                      ) : (
+                        <>
+                          아직 선택된 프로젝트가 없습니다.
+                          <br />
+                          프로젝트를 선택해 주세요.
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <div className={styles.cartItems}>
+                      {selectedProjects.map((project) => (
+                        <div
+                          key={project.projectId}
+                          className={styles.cartItem}
                         >
-                          {getPositionLabel(position)}
-                        </span>
+                          <span>{project.title}</span>
+                          <button
+                            type="button"
+                            className={styles.cartRemove}
+                            onClick={() => removeFromCart(project.projectId)}
+                          >
+                            ×
+                          </button>
+                        </div>
                       ))}
                     </div>
                     {isSecondRound && (
@@ -921,19 +1013,34 @@ function TeamBuildApplyPage({ round = 1 }) {
                     ))}
                     <button
                       type="button"
-                      className={applications.length
-                        ? styles.addApplicationButton : styles.writeApplicationButton}
-                      onClick={() => openProjectApplication(project)}
-                      disabled={projectApplications.length >= MAX_SELECTION}
+                      className={`${styles.projectTypeChip} ${styles.projectTypeChipAll} ${
+                        isAllProjectTypes ? styles.projectTypeChipActive : ""
+                      }`}
+                      onClick={() => setSelectedProjectTypes([])}
+                      aria-pressed={isAllProjectTypes}
                     >
-                      {applications.length ? "+ 지원서 추가 작성하기" : "지원서 작성하기"}
+                      모두
                     </button>
+                    {PROJECT_TYPE_OPTIONS.map((option) => {
+                      const isActive = selectedProjectTypes.includes(
+                        option.value,
+                      );
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          className={`${styles.projectTypeChip} ${
+                            styles[`projectTypeChip${option.value}`]
+                          } ${isActive ? styles.projectTypeChipActive : ""}`}
+                          onClick={() => toggleProjectTypeFilter(option.value)}
+                          aria-pressed={isActive}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
                   </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
+                </div>
 
       </div>
       {applicationModal && (
@@ -1091,9 +1198,119 @@ function TeamBuildApplyPage({ round = 1 }) {
                 {isSubmitting ? "제출 중..." : "최종 제출하기"}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+
+            {!step3Expanded ? (
+              <div className={styles.sectionSummary}>
+                {!canReviewPriority ? (
+                  <div className={styles.summaryText}>
+                    Step 2에서 프로젝트를 선택하면 제출 단계가 열립니다.
+                  </div>
+                ) : (
+                  <>
+                    <div className={styles.summaryRow}>
+                      <span>제출 예정 프로젝트</span>
+                      <strong>{selectedCount}개</strong>
+                    </div>
+                    <div className={styles.summaryText}>
+                      {summaryPreviewProjects
+                        .map(
+                          (project, index) => `${index + 1}. ${project.title}`,
+                        )
+                        .join(" / ")}
+                      {hiddenProjectCount > 0
+                        ? ` / +${hiddenProjectCount}개`
+                        : ""}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className={styles.sectionBody}>
+                {!canReviewPriority ? (
+                  <div className={styles.lockNotice}>
+                    <span>
+                      먼저 Step 2에서 최소 1개 이상의 프로젝트를 선택해주세요.
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.lockAction}
+                      onClick={() => openStep(2)}
+                    >
+                      Step 2로 이동
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className={styles.priorityGuide}>
+                      <strong>지원 우선순위 설정</strong>
+                      <span>· 드래그하면 이동될 순서가 미리 반영됩니다.</span>
+                    </div>
+
+                    <ol
+                      className={`${styles.priorityList} ${draggingId ? styles.priorityListDragging : ""}`}
+                      onDragOver={handleListDragOver}
+                      onDrop={handleListDrop}
+                    >
+                      {priorityPreviewProjects.map((project, index) => {
+                        const isDropTarget =
+                          Boolean(draggingId) &&
+                          dragOverId === project.projectId &&
+                          draggingId !== project.projectId;
+                        const dropPlacementClass = isDropTarget
+                          ? dragOverPlacement === "after"
+                            ? styles.dropAfter
+                            : styles.dropBefore
+                          : "";
+
+                        return (
+                          <li
+                            key={project.projectId}
+                            className={`${styles.priorityItem} ${
+                              draggingId === project.projectId
+                                ? styles.dragging
+                                : ""
+                            } ${dragOverId === project.projectId ? styles.dragOver : ""} ${dropPlacementClass}`}
+                            draggable
+                            onDragStart={handleDragStart(project.projectId)}
+                            onDragEnd={handleDragEnd}
+                            onDragOver={handleDragOver(project.projectId)}
+                            onDrop={handleDrop(project.projectId)}
+                          >
+                            <div className={styles.priorityNumber}>
+                              {index + 1}
+                            </div>
+                            <div className={styles.priorityInfo}>
+                              <div className={styles.priorityTitle}>
+                                {project.title}
+                              </div>
+                              <div className={styles.priorityRole}>
+                                지원 직무:{" "}
+                                {getPositionLabel(commonApplication?.position)}
+                              </div>
+                            </div>
+                            <span className={styles.dragHandle}>⋮⋮</span>
+                          </li>
+                        );
+                      })}
+                    </ol>
+
+                    <button
+                      type="button"
+                      className={styles.modalSubmit}
+                      onClick={submitAllApplications}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting
+                        ? "제출 중..."
+                        : "선택한 프로젝트에 지원하기"}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </section>
+        </section>
+      </div>
     </div>
   );
 }

@@ -21,16 +21,15 @@ public class S3Config {
     @Bean
     public S3Client s3Client() {
         return S3Client.builder()
-                .region(Region.of(s3Properties.getS3().getRegion()))
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(
-                                        s3Properties.getAccessKeyId(),
-                                        s3Properties.getSecretKey()
-                                )
-                        )
+            .region(Region.of(s3Properties.getS3().getRegion()))
+            .credentialsProvider(
+                StaticCredentialsProvider.create(
+                    AwsBasicCredentials.create(
+                        s3Properties.getAccessKeyId(),
+                        s3Properties.getSecretKey()
+                    )
                 )
-                .build();
+            )
+            .build();
     }
-
 }

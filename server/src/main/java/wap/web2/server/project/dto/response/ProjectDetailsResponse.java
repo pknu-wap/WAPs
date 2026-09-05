@@ -30,34 +30,37 @@ public class ProjectDetailsResponse {
     private Boolean isOwner;
 
     public static ProjectDetailsResponse from(Project project) {
-        List<TeamMemberDto> teamMembers = project.getTeamMembers().stream()
-                .map(TeamMemberDto::from).toList();
-        List<ImageDto> images = project.getImages().stream()
-                .map(ImageDto::from).toList();
-        List<TechStackDto> techStacks = project.getTechStacks().stream()
-                .map(TechStackDto::from).toList();
-        List<CommentDto> comments = project.getComments().stream()
-                .map(CommentDto::from).toList();
+        List<TeamMemberDto> teamMembers = project
+            .getTeamMembers()
+            .stream()
+            .map(TeamMemberDto::from)
+            .toList();
+        List<ImageDto> images = project.getImages().stream().map(ImageDto::from).toList();
+        List<TechStackDto> techStacks = project
+            .getTechStacks()
+            .stream()
+            .map(TechStackDto::from)
+            .toList();
+        List<CommentDto> comments = project.getComments().stream().map(CommentDto::from).toList();
 
         return ProjectDetailsResponse.builder()
-                .projectId(project.getProjectId())
-                .title(project.getTitle())
-                .projectType(project.getProjectType())
-                .content(project.getContent())
-                .summary(project.getSummary())
-                .semester(project.getSemester())
-                .thumbnail(project.getThumbnail())
-                .teamMember(teamMembers)
-                .techStack(techStacks)
-                .images(images)
-                .comments(comments)
-                .isOwner(false)
-                .build();
+            .projectId(project.getProjectId())
+            .title(project.getTitle())
+            .projectType(project.getProjectType())
+            .content(project.getContent())
+            .summary(project.getSummary())
+            .semester(project.getSemester())
+            .thumbnail(project.getThumbnail())
+            .teamMember(teamMembers)
+            .techStack(techStacks)
+            .images(images)
+            .comments(comments)
+            .isOwner(false)
+            .build();
     }
 
     public ProjectDetailsResponse changeIsOwner(boolean isOwner) {
         this.isOwner = isOwner;
         return this;
     }
-
 }

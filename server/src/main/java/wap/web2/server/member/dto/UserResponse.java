@@ -18,10 +18,9 @@ public class UserResponse {
 
     public static UserResponse of(User user) {
         return UserResponse.builder()
-                .userId(user.getId())
-                .userName(user.getName())
-                .userEmail(user.getEmail())
-                .build();
+            .userId(user.getId())
+            .userName(user.getName())
+            .userEmail(user.getEmail())
+            .build();
     }
-
 }

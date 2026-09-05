@@ -5,5 +5,4 @@ public class ProjectPasswordInvalidException extends BusinessException {
     public ProjectPasswordInvalidException() {
         super(ErrorCode.PROJECT_PASSWORD_INVALID);
     }
-
 }

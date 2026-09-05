@@ -35,5 +35,4 @@ public class ProjectRecruitWish {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_recruit_id", nullable = false)
     private ProjectRecruit recruit;
-
 }

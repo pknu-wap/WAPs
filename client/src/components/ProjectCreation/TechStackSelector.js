@@ -25,9 +25,7 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
       try {
         const data = await stackApi.getTechStack();
         setTechStacks(
-          Array.isArray(data.techStackResponse)
-            ? data.techStackResponse
-            : []
+          Array.isArray(data.techStackResponse) ? data.techStackResponse : [],
         );
       } catch (error) {
         // console.error("Failed to fetch tech stacks:", error);

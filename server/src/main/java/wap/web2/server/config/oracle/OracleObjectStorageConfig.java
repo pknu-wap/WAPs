@@ -21,17 +21,18 @@ public class OracleObjectStorageConfig {
     @Bean
     public ConfigFileAuthenticationDetailsProvider oracleAuthProvider() throws IOException {
         ConfigFileReader.ConfigFile configFile = ConfigFileReader.parse(
-                properties.getConfigPath(),
-                properties.getProfile()
+            properties.getConfigPath(),
+            properties.getProfile()
         );
         return new ConfigFileAuthenticationDetailsProvider(configFile);
     }
 
     @Bean
-    public ObjectStorageClient objectStorageClient(ConfigFileAuthenticationDetailsProvider authProvider) {
+    public ObjectStorageClient objectStorageClient(
+        ConfigFileAuthenticationDetailsProvider authProvider
+    ) {
         ObjectStorageClient client = ObjectStorageClient.builder().build(authProvider);
         client.useRealmSpecificEndpointTemplate(true);
         return client;
     }
-
 }

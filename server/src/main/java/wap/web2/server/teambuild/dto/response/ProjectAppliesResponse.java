@@ -17,6 +17,7 @@ public class ProjectAppliesResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ApplyResponse {
+
         private Long projectId;
         private String position;
         private String comment;
@@ -39,5 +40,4 @@ public class ProjectAppliesResponse {
 
         return new ProjectAppliesResponse(responses);
     }
-
 }

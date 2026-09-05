@@ -45,5 +45,4 @@ public class Comment {
         }
         return this.user.getId().equals(user.getId());
     }
-
 }

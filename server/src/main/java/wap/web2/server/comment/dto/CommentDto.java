@@ -17,9 +17,8 @@ public class CommentDto {
 
     public static CommentDto from(Comment comment) {
         return CommentDto.builder()
-                .commentId((comment.getCommentId()))
-                .commentContent(comment.getCommentContent())
-                .build();
+            .commentId((comment.getCommentId()))
+            .commentContent(comment.getCommentContent())
+            .build();
     }
-
 }

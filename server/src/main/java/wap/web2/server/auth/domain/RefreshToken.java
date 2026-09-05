@@ -52,5 +52,4 @@ public class RefreshToken {
         Instant expiryDate = Instant.now().plusMillis(refreshTokenExpiry);
         return new RefreshToken(user, refreshToken, expiryDate);
     }
-
 }

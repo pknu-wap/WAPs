@@ -297,18 +297,12 @@
   border-radius: 10px;
   --cut: 30px;
   clip-path: polygon(var(--cut) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cut));
-  -webkit-mask-image: radial-gradient(
-      circle 12px at top left,
-      transparent 10px,
-      black 10px
-    ),
+  -webkit-mask-image:
+    radial-gradient(circle 12px at top left, transparent 10px, black 10px),
     radial-gradient(circle 12px at bottom right, transparent 10px, black 10px),
     linear-gradient(135deg, transparent 30px, black 30px);
-  mask-image: radial-gradient(
-      circle 12px at top left,
-      transparent 10px,
-      black 10px
-    ),
+  mask-image:
+    radial-gradient(circle 12px at top left, transparent 10px, black 10px),
     radial-gradient(circle 12px at bottom right, transparent 10px, black 10px),
     linear-gradient(135deg, transparent 30px, black 30px);
   -webkit-mask-composite: source-over;
@@ -420,7 +414,10 @@
   font-family: "Pretendard-Regular";
   font-size: 10px;
   cursor: pointer;
-  transition: transform 0.08s ease, background 0.2s ease, color 0.2s ease;
+  transition:
+    transform 0.08s ease,
+    background 0.2s ease,
+    color 0.2s ease;
   display: inline-block;
 }
 

@@ -1,13 +1,15 @@
 @font-face {
-  font-family: 'Pretendard-Bold';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2') format('woff2');
+  font-family: "Pretendard-Bold";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2")
+    format("woff2");
   font-weight: 600;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Pretendard-Regular';
-  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
   font-weight: 400;
   font-style: normal;
 }
@@ -23,7 +25,7 @@
   padding: 40px 20px;
   box-sizing: border-box;
   overflow: hidden; /* 전체 페이지 스크롤바 숨기기 */
-  font-family: 'Pretendard-Regular';
+  font-family: "Pretendard-Regular";
 }
 
 /* 우측 상단 X 버튼 */
@@ -47,10 +49,10 @@
 /* 상단 제목 */
 .calendar-title {
   font-size: 40px;
-  font-family: 'Pretendard-Bold';
+  font-family: "Pretendard-Bold";
   text-align: center;
 
-  background: linear-gradient(90deg, #A0AFFF 0%, #B4EDFE 100%);
+  background: linear-gradient(90deg, #a0afff 0%, #b4edfe 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -58,7 +60,6 @@
   margin-top: 50px;
   margin-bottom: 0px; /* 제목과 설명 사이 간격 */
 }
-
 
 .calendar-desc {
   color: #aaa;
@@ -156,5 +157,5 @@
   text-align: right;
   font-size: 16px;
   color: #fff;
-  font-family: 'Pretendard-Regular';
+  font-family: "Pretendard-Regular";
 }

@@ -17,13 +17,12 @@ public class AdminCalendarService {
     @Transactional
     public void postCalendarEvent(CalendarEventPostingRequest request) {
         CalendarEvent event = CalendarEvent.builder()
-                .title(request.title())
-                .content(request.content() + "\n" + request.location())
-                .target(request.target())
-                .date(request.dateTime())
-                .build();
+            .title(request.title())
+            .content(request.content() + "\n" + request.location())
+            .target(request.target())
+            .date(request.dateTime())
+            .build();
 
         calendarEventRepository.save(event);
     }
-
 }

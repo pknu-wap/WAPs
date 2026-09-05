@@ -7,18 +7,13 @@ const Callback = () => {
   const navigate = useNavigate();
   const hasHandled = useRef(false);
 
-  const fetchUserInfo = useCallback((token) => {
-    fetch(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch user info.");
-        }
-        return response.json();
+  const fetchUserInfo = useCallback(
+    (token) => {
+      fetch(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
         .then((response) => {
           if (!response.ok) {
@@ -57,18 +52,21 @@ const Callback = () => {
             Cookies.set("userRole", roleData.role, { expires: 7 });
           }
 
-        if (roleData.roleAssigned) { // 역할을 이미 선택했다면
-          navigate("/ProjectPage"); // 홈페이지로
-        } else {
-          navigate("/select/role");
-        }
-      })
-      .catch((error) => {
-        console.error("사용자 정보를 가져오는 동안 에러 발생:", error);
-        alert("사용자 정보를 가져오는 중 오류가 발생했습니다.");
-        navigate("/login");
-      });
-  }, [navigate]);
+          if (roleData.roleAssigned) {
+            // 역할을 이미 선택했다면
+            navigate("/ProjectPage"); // 홈페이지로
+          } else {
+            navigate("/select/role");
+          }
+        })
+        .catch((error) => {
+          console.error("사용자 정보를 가져오는 동안 에러 발생:", error);
+          alert("사용자 정보를 가져오는 중 오류가 발생했습니다.");
+          navigate("/login");
+        });
+    },
+    [navigate],
+  );
 
   useEffect(() => {
     if (hasHandled.current) return;

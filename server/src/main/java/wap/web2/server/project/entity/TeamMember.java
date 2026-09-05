@@ -37,5 +37,4 @@ public class TeamMember {
     public void updateTeamMember(Project project) {
         this.project = project;
     }
-
 }

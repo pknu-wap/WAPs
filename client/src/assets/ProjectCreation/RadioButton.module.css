@@ -1,56 +1,55 @@
-.radio_button{
-    width: 90%;
-    height: 100%;
-    padding-top: 15px;
-    padding-bottom: 20px;
-    background-color: #2A2A2A;
-    color: #7E7E7E;
-    border-radius: 10px;
-    margin: 0 auto; 
-    margin-top: 10px;
-    
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    text-align: left;
-    font-size:12px;
+.radio_button {
+  width: 90%;
+  height: 100%;
+  padding-top: 15px;
+  padding-bottom: 20px;
+  background-color: #2a2a2a;
+  color: #7e7e7e;
+  border-radius: 10px;
+  margin: 0 auto;
+  margin-top: 10px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  font-size: 12px;
 }
 
-.radio_button_label { /* .radio-button 내부의 직접적인 label만 선택 */
-    margin-top: 10px;
-    margin-left: 33px;
-    margin-bottom: 10px;
-    font-size: 12px;
-    color: #EBEBEB;
-}
-  
-.radio_option{
-    display: flex;
-    justify-content: space-between;
-
-    font-size: 14px;
-
-    margin: 0 auto;
-    width: 80%;
+.radio_button_label {
+  /* .radio-button 내부의 직접적인 label만 선택 */
+  margin-top: 10px;
+  margin-left: 33px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #ebebeb;
 }
 
-.radio_option input[type="radio"]{
-    -webkit-appearance: none; 
-    -moz-appearance: none;
-    appearance: none; 
+.radio_option {
+  display: flex;
+  justify-content: space-between;
 
-    width: 15px;
-    height: 15px;
-    box-shadow: 0 0 0 1.5px #7E7E7E;
-    border-radius: 50%;
-    outline: none; 
-    cursor: pointer;
+  font-size: 14px;
+
+  margin: 0 auto;
+  width: 80%;
 }
 
-.radio_option input[type='radio']:checked {
-    box-shadow: 0 0 0 1.5px #02FF2E;
-    background-color: #02FF2E; 
-    border: 3px solid #2A2A2A; 
+.radio_option input[type="radio"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 
+  width: 15px;
+  height: 15px;
+  box-shadow: 0 0 0 1.5px #7e7e7e;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
 }
 
+.radio_option input[type="radio"]:checked {
+  box-shadow: 0 0 0 1.5px #02ff2e;
+  background-color: #02ff2e;
+  border: 3px solid #2a2a2a;
+}

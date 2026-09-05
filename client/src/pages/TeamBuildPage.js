@@ -44,24 +44,40 @@ function TeamBuildPage({ round = 1 }) {
   const [projectTitle, setProjectTitle] = useState("");
   const [applies, setApplies] = useState([]);
   const [rankedByPosition, setRankedByPosition] = useState(createEmptyRankMap);
-  const [capacityByPosition, setCapacityByPosition] = useState(createEmptyCapacityMap);
+  const [capacityByPosition, setCapacityByPosition] = useState(
+    createEmptyCapacityMap,
+  );
   const [currentFilter, setCurrentFilter] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState("");
   const [submitStatus, setSubmitStatus] = useState("");
-  const [expandedApplicantIds, setExpandedApplicantIds] = useState(() => new Set());
+  const [expandedApplicantIds, setExpandedApplicantIds] = useState(
+    () => new Set(),
+  );
   const [highlightedApplicantId, setHighlightedApplicantId] = useState(null);
   const [draggingId, setDraggingId] = useState(null);
-  const [dragOver, setDragOver] = useState({ position: null, zone: null, index: null });
+  const [dragOver, setDragOver] = useState({
+    position: null,
+    zone: null,
+    index: null,
+  });
   const filterRef = useRef(null);
-  const dragStateRef = useRef({ candidate: null, source: null, index: -1, position: null });
+  const dragStateRef = useRef({
+    candidate: null,
+    source: null,
+    index: -1,
+    position: null,
+  });
 
   const userName = Cookies.get("userName") || "";
 
   useEffect(() => {
-    const token = Cookies.get("authToken") || window.localStorage.getItem("authToken") || "";
+    const token =
+      Cookies.get("authToken") ||
+      window.localStorage.getItem("authToken") ||
+      "";
     if (!token) {
       alert("로그인이 필요합니다.");
       navigate("/login");
@@ -92,7 +108,9 @@ function TeamBuildPage({ round = 1 }) {
   }, [applies]);
 
   const filteredApplies = useMemo(() => {
-    return currentFilter ? applies.filter((a) => a.position === currentFilter) : applies;
+    return currentFilter
+      ? applies.filter((a) => a.position === currentFilter)
+      : applies;
   }, [applies, currentFilter]);
 
   const visiblePositions = useMemo(() => {
@@ -105,7 +123,9 @@ function TeamBuildPage({ round = 1 }) {
       return acc;
     }, {});
     const rankedIds = POSITIONS.reduce((acc, pos) => {
-      acc[pos] = new Set((rankedByPosition[pos] || []).map((c) => c.applicantId));
+      acc[pos] = new Set(
+        (rankedByPosition[pos] || []).map((c) => c.applicantId),
+      );
       return acc;
     }, {});
     for (const apply of applies) {
@@ -135,7 +155,9 @@ function TeamBuildPage({ round = 1 }) {
         throw new Error(response.message || "불러오기 실패");
       }
 
-      const normalized = normalizeApplies(response?.applies || response?.data?.applies || []);
+      const normalized = normalizeApplies(
+        response?.applies || response?.data?.applies || [],
+      );
       const rawTitle = response?.projectTitle;
       const safeTitle = rawTitle && rawTitle !== "null" ? rawTitle : "";
       setCurrentProjectId(projectId);
@@ -183,53 +205,69 @@ function TeamBuildPage({ round = 1 }) {
   };
 
   const handleDragStart = (candidate, source, index) => (event) => {
-    dragStateRef.current = { candidate, source, index, position: candidate.position };
+    dragStateRef.current = {
+      candidate,
+      source,
+      index,
+      position: candidate.position,
+    };
     setDraggingId(candidate.applicantId);
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", String(candidate.applicantId));
   };
 
   const handleDragEnd = () => {
-    dragStateRef.current = { candidate: null, source: null, index: -1, position: null };
+    dragStateRef.current = {
+      candidate: null,
+      source: null,
+      index: -1,
+      position: null,
+    };
     setDraggingId(null);
     setDragOver({ position: null, zone: null, index: null });
   };
 
-  const handleRankedDrop = (position, targetIndex = null) => (event) => {
-    event.preventDefault();
-    if (targetIndex !== null) {
-      event.stopPropagation();
-    }
-    setDragOver({ position: null, zone: null, index: null });
+  const handleRankedDrop =
+    (position, targetIndex = null) =>
+    (event) => {
+      event.preventDefault();
+      if (targetIndex !== null) {
+        event.stopPropagation();
+      }
+      setDragOver({ position: null, zone: null, index: null });
 
-    const dragState = dragStateRef.current;
-    if (!dragState.candidate || dragState.position !== position) return;
+      const dragState = dragStateRef.current;
+      if (!dragState.candidate || dragState.position !== position) return;
 
-    const cap = Number(capacityByPosition[position] || 0);
-    if (cap === 0) {
-      alert("capacity=0 상태에서는 해당 포지션에 우선순위를 설정할 수 없습니다.");
-      return;
-    }
-
-    setRankedByPosition((prev) => {
-      const list = [...(prev[position] || [])];
-      const existingIndex = list.findIndex((c) => c.applicantId === dragState.candidate.applicantId);
-
-      if (existingIndex !== -1) {
-        const [moved] = list.splice(existingIndex, 1);
-        let insertIndex = targetIndex === null ? list.length : targetIndex;
-        if (targetIndex !== null && targetIndex > existingIndex) {
-          insertIndex -= 1;
-        }
-        list.splice(insertIndex, 0, moved);
-      } else {
-        const insertIndex = targetIndex === null ? list.length : targetIndex;
-        list.splice(insertIndex, 0, dragState.candidate);
+      const cap = Number(capacityByPosition[position] || 0);
+      if (cap === 0) {
+        alert(
+          "capacity=0 상태에서는 해당 포지션에 우선순위를 설정할 수 없습니다.",
+        );
+        return;
       }
 
-      return { ...prev, [position]: list };
-    });
-  };
+      setRankedByPosition((prev) => {
+        const list = [...(prev[position] || [])];
+        const existingIndex = list.findIndex(
+          (c) => c.applicantId === dragState.candidate.applicantId,
+        );
+
+        if (existingIndex !== -1) {
+          const [moved] = list.splice(existingIndex, 1);
+          let insertIndex = targetIndex === null ? list.length : targetIndex;
+          if (targetIndex !== null && targetIndex > existingIndex) {
+            insertIndex -= 1;
+          }
+          list.splice(insertIndex, 0, moved);
+        } else {
+          const insertIndex = targetIndex === null ? list.length : targetIndex;
+          list.splice(insertIndex, 0, dragState.candidate);
+        }
+
+        return { ...prev, [position]: list };
+      });
+    };
 
   const handleAvailableDrop = (position) => (event) => {
     event.preventDefault();
@@ -240,20 +278,25 @@ function TeamBuildPage({ round = 1 }) {
 
     setRankedByPosition((prev) => {
       const list = [...(prev[position] || [])];
-      const existingIndex = list.findIndex((c) => c.applicantId === dragState.candidate.applicantId);
+      const existingIndex = list.findIndex(
+        (c) => c.applicantId === dragState.candidate.applicantId,
+      );
       if (existingIndex === -1) return prev;
       list.splice(existingIndex, 1);
       return { ...prev, [position]: list };
     });
   };
 
-  const handleDragOverZone = (position, zone, index = null) => (event) => {
-    const dragState = dragStateRef.current;
-    if (!dragState.candidate || dragState.position !== position) return;
-    if (zone === "ranked" && Number(capacityByPosition[position] || 0) === 0) return;
-    event.preventDefault();
-    setDragOver({ position, zone, index });
-  };
+  const handleDragOverZone =
+    (position, zone, index = null) =>
+    (event) => {
+      const dragState = dragStateRef.current;
+      if (!dragState.candidate || dragState.position !== position) return;
+      if (zone === "ranked" && Number(capacityByPosition[position] || 0) === 0)
+        return;
+      event.preventDefault();
+      setDragOver({ position, zone, index });
+    };
 
   const handleDragLeaveZone = (event) => {
     if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -289,7 +332,8 @@ function TeamBuildPage({ round = 1 }) {
       const message =
         typeof response === "string"
           ? response
-          : response?.message || `[성공] 팀 구성이 완료되었습니다. projectId=${currentProjectId}`;
+          : response?.message ||
+            `[성공] 팀 구성이 완료되었습니다. projectId=${currentProjectId}`;
       setSubmitMsg(message);
       setSubmitStatus("ok");
       setTimeout(() => navigate(-1), 800);
@@ -304,7 +348,11 @@ function TeamBuildPage({ round = 1 }) {
   const renderPositionBadge = (pos) => {
     const colorClass = pos ? styles[`positionBadge${pos}`] : "";
     const className = colorClass || styles.tagMuted;
-    return <span className={`${styles.positionBadge} ${className}`}>{pos || "전체"}</span>;
+    return (
+      <span className={`${styles.positionBadge} ${className}`}>
+        {pos || "전체"}
+      </span>
+    );
   };
 
   const emptyApplyMessage = currentProjectId
@@ -322,7 +370,11 @@ function TeamBuildPage({ round = 1 }) {
           </div>
           <div className={styles.topActions}>
             {userName && <span className={styles.userName}>{userName} 님</span>}
-            <button type="button" className={styles.closeButton} onClick={() => navigate(-1)}>
+            <button
+              type="button"
+              className={styles.closeButton}
+              onClick={() => navigate(-1)}
+            >
               &times;
             </button>
           </div>
@@ -335,7 +387,9 @@ function TeamBuildPage({ round = 1 }) {
 
         <div className={styles.card}>
           <div className={styles.sectionTitle}>프로젝트 ID</div>
-          <div className={styles.sectionCaption}>본인이 등록한 프로젝트의 ID를 입력하세요.</div>
+          <div className={styles.sectionCaption}>
+            본인이 등록한 프로젝트의 ID를 입력하세요.
+          </div>
 
           <div className={styles.projectRow}>
             <input
@@ -360,7 +414,9 @@ function TeamBuildPage({ round = 1 }) {
           <div className={styles.sectionHeader}>
             <div>
               <div className={styles.sectionTitle}>신청자 목록</div>
-              <div className={styles.sectionCaption}>본인의 팀에 지원한 신청자들의 목록입니다.</div>
+              <div className={styles.sectionCaption}>
+                본인의 팀에 지원한 신청자들의 목록입니다.
+              </div>
             </div>
             <div className={styles.filterWrap} ref={filterRef}>
               <span className={styles.filterLabel}>분야별 필터</span>
@@ -434,7 +490,9 @@ function TeamBuildPage({ round = 1 }) {
                     <tr
                       key={apply.applicantId}
                       className={
-                        highlightedApplicantId === apply.applicantId ? styles.rowHighlight : ""
+                        highlightedApplicantId === apply.applicantId
+                          ? styles.rowHighlight
+                          : ""
                       }
                     >
                       <td className={styles.applicantNameCell}>{apply.applicantName || "-"}</td>
@@ -454,9 +512,7 @@ function TeamBuildPage({ round = 1 }) {
 
           <div className={styles.mobileList}>
             {filteredApplies.length === 0 ? (
-              <div className={styles.muted}>
-                {emptyApplyMessage}
-              </div>
+              <div className={styles.muted}>{emptyApplyMessage}</div>
             ) : (
               filteredApplies.map((apply) => {
                 const isExpanded = expandedApplicantIds.has(apply.applicantId);
@@ -496,8 +552,12 @@ function TeamBuildPage({ round = 1 }) {
                       {apply.career && <>경력: {apply.career}<br /></>}
                         {apply.comment || "작성된 지원서 내용이 없습니다."}
                     </div>
-                  )}
-                </div>
+                    {isExpanded && (
+                      <div className={styles.applicationContent}>
+                        {apply.comment || "작성된 지원서 내용이 없습니다."}
+                      </div>
+                    )}
+                  </div>
                 );
               })
             )}
@@ -509,10 +569,23 @@ function TeamBuildPage({ round = 1 }) {
               드래그 앤 드롭으로 지원자를 선택하고 우선순위를 변경하세요.
             </div>
             <ul className={styles.instructionList}>
-              <li>1. 모집을 희망하는 분야에 원하는 인원만큼 capacity를 입력하세요.</li>
-              <li>2. 지원자를 드래그하여 우선순위를 정해주세요. (1순위부터 마지막 순위까지)</li>
+              <li>
+                1. 모집을 희망하는 분야에 원하는 인원만큼 capacity를 입력하세요.
+              </li>
+              <li>
+                2. 지원자를 드래그하여 우선순위를 정해주세요. (1순위부터 마지막
+                순위까지)
+              </li>
               <li>3. capacity가 0이면 우선순위를 설정할 수 없습니다.</li>
-              <li>4. 팀 최소 인원은 4명이며 최대 인원은 6명입니다. (디자이너 포함)</li>
+              <li>
+                4. 지원자가 4명 미만이면 전원의 우선순위를 지정해야 합니다.
+              </li>
+              <li>
+                5. 지원자가 4명 이상이면 최소 4명의 우선순위를 지정해야 합니다.
+              </li>
+              <li>
+                6. 팀 최소 인원은 4명이며 최대 인원은 6명입니다. (디자이너 포함)
+              </li>
             </ul>
           </div>
 
@@ -526,48 +599,70 @@ function TeamBuildPage({ round = 1 }) {
                 const capValue = capacityByPosition[pos];
                 const cap = Number(capValue || 0);
                 const maxCap = totalApplicantsOf(pos);
-                const rankedDragOver = dragOver.position === pos && dragOver.zone === "ranked";
-                const availableDragOver = dragOver.position === pos && dragOver.zone === "available";
+                const rankedDragOver =
+                  dragOver.position === pos && dragOver.zone === "ranked";
+                const availableDragOver =
+                  dragOver.position === pos && dragOver.zone === "available";
 
                 return (
-                <div key={pos} className={styles.positionRow}>
-                  <div className={styles.positionMeta}>
-                    <div className={styles.positionName}>{pos}</div>
-                    <div className={styles.capacityBox}>
-                      <div className={styles.capacityPill}>
-                        <input
-                          className={styles.capacityInput}
-                          type="number"
-                          min="0"
-                          max={maxCap}
-                          step="1"
-                          value={capValue === undefined || capValue === null ? "" : capValue}
-                          onChange={(event) => handleCapacityChange(pos, event.target.value)}
-                          onFocus={(event) => {
-                            if (event.target.value === "0") {
-                              event.target.select();
+                  <div key={pos} className={styles.positionRow}>
+                    <div className={styles.positionMeta}>
+                      <div className={styles.positionName}>{pos}</div>
+                      <div className={styles.capacityBox}>
+                        <div className={styles.capacityPill}>
+                          <input
+                            className={styles.capacityInput}
+                            type="number"
+                            min="0"
+                            max={maxCap}
+                            step="1"
+                            value={
+                              capValue === undefined || capValue === null
+                                ? ""
+                                : capValue
                             }
-                          }}
-                          onBlur={(event) => {
-                            if (event.target.value === "") {
-                              setCapacityByPosition((prev) => ({ ...prev, [pos]: "0" }));
-                              return;
+                            onChange={(event) =>
+                              handleCapacityChange(pos, event.target.value)
                             }
-                            const nextNum = Number(event.target.value);
-                            if (Number.isNaN(nextNum)) {
-                              setCapacityByPosition((prev) => ({ ...prev, [pos]: "0" }));
-                              return;
-                            }
-                            const clamped = Math.min(Math.max(nextNum, 0), maxCap);
-                            setCapacityByPosition((prev) => ({ ...prev, [pos]: String(clamped) }));
-                          }}
-                        />
+                            onFocus={(event) => {
+                              if (event.target.value === "0") {
+                                event.target.select();
+                              }
+                            }}
+                            onBlur={(event) => {
+                              if (event.target.value === "") {
+                                setCapacityByPosition((prev) => ({
+                                  ...prev,
+                                  [pos]: "0",
+                                }));
+                                return;
+                              }
+                              const nextNum = Number(event.target.value);
+                              if (Number.isNaN(nextNum)) {
+                                setCapacityByPosition((prev) => ({
+                                  ...prev,
+                                  [pos]: "0",
+                                }));
+                                return;
+                              }
+                              const clamped = Math.min(
+                                Math.max(nextNum, 0),
+                                maxCap,
+                              );
+                              setCapacityByPosition((prev) => ({
+                                ...prev,
+                                [pos]: String(clamped),
+                              }));
+                            }}
+                          />
+                        </div>
+                        <span className={styles.capacityLabel}>Capacity</span>
                       </div>
-                      <span className={styles.capacityLabel}>Capacity</span>
                     </div>
-                  </div>
-                  <div className={styles.rankArea}>
-                      <div className={styles.rankLabel}>선택된 지원자(우선 순위)</div>
+                    <div className={styles.rankArea}>
+                      <div className={styles.rankLabel}>
+                        선택된 지원자(우선 순위)
+                      </div>
                       <div
                         className={`${styles.dropZone} ${rankedDragOver ? styles.dragOver : ""} ${
                           cap === 0 ? styles.locked : ""
@@ -578,13 +673,17 @@ function TeamBuildPage({ round = 1 }) {
                         onDrop={handleRankedDrop(pos)}
                       >
                         {ranked.length === 0 ? (
-                          <span className={styles.emptyText}>여기에 지원자를 드래그해 넣으세요.</span>
+                          <span className={styles.emptyText}>
+                            여기에 지원자를 드래그해 넣으세요.
+                          </span>
                         ) : (
                           ranked.map((candidate, index) => (
                             <span
                               key={candidate.applicantId}
                               className={`${styles.pill} ${styles.pillRanked} ${
-                                draggingId === candidate.applicantId ? styles.pillDragging : ""
+                                draggingId === candidate.applicantId
+                                  ? styles.pillDragging
+                                  : ""
                               } ${
                                 dragOver.position === pos &&
                                 dragOver.zone === "ranked" &&
@@ -594,14 +693,30 @@ function TeamBuildPage({ round = 1 }) {
                               }`}
                               data-priority={index + 1}
                               draggable
-                              onDragStart={handleDragStart(candidate, "ranked", index)}
+                              onDragStart={handleDragStart(
+                                candidate,
+                                "ranked",
+                                index,
+                              )}
                               onDragEnd={handleDragEnd}
-                              onDragOver={handleDragOverZone(pos, "ranked", index)}
-                              onDragEnter={handleDragOverZone(pos, "ranked", index)}
+                              onDragOver={handleDragOverZone(
+                                pos,
+                                "ranked",
+                                index,
+                              )}
+                              onDragEnter={handleDragOverZone(
+                                pos,
+                                "ranked",
+                                index,
+                              )}
                               onDragLeave={handleDragLeaveZone}
                               onDrop={handleRankedDrop(pos, index)}
-                              onMouseEnter={() => setHighlightedApplicantId(candidate.applicantId)}
-                              onMouseLeave={() => setHighlightedApplicantId(null)}
+                              onMouseEnter={() =>
+                                setHighlightedApplicantId(candidate.applicantId)
+                              }
+                              onMouseLeave={() =>
+                                setHighlightedApplicantId(null)
+                              }
                             >
                               {candidate.applicantName}
                             </span>
@@ -624,13 +739,23 @@ function TeamBuildPage({ round = 1 }) {
                             <span
                               key={candidate.applicantId}
                               className={`${styles.pill} ${
-                                draggingId === candidate.applicantId ? styles.pillDragging : ""
+                                draggingId === candidate.applicantId
+                                  ? styles.pillDragging
+                                  : ""
                               }`}
                               draggable
-                              onDragStart={handleDragStart(candidate, "available", -1)}
+                              onDragStart={handleDragStart(
+                                candidate,
+                                "available",
+                                -1,
+                              )}
                               onDragEnd={handleDragEnd}
-                              onMouseEnter={() => setHighlightedApplicantId(candidate.applicantId)}
-                              onMouseLeave={() => setHighlightedApplicantId(null)}
+                              onMouseEnter={() =>
+                                setHighlightedApplicantId(candidate.applicantId)
+                              }
+                              onMouseLeave={() =>
+                                setHighlightedApplicantId(null)
+                              }
                             >
                               {candidate.applicantName}
                             </span>
@@ -654,7 +779,11 @@ function TeamBuildPage({ round = 1 }) {
               {isSubmitting ? "제출 중..." : "희망 팀 제출하기"}
             </button>
             {submitMsg && (
-              <span className={submitStatus === "ok" ? styles.statusOk : styles.statusErr}>
+              <span
+                className={
+                  submitStatus === "ok" ? styles.statusOk : styles.statusErr
+                }
+              >
                 {submitMsg}
               </span>
             )}

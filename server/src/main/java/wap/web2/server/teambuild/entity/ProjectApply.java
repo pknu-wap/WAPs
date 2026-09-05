@@ -32,20 +32,20 @@ public class ProjectApply {
     private Long id;
 
     @Column(nullable = false)
-    private Integer priority;   // 지원은 1부터 5까지 우선순위를 가진다.
+    private Integer priority; // 지원은 1부터 5까지 우선순위를 가진다.
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Position position;  // 지원 분야 ex) BE, FE, AI, etc..
+    private Position position; // 지원 분야 ex) BE, FE, AI, etc..
 
     @Column(nullable = false, length = 255)
-    private String comment;     // 자율 서술 부분
+    private String comment; // 자율 서술 부분
 
     @Column(columnDefinition = "TEXT")
     private String career;
 
     @Column(nullable = false, length = 7)
-    private String semester;    // "year-semester"
+    private String semester; // "year-semester"
 
     // TODO: N+1 문제 생기는지 파악 필요
     @ManyToOne(fetch = FetchType.LAZY)
@@ -62,5 +62,4 @@ public class ProjectApply {
             this.semester = generateSemester();
         }
     }
-
 }

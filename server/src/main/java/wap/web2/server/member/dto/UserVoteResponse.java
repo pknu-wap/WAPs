@@ -9,5 +9,4 @@ import lombok.Getter;
 public class UserVoteResponse {
 
     private List<Long> projectIds;
-
 }

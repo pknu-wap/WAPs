@@ -24,7 +24,7 @@ import wap.web2.server.project.entity.Project;
 @Entity
 @Getter
 @Setter // User 엔티티만 Setter 사용
-@Table(name = "user", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
+@Table(name = "user", uniqueConstraints = { @UniqueConstraint(columnNames = "email") })
 public class User {
 
     @Id
@@ -66,5 +66,4 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Comment> comments = new ArrayList<>();
-
 }

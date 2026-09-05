@@ -1,0 +1,240 @@
+name: Server Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: oci-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build & Deploy to OCI Compute
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      OCI_HOST: ${{ secrets.OCI_HOST }}
+      OCI_USER: ${{ secrets.OCI_USER }}
+      OCI_SSH_PORT: ${{ vars.OCI_SSH_PORT || '22' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            server
+            .github/scripts
+      - name: Verify SSH host and detect OCI architecture
+        id: target
+        env:
+          OCI_SSH_KEY: ${{ secrets.OCI_SSH_KEY }}
+          OCI_SSH_FINGERPRINT: ${{ secrets.OCI_SSH_FINGERPRINT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          source .github/scripts/deploy-ssh.sh
+
+          : "${OCI_SSH_KEY:?}" "${OCI_SSH_FINGERPRINT:?}"
+          [[ "$OCI_HOST" =~ ^[A-Za-z0-9][A-Za-z0-9.:-]*$ ]]
+          [[ "$OCI_USER" =~ ^[A-Za-z_][A-Za-z0-9_-]*$ ]]
+          [[ "$OCI_SSH_PORT" =~ ^[0-9]{1,5}$ ]]
+          (( 10#$OCI_SSH_PORT > 0 && 10#$OCI_SSH_PORT <= 65535 ))
+          umask 077
+          mkdir -p "$state"
+          printf '%s\n' "$OCI_SSH_KEY" > "$state/key"
+          # Trust only a scanned key matching the fingerprint configured in Secrets.
+          ssh-keyscan -T 15 -p "$OCI_SSH_PORT" "$OCI_HOST" > "$state/scanned_keys"
+          : > "$state/known_hosts"
+          while IFS= read -r key; do
+            [[ -n "$key" && "$key" != \#* ]] || continue
+            printf '%s\n' "$key" > "$state/candidate_key"
+            fingerprint=$(ssh-keygen -lf "$state/candidate_key" -E sha256 | awk '{print $2}')
+            if [[ "$fingerprint" == "$OCI_SSH_FINGERPRINT" ]]; then
+              printf '%s\n' "$key" >> "$state/known_hosts"
+            fi
+          done < "$state/scanned_keys"
+          if [[ ! -s "$state/known_hosts" ]]; then
+            echo 'OCI SSH host fingerprint mismatch.' >&2
+            exit 1
+          fi
+          architecture=$(remote 'uname -m')
+          case "$architecture" in
+            aarch64) platform=linux/arm64 ;;
+            x86_64) platform=linux/amd64 ;;
+            *) echo "Unsupported OCI architecture: $architecture" >&2; exit 1 ;;
+          esac
+          printf 'platform=%s\n' "$platform" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image for OCI
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          load: true
+          tags: waps-server:${{ github.sha }}
+          platforms: ${{ steps.target.outputs.platform }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Save compressed image and checksum
+        env:
+          IMAGE: waps-server:${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/waps-deploy"
+          docker save "$IMAGE" | gzip > image.tar.gz
+          sha256sum image.tar.gz > image.tar.gz.sha256
+      - name: Transfer image to OCI temporary directory
+        id: transfer
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          source .github/scripts/deploy-ssh.sh
+
+          remote_dir=$(remote 'mktemp -d /tmp/waps-deploy.XXXXXXXX')
+          valid_remote_dir "$remote_dir"
+          # Save before SCP so the always() step can clean up even a partial transfer.
+          printf '%s\n' "$remote_dir" > "$state/remote_dir"
+          printf 'remote_dir=%s\n' "$remote_dir" >> "$GITHUB_OUTPUT"
+          scp "${ssh_options[@]}" -P "$OCI_SSH_PORT" \
+            "$state/image.tar.gz" "$state/image.tar.gz.sha256" \
+            "$OCI_USER@[$OCI_HOST]:$remote_dir/"
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          IMAGE: waps-server:${{ github.sha }}
+          REMOTE_DIR: ${{ steps.transfer.outputs.remote_dir }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ vars.DB_PORT || '3306' }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          SERVER_URL: ${{ secrets.SERVER_URL }}
+          SWAGGER_SERVER_URL: ${{ secrets.SWAGGER_SERVER_URL }}
+          OCI_NAMESPACE: ${{ secrets.OCI_NAMESPACE }}
+          OCI_BUCKET_NAME: ${{ secrets.OCI_BUCKET_NAME }}
+          OCI_REGION: ${{ secrets.OCI_REGION }}
+        with:
+          host: ${{ secrets.OCI_HOST }}
+          username: ${{ secrets.OCI_USER }}
+          key: ${{ secrets.OCI_SSH_KEY }}
+          fingerprint: ${{ secrets.OCI_SSH_FINGERPRINT }}
+          port: ${{ vars.OCI_SSH_PORT || '22' }}
+          command_timeout: 15m
+          envs: IMAGE,REMOTE_DIR,DB_HOST,DB_PORT,DB_NAME,DB_USER,DB_PASSWORD,JWT_SECRET_KEY,KAKAO_REST_API_KEY,SERVER_URL,SWAGGER_SERVER_URL,OCI_NAMESPACE,OCI_BUCKET_NAME,OCI_REGION
+          script: |
+            set -eu
+
+            if ! printf '%s\n' "${REMOTE_DIR:-}" | grep -Eq '^/tmp/waps-deploy\.[A-Za-z0-9]{8}$'; then
+              echo 'Invalid deployment temporary directory.' >&2
+              exit 1
+            fi
+            trap 'rm -rf -- "$REMOTE_DIR"' EXIT
+
+            # Secrets arrive through ssh-action envs, never as interpolated shell code.
+            for name in IMAGE DB_HOST DB_PORT DB_NAME DB_USER DB_PASSWORD \
+              JWT_SECRET_KEY KAKAO_REST_API_KEY SERVER_URL SWAGGER_SERVER_URL \
+              OCI_NAMESPACE OCI_BUCKET_NAME OCI_REGION; do
+              if ! printenv "$name" | grep -q .; then
+                echo "Missing required environment variable: $name" >&2
+                exit 1
+              fi
+            done
+
+            docker info > /dev/null
+            test -f /home/ubuntu/.oci/config
+
+            # Verify and load the transferred archive before touching the running container.
+            (cd "$REMOTE_DIR" && sha256sum --check image.tar.gz.sha256)
+            docker load --input "$REMOTE_DIR/image.tar.gz"
+            docker image inspect "$IMAGE" > /dev/null
+            rm -f -- "$REMOTE_DIR/image.tar.gz" "$REMOTE_DIR/image.tar.gz.sha256"
+
+            # Verify the mounted config is readable by the image's non-root user.
+            docker run --rm --entrypoint sh \
+              --mount type=bind,src=/home/ubuntu/.oci,dst=/home/ubuntu/.oci,readonly \
+              "$IMAGE" -c 'test -r /home/ubuntu/.oci/config && test -r /home/ubuntu/.oci/waps.pem'
+
+            if docker container inspect waps-server-previous > /dev/null 2>&1; then
+              echo 'Previous deployment backup exists; inspect it before retrying.' >&2
+              exit 1
+            fi
+
+            had_previous=false
+            if docker container inspect waps-server > /dev/null 2>&1; then
+              if ! docker stop waps-server || ! docker rename waps-server waps-server-previous; then
+                echo 'Could not prepare previous container; attempting to restart it.' >&2
+                if ! docker start waps-server; then
+                  echo 'Could not restart previous container; manual recovery required.' >&2
+                fi
+                exit 1
+              fi
+              had_previous=true
+            fi
+
+            rollback() {
+              docker logs --tail 100 waps-server || true
+              docker rm -f waps-server || true
+              if [ "$had_previous" = true ]; then
+                docker rename waps-server-previous waps-server
+                docker start waps-server
+              fi
+              echo 'Deployment failed; previous container restored if available.' >&2
+              exit 1
+            }
+
+            if ! docker run -d \
+              --name waps-server \
+              --restart unless-stopped \
+              -p 8080:8080 \
+              --mount type=bind,src=/home/ubuntu/.oci,dst=/home/ubuntu/.oci,readonly \
+              -e SPRING_PROFILES_ACTIVE=oracle \
+              -e DB_HOST -e DB_PORT -e DB_NAME -e DB_USER -e DB_PASSWORD \
+              -e JWT_SECRET_KEY -e KAKAO_REST_API_KEY -e SERVER_URL \
+              -e OCI_NAMESPACE -e OCI_BUCKET_NAME -e OCI_REGION \
+              -e OCI_CONFIG_PATH=/home/ubuntu/.oci/config \
+              -e SWAGGER_SERVER_URL \
+              "$IMAGE"; then
+              rollback
+            fi
+
+            attempt=0
+            while [ "$attempt" -lt 30 ]; do
+              if docker exec waps-server curl --fail --silent --max-time 5 \
+                http://localhost:8080/actuator/health > /dev/null; then
+                if [ "$had_previous" = true ]; then
+                  docker rm waps-server-previous
+                fi
+                echo 'Deployment completed successfully.'
+                exit 0
+              fi
+              attempt=$((attempt + 1))
+              sleep 10
+            done
+            rollback
+      - name: Clean up temporary files
+        if: ${{ always() }}
+        continue-on-error: true
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          source .github/scripts/deploy-ssh.sh
+
+          trap 'rm -rf -- "$state" || echo "::warning::Could not remove local deployment temporary files"' EXIT
+          if [[ -f "$state/remote_dir" ]]; then
+            remote_dir=$(cat "$state/remote_dir")
+            if ! valid_remote_dir "$remote_dir"; then
+              echo "::warning::Invalid deployment temporary directory; skipping remote cleanup"
+            elif ! remote "rm -rf -- '$remote_dir'"; then
+              echo "::warning::Could not remove OCI temporary directory: $remote_dir"
+            fi
+          fi

@@ -19,17 +19,18 @@ public class TechStackController {
     @GetMapping("/list")
     public ResponseEntity<TechStackResponse> getTechStackList() {
         List<TechStackInfoResponse> techStackResponseList = Arrays.stream(TechStackName.values())
-                .map(techStackName -> TechStackInfoResponse.builder()
-                        .techStackName(techStackName)
-                        .techStackType(TechStackInfoResponse.getTechStackType(techStackName))
-                        .build())
-                .collect(Collectors.toList());
+            .map(techStackName ->
+                TechStackInfoResponse.builder()
+                    .techStackName(techStackName)
+                    .techStackType(TechStackInfoResponse.getTechStackType(techStackName))
+                    .build()
+            )
+            .collect(Collectors.toList());
 
         TechStackResponse techStackResponse = TechStackResponse.builder()
-                .techStackResponse(techStackResponseList)
-                .build();
+            .techStackResponse(techStackResponseList)
+            .build();
 
         return new ResponseEntity<>(techStackResponse, HttpStatus.OK);
     }
-
 }

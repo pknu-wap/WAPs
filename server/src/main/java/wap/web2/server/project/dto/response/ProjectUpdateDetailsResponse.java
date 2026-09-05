@@ -23,20 +23,22 @@ public class ProjectUpdateDetailsResponse {
     private List<CommentDto> comments;
 
     public static ProjectUpdateDetailsResponse from(Project project) {
-        List<TeamMemberDto> teamMembers = project.getTeamMembers().stream()
-                .map(TeamMemberDto::from).toList();
-        List<CommentDto> comments = project.getComments().stream()
-                .map(CommentDto::from).toList();
+        List<TeamMemberDto> teamMembers = project
+            .getTeamMembers()
+            .stream()
+            .map(TeamMemberDto::from)
+            .toList();
+        List<CommentDto> comments = project.getComments().stream().map(CommentDto::from).toList();
 
         return ProjectUpdateDetailsResponse.builder()
-                .projectId(project.getProjectId())
-                .title(project.getTitle())
-                .projectType(project.getProjectType())
-                .content(project.getContent())
-                .summary(project.getSummary())
-                .semester(project.getSemester())
-                .teamMember(teamMembers)
-                .comments(comments)
-                .build();
+            .projectId(project.getProjectId())
+            .title(project.getTitle())
+            .projectType(project.getProjectType())
+            .content(project.getContent())
+            .summary(project.getSummary())
+            .semester(project.getSemester())
+            .teamMember(teamMembers)
+            .comments(comments)
+            .build();
     }
 }

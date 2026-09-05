@@ -140,8 +140,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, existingProject]);
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
@@ -178,9 +176,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       ...projectData,
       removal: removalList,
     };
-    const blob = new Blob([
-      JSON.stringify(isEdit ? editedProjectData : projectData),
-    ], { type: "application/json" });
+    const blob = new Blob(
+      [JSON.stringify(isEdit ? editedProjectData : projectData)],
+      { type: "application/json" },
+    );
     formData.append("project", blob);
     if (thumbnail instanceof File) {
       formData.append("thumbnail", thumbnail);
@@ -224,62 +223,66 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         disabled={isSubmitting}
         style={{ border: 0, margin: 0, padding: 0, minInlineSize: 0 }}
       >
-      <ImageUploader
-        imgText={"메인 이미지 등록"}
-        imgName={thumbnail}
-        errorMessage={errorMessage.thumbnail}
-        handleImgUpload={(file) => handleImgUpload(file, "thumbnail")}
-        handleRemoveImage={() => handleRemoveImage("thumbnail", null)}
-        type="thumbnail"
-      />
-      <div className={styles.semester_fixed_box}>
-        <span className={styles.semester_label}>학기</span>
-        <span className={styles.semester_value}>
-          {isSemesterLoading ? "현재 학기 확인 중..." : formatSemester(semester)}
-        </span>
-      </div>
-      {semesterError && <p className={styles.semester_error}>{semesterError}</p>}
-      <RadioButton
-        labelname={"프로젝트 타입"}
-        name="projectType"
-        options={projectTypeOptions}
-        selected={projectType}
-        setSelected={setProjectType}
-      />
-      <TextInputForm
-        name="title"
-        placeholder="프로젝트 명"
-        maxLen="20"
-        value={title}
-        onChange={(e) => {
-          setTitle(e.target.value);
-          handleInputLimit(e);
-        }}
-        errorMessage={errorMessage}
-      />
-      <TextInputForm
-        name="summary"
-        placeholder="한줄 소개"
-        maxLen="80"
-        value={summary}
-        onChange={(e) => {
-          setSummary(e.target.value);
-          handleInputLimit(e);
-        }}
-        errorMessage={errorMessage}
-      />
-      <TextInputForm
-        name="content"
-        placeholder="상세 설명"
-        maxLen="3000"
-        value={content}
-        onChange={(e) => {
-          setContent(e.target.value);
-          handleInputLimit(e);
-        }}
-        errorMessage={errorMessage}
-      />
-      {/* <div className="form-group">
+        <ImageUploader
+          imgText={"메인 이미지 등록"}
+          imgName={thumbnail}
+          errorMessage={errorMessage.thumbnail}
+          handleImgUpload={(file) => handleImgUpload(file, "thumbnail")}
+          handleRemoveImage={() => handleRemoveImage("thumbnail", null)}
+          type="thumbnail"
+        />
+        <div className={styles.semester_fixed_box}>
+          <span className={styles.semester_label}>학기</span>
+          <span className={styles.semester_value}>
+            {isSemesterLoading
+              ? "현재 학기 확인 중..."
+              : formatSemester(semester)}
+          </span>
+        </div>
+        {semesterError && (
+          <p className={styles.semester_error}>{semesterError}</p>
+        )}
+        <RadioButton
+          labelname={"프로젝트 타입"}
+          name="projectType"
+          options={projectTypeOptions}
+          selected={projectType}
+          setSelected={setProjectType}
+        />
+        <TextInputForm
+          name="title"
+          placeholder="프로젝트 명"
+          maxLen="20"
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            handleInputLimit(e);
+          }}
+          errorMessage={errorMessage}
+        />
+        <TextInputForm
+          name="summary"
+          placeholder="한줄 소개"
+          maxLen="80"
+          value={summary}
+          onChange={(e) => {
+            setSummary(e.target.value);
+            handleInputLimit(e);
+          }}
+          errorMessage={errorMessage}
+        />
+        <TextInputForm
+          name="content"
+          placeholder="상세 설명"
+          maxLen="3000"
+          value={content}
+          onChange={(e) => {
+            setContent(e.target.value);
+            handleInputLimit(e);
+          }}
+          errorMessage={errorMessage}
+        />
+        {/* <div className="form-group">
         <label>이미지 업로드:</label>
         {images.map((img, index) => (
           <ImageUploader
@@ -293,8 +296,8 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           />
         ))}
       </div> */}
-      <div className={styles.images}>
-        {/* {images.map((image, index) => (
+        <div className={styles.images}>
+          {/* {images.map((image, index) => (
           <ImageUploader
             key={index}
             imgText={`이미지 등록 ${index + 1}`}
@@ -306,8 +309,8 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           />
         ))} */}
 
-        {/* 남은 업로더 공간 표시 */}
-        {/* {Array.from({ length: maxImageCount - images.length }).map(
+          {/* 남은 업로더 공간 표시 */}
+          {/* {Array.from({ length: maxImageCount - images.length }).map(
           (_, index) => (
             <ImageUploader
               key={index}
@@ -321,61 +324,68 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           )
         )} */}
 
-        {Array.from({ length: maxImageCount }).map((_, index) => (
-          <ImageUploader
-            key={index}
-            index={index} // 삭제용 index 전달
-            imgText={`이미지 등록 ${index + 1}`}
-            imgName={images[index] || null}
-            errorMessage={errorMessage[`image${index}`]}
-            handleImgUpload={(file) => handleImgUpload(file, "image", index)}
-            handleRemoveImage={(i) => handleRemoveImage("image", i)}
-            type="image"
-          />
-        ))}
-      </div>
-      <div className="form-group">
-        {teamMembers.map((member, index) => (
-          <TeamMemberInputForm
-            key={index}
-            member={member}
-            index={index}
-            handleMemberNameChange={handleMemberNameChange}
-            handleRoleChange={handleRoleChange}
-            handleMemberNameFocus={handleMemberNameFocus}
-            roleOptions={roleOptions}
-            addTeamMember={addTeamMember}
-            handleRemoveTeamMember={handleRemoveTeamMember}
-            teamMembers={teamMembers}
-          />
-        ))}
-      </div>
+          {Array.from({ length: maxImageCount }).map((_, index) => (
+            <ImageUploader
+              key={index}
+              index={index} // 삭제용 index 전달
+              imgText={`이미지 등록 ${index + 1}`}
+              imgName={images[index] || null}
+              errorMessage={errorMessage[`image${index}`]}
+              handleImgUpload={(file) => handleImgUpload(file, "image", index)}
+              handleRemoveImage={(i) => handleRemoveImage("image", i)}
+              type="image"
+            />
+          ))}
+        </div>
+        <div className="form-group">
+          {teamMembers.map((member, index) => (
+            <TeamMemberInputForm
+              key={index}
+              member={member}
+              index={index}
+              handleMemberNameChange={handleMemberNameChange}
+              handleRoleChange={handleRoleChange}
+              handleMemberNameFocus={handleMemberNameFocus}
+              roleOptions={roleOptions}
+              addTeamMember={addTeamMember}
+              handleRemoveTeamMember={handleRemoveTeamMember}
+              teamMembers={teamMembers}
+            />
+          ))}
+        </div>
 
-      {/* <div className="form-group">
+        {/* <div className="form-group">
         <label>팀원:</label>
         {teamMembers.map((member, index) => (
           <TeamMemberInputNew initialTeamMember={teamMembers} />
         ))}
       </div> */}
 
-      <TechStackSelector
-        selectedTechStacks={selectedTechStacks}
-        toggleTechStack={toggleTechStack}
-      />
-      <InputPin password={password} setPassword={setPassword} />
-      {uploadError && <p className="error-message">{uploadError}</p>}
-      <button
-        type="submit"
-        className={styles.submit_button}
-        disabled={uploading || isSubmitting || isSemesterLoading || !semester}
-        style={{
-          marginTop: "20px",
-          marginBottom: "100px",
-          cursor: isSubmitting || isSemesterLoading || !semester ? "not-allowed" : "pointer",
-        }}
-      >
-        {isSubmitting ? "업로드 중..." : isEdit ? "프로젝트 수정" : "프로젝트 생성"}
-      </button>
+        <TechStackSelector
+          selectedTechStacks={selectedTechStacks}
+          toggleTechStack={toggleTechStack}
+        />
+        <InputPin password={password} setPassword={setPassword} />
+        {uploadError && <p className="error-message">{uploadError}</p>}
+        <button
+          type="submit"
+          className={styles.submit_button}
+          disabled={uploading || isSubmitting || isSemesterLoading || !semester}
+          style={{
+            marginTop: "20px",
+            marginBottom: "100px",
+            cursor:
+              isSubmitting || isSemesterLoading || !semester
+                ? "not-allowed"
+                : "pointer",
+          }}
+        >
+          {isSubmitting
+            ? "업로드 중..."
+            : isEdit
+              ? "프로젝트 수정"
+              : "프로젝트 생성"}
+        </button>
       </fieldset>
     </form>
   );

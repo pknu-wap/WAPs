@@ -1,5 +1,10 @@
 import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import ProjectPage from "./pages/ProjectPage";
 import Login from "./pages/Login";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
@@ -18,9 +23,9 @@ import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import CalendarPage from "./pages/CalendarPage";
 import AdminRoute from "./components/Login/PrivateRoute";
 
-// 관리자 페이지 
+// 관리자 페이지
 import ManagePermissionPage from "./pages/adminPages/ManagePermissionPage";
-import ManagePlanPage from "./pages/adminPages/ManagePlanPage"
+import ManagePlanPage from "./pages/adminPages/ManagePlanPage";
 import ManageTeamBuildPage from "./pages/adminPages/ManageTeamBuildPage";
 import ManageVotePage from "./pages/adminPages/ManageVotePage";
 import MainLayout from "./components/MainLayout";
@@ -58,10 +63,16 @@ function App() {
           <Route path="/project/create" element={<ProjectCreatePage />} />
           <Route path="/vote" element={<VotePage />} />
           <Route path="/vote/result" element={<VoteResultPage />} />
-          <Route path="/vote/result/:semesterParam" element={<VoteResultPage />} />
+          <Route
+            path="/vote/result/:semesterParam"
+            element={<VoteResultPage />}
+          />
           <Route path="/ProjectPage" element={<ProjectPage />} />
           <Route path="/project/:projectId" element={<ProjectDetailPage />} />
-          <Route path="/project/edit/:projectId" element={<ProjectCreatePage />} />
+          <Route
+            path="/project/edit/:projectId"
+            element={<ProjectCreatePage />}
+          />
           <Route path="/select/role" element={<RoleSelectPage />} />
           <Route path="/team-build" element={<TeamBuildEntryPage />} />
           <Route path="/team-build/projects" element={<TeamBuildApplyPage key="first" round={1} />} />
@@ -89,7 +100,6 @@ function App() {
               <Route path="plan" element={<ManagePlanPage />} />
             </Route>
           </Route>
-
         </Route>
       </Routes>
     </Router>

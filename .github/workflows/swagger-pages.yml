@@ -1,0 +1,133 @@
+name: Deploy Swagger UI to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  # Public base URL embedded into the deployed OpenAPI spec.
+  # Set as a repository or environment variable (Settings → Variables).
+  PUBLIC_SERVER_URL: ${{ vars.PUBLIC_SERVER_URL }}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: swagger-pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: server
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root1234
+          MYSQL_DATABASE: waps
+          MYSQL_USER: waps
+          MYSQL_PASSWORD: waps1234
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Build with Gradle
+        run: ./gradlew bootJar -x test --no-daemon
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch swagger-ui-dist via npm
+        run: |
+          npm install swagger-ui-dist@5.29.5 --no-audit --no-fund
+          mkdir -p site
+          cp -r node_modules/swagger-ui-dist/. site/
+
+      - name: Start Spring Boot server
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_NAME: waps
+          # CI uses root because the waps user created by MySQL image lacks
+          # the CREATE/ALTER privileges required by Flyway and Hibernate.
+          DB_USER: root
+          DB_PASSWORD: root1234
+          # JWT_SECRET_KEY is generated per-run because /v3/api-docs is permitAll
+          # and no real tokens are issued during CI spec extraction.
+          JWT_SECRET_KEY: ${{ secrets.CI_JWT_SECRET_KEY }}
+          KAKAO_REST_API_KEY: ${{ secrets.CI_KAKAO_REST_API_KEY }}
+          SERVER_URL: ${{ vars.PUBLIC_SERVER_URL }}
+          SWAGGER_SERVER_URL: ${{ vars.PUBLIC_SERVER_URL }}
+          SPRING_PROFILES_ACTIVE: ""
+        run: |
+          # Wait until MySQL has finished initializing (DB & users ready).
+          for i in {1..60}; do
+            if mysql -h 127.0.0.1 -uroot -proot1234 -e "SELECT 1 FROM mysql.user LIMIT 1;" > /dev/null 2>&1; then
+              echo "mysql ready"
+              break
+            fi
+            sleep 2
+          done
+
+          nohup java -jar build/libs/server-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+          echo "server pid=$!"
+          for i in {1..60}; do
+            sleep 2
+            if curl -fsS http://localhost:8080/actuator/health > /dev/null 2>&1; then
+              echo "server is up"
+              exit 0
+            fi
+          done
+          echo "server failed to start"
+          tail -n 200 app.log
+          exit 1
+
+      - name: Fetch OpenAPI spec and patch initializer
+        run: |
+          curl -fsS http://localhost:8080/v3/api-docs -o site/openapi.json
+          sed -i 's|https://petstore.swagger.io/v2/swagger.json|./openapi.json|g' site/swagger-initializer.js
+          sed -i 's|https://petstore3.swagger.io/api/v3/openapi.json|./openapi.json|g' site/swagger-initializer.js
+
+      - name: Show site contents
+        run: ls -la site/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: server/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

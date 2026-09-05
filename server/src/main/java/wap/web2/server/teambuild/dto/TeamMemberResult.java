@@ -27,10 +27,10 @@ public class TeamMemberResult {
     }
 
     public static TeamMemberResult from(ProjectApply memberApplication) {
-        return new TeamMemberResult(memberApplication.getUser().getId(),
-                memberApplication.getUser().getName(),
-                memberApplication.getPosition()
+        return new TeamMemberResult(
+            memberApplication.getUser().getId(),
+            memberApplication.getUser().getName(),
+            memberApplication.getPosition()
         );
     }
-
 }

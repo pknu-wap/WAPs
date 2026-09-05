@@ -87,18 +87,22 @@ public class Project {
         // 팀 멤버 리스트 초기화 및 새로 추가
         this.teamMembers.clear();
         if (request.getTeamMember() != null && !request.getTeamMember().isEmpty()) {
-            List<TeamMember> newTeamMembers = request.getTeamMember().stream()
-                    .map(TeamMemberDto::toEntity)
-                    .toList();
+            List<TeamMember> newTeamMembers = request
+                .getTeamMember()
+                .stream()
+                .map(TeamMemberDto::toEntity)
+                .toList();
             this.teamMembers.addAll(newTeamMembers);
         }
 
         // 기술 스택 리스트 초기화 및 새로 추가
         this.techStacks.clear();
         if (request.getTechStack() != null && !request.getTechStack().isEmpty()) {
-            List<TechStack> newTechStacks = request.getTechStack().stream()
-                    .map(TechStackDto::toEntity)
-                    .toList();
+            List<TechStack> newTechStacks = request
+                .getTechStack()
+                .stream()
+                .map(TechStackDto::toEntity)
+                .toList();
             this.techStacks.addAll(newTechStacks);
         }
 
@@ -124,9 +128,9 @@ public class Project {
     public List<String> removeImages(Collection<String> imageUrls) {
         Set<String> removalTargets = new HashSet<>(imageUrls);
         List<String> removedImageUrls = this.images.stream()
-                .map(Image::getImageFile)
-                .filter(removalTargets::contains)
-                .toList();
+            .map(Image::getImageFile)
+            .filter(removalTargets::contains)
+            .toList();
 
         this.images.removeIf(image -> removalTargets.contains(image.getImageFile()));
 
@@ -136,5 +140,4 @@ public class Project {
     public boolean isOwner(User user) {
         return Objects.equals(this.user.getId(), user.getId());
     }
-
 }

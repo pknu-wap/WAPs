@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public enum TechStackName {
-
     // Frontend
     REACT("React"),
     VUE("Vue"),
@@ -51,5 +50,4 @@ public enum TechStackName {
     TechStackName(String name) {
         this.name = name;
     }
-
 }

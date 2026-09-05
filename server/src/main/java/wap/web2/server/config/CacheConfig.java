@@ -18,24 +18,27 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
         SimpleCacheManager manager = new SimpleCacheManager();
-        manager.setCaches(List.of(
-                new CaffeineCache("projectList",
-                        Caffeine.newBuilder()
-                                .expireAfterWrite(30, TimeUnit.MINUTES)
-                                .initialCapacity(4)
-                                .maximumSize(20)
-                                .build()
+        manager.setCaches(
+            List.of(
+                new CaffeineCache(
+                    "projectList",
+                    Caffeine.newBuilder()
+                        .expireAfterWrite(30, TimeUnit.MINUTES)
+                        .initialCapacity(4)
+                        .maximumSize(20)
+                        .build()
                 ),
-                new CaffeineCache("voteResults",
-                        Caffeine.newBuilder()
-                                .expireAfterWrite(60, TimeUnit.MINUTES)
-                                .initialCapacity(4)
-                                .maximumSize(20)
-                                .build()
+                new CaffeineCache(
+                    "voteResults",
+                    Caffeine.newBuilder()
+                        .expireAfterWrite(60, TimeUnit.MINUTES)
+                        .initialCapacity(4)
+                        .maximumSize(20)
+                        .build()
                 )
-        ));
+            )
+        );
 
         return manager;
     }
-
 }

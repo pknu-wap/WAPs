@@ -1,7 +1,6 @@
 package wap.web2.server.vote.dto;
 
 public interface ProjectVoteCount {
-
     String getProjectName();
 
     String getProjectSummary();
@@ -11,5 +10,4 @@ public interface ProjectVoteCount {
     Long getProjectId();
 
     Long getVoteCount();
-
 }

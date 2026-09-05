@@ -45,43 +45,50 @@ public class AdminTeamBuildingController {
     // TODO: status request를 직렬화했을 때 예외가 발생한다면?
     @PatchMapping("/building/status")
     @Operation(summary = "팀빌딩 상태 변경", description = "팀빌딩 상태를 변경합니다.")
-    public ResponseEntity<Void> changeStatus(
-            @RequestBody TeamBuildingStatusRequest statusRequest
-    ) {
+    public ResponseEntity<Void> changeStatus(@RequestBody TeamBuildingStatusRequest statusRequest) {
         adminTeamBuildingService.changeStatus(statusRequest);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/building/open/current")
-    @Operation(summary = "현재 학기 팀빌딩 생성", description = "현재 학기의 팀빌딩 기능을 생성합니다.")
+    @Operation(
+        summary = "현재 학기 팀빌딩 생성",
+        description = "현재 학기의 팀빌딩 기능을 생성합니다."
+    )
     public ResponseEntity<Void> openTeamBuilding() {
         adminTeamBuildingService.openTeamBuilding(generateSemester());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/applies/export", produces = "text/csv; charset=UTF-8")
-    @Operation(summary = "지원 현황 CSV 다운로드", description = "현재까지의 지원 현황을 CSV 형식으로 다운로드합니다.")
+    @Operation(
+        summary = "지원 현황 CSV 다운로드",
+        description = "현재까지의 지원 현황을 CSV 형식으로 다운로드합니다."
+    )
     public ResponseEntity<byte[]> exportAppliesCsv() {
         byte[] bytes = exportService.generateAppliesCsvBytes();
 
         String filename = "applies_" + LocalDate.now() + ".csv";
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                .contentLength(bytes.length)
-                .body(bytes);
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+            .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+            .contentLength(bytes.length)
+            .body(bytes);
     }
 
     @GetMapping(value = "/recruits/export", produces = "text/csv; charset=UTF-8")
-    @Operation(summary = "모집 현황 CSV 다운로드", description = "현재까지의 모집 현황을 CSV 형식으로 다운로드합니다.")
+    @Operation(
+        summary = "모집 현황 CSV 다운로드",
+        description = "현재까지의 모집 현황을 CSV 형식으로 다운로드합니다."
+    )
     public ResponseEntity<byte[]> exportRecruitsCsv() {
         byte[] bytes = exportService.generateRecruitsCsvBytes();
 
         String filename = "recruits_" + LocalDate.now() + ".csv";
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
-                .contentLength(bytes.length)
-                .body(bytes);
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+            .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+            .contentLength(bytes.length)
+            .body(bytes);
     }
 }

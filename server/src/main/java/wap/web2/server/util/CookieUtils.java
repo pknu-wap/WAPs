@@ -11,7 +11,8 @@ public class CookieUtils {
 
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
-        if (cookies != null) { // cookies.length > 0 조건 없애서 간소화
+        if (cookies != null) {
+            // cookies.length > 0 조건 없애서 간소화
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(name)) {
                     return Optional.of(cookie);
@@ -22,7 +23,12 @@ public class CookieUtils {
         return Optional.empty();
     }
 
-    public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+    public static void addCookie(
+        HttpServletResponse response,
+        String name,
+        String value,
+        int maxAge
+    ) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
@@ -30,9 +36,14 @@ public class CookieUtils {
         response.addCookie(cookie);
     }
 
-    public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
+    public static void deleteCookie(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        String name
+    ) {
         Cookie[] cookies = request.getCookies();
-        if (cookies != null) { // cookies.length > 0 조건 없애서 간소화
+        if (cookies != null) {
+            // cookies.length > 0 조건 없애서 간소화
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(name)) {
                     cookie.setValue("");
@@ -49,7 +60,8 @@ public class CookieUtils {
     }
 
     public static <T> T deserialize(Cookie cookie, Class<T> cls) {
-        return cls.cast(SerializationUtils.deserialize(Base64.getUrlDecoder().decode(cookie.getValue())));
+        return cls.cast(
+            SerializationUtils.deserialize(Base64.getUrlDecoder().decode(cookie.getValue()))
+        );
     }
-
 }

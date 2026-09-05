@@ -5,8 +5,16 @@
   min-height: 100vh;
   color: #f7f7f7;
   background:
-    radial-gradient(900px 480px at 15% 0%, rgba(150, 170, 210, 0.65), transparent 60%),
-    radial-gradient(720px 520px at 100% 10%, rgba(120, 190, 210, 0.45), transparent 55%),
+    radial-gradient(
+      900px 480px at 15% 0%,
+      rgba(150, 170, 210, 0.65),
+      transparent 60%
+    ),
+    radial-gradient(
+      720px 520px at 100% 10%,
+      rgba(120, 190, 210, 0.45),
+      transparent 55%
+    ),
     linear-gradient(180deg, #8ea1bf 0%, #5c6d84 28%, #2b333b 58%, #0b0b0d 100%);
   overflow-x: hidden;
 }
@@ -16,8 +24,16 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(460px 240px at 12% 30%, rgba(255, 255, 255, 0.08), transparent 60%),
-    radial-gradient(520px 320px at 85% 40%, rgba(255, 255, 255, 0.06), transparent 60%);
+    radial-gradient(
+      460px 240px at 12% 30%,
+      rgba(255, 255, 255, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      520px 320px at 85% 40%,
+      rgba(255, 255, 255, 0.06),
+      transparent 60%
+    );
   pointer-events: none;
 }
 
@@ -79,13 +95,13 @@
 
 .hero {
   text-align: center;
-  margin-bottom: 42px;
+  margin-bottom: 22px;
 }
 
 .heroTitle {
   font-size: 34px;
   font-weight: 800;
-  letter-spacing: -1px;
+  letter-spacing: 0.14em;
 }
 
 .heroSubtitle {
@@ -187,146 +203,32 @@
 
 .myApplyTitle {
   display: block;
+.backRow {
+  margin-bottom: 18px;
 }
 
-.myApplyTitleRow {
+.backButton {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-}
-
-.myApplyHeader h2 {
-  margin: 2px 0 2px 13px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #f7f7f7;
-}
-
-.myApplyTitle p {
-  margin: 9px 0 0 13px;
-  color: rgba(255, 255, 255, 0.379);
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+  color: #f4f4f4;
   font-size: 13px;
-  line-height: 1.45;
-  text-align: left;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.myApplyTitle p + p {
-  margin-top: 3px;
+.backButton:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
 }
 
-.myApplyCount {
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 12px;
-  font-weight: 800;
-  margin-top: 0;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.myApplyCountActive {
-  background: #9ed0ff;
-  color: #000000;
-}
-
-.primaryPositionCard {
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 10px;
-  margin-top: 20px;
-  padding: 18px 16px;
-  border-radius: 26px;
-  background: rgba(255, 255, 255, 0.059);
-  backdrop-filter: blur(8px);
-}
-
-.primaryPositionHeader h2 {
-  margin: 0 0 0 8px;
-  color: #f7f7f7ac;
-  font-size: 17px;
-  font-weight: 600;
-}
-
-.primaryPositionHeader p {
-  margin: 4px 0 0 8px;
-  color: rgba(255, 255, 255, 0.205);
-  font-size: 11px;
-  line-height: 1.45;
-}
-
-.formGroup.primaryPositionSelect {
-  position: relative;
-  margin: 10px 8px 0;
-}
-
-.formGroup.primaryPositionSelect::after {
-  content: "";
-  position: absolute;
-  top: 13px;
-  right: 16px;
-  width: 8px;
-  height: 8px;
-  border-right: 1.5px solid #d9e2f1;
-  border-bottom: 1.5px solid #d9e2f1;
-  pointer-events: none;
-  transform: rotate(45deg);
-}
-
-.formGroup.primaryPositionSelect select {
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  padding-top: 9px;
-  padding-bottom: 9px;
-  border-color: rgba(255, 255, 255, 0.22);
-  background-color: rgba(255, 255, 255, 0.14);
-  background-image: none !important;
-  color-scheme: dark;
-}
-
-.formGroup.primaryPositionSelect select::-ms-expand {
-  display: none;
-}
-
-.formGroup.primaryPositionSelect select:focus,
-.formGroup.primaryPositionSelect select:focus-visible {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.22);
-  box-shadow: none;
-}
-
-.formGroup.primaryPositionSelect option {
-  background-color: #292a2e;
-  color: #f8f8f8;
-}
-
-.emptyApply {
-  min-height: 240px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.emptyFolder {
-  width: 120px;
-  height: auto;
-  object-fit: contain;
-  opacity: 0.3;
-  margin-top: 20px;
-}
-
-.emptyApply p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.65);
-  margin-bottom: 30px;
+.backArrow {
+  font-size: 16px;
+  line-height: 1;
 }
 
 .stepGuide {
@@ -419,12 +321,16 @@
 
 .editablePanel {
   margin-bottom: 0;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .editablePanelActive {
   border-color: rgba(159, 199, 242, 0.48);
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(159, 199, 242, 0.2) inset;
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(159, 199, 242, 0.2) inset;
 }
 
 .editableHeader {
@@ -777,8 +683,12 @@
   justify-content: center;
   cursor: pointer;
   touch-action: manipulation;
-  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease,
-    transform 0.18s ease, color 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease,
+    color 0.18s ease;
 }
 
 .projectTypeChip:hover {
@@ -816,7 +726,9 @@
 
 .projectTypeChipActive {
   border-color: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 8px 18px rgba(0, 0, 0, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+    0 8px 18px rgba(0, 0, 0, 0.28);
   color: #ffffff;
   transform: translateY(-1px);
 }
@@ -824,25 +736,33 @@
 .projectTypeChipWEB.projectTypeChipActive {
   background: rgba(98, 183, 255, 0.32);
   border-color: rgba(98, 183, 255, 0.85);
-  box-shadow: 0 0 0 1px rgba(98, 183, 255, 0.45) inset, 0 0 16px rgba(98, 183, 255, 0.35);
+  box-shadow:
+    0 0 0 1px rgba(98, 183, 255, 0.45) inset,
+    0 0 16px rgba(98, 183, 255, 0.35);
 }
 
 .projectTypeChipAPP.projectTypeChipActive {
   background: rgba(106, 225, 180, 0.3);
   border-color: rgba(106, 225, 180, 0.84);
-  box-shadow: 0 0 0 1px rgba(106, 225, 180, 0.44) inset, 0 0 16px rgba(106, 225, 180, 0.32);
+  box-shadow:
+    0 0 0 1px rgba(106, 225, 180, 0.44) inset,
+    0 0 16px rgba(106, 225, 180, 0.32);
 }
 
 .projectTypeChipGAME.projectTypeChipActive {
   background: rgba(255, 193, 111, 0.34);
   border-color: rgba(255, 193, 111, 0.88);
-  box-shadow: 0 0 0 1px rgba(255, 193, 111, 0.45) inset, 0 0 16px rgba(255, 193, 111, 0.3);
+  box-shadow:
+    0 0 0 1px rgba(255, 193, 111, 0.45) inset,
+    0 0 16px rgba(255, 193, 111, 0.3);
 }
 
 .projectTypeChipEMBEDDED.projectTypeChipActive {
   background: rgba(176, 200, 235, 0.34);
   border-color: rgba(176, 200, 235, 0.9);
-  box-shadow: 0 0 0 1px rgba(176, 200, 235, 0.46) inset, 0 0 16px rgba(176, 200, 235, 0.32);
+  box-shadow:
+    0 0 0 1px rgba(176, 200, 235, 0.46) inset,
+    0 0 16px rgba(176, 200, 235, 0.32);
 }
 
 .projectTypeChipAll.projectTypeChipActive {
@@ -1129,13 +1049,6 @@
   background-size: 14px 9px;
 }
 
-.formGroup select:focus,
-.formGroup select:focus-visible {
-  outline: none;
-  border-color: #9ed0ff;
-  box-shadow: 0 0 0 3px rgba(158, 208, 255, 0.16);
-}
-
 .formGroup textarea {
   min-height: 140px;
   resize: none;
@@ -1151,9 +1064,7 @@
 }
 
 .modalSubmit {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -1189,7 +1100,11 @@
 }
 
 .priorityListDragging .priorityItem {
-  transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease, opacity 0.16s ease;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    transform 0.16s ease,
+    opacity 0.16s ease;
 }
 
 .priorityItem {
@@ -1202,7 +1117,10 @@
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   cursor: grab;
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .priorityItem:hover {
@@ -1306,7 +1224,9 @@
 .dragHandle {
   font-size: 18px;
   color: rgba(255, 255, 255, 0.4);
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .priorityItem:hover .dragHandle {

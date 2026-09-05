@@ -23,9 +23,7 @@ import wap.web2.server.member.entity.Role;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(indexes = {
-        @Index(name = "idx_semester_userId", columnList = "semester, userId")
-})
+@Table(indexes = { @Index(name = "idx_semester_userId", columnList = "semester, userId") })
 public class Ballot {
 
     @Id
@@ -58,5 +56,4 @@ public class Ballot {
     public static Ballot of(String semester, Long userId, Role userRole, Long projectId) {
         return new Ballot(semester, userId, userRole, projectId);
     }
-
 }

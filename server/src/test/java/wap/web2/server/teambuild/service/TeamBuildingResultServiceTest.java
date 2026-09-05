@@ -34,19 +34,47 @@ class TeamBuildingResultServiceTest {
     void getUnassignedMembers_excludesAllocatedMembersAndLeader() {
         // given
         TeamMemberResult leader = TeamMemberResult.builder().id(1L).name("팀장").build();
-        TeamMemberResult assignedMember = TeamMemberResult.builder().id(2L).name("팀원").position(Position.AI).build();
+        TeamMemberResult assignedMember = TeamMemberResult.builder()
+            .id(2L)
+            .name("팀원")
+            .position(Position.AI)
+            .build();
 
         TeamBuildingResults results = new TeamBuildingResults();
-        results.add(new TeamBuildingResult(140L, "test-title", "summary", leader, List.of(assignedMember)));
+        results.add(
+            new TeamBuildingResult(140L, "test-title", "summary", leader, List.of(assignedMember))
+        );
 
         Project project = Project.builder().projectId(140L).title("test-title").build();
 
-        ProjectApply leaderApply = apply(1L, 1, Position.BACKEND, "2026-01", user(1L, "팀장"), project);
-        ProjectApply assignedApply = apply(2L, 1, Position.AI, "2026-01", user(2L, "팀원"), project);
-        ProjectApply unassignedApply = apply(3L, 1, Position.FRONTEND, "2026-01", user(3L, "미배정"), project);
+        ProjectApply leaderApply = apply(
+            1L,
+            1,
+            Position.BACKEND,
+            "2026-01",
+            user(1L, "팀장"),
+            project
+        );
+        ProjectApply assignedApply = apply(
+            2L,
+            1,
+            Position.AI,
+            "2026-01",
+            user(2L, "팀원"),
+            project
+        );
+        ProjectApply unassignedApply = apply(
+            3L,
+            1,
+            Position.FRONTEND,
+            "2026-01",
+            user(3L, "미배정"),
+            project
+        );
 
-        when(projectApplyRepository.findAllBySemester(anyString()))
-                .thenReturn(List.of(leaderApply, assignedApply, unassignedApply));
+        when(projectApplyRepository.findAllBySemester(anyString())).thenReturn(
+            List.of(leaderApply, assignedApply, unassignedApply)
+        );
 
         // when
         List<TeamMemberResult> unassigned = teamBuildingResultService.getUnassignedMembers(results);
@@ -64,20 +92,22 @@ class TeamBuildingResultServiceTest {
         return user;
     }
 
-    private ProjectApply apply(Long id,
-                               Integer priority,
-                               Position position,
-                               String semester,
-                               User user,
-                               Project project) {
+    private ProjectApply apply(
+        Long id,
+        Integer priority,
+        Position position,
+        String semester,
+        User user,
+        Project project
+    ) {
         return ProjectApply.builder()
-                .id(id)
-                .priority(priority)
-                .position(position)
-                .comment("comment")
-                .semester(semester)
-                .user(user)
-                .project(project)
-                .build();
+            .id(id)
+            .priority(priority)
+            .position(position)
+            .comment("comment")
+            .semester(semester)
+            .user(user)
+            .project(project)
+            .build();
     }
 }

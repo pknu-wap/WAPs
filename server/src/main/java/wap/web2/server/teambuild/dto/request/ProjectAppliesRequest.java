@@ -25,6 +25,7 @@ public class ProjectAppliesRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ApplyRequest {
+
         @NotNull
         private Long projectId;
 
@@ -42,5 +43,4 @@ public class ProjectAppliesRequest {
             this(projectId, position, comment, null);
         }
     }
-
 }

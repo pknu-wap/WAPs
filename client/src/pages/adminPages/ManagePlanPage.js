@@ -21,7 +21,11 @@ const ManagePlanPage = () => {
 
   const preview = generatePreview();
   const hasPreview =
-    preview.date || preview.title || preview.content || preview.location || preview.target;
+    preview.date ||
+    preview.title ||
+    preview.content ||
+    preview.location ||
+    preview.target;
 
   const handlePublish = async () => {
     if (!title || !date || !content || !target || !location) {
@@ -147,7 +151,9 @@ const ManagePlanPage = () => {
                 <div className={styles.scheduleTitle}>{preview.title}</div>
                 <div className={styles.scheduleContent}>{preview.content}</div>
                 {preview.location && (
-                  <div className={styles.scheduleContent}>{preview.location}</div>
+                  <div className={styles.scheduleContent}>
+                    {preview.location}
+                  </div>
                 )}
                 <div className={styles.miniTarget}>#{preview.target}</div>
               </div>
