@@ -150,7 +150,7 @@ function TeamBuildPage({ round = 1 }) {
     setSubmitMsg("");
     setSubmitStatus("");
     try {
-      const response = await teamBuildApi.getRecruitApplies(projectId);
+      const response = await teamBuildApi.getRecruitApplies(projectId, round);
       if (response?.success === false) {
         throw new Error(response.message || "불러오기 실패");
       }
@@ -328,7 +328,9 @@ function TeamBuildPage({ round = 1 }) {
       const response = await teamBuildApi.submitRecruitPreference({
         projectId: currentProjectId,
         roasters,
-      });
+      },
+      round
+    );
       const message =
         typeof response === "string"
           ? response
