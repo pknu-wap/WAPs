@@ -2,7 +2,7 @@ name: Server Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [production]
 
 concurrency:
   group: oci-production
