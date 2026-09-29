@@ -1,9 +1,10 @@
 package wap.web2.server.config.oracle;
 
-import com.oracle.bmc.ConfigFileReader;
-import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
+import com.oracle.bmc.Region;
+import com.oracle.bmc.auth.SimpleAuthenticationDetailsProvider;
 import com.oracle.bmc.objectstorage.ObjectStorageClient;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -19,17 +20,20 @@ public class OracleObjectStorageConfig {
     private final OracleObjectStorageProperties properties;
 
     @Bean
-    public ConfigFileAuthenticationDetailsProvider oracleAuthProvider() throws IOException {
-        ConfigFileReader.ConfigFile configFile = ConfigFileReader.parse(
-            properties.getConfigPath(),
-            properties.getProfile()
-        );
-        return new ConfigFileAuthenticationDetailsProvider(configFile);
+    public SimpleAuthenticationDetailsProvider oracleAuthProvider() {
+        byte[] privateKey = properties.getKey().getBytes(StandardCharsets.UTF_8);
+        return SimpleAuthenticationDetailsProvider.builder()
+            .userId(properties.getUser())
+            .fingerprint(properties.getFingerprint())
+            .tenantId(properties.getTenancy())
+            .region(Region.fromRegionId(properties.getRegion()))
+            .privateKeySupplier(() -> new ByteArrayInputStream(privateKey))
+            .build();
     }
 
     @Bean
     public ObjectStorageClient objectStorageClient(
-        ConfigFileAuthenticationDetailsProvider authProvider
+        SimpleAuthenticationDetailsProvider authProvider
     ) {
         ObjectStorageClient client = ObjectStorageClient.builder().build(authProvider);
         client.useRealmSpecificEndpointTemplate(true);

@@ -20,13 +20,14 @@ services:
       KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY}
       KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
       # Oracle Object Storage
-      OCI_CONFIG_PATH: /app/.oci/config
+      OCI_USER: ${OCI_USER}
+      OCI_FINGERPRINT: ${OCI_FINGERPRINT}
+      OCI_KEY: ${OCI_KEY}
+      OCI_TENANCY: ${OCI_TENANCY}
       OCI_REGION: ${OCI_REGION}
       OCI_NAMESPACE: ${OCI_NAMESPACE}
       OCI_BUCKET_NAME: ${OCI_BUCKET_NAME}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-    volumes:
-      - ${HOME}/.oci:/app/.oci:ro
     networks:
       - waps-network
 
