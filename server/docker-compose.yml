@@ -1,6 +1,7 @@
 services:
   app:
-    container_name: app
+    container_name: app-${DEPLOY_ENV}
+    image: ${APP_IMAGE}
     platform: linux/arm64
     build:
       context: .
@@ -31,27 +32,6 @@ services:
     networks:
       - waps-network
 
-  caddy:
-    container_name: caddy
-    image: caddy:2.11.4
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    environment:
-      SERVER_URL: ${SERVER_URL}
-    networks:
-      - waps-network
-    volumes:
-      - ./caddy:/etc/caddy
-      - caddy_data:/data
-      - caddy_config:/config
-
 networks:
   waps-network:
     external: true
-
-volumes:
-  caddy_data:
-  caddy_config:
