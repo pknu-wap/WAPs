@@ -69,7 +69,7 @@ app:
       - myiosapp://oauth2/redirect
 
 swagger:
-  server-url: ${SWAGGER_SERVER_URL}
+  server-url: ${SERVER_URL}
 
 project:
   password: 1248
