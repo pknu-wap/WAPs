@@ -1,3 +1,5 @@
+name: waps-caddy
+
 services:
   caddy:
     container_name: caddy

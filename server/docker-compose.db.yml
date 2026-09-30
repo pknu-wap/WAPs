@@ -1,3 +1,5 @@
+name: waps-db
+
 services:
   db:
     container_name: db
