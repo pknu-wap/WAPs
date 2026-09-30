@@ -39,8 +39,6 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
 
 ## 💻 실행 방법
 
-클라이언트와 서버는 각각 별도의 터미널에서 실행한다. 아래 명령은 저장소 루트에서 시작한다.
-
 ### 🖥️ Client
 
 1. 의존성을 설치한다.
@@ -53,7 +51,7 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
 2. `client/.env.local` 파일을 만들고 API 서버 주소를 설정한다.
 
    ```dotenv
-   REACT_APP_API_BASE_URL=http://localhost:8080
+   REACT_APP_API_BASE_URL=http://localhost
    ```
 
 3. 개발 서버를 실행한다.
@@ -64,33 +62,66 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
 
 ### ⚙️ Server
 
-1. MySQL에 로컬 개발용 `waps` 데이터베이스를 준비한다.
+1. `server/.env` 파일에 아래 설정을 작성한다. 빈 값은 직접 작성한다.
 
-2. `server/.env` 파일에 아래 설정을 작성한다. 빈 값은 직접 작성한다.
+   ```dotenv
+   # Database
+   DB_ROOT_PASSWORD=
+   DB_NAME=waps
+   DB_USER=waps
+   DB_PASSWORD=
 
-   ```yaml
-   DB_HOST: "localhost"
-   DB_PORT: "3306"
-   DB_NAME: "waps"
-   DB_USER: ""
-   DB_PASSWORD: ""
-   JWT_SECRET_KEY: ""
-   KAKAO_REST_API_KEY: ""
-   KAKAO_CLIENT_SECRET: ""
-   SERVER_URL: "http://localhost:8080"
-   SWAGGER_SERVER_URL: "http://localhost:8080"
-   SPRING_PROFILES_ACTIVE: "local"
+   # Caddy
+   CADDY_ENV=local
+
+   # URI
+   SERVER_URL=
+   SERVER_URL_DEV=http://localhost
+
+   # Auth
+   JWT_SECRET_KEY=
+   KAKAO_REST_API_KEY=
+   KAKAO_CLIENT_SECRET=
+
+   # Oracle Object Storage
+   SPRING_PROFILES_ACTIVE=oracle
+   OCI_USER=
+   OCI_FINGERPRINT=
+   OCI_TENANCY=
+   OCI_REGION=
+   OCI_NAMESPACE=
+   OCI_BUCKET_NAME=
+   OCI_KEY='-----BEGIN RSA PRIVATE KEY-----
+   -----END RSA PRIVATE KEY-----'
+
+   # Docker Compose
+   DEPLOY_ENV=main
+   APP_IMAGE=waps-server:local
    ```
 
-   `local` 프로필에서는 클라우드 스토리지를 사용하지 않아 이미지 업로드가 실제로 저장되지 않는다. 업로드 기능을 사용하려면 `oracle`, `aws`, `azure` 중 하나의 프로파일과 해당 스토리지 설정이 필요하다.
-
-   `KAKAO_REST_API_KEY`와 `KAKAO_CLIENT_SECRET`은 카카오디벨로퍼스의 동일한 REST API 키에 연결된 값을 사용한다. 운영 배포는 GitHub Actions Secrets에도 두 값을 등록해야 한다. 시크릿 변경 후 서버를 재배포한다.
-
-3. 서버를 실행한다.
+2. db docker를 실행한다.
 
    ```bash
    cd server
-   ./gradlew bootRun
+   docker compose -f docker-compose.db.yml up -d
+   ```
+
+3. Caddy docker를 실행한다.
+
+   ```bash
+   docker compose -f docker-compose.caddy.yml up -d
+   ```
+
+4. App docker를 실행한다.
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+5. [http://localhost/actuator/health](http://localhost/actuator/health)에 접속해 정상적인 응답이 반환되는지 확인한다.
+
+   ```json
+   { "status": "UP" }
    ```
 
 ## 🚀 WAPs service
@@ -101,47 +132,64 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
 
 <table>
   <tr>
-  <td align="center">
-       <img src="https://github.com/daimlee.png" width="120px;"/>   
-        <br />
-        <a href="https://github.com/daimlee" title="Code"><b>daimlee</b></a>
+    <td align="center">
+      <img src="https://github.com/daimlee.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/daimlee" title="Code"><b>daimlee</b></a>
     </td>
     <td align="center">
-        <img src="https://github.com/kangrae-jo.png" width="120px;"/>   
-        <br />
-        <a href="https://github.com/kangrae-jo" title="Code"><b>kangrae-jo</b></a>
+      <img src="https://github.com/kangrae-jo.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/kangrae-jo" title="Code"><b>kangrae-jo</b></a>
     </td>
     <td align="center">
-        <img src="https://github.com/g0rnn.png" width="120px;"/>   
-        <br />
-        <a href="https://github.com/g0rnn" title="Code"><b>g0rnn</b></a>
+      <img src="https://github.com/g0rnn.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/g0rnn" title="Code"><b>g0rnn</b></a>
     </td>
     <td align="center">
-        <img src="https://github.com/SH-MooDy.png" width="120px;"/>   
-        <br/>
-        <a href="https://github.com/SH-MooDy" title="Code"><b>SH-MooDy</b></a>
+      <img src="https://github.com/SH-MooDy.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/SH-MooDy" title="Code"><b>SH-MooDy</b></a>
     </td>
-    <td align="center">
-        <img src="https://github.com/1lisalozf.png" width="120px;"/> 
-        <br/>
-        <a href="https://github.com/1lisalozf" title="Code"><b>1lisalozf</b></a>
-    </td> 
   </tr>
   <tr>
     <td align="center">
-       <img src="https://github.com/2siyeon.png" width="120px;"/>   
-        <br />
-        <a href="https://github.com/2siyeon" title="Code"><b>2siyeon</b></a>
+      <img src="https://github.com/1lisalozf.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/1lisalozf" title="Code"><b>1lisalozf</b></a>
     </td>
     <td align="center">
-       <img src="https://github.com/seizethedayunhui.png" width="120px;"/>   
-        <br />
-        <a href="https://github.com/seizethedayunhui" title="Code"><b>seizethedayunhui</b></a>
+      <img src="https://github.com/2siyeon.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/2siyeon" title="Code"><b>2siyeon</b></a>
     </td>
     <td align="center">
-       <img src="https://github.com/psvm203.png" width="120px;"/>   
-        <br />
-        <a href="https://github.com/psvm203" title="Code"><b>psvm203</b></a>
+      <img src="https://github.com/seizethedayunhui.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/seizethedayunhui" title="Code"><b>seizethedayunhui</b></a>
+    </td>
+    <td align="center">
+      <img src="https://github.com/psvm203.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/psvm203" title="Code"><b>psvm203</b></a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/Jun3610.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/Jun3610" title="Code"><b>Jun3610</b></a>
+    </td>
+    <td align="center">
+      <img src="https://github.com/lio-115.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/lio-115" title="Code"><b>lio-115</b></a>
+    </td>
+    <td align="center">
+      <img src="https://github.com/pwc0319.png" width="120px;"/>
+      <br />
+      <a href="https://github.com/pwc0319" title="Code"><b>pwc0319</b></a>
     </td>
   </tr>
 </table>

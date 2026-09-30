@@ -14,6 +14,8 @@ public class OracleObjectStorageProperties {
     private String namespace;
     private String bucketName;
     private String region;
-    private String configPath;
-    private String profile = "DEFAULT";
+    private String user;
+    private String fingerprint;
+    private String tenancy;
+    private String key;
 }

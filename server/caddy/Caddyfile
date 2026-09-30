@@ -1,0 +1,17 @@
+(local) {
+	{$SERVER_URL_DEV} {
+		reverse_proxy app-main:8080
+		encode zstd gzip
+	}
+}
+
+(remote) {
+	import local
+
+	{$SERVER_URL} {
+		reverse_proxy app-production:8080
+		encode zstd gzip
+	}
+}
+
+import {$CADDY_ENV}
