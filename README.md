@@ -39,8 +39,6 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
 
 ## 💻 실행 방법
 
-클라이언트와 서버는 각각 별도의 터미널에서 실행한다. 아래 명령은 저장소 루트에서 시작한다.
-
 ### 🖥️ Client
 
 1. 의존성을 설치한다.
@@ -73,8 +71,12 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
    DB_USER=waps
    DB_PASSWORD=
 
+   # Caddy
+   CADDY_ENV=local
+
    # URI
-   SERVER_URL=http://localhost
+   SERVER_URL=
+   SERVER_URL_DEV=http://localhost
 
    # Auth
    JWT_SECRET_KEY=
@@ -91,20 +93,38 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
    OCI_BUCKET_NAME=
    OCI_KEY='-----BEGIN RSA PRIVATE KEY-----
    -----END RSA PRIVATE KEY-----'
+
+   # Docker Compose
+   DEPLOY_ENV=main
+   APP_IMAGE=waps-server:local
    ```
 
 2. db docker를 실행한다.
 
    ```bash
    cd server
-   docker compose -f docker-compose.db.yml up -d --build
+   docker compose -f docker-compose.db.yml up -d
    ```
 
-3. app docker를 실행한다.
+3. Caddy docker를 실행한다.
+
+   ```bash
+   docker compose -f docker-compose.caddy.yml up -d
+   ```
+
+4. App docker를 실행한다.
 
    ```bash
    docker compose up -d --build
    ```
+
+5. [http://localhost/actuator/health](http://localhost/actuator/health)에 접속해 정상적인 응답이 반환되는지 확인한다.
+
+   ```json
+   { "status": "UP" }
+   ```
+
+```
 
 ## 🚀 WAPs service
 
@@ -175,3 +195,4 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
     </td>
   </tr>
 </table>
+```
