@@ -14,4 +14,4 @@
 	}
 }
 
-import {$CADDY_ENV:local}
+import {$CADDY_ENV}

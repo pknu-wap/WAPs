@@ -1,7 +1,7 @@
 services:
   app:
-    container_name: app-${DEPLOY_ENV}
-    image: ${APP_IMAGE}
+    container_name: app-${DEPLOY_ENV:-main}
+    image: ${APP_IMAGE:-waps-server:local}
     platform: linux/arm64
     build:
       context: .

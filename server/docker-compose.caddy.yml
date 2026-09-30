@@ -10,9 +10,9 @@ services:
       - "443:443"
       - "443:443/udp"
     environment:
-      CADDY_ENV: ${CADDY_ENV}
-      SERVER_URL: ${SERVER_URL}
-      SERVER_URL_DEV: ${SERVER_URL_DEV}
+      CADDY_ENV: ${CADDY_ENV:-local}
+      SERVER_URL: ${SERVER_URL:-}
+      SERVER_URL_DEV: ${SERVER_URL_DEV:-http://localhost}
     networks:
       - waps-network
     volumes:
