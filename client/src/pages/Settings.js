@@ -7,10 +7,10 @@ import "../assets/Settings.css";
 const Settings = () => {
   const navigate = useNavigate();
 
-  // 카카오 로그인에서 저장된 사용자 이름
+  // 카카오에서 가져온 사용자 이름
   const [userName, setUserName] = useState("");
 
-  // 백엔드에서 받아오는 회원 구분
+  // 백엔드에서 회원 구분 가져오기
   const [userType, setUserType] = useState("");
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const Settings = () => {
       setUserName(kakaoUserName);
     }
 
-    // 회원 구분은 백엔드에서 가져오기
+    // 백엔드에서 회원 구분 가져오기
     const fetchMemberInfo = async () => {
       try {
         const token = Cookies.get("authToken");

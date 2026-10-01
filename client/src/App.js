@@ -23,7 +23,7 @@ import TeamBuildEntryPage from "./pages/TeamBuildEntryPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import CalendarPage from "./pages/CalendarPage";
 import AdminRoute from "./components/Login/PrivateRoute";
-import SettingForm from "./pages/SettingForm";
+import Settings from "./pages/Settings";
 
 // 관리자 페이지
 import ManagePermissionPage from "./pages/adminPages/ManagePermissionPage";
@@ -97,7 +97,7 @@ function App() {
           />
           <Route path="/team-build/result" element={<TeamBuildResultPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/SettingForm" element={<SettingForm />} />
+          <Route path="/Settings" element={<Settings />} />
           {/* 보호된 페이지 */}
           <Route path="/protected" element={<ProtectedPage />} />
         </Route>
