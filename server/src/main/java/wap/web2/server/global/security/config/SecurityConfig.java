@@ -95,6 +95,7 @@ public class SecurityConfig {
                     .requestMatchers(
                         "/swagger-ui/**",
                         "/swagger-ui.html",
+                        "/openapi.yaml",
                         "/v3/api-docs/**",
                         "/swagger-resources/**",
                         "/swagger-resources",
