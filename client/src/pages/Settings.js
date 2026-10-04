@@ -2,29 +2,24 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "../utils/authStorage";
 import { FaUser, FaPen } from "react-icons/fa";
+import NameChange from "../components/NameChange";
 import "../assets/Settings.css";
 
 const Settings = () => {
   const navigate = useNavigate();
-
-  // 카카오에서 가져온 사용자 이름
   const [userName, setUserName] = useState("");
-
-  // 백엔드에서 회원 구분 가져오기
   const [userType, setUserType] = useState("");
+  const [isNameModalOpen, setIsNameModalOpen] = useState(false);
 
   useEffect(() => {
-    // 카카오 로그인 후 저장된 사용자 이름 가져오기
-    const kakaoUserName = Cookies.get("userName");
-
-    if (kakaoUserName) {
-      setUserName(kakaoUserName);
-    }
-
-    // 백엔드에서 회원 구분 가져오기
     const fetchMemberInfo = async () => {
       try {
         const token = Cookies.get("authToken");
+      
+        if (!token) {
+          console.error("authToken이 없습니다.");
+          return;
+        }
 
         const response = await fetch("/api/member", {
           method: "GET",
@@ -35,13 +30,31 @@ const Settings = () => {
         });
 
         if (!response.ok) {
-          throw new Error("회원 정보를 불러오지 못했습니다.");
+          throw new Error(
+            `회원 정보 조회 실패: ${response.status}`
+          );
         }
 
         const data = await response.json();
 
+        console.log("회원 정보:", data);
+
+        if (data.name) {
+          setUserName(data.name);
+        } else {
+        
+          const kakaoUserName = Cookies.get("userName");
+
+          if (kakaoUserName) {
+            setUserName(kakaoUserName);
+          }
+        }
+
         // 회원 구분
-        setUserType(data.memberType);
+        if (data.memberType) {
+          setUserType(data.memberType);
+        }
+
       } catch (error) {
         console.error("회원 정보 조회 실패:", error);
       }
@@ -50,19 +63,70 @@ const Settings = () => {
     fetchMemberInfo();
   }, []);
 
-  // 연필 버튼 클릭
-  // 추후 이름 변경 모달 연결 예정
   const handleEditClick = () => {
-    console.log("이름 변경 모달 열기");
+    setIsNameModalOpen(true);
   };
 
-  // 메뉴 페이지로 돌아가기
+  //이름변경
+  const handleNameChange = async (newName) => {
+    try {
+      const token = Cookies.get("authToken");
+
+      if (!token) {
+        alert("로그인 정보가 없습니다.");
+        return;
+      }
+
+      const response = await fetch("/api/member/name", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+
+        body: JSON.stringify({
+          name: newName,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+
+        console.error(
+          "이름 변경 API 오류:",
+          response.status,
+          errorText
+        );
+
+        throw new Error(
+          `이름 변경 실패: ${response.status}`
+        );
+      }
+
+      setUserName(newName);
+
+      if (Cookies.set) {
+        Cookies.set("userName", newName);
+      }
+
+      setIsNameModalOpen(false);
+
+      console.log("이름 변경 성공:", newName);
+
+    } catch (error) {
+      console.error("이름 변경 실패:", error);
+
+      alert("이름 변경에 실패했습니다.");
+    }
+  };
+
   const handleMenuNavigate = () => {
     navigate("/menu");
   };
 
   return (
     <div className="settingsContainer">
+
       <div className="settings-content">
 
         {/* 닫기 버튼 */}
@@ -76,14 +140,17 @@ const Settings = () => {
           <span></span>
         </button>
 
+
         {/* 제목 */}
         <header className="settings-header">
           <p>설정을 변경해보세요.</p>
           <h1>SETTINGS</h1>
         </header>
 
+
         {/* 회원 정보 */}
         <section className="settings-section information-section">
+
           <h3>
             회원 정보 <span>Member Information</span>
           </h3>
@@ -100,10 +167,13 @@ const Settings = () => {
             </div>
 
           </div>
+
         </section>
+
 
         {/* 회원 설정 */}
         <section className="settings-section setting-section">
+
           <h3>
             회원 설정 <span>Member Settings</span>
           </h3>
@@ -112,6 +182,7 @@ const Settings = () => {
 
             {/* 이름 */}
             <div className="setting-item">
+
               <label>
                 이름 <span>Name</span>
               </label>
@@ -136,10 +207,13 @@ const Settings = () => {
               <p className="name-description">
                 ⓘ WAPS에 쓰이는 이름은 반드시 본명으로 설정해주세요!
               </p>
+
             </div>
+
 
             {/* 회원 구분 */}
             <div className="setting-item member-type">
+
               <label>
                 회원 구분 <span>Member Type</span>
               </label>
@@ -147,12 +221,15 @@ const Settings = () => {
               <div className="member-type-value">
                 {userType}
               </div>
+
             </div>
 
           </div>
+
         </section>
 
-        {/* 메뉴 페이지 */}
+
+        {/* 메뉴 페이지로 돌아가기 */}
         <button
           type="button"
           className="back-menu-button"
@@ -162,6 +239,17 @@ const Settings = () => {
         </button>
 
       </div>
+
+
+      {/* 이름 변경 모달 */}
+      {isNameModalOpen && (
+        <NameChange
+          currentName={userName}
+          onClose={() => setIsNameModalOpen(false)}
+          onChangeName={handleNameChange}
+        />
+      )}
+
     </div>
   );
 };
