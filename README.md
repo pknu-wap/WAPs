@@ -66,10 +66,10 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
 
    ```dotenv
    # Database
-   DB_ROOT_PASSWORD=
    DB_NAME=waps
    DB_USER=waps
    DB_PASSWORD=
+   DB_ROOT_PASSWORD=
 
    # Caddy
    CADDY_ENV=local
@@ -85,18 +85,14 @@ WAP 구성원이 보다 편하게 탐색하고 참여하며 기록을 남길 수
 
    # Oracle Object Storage
    SPRING_PROFILES_ACTIVE=oracle
-   OCI_USER=
-   OCI_FINGERPRINT=
+   OCI_STORAGE_USER=
+   OCI_STORAGE_FINGERPRINT=
    OCI_TENANCY=
    OCI_REGION=
    OCI_NAMESPACE=
    OCI_BUCKET_NAME=
-   OCI_KEY='-----BEGIN RSA PRIVATE KEY-----
+   OCI_STORAGE_KEY='-----BEGIN RSA PRIVATE KEY-----
    -----END RSA PRIVATE KEY-----'
-
-   # Docker Compose
-   DEPLOY_ENV=main
-   APP_IMAGE=waps-server:local
    ```
 
 2. db docker를 실행한다.
