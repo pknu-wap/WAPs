@@ -55,7 +55,8 @@ jobs:
         env:
           OCI_HOST: ${{ secrets.OCI_HOST }}
           OCI_SSH_USER: ${{ secrets.OCI_SSH_USER }}
-          OCI_SSH_KNOWN_HOSTS: ${{ secrets.OCI_SSH_KNOWN_HOSTS }}
+          OCI_SSH_KEY: ${{ secrets.OCI_SSH_KEY }}
+          OCI_SSH_FINGERPRINT: ${{ secrets.OCI_SSH_FINGERPRINT }}
           DEPLOY_ENV: ${{ github.ref_name }}
           APP_IMAGE: ${{ steps.image.outputs.name }}@${{ steps.build.outputs.digest }}
           GHCR_USER: ${{ github.actor }}
@@ -68,9 +69,9 @@ jobs:
           KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           SPRING_PROFILES_ACTIVE: ${{ secrets.SPRING_PROFILES_ACTIVE }}
-          OCI_USER: ${{ secrets.OCI_USER }}
-          OCI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
-          OCI_KEY: ${{ secrets.OCI_KEY }}
+          OCI_STORAGE_USER: ${{ secrets.OCI_STORAGE_USER }}
+          OCI_STORAGE_FINGERPRINT: ${{ secrets.OCI_STORAGE_FINGERPRINT }}
+          OCI_STORAGE_KEY: ${{ secrets.OCI_STORAGE_KEY }}
           OCI_TENANCY: ${{ secrets.OCI_TENANCY }}
           OCI_REGION: ${{ secrets.OCI_REGION }}
           OCI_NAMESPACE: ${{ secrets.OCI_NAMESPACE }}
@@ -81,8 +82,8 @@ jobs:
 
           deploy_vars=(DEPLOY_ENV APP_IMAGE GHCR_USER GHCR_TOKEN DB_NAME DB_USER DB_PASSWORD
             SERVER_URL JWT_SECRET_KEY KAKAO_REST_API_KEY KAKAO_CLIENT_SECRET SPRING_PROFILES_ACTIVE
-            OCI_USER OCI_FINGERPRINT OCI_KEY OCI_TENANCY OCI_REGION OCI_NAMESPACE OCI_BUCKET_NAME)
-          for name in OCI_HOST OCI_SSH_USER OCI_SSH_KNOWN_HOSTS "${deploy_vars[@]}"; do
+            OCI_STORAGE_USER OCI_STORAGE_FINGERPRINT OCI_STORAGE_KEY OCI_TENANCY OCI_REGION OCI_NAMESPACE OCI_BUCKET_NAME)
+          for name in OCI_HOST OCI_SSH_USER OCI_SSH_KEY OCI_SSH_FINGERPRINT "${deploy_vars[@]}"; do
             if [[ -z "${!name}" ]]; then
               echo "::error::Missing required configuration: $name"
               exit 1
@@ -95,8 +96,20 @@ jobs:
           umask 077
           state=$(mktemp -d)
           trap 'rm -rf -- "$state"' EXIT
-          printf '%s\n' "$OCI_KEY" > "$state/key"
-          printf '%s\n' "$OCI_SSH_KNOWN_HOSTS" > "$state/known_hosts"
+          printf '%s\n' "$OCI_SSH_KEY" > "$state/key"
+          ssh-keyscan -T 15 -t rsa,ecdsa,ed25519 "$OCI_HOST" > "$state/host_keys"
+          # Trust only host keys matching the fingerprint obtained from the server.
+          : > "$state/known_hosts"
+          while IFS= read -r host_key; do
+            fingerprint=$(printf '%s\n' "$host_key" | ssh-keygen -lf - -E sha256 | awk '{print $2}')
+            if [[ "$fingerprint" == "$OCI_SSH_FINGERPRINT" ]]; then
+              printf '%s\n' "$host_key" >> "$state/known_hosts"
+            fi
+          done < "$state/host_keys"
+          if [[ ! -s "$state/known_hosts" ]]; then
+            echo "::error::SSH host fingerprint does not match OCI_SSH_FINGERPRINT"
+            exit 1
+          fi
           ssh_options=(-F /dev/null -i "$state/key" -p 22
             -o "UserKnownHostsFile=$state/known_hosts" -o GlobalKnownHostsFile=/dev/null
             -o StrictHostKeyChecking=yes -o BatchMode=yes -o IdentitiesOnly=yes

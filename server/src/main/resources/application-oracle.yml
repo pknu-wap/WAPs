@@ -3,7 +3,7 @@ oracle:
     namespace: ${OCI_NAMESPACE}
     bucketName: ${OCI_BUCKET_NAME}
     region: ${OCI_REGION}
-    user: ${OCI_USER}
-    fingerprint: ${OCI_FINGERPRINT}
+    user: ${OCI_STORAGE_USER}
+    fingerprint: ${OCI_STORAGE_FINGERPRINT}
     tenancy: ${OCI_TENANCY}
-    key: ${OCI_KEY}
+    key: ${OCI_STORAGE_KEY}
