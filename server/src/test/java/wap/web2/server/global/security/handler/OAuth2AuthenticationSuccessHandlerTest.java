@@ -3,9 +3,13 @@ package wap.web2.server.global.security.handler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
@@ -25,6 +29,14 @@ import wap.web2.server.member.repository.UserRepository;
 class OAuth2AuthenticationSuccessHandlerTest {
 
     private final AppProperties properties = new AppProperties();
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+    private final TokenProvider tokenProvider = mock(TokenProvider.class);
+    private final UserRepository userRepository = mock(UserRepository.class);
+    private final RefreshTokenRepository refreshTokenRepository = mock(RefreshTokenRepository.class);
+    private final OAuth2AuthenticationSuccessHandler handler = new OAuth2AuthenticationSuccessHandler(
+        tokenProvider, properties, new HttpCookieOAuth2AuthorizationRequestRepository(),
+        userRepository, refreshTokenRepository, new SecurityErrorResponseWriter(objectMapper)
+    );
 
     @BeforeEach
     void loadConfiguredRedirectUris() {
@@ -67,12 +79,61 @@ class OAuth2AuthenticationSuccessHandlerTest {
         assertThatThrownBy(() -> determineTargetUrl(uri)).isInstanceOf(BadRequestException.class);
     }
 
-    private String determineTargetUrl(String uri) {
-        var handler = new OAuth2AuthenticationSuccessHandler(
-            mock(TokenProvider.class), properties,
-            mock(HttpCookieOAuth2AuthorizationRequestRepository.class),
-            mock(UserRepository.class), mock(RefreshTokenRepository.class)
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "https://feat-698.dev.waps.im/%",
+        "https://[invalid",
+        "https://evil.example/oauth/callback",
+        "/oauth/callback"
+    })
+    void invalidRedirectsReturnBadRequestWithoutIssuingTokens(String uri) throws Exception {
+        assertBadRequestWithoutIssuingTokens(uri);
+    }
+
+    @Test
+    void invalidConfiguredRedirectReturnsBadRequestWithoutIssuingTokens() throws Exception {
+        properties.getOauth2().authorizedRedirectUris(List.of("https://[invalid"));
+        assertBadRequestWithoutIssuingTokens("https://feat-698.dev.waps.im/oauth/callback");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "https://foo.com/path/://*.bar",
+        "https://foo.com/path?x=://*.bar",
+        "https://foo.com/path#://*.bar"
+    })
+    void wildcardTextOutsideHostDoesNotAuthorizeSubdomains(String configuredUri) {
+        properties.getOauth2().authorizedRedirectUris(List.of(configuredUri));
+
+        assertThatThrownBy(() -> determineTargetUrl("https://attacker.foo.com/oauth/callback"))
+            .isInstanceOf(BadRequestException.class);
+        assertThat(determineTargetUrl("https://foo.com/oauth/callback"))
+            .isEqualTo("https://foo.com/oauth/callback");
+    }
+
+    private void assertBadRequestWithoutIssuingTokens(String uri) throws Exception {
+        var request = new MockHttpServletRequest("GET", "/oauth2/callback/kakao");
+        request.setCookies(
+            new Cookie("redirect_uri", uri),
+            new Cookie("oauth2_auth_request", "unused")
         );
+        var response = new MockHttpServletResponse();
+
+        handler.onAuthenticationSuccess(request, response, null);
+
+        assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getContentType()).startsWith("application/json");
+        var body = objectMapper.readTree(response.getContentAsString());
+        assertThat(body.get("code").asText()).isEqualTo("COMMON_INVALID_INPUT");
+        assertThat(body.get("status").asInt()).isEqualTo(400);
+        assertThat(response.getRedirectedUrl()).isNull();
+        assertThat(response.getCookie("refresh_token")).isNull();
+        assertThat(response.getCookie("redirect_uri").getMaxAge()).isZero();
+        assertThat(response.getCookie("oauth2_auth_request").getMaxAge()).isZero();
+        verifyNoInteractions(tokenProvider, userRepository, refreshTokenRepository);
+    }
+
+    private String determineTargetUrl(String uri) {
         var request = new MockHttpServletRequest("GET", "/oauth2/callback/kakao");
         request.setCookies(new Cookie("redirect_uri", uri));
         return handler.determineTargetUrl(request, new MockHttpServletResponse(), null);

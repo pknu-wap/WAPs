@@ -16,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import wap.web2.server.auth.RefreshTokenRepository;
 import wap.web2.server.auth.domain.RefreshToken;
 import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.exception.ErrorCode;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.global.security.config.AppProperties;
 import wap.web2.server.global.security.jwt.TokenProvider;
@@ -33,6 +34,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final SecurityErrorResponseWriter securityErrorResponseWriter;
 
     @Override
     public void onAuthenticationSuccess(
@@ -40,7 +42,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         HttpServletResponse response,
         Authentication authentication
     ) throws IOException, ServletException {
-        String targetUrl = determineTargetUrl(request, response, authentication);
+        String targetUrl;
+        try {
+            targetUrl = determineTargetUrl(request, response, authentication);
+        } catch (IllegalArgumentException | BadRequestException exception) {
+            clearAuthenticationAttributes(request, response);
+            securityErrorResponseWriter.write(
+                request, response, ErrorCode.COMMON_INVALID_INPUT,
+                "유효하지 않은 로그인 복귀 주소입니다."
+            );
+            return;
+        }
         String urlWithToken = addTokenCookiesTo(targetUrl, response, authentication);
 
         if (response.isCommitted()) {
@@ -124,8 +136,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             .getAuthorizedRedirectUris()
             .stream()
             .anyMatch(authorizedRedirectUri -> {
-                boolean wildcard = authorizedRedirectUri.contains("://*.");
-                URI authorizedURI = URI.create(authorizedRedirectUri.replace("://*.", "://"));
+                boolean wildcard = authorizedRedirectUri.startsWith("https://*.");
+                URI authorizedURI = URI.create(wildcard
+                    ? "https://" + authorizedRedirectUri.substring("https://*.".length())
+                    : authorizedRedirectUri);
                 String authorizedHost = authorizedURI.getHost();
                 String clientHost = clientRedirectUri.getHost();
                 if (authorizedHost == null || clientHost == null) {
