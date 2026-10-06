@@ -71,6 +71,15 @@ app:
 swagger:
   server-url: ${SERVER_URL}
 
+springdoc:
+  swagger-ui:
+    urls:
+      - name: WAPs API
+        url: /v3/api-docs
+      - name: QR 출석 API (설계)
+        url: /openapi.yaml
+    urls-primary-name: QR 출석 API (설계)
+
 project:
   password: 1248
 

@@ -3,12 +3,14 @@ package wap.web2.server.global.security.config;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -45,6 +47,9 @@ public class SecurityConfig {
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     private final RestAccessDeniedHandler restAccessDeniedHandler;
     private final TokenProvider tokenProvider;
+
+    @Value("${springdoc.api-docs.enabled:true}")
+    private boolean apiDocsEnabled;
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
@@ -89,17 +94,19 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth ->
                 auth
-                    .requestMatchers(staticResources())
-                    .permitAll()
                     // swagger
                     .requestMatchers(
                         "/swagger-ui/**",
                         "/swagger-ui.html",
+                        "/openapi.yaml",
                         "/v3/api-docs/**",
+                        "/v3/api-docs.yaml",
                         "/swagger-resources/**",
                         "/swagger-resources",
                         "/webjars/**"
                     )
+                    .access((authentication, context) -> new AuthorizationDecision(apiDocsEnabled))
+                    .requestMatchers(staticResources())
                     .permitAll()
                     // actuator
                     .requestMatchers("/actuator/**")
