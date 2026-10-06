@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Locale;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -123,11 +124,21 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             .getAuthorizedRedirectUris()
             .stream()
             .anyMatch(authorizedRedirectUri -> {
-                // Only validate host and port. Let the clients use different paths if they want
-                // to
-                URI authorizedURI = URI.create(authorizedRedirectUri);
+                boolean wildcard = authorizedRedirectUri.contains("://*.");
+                URI authorizedURI = URI.create(authorizedRedirectUri.replace("://*.", "://"));
+                String authorizedHost = authorizedURI.getHost();
+                String clientHost = clientRedirectUri.getHost();
+                if (authorizedHost == null || clientHost == null) {
+                    return false;
+                }
+                boolean hostMatches = wildcard
+                    ? clientHost.toLowerCase(Locale.ROOT).endsWith("." + authorizedHost.toLowerCase(Locale.ROOT))
+                    : authorizedHost.equalsIgnoreCase(clientHost);
+
+                // Clients may use different paths, but must match the scheme, host and port.
                 return (
-                    authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost()) &&
+                    hostMatches &&
+                    authorizedURI.getScheme().equalsIgnoreCase(clientRedirectUri.getScheme()) &&
                     authorizedURI.getPort() == clientRedirectUri.getPort()
                 );
             });
