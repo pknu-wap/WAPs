@@ -96,8 +96,20 @@ jobs:
           umask 077
           state=$(mktemp -d)
           trap 'rm -rf -- "$state"' EXIT
-          printf '%s\n' "$OCI_KEY" > "$state/key"
-          printf '%s\n' "$OCI_SSH_KNOWN_HOSTS" > "$state/known_hosts"
+          printf '%s\n' "$OCI_SSH_KEY" > "$state/key"
+          ssh-keyscan -T 15 -t rsa,ecdsa,ed25519 "$OCI_HOST" > "$state/host_keys"
+          # Trust only host keys matching the fingerprint obtained from the server.
+          : > "$state/known_hosts"
+          while IFS= read -r host_key; do
+            fingerprint=$(printf '%s\n' "$host_key" | ssh-keygen -lf - -E sha256 | awk '{print $2}')
+            if [[ "$fingerprint" == "$OCI_SSH_FINGERPRINT" ]]; then
+              printf '%s\n' "$host_key" >> "$state/known_hosts"
+            fi
+          done < "$state/host_keys"
+          if [[ ! -s "$state/known_hosts" ]]; then
+            echo "::error::SSH host fingerprint does not match OCI_SSH_FINGERPRINT"
+            exit 1
+          fi
           ssh_options=(-F /dev/null -i "$state/key" -p 22
             -o "UserKnownHostsFile=$state/known_hosts" -o GlobalKnownHostsFile=/dev/null
             -o StrictHostKeyChecking=yes -o BatchMode=yes -o IdentitiesOnly=yes
