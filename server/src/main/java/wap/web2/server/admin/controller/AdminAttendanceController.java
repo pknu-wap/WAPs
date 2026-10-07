@@ -44,8 +44,8 @@ public class AdminAttendanceController {
     @Operation(operationId = "createAttendance", summary = "출석체크 생성", description = """
         생성 시 가입된 전체 사용자를 등급과 무관하게 출석 대상자로 고정하고 ABSENT로 등록합니다.
         title은 앞뒤 공백 제거 후 1~100자, date는 한국 시간(Asia/Seoul) 기준 오늘 또는 미래 날짜여야 합니다.
-        해당 날짜 00:00부터 다음 날 00:00 전까지 ONGOING이며, 날짜에 따라 자동으로 시작·종료합니다.
-        오늘 날짜로 생성하면 즉시 ONGOING 상태가 됩니다.
+        생성 시 항상 SCHEDULED 상태이며, 날짜가 바뀌어도 자동으로 시작·종료하지 않습니다.
+        진행 상태는 관리자가 직접 변경합니다.
         """)
     @ApiResponse(responseCode = "201", description = "출석체크 생성 완료",
         headers = @Header(name = "Location", description = "생성한 출석체크 상세 조회 경로",
@@ -124,7 +124,7 @@ public class AdminAttendanceController {
         예: {"attendanceId":1,"qrToken":"example-attendance-qr-token"}. QR 이미지 생성 및 카메라 스캔은 프런트엔드에서 처리합니다.
         QR에는 사용자 정보나 로그인 JWT를 넣지 않습니다. 추측 불가능한 출석 전용 난수만 사용합니다.
         유효 시간은 발급 시각부터 30초이며 재발급 시 이전 토큰은 즉시 무효화됩니다.
-        출석 날짜가 지나면 토큰의 유효 시간과 무관하게 출석할 수 없습니다.
+        출석체크의 상태가 변경되면 기존 QR은 즉시 무효화됩니다.
         동일 토큰을 여러 대상자가 사용할 수 있지만 사용자별 출석은 한 번만 기록합니다.
         """)
     @ApiResponses({

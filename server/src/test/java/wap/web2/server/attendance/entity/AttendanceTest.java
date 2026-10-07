@@ -11,11 +11,15 @@ class AttendanceTest {
     private final Instant now = Instant.parse("2026-10-10T10:00:00Z");
 
     @Test
-    void dateDeterminesStatusAndQrExpiresAtExactlyThirtySeconds() {
+    void creationIsAlwaysScheduledRegardlessOfDate() {
+        for (LocalDate day : new LocalDate[]{date.minusDays(1), date, date.plusDays(1)}) {
+            assertThat(new Attendance("발표", day).getStatus()).isEqualTo(AttendanceStatus.SCHEDULED);
+        }
+    }
+
+    @Test
+    void qrExpiresAtExactlyThirtySeconds() {
         var attendance = new Attendance("발표", date);
-        assertThat(attendance.statusOn(date.minusDays(1))).isEqualTo(AttendanceStatus.SCHEDULED);
-        assertThat(attendance.statusOn(date)).isEqualTo(AttendanceStatus.ONGOING);
-        assertThat(attendance.statusOn(date.plusDays(1))).isEqualTo(AttendanceStatus.ENDED);
         assertThat(attendance.acceptsQr("first", now)).isFalse();
         attendance.issueQr("first", now);
         assertThat(attendance.acceptsQr("first", now.plusSeconds(29))).isTrue();
@@ -24,6 +28,24 @@ class AttendanceTest {
         attendance.issueQr("second", now.plusSeconds(1));
         assertThat(attendance.acceptsQr("first", now.plusSeconds(2))).isFalse();
         assertThat(attendance.acceptsQr("second", now.plusSeconds(2))).isTrue();
+    }
+
+    @Test
+    void changingStatusInvalidatesQrButRepeatingTheSameStatusPreservesIt() {
+        var attendance = new Attendance("발표", date);
+        attendance.changeStatus(AttendanceStatus.ONGOING);
+        attendance.issueQr("token", now);
+        attendance.changeStatus(AttendanceStatus.ONGOING);
+        assertThat(attendance.acceptsQr("token", now)).isTrue();
+        attendance.changeStatus(AttendanceStatus.ENDED);
+        assertThat(attendance.getStatus()).isEqualTo(AttendanceStatus.ENDED);
+        assertThat(attendance.getQrToken()).isNull();
+        assertThat(attendance.getQrExpiresAt()).isNull();
+        attendance.changeStatus(AttendanceStatus.ONGOING);
+        assertThat(attendance.acceptsQr("token", now)).isFalse();
+        attendance.issueQr("new-token", now);
+        attendance.changeStatus(AttendanceStatus.SCHEDULED);
+        assertThat(attendance.acceptsQr("new-token", now)).isFalse();
     }
 
     @Test

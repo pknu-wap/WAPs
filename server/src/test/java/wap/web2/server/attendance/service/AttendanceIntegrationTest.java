@@ -41,6 +41,7 @@ class AttendanceIntegrationTest {
     private AttendanceParticipantRepository participants;
     private UserRepository users;
     private AttendanceService service;
+    private JdbcTemplate jdbc;
     private final Clock clock = mock(Clock.class);
     private final Instant now = Instant.parse("2026-10-10T10:00:00.123456Z");
     private final LocalDate today = LocalDate.of(2026, 10, 10);
@@ -59,10 +60,11 @@ class AttendanceIntegrationTest {
             "hibernate.physical_naming_strategy", "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy",
             "hibernate.jdbc.time_zone", "UTC"));
         factory.afterPropertiesSet();
-        var jdbc = new JdbcTemplate(dataSource);
+        jdbc = new JdbcTemplate(dataSource);
         jdbc.execute("DROP TABLE attendance_participant");
         jdbc.execute("DROP TABLE attendance");
-        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V13__create_attendances.sql"))
+        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V13__create_attendances.sql"),
+            new ClassPathResource("db/migration/V14__persist_attendance_status.sql"))
             .execute(dataSource);
         var entityManager = SharedEntityManagerCreator.createSharedEntityManager(factory.getObject());
         var repositories = new JpaRepositoryFactory(entityManager);
@@ -86,6 +88,30 @@ class AttendanceIntegrationTest {
     }
 
     @Test
+    void migrationPreservesExistingStatusesAndDefaultsNewRowsToScheduled() {
+        jdbc.execute("ALTER TABLE attendance DROP COLUMN status");
+        jdbc.update("""
+            INSERT INTO attendance (title, date) VALUES
+                ('과거', DATE(UTC_TIMESTAMP() + INTERVAL 9 HOUR) - INTERVAL 1 DAY),
+                ('오늘', DATE(UTC_TIMESTAMP() + INTERVAL 9 HOUR)),
+                ('미래', DATE(UTC_TIMESTAMP() + INTERVAL 9 HOUR) + INTERVAL 1 DAY)
+            """);
+        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V14__persist_attendance_status.sql"))
+            .execute(jdbc.getDataSource());
+        assertThat(jdbc.queryForList("SELECT status FROM attendance ORDER BY id", String.class))
+            .containsExactly("ENDED", "ONGOING", "SCHEDULED");
+        jdbc.update("INSERT INTO attendance (title, date) VALUES ('신규', DATE(UTC_TIMESTAMP() + INTERVAL 9 HOUR))");
+        assertThat(jdbc.queryForObject("SELECT status FROM attendance WHERE title = '신규'", String.class))
+            .isEqualTo("SCHEDULED");
+        for (LocalDate date : List.of(today, today.plusDays(1))) {
+            var created = service.create(new AttendanceRequests.Create("신규 출석", date));
+            assertThat(created.status()).isEqualTo(AttendanceStatus.SCHEDULED);
+            assertThat(service.detail(created.attendanceId(), null, "userName,asc").summary().status())
+                .isEqualTo(AttendanceStatus.SCHEDULED);
+        }
+    }
+
+    @Test
     void migrationSupportsEmptyEventsFixedTargetsCountsAndOrderedUserHistory() {
         long empty = create(today);
         assertThat(service.listAdmin(null).content().get(0).totalCount()).isZero();
@@ -94,7 +120,7 @@ class AttendanceIntegrationTest {
         long second = user("나", Role.ROLE_ADMIN);
         long event = create(today);
         long laterId = create(today);
-        long future = create(today.plusDays(1));
+        long future = service.create(new AttendanceRequests.Create("미래", today.plusDays(1))).attendanceId();
         long outsider = user("다", Role.ROLE_MEMBER);
         String token = service.issueQr(event).qrToken();
         service.checkIn(event, first, token);
@@ -115,6 +141,13 @@ class AttendanceIntegrationTest {
             new AttendanceParticipant(attendances.findById(event).orElseThrow(), first, "중복"))))
             .isInstanceOf(org.hibernate.exception.ConstraintViolationException.class);
         when(clock.instant()).thenReturn(Instant.parse("2026-10-10T15:00:00Z"));
+        assertThat(service.listMine(first, AttendanceStatus.ENDED)).isEmpty();
+        assertThat(service.listMine(first, AttendanceStatus.ONGOING)).extracting(AttendanceResponses.MyAttendance::attendanceId)
+            .containsExactly(laterId, event);
+        assertThat(service.detail(future, null, "userName,asc").summary().status()).isEqualTo(AttendanceStatus.SCHEDULED);
+        changeStatus(event, AttendanceStatus.ENDED);
+        changeStatus(laterId, AttendanceStatus.ENDED);
+        changeStatus(future, AttendanceStatus.ONGOING);
         assertThat(service.listMine(first, AttendanceStatus.ENDED)).extracting(AttendanceResponses.MyAttendance::attendanceId)
             .containsExactly(laterId, event);
         assertThat(service.listMine(first, AttendanceStatus.ONGOING)).extracting(AttendanceResponses.MyAttendance::attendanceId)
@@ -224,7 +257,13 @@ class AttendanceIntegrationTest {
     }
 
     private long create(LocalDate date) {
-        return service.create(new AttendanceRequests.Create("발표", date)).attendanceId();
+        long id = service.create(new AttendanceRequests.Create("발표", date)).attendanceId();
+        changeStatus(id, AttendanceStatus.ONGOING);
+        return id;
+    }
+
+    private void changeStatus(long attendanceId, AttendanceStatus status) {
+        transaction.executeWithoutResult(ignored -> attendances.findByIdForUpdate(attendanceId).orElseThrow().changeStatus(status));
     }
 
     private long user(String name, Role role) {

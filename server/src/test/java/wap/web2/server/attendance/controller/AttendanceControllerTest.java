@@ -119,7 +119,7 @@ class AttendanceControllerTest {
     void serializesAdminResponsesAndPreservesPatchOmissions() {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
-            var summary = new Summary(1L, "발표", LocalDate.of(2026, 10, 10), AttendanceStatus.ONGOING, 1, 0, 1);
+            var summary = new Summary(1L, "발표", LocalDate.of(2026, 10, 10), AttendanceStatus.SCHEDULED, 1, 0, 1);
             var participant = new Participant(10L, "가", PresenceStatus.ABSENT, null, "");
             when(service.create(any())).thenReturn(summary);
             when(service.listAdmin(null)).thenReturn(new Content<>(List.of(summary)));
@@ -128,7 +128,8 @@ class AttendanceControllerTest {
             mvc.perform(post("/admin/attendances").with(user("admin").roles("ADMIN"))
                 .contentType("application/json").content("{\"title\":\"  발표  \",\"date\":\"2026-10-10\"}"))
                 .andExpect(status().isCreated()).andExpect(header().string("Location", "/admin/attendances/1"))
-                .andExpect(jsonPath("$.date").value("2026-10-10"));
+                .andExpect(jsonPath("$.date").value("2026-10-10"))
+                .andExpect(jsonPath("$.status").value("SCHEDULED"));
             verify(service).create(new AttendanceRequests.Create("발표", LocalDate.of(2026, 10, 10)));
             mvc.perform(get("/admin/attendances").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.content[0].absentCount").value(1));
@@ -251,6 +252,7 @@ class AttendanceControllerTest {
                 if (path.contains("{attendanceId}")) assertThat(operation.at("/responses/404").isMissingNode()).isFalse();
             }));
             var create = paths.path("/admin/attendances").path("post");
+            assertThat(create.path("description").asText()).contains("항상 SCHEDULED", "자동으로 시작·종료하지 않습니다");
             assertThat(create.at("/responses/201/headers/Location/schema/example").asText()).isEqualTo("/admin/attendances/1");
             assertThat(create.at("/responses/201/content/application~1json/schema/$ref").asText()).isEqualTo("#/components/schemas/AttendanceSummary");
             assertThat(create.at("/requestBody/content/application~1json/schema/$ref").asText()).isEqualTo("#/components/schemas/CreateAttendanceRequest");

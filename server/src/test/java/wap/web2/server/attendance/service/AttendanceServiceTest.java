@@ -32,6 +32,7 @@ class AttendanceServiceTest {
     @BeforeEach
     void setup() {
         when(clock.instant()).thenReturn(now);
+        attendance.changeStatus(AttendanceStatus.ONGOING);
         ReflectionTestUtils.setField(attendance, "id", 1L);
         when(attendances.findById(1L)).thenReturn(Optional.of(attendance));
         when(attendances.findByIdForUpdate(1L)).thenReturn(Optional.of(attendance));
@@ -50,7 +51,7 @@ class AttendanceServiceTest {
         });
         var response = service.create(new AttendanceRequests.Create("  발표  ", today));
         assertThat(response.title()).isEqualTo("발표");
-        assertThat(response.status()).isEqualTo(AttendanceStatus.ONGOING);
+        assertThat(response.status()).isEqualTo(AttendanceStatus.SCHEDULED);
         assertThat(response.totalCount()).isEqualTo(2);
         assertThat(response.absentCount()).isEqualTo(2);
         ArgumentCaptor<List<AttendanceParticipant>> captured = ArgumentCaptor.forClass((Class) List.class);
@@ -102,6 +103,7 @@ class AttendanceServiceTest {
         var checkedIn = service.update(1, 10, new AttendanceRequests.Update(PresenceStatus.PRESENT, null));
         assertThat(checkedIn.checkedInAt()).isEqualTo(Instant.parse("2026-10-09T15:00:00.123456Z"));
         when(clock.instant()).thenReturn(now.plusSeconds(86400));
+        attendance.changeStatus(AttendanceStatus.ENDED);
         var same = service.update(1, 10, new AttendanceRequests.Update(PresenceStatus.PRESENT, null));
         assertThat(same.checkedInAt()).isEqualTo(checkedIn.checkedInAt());
         assertThat(same.note()).isEqualTo("확인");
@@ -111,16 +113,18 @@ class AttendanceServiceTest {
         assertThatThrownBy(() -> service.update(1, 99, new AttendanceRequests.Update(null, "확인")))
             .isInstanceOf(ResourceNotFoundException.class);
         when(clock.instant()).thenReturn(Instant.parse("2026-10-09T14:59:59Z"));
+        attendance.changeStatus(AttendanceStatus.SCHEDULED);
         assertThatThrownBy(() -> service.update(1, 10, new AttendanceRequests.Update(PresenceStatus.PRESENT, null)))
             .isInstanceOf(ConflictException.class);
     }
 
     @Test
-    void adminListsFilterStatusUsingKoreanDate() {
+    void adminListsFilterStoredStatusRegardlessOfDate() {
         var counts = mock(AttendanceRepository.Counts.class);
         when(counts.getAttendanceId()).thenReturn(1L);
         when(counts.getTitle()).thenReturn("발표");
         when(counts.getDate()).thenReturn(today);
+        when(counts.getStatus()).thenReturn(AttendanceStatus.ONGOING);
         when(counts.getTotalCount()).thenReturn(3L);
         when(counts.getPresentCount()).thenReturn(1L);
         when(attendances.findAllWithCounts()).thenReturn(List.of(counts));
@@ -128,6 +132,9 @@ class AttendanceServiceTest {
         assertThat(service.listAdmin(AttendanceStatus.ONGOING).content().get(0).absentCount()).isEqualTo(2);
         assertThat(service.listAdmin(AttendanceStatus.ENDED).content()).isEmpty();
         when(clock.instant()).thenReturn(Instant.parse("2026-10-10T15:00:00Z"));
+        assertThat(service.listAdmin(AttendanceStatus.ONGOING).content()).hasSize(1);
+        assertThat(service.listAdmin(AttendanceStatus.ENDED).content()).isEmpty();
+        when(counts.getStatus()).thenReturn(AttendanceStatus.ENDED);
         assertThat(service.listAdmin(AttendanceStatus.ENDED).content()).hasSize(1);
     }
 
@@ -144,6 +151,7 @@ class AttendanceServiceTest {
         assertThatThrownBy(() -> service.checkIn(1, 99, current)).isInstanceOf(ForbiddenException.class);
         assertThatThrownBy(() -> service.checkIn(99, 10, current)).isInstanceOf(ResourceNotFoundException.class);
         var other = new Attendance("다른 행사", today);
+        other.changeStatus(AttendanceStatus.ONGOING);
         when(attendances.findByIdForUpdate(2)).thenReturn(Optional.of(other));
         String otherToken = service.issueQr(2).qrToken();
         assertThatThrownBy(() -> service.checkIn(1, 10, otherToken)).isInstanceOf(BadRequestException.class);
@@ -157,15 +165,28 @@ class AttendanceServiceTest {
     }
 
     @Test
-    void midnightClosesCheckInEvenWhenTheQrHasNotExpired() {
+    void midnightDoesNotCloseAnOngoingAttendance() {
+        var participant = new AttendanceParticipant(attendance, 10L, "가");
+        when(participants.findByAttendanceIdAndUserId(1, 10)).thenReturn(Optional.of(participant));
         when(clock.instant()).thenReturn(Instant.parse("2026-10-10T14:59:59Z"));
         String token = service.issueQr(1).qrToken();
         when(clock.instant()).thenReturn(Instant.parse("2026-10-10T15:00:00Z"));
-        assertThatThrownBy(() -> service.checkIn(1, 10, token)).isInstanceOf(ConflictException.class);
-        assertThatThrownBy(() -> service.issueQr(1)).isInstanceOf(ConflictException.class);
+        assertThat(service.checkIn(1, 10, token).status()).isEqualTo(PresenceStatus.PRESENT);
+        assertThat(service.detail(1, null, "userName,asc").summary().status()).isEqualTo(AttendanceStatus.ONGOING);
+        assertThat(service.issueQr(1).qrToken()).isNotBlank();
+        // 예정 날짜 이전이어도 관리자가 시작한 출석은 진행 중이다.
         when(clock.instant()).thenReturn(Instant.parse("2026-10-09T14:59:59Z"));
-        assertThatThrownBy(() -> service.checkIn(1, 10, token)).isInstanceOf(ConflictException.class);
-        assertThatThrownBy(() -> service.issueQr(1)).isInstanceOf(ConflictException.class);
+        String early = service.issueQr(1).qrToken();
+        assertThat(service.checkIn(1, 10, early).status()).isEqualTo(PresenceStatus.PRESENT);
+    }
+
+    @Test
+    void scheduledAndEndedAttendancesRejectQrAndCheckInRegardlessOfDate() {
+        for (AttendanceStatus status : List.of(AttendanceStatus.SCHEDULED, AttendanceStatus.ENDED)) {
+            attendance.changeStatus(status);
+            assertThatThrownBy(() -> service.checkIn(1, 10, "token")).isInstanceOf(ConflictException.class);
+            assertThatThrownBy(() -> service.issueQr(1)).isInstanceOf(ConflictException.class);
+        }
         verifyNoInteractions(participants);
     }
 
@@ -173,8 +194,10 @@ class AttendanceServiceTest {
     void userListsOnlyAllowOngoingOrEndedAttendances() {
         var ongoing = new AttendanceParticipant(attendance, 10L, "가");
         var ended = new AttendanceParticipant(new Attendance("과거", today.minusDays(1)), 10L, "가");
+        ended.getAttendance().changeStatus(AttendanceStatus.ENDED);
         var future = new AttendanceParticipant(new Attendance("예정", today.plusDays(1)), 10L, "가");
         when(participants.findAllForUser(10)).thenReturn(List.of(future, ongoing, ended));
+        when(clock.instant()).thenReturn(now.plusSeconds(86400 * 2));
         assertThat(service.listMine(10, AttendanceStatus.ONGOING)).extracting(a -> a.title()).containsExactly("발표");
         assertThat(service.listMine(10, AttendanceStatus.ENDED)).extracting(a -> a.title()).containsExactly("과거");
         assertThatThrownBy(() -> service.listMine(10, AttendanceStatus.SCHEDULED)).isInstanceOf(BadRequestException.class);

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import wap.web2.server.attendance.entity.Attendance;
+import wap.web2.server.attendance.entity.AttendanceStatus;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -16,11 +17,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     Optional<Attendance> findByIdForUpdate(@Param("id") long id);
 
     @Query("""
-        select a.id as attendanceId, a.title as title, a.date as date,
+        select a.id as attendanceId, a.title as title, a.date as date, a.status as status,
             count(p.id) as totalCount,
             sum(case when p.status = wap.web2.server.attendance.entity.PresenceStatus.PRESENT then 1 else 0 end) as presentCount
         from Attendance a left join AttendanceParticipant p on p.attendance = a
-        group by a.id, a.title, a.date
+        group by a.id, a.title, a.date, a.status
         order by a.date desc, a.id desc
         """)
     List<Counts> findAllWithCounts();
@@ -29,6 +30,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         Long getAttendanceId();
         String getTitle();
         LocalDate getDate();
+        AttendanceStatus getStatus();
         long getTotalCount();
         long getPresentCount();
     }

@@ -48,13 +48,12 @@ public class AttendanceService {
         var attendance = attendances.save(new Attendance(request.title(), request.date()));
         participants.saveAll(targets.stream()
             .map(user -> new AttendanceParticipant(attendance, user.getId(), user.getName())).toList());
-        return summary(attendance, today, targets.size(), 0);
+        return summary(attendance, targets.size(), 0);
     }
 
     public Content<Summary> listAdmin(AttendanceStatus status) {
-        LocalDate today = today(now());
         return new Content<>(attendances.findAllWithCounts().stream()
-            .map(a -> new Summary(a.getAttendanceId(), a.getTitle(), a.getDate(), AttendanceStatus.on(a.getDate(), today),
+            .map(a -> new Summary(a.getAttendanceId(), a.getTitle(), a.getDate(), a.getStatus(),
                 a.getTotalCount(), a.getPresentCount(), a.getTotalCount() - a.getPresentCount()))
             .filter(a -> status == null || a.status() == status).toList());
     }
@@ -64,7 +63,7 @@ public class AttendanceService {
         var attendance = attendances.findById(attendanceId).orElseThrow(AttendanceService::notFound);
         var targets = participants.findByAttendanceId(attendanceId);
         long present = targets.stream().filter(p -> p.getStatus() == PresenceStatus.PRESENT).count();
-        return new Detail(summary(attendance, today(now()), targets.size(), present),
+        return new Detail(summary(attendance, targets.size(), present),
             new Content<>(targets.stream().filter(p -> status == null || p.getStatus() == status)
                 .sorted(order).map(Participant::from).toList()));
     }
@@ -73,7 +72,7 @@ public class AttendanceService {
     public Participant update(long attendanceId, long userId, AttendanceRequests.Update request) {
         var attendance = lockAttendance(attendanceId);
         Instant now = now();
-        if (attendance.statusOn(today(now)) == AttendanceStatus.SCHEDULED) {
+        if (attendance.getStatus() == AttendanceStatus.SCHEDULED) {
             throw new ConflictException("아직 시작되지 않은 출석체크입니다.");
         }
         var participant = participants.findByAttendanceIdAndUserId(attendanceId, userId)
@@ -86,7 +85,7 @@ public class AttendanceService {
     public Qr issueQr(long attendanceId) {
         var attendance = lockAttendance(attendanceId);
         Instant now = now();
-        requireOngoing(attendance, now);
+        requireOngoing(attendance);
         byte[] bytes = new byte[32];
         RANDOM.nextBytes(bytes);
         attendance.issueQr(Base64.getUrlEncoder().withoutPadding().encodeToString(bytes), now);
@@ -97,9 +96,8 @@ public class AttendanceService {
         if (status != AttendanceStatus.ONGOING && status != AttendanceStatus.ENDED) {
             throw new BadRequestException("ONGOING 또는 ENDED 상태로 조회해 주세요.");
         }
-        LocalDate today = today(now());
         return participants.findAllForUser(userId).stream()
-            .filter(p -> p.getAttendance().statusOn(today) == status)
+            .filter(p -> p.getAttendance().getStatus() == status)
             .map(p -> new MyAttendance(p.getAttendance().getId(), p.getAttendance().getTitle(),
                 p.getAttendance().getDate(), status, p.getStatus(), p.getCheckedInAt())).toList();
     }
@@ -108,7 +106,7 @@ public class AttendanceService {
     public CheckIn checkIn(long attendanceId, long userId, String qrToken) {
         var attendance = lockAttendance(attendanceId);
         Instant now = now();
-        requireOngoing(attendance, now);
+        requireOngoing(attendance);
         var participant = participants.findByAttendanceIdAndUserId(attendanceId, userId)
             .orElseThrow(() -> new ForbiddenException("해당 출석체크의 대상자가 아닙니다."));
         if (!attendance.acceptsQr(qrToken, now)) {
@@ -118,8 +116,8 @@ public class AttendanceService {
         return new CheckIn(attendanceId, userId, participant.getStatus(), participant.getCheckedInAt());
     }
 
-    private static void requireOngoing(Attendance attendance, Instant now) {
-        if (attendance.statusOn(today(now)) != AttendanceStatus.ONGOING) {
+    private static void requireOngoing(Attendance attendance) {
+        if (attendance.getStatus() != AttendanceStatus.ONGOING) {
             throw new ConflictException("진행 중인 출석체크가 아닙니다.");
         }
     }
@@ -140,8 +138,8 @@ public class AttendanceService {
         return order.thenComparing(AttendanceParticipant::getUserId);
     }
 
-    private static Summary summary(Attendance attendance, LocalDate today, long total, long present) {
-        return new Summary(attendance.getId(), attendance.getTitle(), attendance.getDate(), attendance.statusOn(today),
+    private static Summary summary(Attendance attendance, long total, long present) {
+        return new Summary(attendance.getId(), attendance.getTitle(), attendance.getDate(), attendance.getStatus(),
             total, present, total - present);
     }
 

@@ -24,6 +24,10 @@ public class Attendance {
     @Column(nullable = false)
     private LocalDate date;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private AttendanceStatus status = AttendanceStatus.SCHEDULED;
+
     @Column(length = 43)
     private String qrToken;
 
@@ -34,8 +38,11 @@ public class Attendance {
         this.date = date;
     }
 
-    public AttendanceStatus statusOn(LocalDate today) {
-        return AttendanceStatus.on(date, today);
+    public void changeStatus(AttendanceStatus status) {
+        if (this.status == status) return;
+        this.status = status;
+        qrToken = null;
+        qrExpiresAt = null;
     }
 
     public void issueQr(String token, Instant now) {

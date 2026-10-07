@@ -1,0 +1,10 @@
+ALTER TABLE attendance
+    ADD COLUMN status ENUM('SCHEDULED', 'ONGOING', 'ENDED') NOT NULL DEFAULT 'SCHEDULED';
+
+-- 기존 기록은 마이그레이션 시점의 한국 날짜 기준 상태를 한 번만 저장한다.
+UPDATE attendance
+SET status = CASE
+    WHEN date < DATE(UTC_TIMESTAMP() + INTERVAL 9 HOUR) THEN 'ENDED'
+    WHEN date = DATE(UTC_TIMESTAMP() + INTERVAL 9 HOUR) THEN 'ONGOING'
+    ELSE 'SCHEDULED'
+END;
