@@ -2,12 +2,15 @@ package wap.web2.server.attendance.service;
 
 import static wap.web2.server.attendance.dto.AttendanceResponses.*;
 
+import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Base64;
 import java.util.Comparator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +23,7 @@ import wap.web2.server.attendance.repository.AttendanceParticipantRepository;
 import wap.web2.server.attendance.repository.AttendanceRepository;
 import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.exception.ConflictException;
+import wap.web2.server.exception.ForbiddenException;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.member.repository.UserRepository;
 
@@ -28,6 +32,7 @@ import wap.web2.server.member.repository.UserRepository;
 @Transactional(readOnly = true)
 public class AttendanceService {
     private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
+    private static final SecureRandom RANDOM = new SecureRandom();
     private final AttendanceRepository attendances;
     private final AttendanceParticipantRepository participants;
     private final UserRepository users;
@@ -75,6 +80,48 @@ public class AttendanceService {
             .orElseThrow(AttendanceService::notFound);
         participant.update(request.status(), request.note(), now);
         return Participant.from(participant);
+    }
+
+    @Transactional
+    public Qr issueQr(long attendanceId) {
+        var attendance = lockAttendance(attendanceId);
+        Instant now = now();
+        requireOngoing(attendance, now);
+        byte[] bytes = new byte[32];
+        RANDOM.nextBytes(bytes);
+        attendance.issueQr(Base64.getUrlEncoder().withoutPadding().encodeToString(bytes), now);
+        return new Qr(attendance.getId(), attendance.getQrToken(), attendance.getQrExpiresAt());
+    }
+
+    public List<MyAttendance> listMine(long userId, AttendanceStatus status) {
+        if (status != AttendanceStatus.ONGOING && status != AttendanceStatus.ENDED) {
+            throw new BadRequestException("ONGOING 또는 ENDED 상태로 조회해 주세요.");
+        }
+        LocalDate today = today(now());
+        return participants.findAllForUser(userId).stream()
+            .filter(p -> p.getAttendance().statusOn(today) == status)
+            .map(p -> new MyAttendance(p.getAttendance().getId(), p.getAttendance().getTitle(),
+                p.getAttendance().getDate(), status, p.getStatus(), p.getCheckedInAt())).toList();
+    }
+
+    @Transactional
+    public CheckIn checkIn(long attendanceId, long userId, String qrToken) {
+        var attendance = lockAttendance(attendanceId);
+        Instant now = now();
+        requireOngoing(attendance, now);
+        var participant = participants.findByAttendanceIdAndUserId(attendanceId, userId)
+            .orElseThrow(() -> new ForbiddenException("해당 출석체크의 대상자가 아닙니다."));
+        if (!attendance.acceptsQr(qrToken, now)) {
+            throw new BadRequestException("QR이 유효하지 않거나 만료되었습니다. 최신 QR을 다시 스캔해주세요.");
+        }
+        participant.update(PresenceStatus.PRESENT, null, now);
+        return new CheckIn(attendanceId, userId, participant.getStatus(), participant.getCheckedInAt());
+    }
+
+    private static void requireOngoing(Attendance attendance, Instant now) {
+        if (attendance.statusOn(today(now)) != AttendanceStatus.ONGOING) {
+            throw new ConflictException("진행 중인 출석체크가 아닙니다.");
+        }
     }
 
     private Attendance lockAttendance(long attendanceId) {

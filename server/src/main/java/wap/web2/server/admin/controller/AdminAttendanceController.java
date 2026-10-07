@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,5 +43,10 @@ public class AdminAttendanceController {
     public Participant update(@PathVariable @Positive long attendanceId, @PathVariable @Positive long userId,
                               @Valid @RequestBody AttendanceRequests.Update request) {
         return service.update(attendanceId, userId, request);
+    }
+
+    @PostMapping("/{attendanceId}/qr")
+    public ResponseEntity<Qr> issueQr(@PathVariable @Positive long attendanceId) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(service.issueQr(attendanceId));
     }
 }

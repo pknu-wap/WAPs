@@ -130,4 +130,53 @@ class AttendanceServiceTest {
         when(clock.instant()).thenReturn(Instant.parse("2026-10-10T15:00:00Z"));
         assertThat(service.listAdmin(AttendanceStatus.ENDED).content()).hasSize(1);
     }
+
+    @Test
+    void checkInRequiresTheLatestUnexpiredTokenEvenForPresentUsers() {
+        var participant = new AttendanceParticipant(attendance, 10L, "가");
+        when(participants.findByAttendanceIdAndUserId(1, 10)).thenReturn(Optional.of(participant));
+        assertThatThrownBy(() -> service.checkIn(1, 10, "unissued")).isInstanceOf(BadRequestException.class);
+        String old = service.issueQr(1).qrToken();
+        String current = service.issueQr(1).qrToken();
+        assertThat(current).isNotEqualTo(old);
+        assertThatThrownBy(() -> service.checkIn(1, 10, old)).isInstanceOf(BadRequestException.class);
+        assertThatThrownBy(() -> service.checkIn(1, 10, "forged")).isInstanceOf(BadRequestException.class);
+        assertThatThrownBy(() -> service.checkIn(1, 99, current)).isInstanceOf(ForbiddenException.class);
+        assertThatThrownBy(() -> service.checkIn(99, 10, current)).isInstanceOf(ResourceNotFoundException.class);
+        var other = new Attendance("다른 행사", today);
+        when(attendances.findByIdForUpdate(2)).thenReturn(Optional.of(other));
+        String otherToken = service.issueQr(2).qrToken();
+        assertThatThrownBy(() -> service.checkIn(1, 10, otherToken)).isInstanceOf(BadRequestException.class);
+        var result = service.checkIn(1, 10, current);
+        assertThat(result.status()).isEqualTo(PresenceStatus.PRESENT);
+        when(clock.instant()).thenReturn(now.plusSeconds(29));
+        assertThat(service.checkIn(1, 10, current).checkedInAt()).isEqualTo(result.checkedInAt());
+        when(clock.instant()).thenReturn(now.plusSeconds(30));
+        assertThatThrownBy(() -> service.checkIn(1, 10, current)).isInstanceOf(BadRequestException.class);
+        assertThat(participant.getCheckedInAt()).isEqualTo(result.checkedInAt());
+    }
+
+    @Test
+    void midnightClosesCheckInEvenWhenTheQrHasNotExpired() {
+        when(clock.instant()).thenReturn(Instant.parse("2026-10-10T14:59:59Z"));
+        String token = service.issueQr(1).qrToken();
+        when(clock.instant()).thenReturn(Instant.parse("2026-10-10T15:00:00Z"));
+        assertThatThrownBy(() -> service.checkIn(1, 10, token)).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(() -> service.issueQr(1)).isInstanceOf(ConflictException.class);
+        when(clock.instant()).thenReturn(Instant.parse("2026-10-09T14:59:59Z"));
+        assertThatThrownBy(() -> service.checkIn(1, 10, token)).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(() -> service.issueQr(1)).isInstanceOf(ConflictException.class);
+        verifyNoInteractions(participants);
+    }
+
+    @Test
+    void userListsOnlyAllowOngoingOrEndedAttendances() {
+        var ongoing = new AttendanceParticipant(attendance, 10L, "가");
+        var ended = new AttendanceParticipant(new Attendance("과거", today.minusDays(1)), 10L, "가");
+        var future = new AttendanceParticipant(new Attendance("예정", today.plusDays(1)), 10L, "가");
+        when(participants.findAllForUser(10)).thenReturn(List.of(future, ongoing, ended));
+        assertThat(service.listMine(10, AttendanceStatus.ONGOING)).extracting(a -> a.title()).containsExactly("발표");
+        assertThat(service.listMine(10, AttendanceStatus.ENDED)).extracting(a -> a.title()).containsExactly("과거");
+        assertThatThrownBy(() -> service.listMine(10, AttendanceStatus.SCHEDULED)).isInstanceOf(BadRequestException.class);
+    }
 }

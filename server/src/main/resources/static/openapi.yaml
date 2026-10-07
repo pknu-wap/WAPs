@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   title: WAPs QR 출석 API
-  version: 1.0.0-draft
+  version: 1.0.0
   description: |
-    QR 출석 기능의 구현 예정 API 명세입니다. 출석 API의 서버 로직은 아직 구현되지 않았습니다.
+    QR 출석 기능의 API 명세입니다.
 
     관리자는 출석체크를 생성하고, 진행 중인 출석의 QR을 발급하여 현장에 표시합니다.
     사용자는 로그인한 상태에서 QR을 스캔하여 본인의 출석을 등록하고, 종료된 출석 기록을 조회합니다.

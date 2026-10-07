@@ -6,6 +6,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,12 @@ import wap.web2.server.attendance.entity.AttendanceStatus;
 import wap.web2.server.attendance.entity.PresenceStatus;
 import wap.web2.server.attendance.service.AttendanceService;
 import wap.web2.server.exception.GlobalExceptionHandler;
+import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.exception.ConflictException;
+import wap.web2.server.exception.ForbiddenException;
+import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.global.security.CustomUserDetailsService;
+import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.global.security.config.SecurityConfig;
 import wap.web2.server.global.security.handler.*;
 import wap.web2.server.global.security.jwt.TokenProvider;
@@ -55,7 +61,7 @@ class AttendanceControllerTest {
 
     @TestConfiguration(proxyBeanMethods = false)
     @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class, FlywayAutoConfiguration.class})
-    @Import({SecurityConfig.class, AdminAttendanceController.class, GlobalExceptionHandler.class,
+    @Import({SecurityConfig.class, AdminAttendanceController.class, AttendanceController.class, GlobalExceptionHandler.class,
         RestAuthenticationEntryPoint.class, RestAccessDeniedHandler.class, SecurityErrorResponseWriter.class})
     static class TestApplication {}
 
@@ -64,7 +70,7 @@ class AttendanceControllerTest {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
             for (var request : List.of(get("/admin/attendances"), post("/admin/attendances"),
-                get("/admin/attendances/1"), patch("/admin/attendances/1/users/10"))) {
+                get("/admin/attendances/1"), patch("/admin/attendances/1/users/10"), post("/admin/attendances/1/qr"))) {
                 mvc.perform(request).andExpect(status().isUnauthorized()).andExpect(jsonPath("$.code").value("AUTH_UNAUTHORIZED"));
                 mvc.perform(request.with(user("member").roles("MEMBER"))).andExpect(status().isForbidden())
                     .andExpect(jsonPath("$.code").value("AUTH_FORBIDDEN"));
@@ -132,5 +138,78 @@ class AttendanceControllerTest {
                 .contentType("application/json").content("{\"status\":\"PRESENT\"}")).andExpect(status().isOk());
             verify(service).update(1, 10, new AttendanceRequests.Update(PresenceStatus.PRESENT, null));
         });
+    }
+
+    @Test
+    void qrResponseIsNotCachedAndUserEndpointsOnlyUseTheAuthenticatedIdentity() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            var instant = Instant.parse("2026-10-10T10:00:00Z");
+            when(service.issueQr(1)).thenReturn(new Qr(1L, "token", instant.plusSeconds(30)));
+            mvc.perform(post("/admin/attendances/1/qr").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk()).andExpect(header().string("Cache-Control", "no-store"))
+                .andExpect(jsonPath("$.qrToken").value("token"))
+                .andExpect(jsonPath("$.expiresAt").value("2026-10-10T10:00:30Z"));
+            mvc.perform(get("/attendances")).andExpect(status().isUnauthorized());
+            mvc.perform(post("/attendances/1/check-in").contentType("application/json").content("{\"qrToken\":\"token\"}"))
+                .andExpect(status().isUnauthorized());
+            for (String role : List.of("GUEST", "USER", "MEMBER", "ADMIN")) {
+                var principal = principal(role);
+                when(service.listMine(10, AttendanceStatus.ONGOING)).thenReturn(List.of(
+                    new MyAttendance(1L, "발표", LocalDate.of(2026, 10, 10), AttendanceStatus.ONGOING, PresenceStatus.ABSENT, null)));
+                when(service.listMine(10, AttendanceStatus.ENDED)).thenReturn(List.of());
+                when(service.checkIn(1, 10, "token")).thenReturn(new CheckIn(1L, 10L, PresenceStatus.PRESENT, instant));
+                mvc.perform(get("/attendances?userId=99").with(user(principal)))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$[0].myStatus").value("ABSENT"))
+                    .andExpect(jsonPath("$[0].checkedInAt").value(org.hamcrest.Matchers.nullValue()))
+                    .andExpect(jsonPath("$[0].note").doesNotExist());
+                mvc.perform(get("/attendances?status=ENDED").with(user(principal)))
+                    .andExpect(status().isOk()).andExpect(content().json("[]"));
+                mvc.perform(post("/attendances/1/check-in?userId=99").with(user(principal))
+                    .contentType("application/json").content("{\"qrToken\":\"token\"}"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.userId").value(10))
+                    .andExpect(jsonPath("$.checkedInAt").value("2026-10-10T10:00:00Z"));
+            }
+            verify(service, times(4)).checkIn(1, 10, "token");
+            verify(service, never()).listMine(eq(99L), any());
+        });
+    }
+
+    @Test
+    void checkInValidatesInputAndReturnsCommonErrors() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            var principal = principal("USER");
+            for (String body : List.of("{}", "null", "{\"qrToken\":null}", "{\"qrToken\":123}",
+                "{\"qrToken\":\"\"}", "{\"qrToken\":\" \"}", "{\"qrToken\":\"token\",\"userId\":99}",
+                "{\"qrToken\":\"" + "a".repeat(513) + "\"}")) {
+                mvc.perform(post("/attendances/1/check-in").with(user(principal))
+                    .contentType("application/json").content(body)).andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value("COMMON_INVALID_INPUT"));
+            }
+            mvc.perform(post("/attendances/0/check-in").with(user(principal))
+                .contentType("application/json").content("{\"qrToken\":\"token\"}"))
+                .andExpect(status().isBadRequest());
+            mvc.perform(get("/attendances?status=INVALID").with(user(principal))).andExpect(status().isBadRequest());
+            verifyNoInteractions(service);
+            when(service.listMine(10, AttendanceStatus.SCHEDULED)).thenThrow(new BadRequestException("예정 조회 불가"));
+            mvc.perform(get("/attendances?status=SCHEDULED").with(user(principal))).andExpect(status().isBadRequest());
+            var errors = List.of(new BadRequestException("QR 오류"), new ForbiddenException("대상자 아님"),
+                new ResourceNotFoundException("없음"), new ConflictException("종료"));
+            for (var error : errors) {
+                when(service.checkIn(1, 10, "token")).thenThrow(error);
+                mvc.perform(post("/attendances/1/check-in").with(user(principal))
+                    .contentType("application/json").content("{\"qrToken\":\"token\"}"))
+                    .andExpect(status().is(error.getErrorCode().getHttpStatus().value()))
+                    .andExpect(jsonPath("$.code").value(error.getErrorCode().name()))
+                    .andExpect(jsonPath("$.path").value("/attendances/1/check-in"));
+                reset(service);
+            }
+        });
+    }
+
+    private UserPrincipal principal(String role) {
+        return new UserPrincipal(10L, "user@example.com", "", List.of(
+            new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + role)));
     }
 }

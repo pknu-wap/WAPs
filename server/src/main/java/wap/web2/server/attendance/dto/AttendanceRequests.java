@@ -42,6 +42,14 @@ public final class AttendanceRequests {
         }
     }
 
+    public record CheckIn(@NotBlank @Size(max = 512) String qrToken) {
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static CheckIn from(JsonNode body) {
+            validateFields(body, Set.of("qrToken"));
+            return new CheckIn(text(body, "qrToken"));
+        }
+    }
+
     // 이 API의 additionalProperties: false와 null/타입 제약만 적용한다.
     private static void validateFields(JsonNode body, Set<String> allowed) {
         if (!body.isObject()) throw new BadRequestException("요청 본문은 객체여야 합니다.");
