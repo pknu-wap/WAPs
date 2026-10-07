@@ -69,6 +69,13 @@ public class AttendanceService {
     }
 
     @Transactional
+    public void delete(long attendanceId) {
+        var attendance = lockAttendance(attendanceId);
+        participants.deleteAllInBatch(participants.findByAttendanceId(attendanceId));
+        attendances.delete(attendance);
+    }
+
+    @Transactional
     public Summary changeStatus(long attendanceId, AttendanceRequests.ChangeStatus request) {
         var attendance = lockAttendance(attendanceId);
         attendance.changeStatus(request.status());

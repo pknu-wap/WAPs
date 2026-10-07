@@ -187,6 +187,30 @@ class AttendanceControllerTest {
     }
 
     @Test
+    void deletesAttendancesOnlyForAdminsAndValidatesIds() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            mvc.perform(delete("/attendances/1")).andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("AUTH_UNAUTHORIZED"));
+            for (String role : List.of("GUEST", "USER", "MEMBER")) {
+                mvc.perform(delete("/attendances/1").with(user("user").roles(role)))
+                    .andExpect(status().isForbidden()).andExpect(jsonPath("$.code").value("AUTH_FORBIDDEN"));
+            }
+            for (String id : List.of("0", "-1", "not-a-number")) {
+                mvc.perform(delete("/attendances/" + id).with(user("admin").roles("ADMIN")))
+                    .andExpect(status().isBadRequest()).andExpect(jsonPath("$.code").value("COMMON_INVALID_INPUT"));
+            }
+            verifyNoInteractions(service);
+            mvc.perform(delete("/attendances/1").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isNoContent()).andExpect(content().string(""));
+            verify(service).delete(1);
+            doThrow(new ResourceNotFoundException("없음")).when(service).delete(99);
+            mvc.perform(delete("/attendances/99").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value("COMMON_RESOURCE_NOT_FOUND"));
+        });
+    }
+
+    @Test
     void qrResponseIsNotCachedAndUserEndpointsOnlyUseTheAuthenticatedIdentity() {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
@@ -283,12 +307,13 @@ class AttendanceControllerTest {
                 "/admin/attendances/{attendanceId}/users/{userId}", Map.of("patch", "updateAttendanceParticipant"),
                 "/admin/attendances/{attendanceId}/qr", Map.of("post", "issueAttendanceQr"),
                 "/attendances", Map.of("get", "listMyAttendances"),
+                "/attendances/{attendanceId}", Map.of("delete", "deleteAttendance"),
                 "/attendances/{attendanceId}/check-in", Map.of("post", "checkInAttendance"));
             operations.forEach((path, methods) -> methods.forEach((method, id) -> {
                 var operation = paths.path(path).path(method);
                 assertThat(operation.path("operationId").asText()).isEqualTo(id);
-                assertThat(operation.path("tags").get(0).asText())
-                    .isEqualTo(path.startsWith("/admin") ? "관리자 출석" : "사용자 출석");
+                assertThat(operation.path("tags"))
+                    .contains(text(path.startsWith("/admin") || method.equals("delete") ? "관리자 출석" : "사용자 출석"));
                 for (String code : List.of("400", "401")) {
                     assertThat(operation.at("/responses/" + code + "/content/application~1json/schema/$ref").asText())
                         .isEqualTo("#/components/schemas/ErrorResponse");
@@ -296,6 +321,12 @@ class AttendanceControllerTest {
                 if (!path.equals("/attendances")) assertThat(operation.at("/responses/403").isMissingNode()).isFalse();
                 if (path.contains("{attendanceId}")) assertThat(operation.at("/responses/404").isMissingNode()).isFalse();
             }));
+            var delete = paths.path("/attendances/{attendanceId}").path("delete");
+            assertThat(delete.path("requestBody").isMissingNode()).isTrue();
+            assertThat(delete.at("/responses/204").isMissingNode()).isFalse();
+            assertThat(delete.at("/responses/204/content").isMissingNode()).isTrue();
+            assertThat(delete.path("description").asText()).contains("관리자", "출석 기록·비고를 함께 삭제", "이미 삭제된");
+            assertThat(parameter(delete, "attendanceId").at("/schema/minimum").asInt()).isEqualTo(1);
             var create = paths.path("/admin/attendances").path("post");
             assertThat(create.path("description").asText()).contains("항상 SCHEDULED", "자동으로 시작·종료하지 않습니다");
             assertThat(create.at("/responses/201/headers/Location/schema/example").asText()).isEqualTo("/admin/attendances/1");

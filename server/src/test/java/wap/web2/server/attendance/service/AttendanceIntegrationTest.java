@@ -227,6 +227,83 @@ class AttendanceIntegrationTest {
     }
 
     @Test
+    void deletionRemovesOnlyTheSelectedAttendanceAndItsParticipantsInEveryStatus() {
+        long empty = create(today);
+        service.delete(empty);
+        assertThat(attendances.existsById(empty)).isFalse();
+
+        long first = user("가", Role.ROLE_MEMBER);
+        user("나", Role.ROLE_USER);
+        long retained = create(today);
+        service.update(retained, first, new AttendanceRequests.Update(PresenceStatus.PRESENT, "보존"));
+        for (AttendanceStatus status : AttendanceStatus.values()) {
+            long event = create(today);
+            service.update(event, first, new AttendanceRequests.Update(PresenceStatus.PRESENT, "확인"));
+            changeStatus(event, status);
+            service.delete(event);
+            assertThat(attendances.existsById(event)).isFalse();
+            assertThat(participants.findByAttendanceId(event)).isEmpty();
+            assertThatThrownBy(() -> service.delete(event)).isInstanceOf(ResourceNotFoundException.class);
+            assertThatThrownBy(() -> service.detail(event, null, "userName,asc")).isInstanceOf(ResourceNotFoundException.class);
+        }
+        assertThat(service.listAdmin(null).content()).extracting(AttendanceResponses.Summary::attendanceId)
+            .containsExactly(retained);
+        assertThat(service.listMine(first, AttendanceStatus.ONGOING)).extracting(AttendanceResponses.MyAttendance::attendanceId)
+            .containsExactly(retained);
+        assertThat(participants.count()).isEqualTo(2);
+        assertThat(users.count()).isEqualTo(2);
+        var preserved = service.detail(retained, null, "userName,asc");
+        assertThat(preserved.summary().presentCount()).isEqualTo(1);
+        assertThat(preserved.participants().content().get(0).note()).isEqualTo("보존");
+    }
+
+    @Test
+    void failedDeletionRollsBackBothAttendanceAndParticipantRecords() {
+        long userId = user("가", Role.ROLE_MEMBER);
+        long event = create(today);
+        String token = service.issueQr(event).qrToken();
+        var checkedIn = service.checkIn(event, userId, token);
+        service.update(event, userId, new AttendanceRequests.Update(null, "확인"));
+        assertThatThrownBy(() -> transaction.executeWithoutResult(ignored -> {
+            service.delete(event);
+            attendances.flush();
+            throw new IllegalStateException("rollback");
+        })).isInstanceOf(IllegalStateException.class).hasMessage("rollback");
+        var detail = service.detail(event, null, "userName,asc");
+        assertThat(detail.summary().status()).isEqualTo(AttendanceStatus.ONGOING);
+        assertThat(detail.summary().presentCount()).isEqualTo(1);
+        assertThat(detail.participants().content().get(0).note()).isEqualTo("확인");
+        assertThat(service.checkIn(event, userId, token).checkedInAt()).isEqualTo(checkedIn.checkedInAt());
+    }
+
+    @Test
+    void checkInAndQrIssueWaitForDeletionAndReturnNotFound() throws Exception {
+        long userId = user("가", Role.ROLE_MEMBER);
+        long event = create(today);
+        String token = service.issueQr(event).qrToken();
+        var deleted = new CountDownLatch(1);
+        var deletion = executor.submit(() -> transaction.executeWithoutResult(ignored -> {
+            service.delete(event);
+            deleted.countDown(); await(release);
+        }));
+        await(deleted);
+        var started = new CountDownLatch(2);
+        var checkIn = executor.submit(() -> { started.countDown(); return service.checkIn(event, userId, token); });
+        var issue = executor.submit(() -> { started.countDown(); return service.issueQr(event); });
+        await(started);
+        assertThatThrownBy(() -> checkIn.get(200, TimeUnit.MILLISECONDS)).isInstanceOf(TimeoutException.class);
+        assertThatThrownBy(() -> issue.get(200, TimeUnit.MILLISECONDS)).isInstanceOf(TimeoutException.class);
+        release.countDown();
+        deletion.get(10, TimeUnit.SECONDS);
+        assertThatThrownBy(() -> checkIn.get(10, TimeUnit.SECONDS))
+            .isInstanceOf(ExecutionException.class).hasCauseInstanceOf(ResourceNotFoundException.class);
+        assertThatThrownBy(() -> issue.get(10, TimeUnit.SECONDS))
+            .isInstanceOf(ExecutionException.class).hasCauseInstanceOf(ResourceNotFoundException.class);
+        assertThat(attendances.existsById(event)).isFalse();
+        assertThat(participants.findByAttendanceId(event)).isEmpty();
+    }
+
+    @Test
     void simultaneousCheckInsRecordOneTimestampAndPreserveNotes() throws Exception {
         long userId = user("가", Role.ROLE_USER);
         long otherId = user("나", Role.ROLE_MEMBER);

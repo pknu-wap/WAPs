@@ -113,6 +113,8 @@ public class SecurityConfig {
                     // admin
                     .requestMatchers("/admin/**")
                     .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/attendances/*")
+                    .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/project/list", "/project/*")
                     .permitAll()
                     .requestMatchers("/vote/result/**", "/techStack/**", "/calendar/**")
