@@ -6,14 +6,20 @@
   font-style: normal;
 }
 
+/* ============================= */
+/* 전체 설정 페이지 */
+/* ============================= */
+
 .settingsContainer {
   position: fixed;
+
   top: 0;
   left: 50%;
   transform: translateX(-50%);
 
   width: 100%;
   max-width: var(--container-max, 400px);
+
   height: calc(var(--vh, 1vh) * 100);
 
   background:
@@ -47,6 +53,10 @@
   display: none;
 }
 
+/* ============================= */
+/* 내부 컨텐츠 */
+/* ============================= */
+
 .settings-content {
   position: relative;
 
@@ -56,8 +66,13 @@
   padding: 0 22px 70px;
 
   box-sizing: border-box;
+
+  font-family: "Pretendard-Regular";
 }
 
+/* ============================= */
+/* 닫기 버튼 */
+/* ============================= */
 
 .settings-close {
   position: absolute;
@@ -104,6 +119,10 @@
   opacity: 0.8;
 }
 
+/* ============================= */
+/* SETTINGS PAGE 제목 */
+/* Menu.css의 menu-title 기준 */
+/* ============================= */
 
 .settings-header {
   padding-top: 105px;
@@ -118,7 +137,9 @@
 
   color: #fff;
 
-  font-size: 14px;
+  font-family: "Pretendard-Regular";
+
+  font-size: 16px;
   font-weight: 500;
 
   line-height: 1.3;
@@ -129,6 +150,8 @@
 
   color: #fff;
 
+  font-family: "Pretendard-Regular";
+
   font-size: 36px;
   font-weight: 700;
 
@@ -137,6 +160,10 @@
   letter-spacing: 0.5px;
 }
 
+/* ============================= */
+/* 섹션 제목 */
+/* Menu.css .section-title 기준 */
+/* ============================= */
 
 .settings-section {
   width: 100%;
@@ -147,17 +174,23 @@
 
   color: #fff;
 
+  font-family: "Pretendard-Regular";
+
   font-size: 14px;
   font-weight: 700;
 
   line-height: 1.3;
+
+  letter-spacing: 0.5px;
 }
 
 .settings-section h3 span {
   font-weight: 700;
 }
 
-
+/* ============================= */
+/* 회원정보 */
+/* ============================= */
 
 .information-section {
   margin-bottom: 38px;
@@ -182,8 +215,10 @@
   border-radius: 12px;
 }
 
+/* 회원 아이콘 */
 .member-icon {
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -203,6 +238,7 @@
   font-size: 14px;
 }
 
+/* 회원 이름 */
 .member-name {
   display: flex;
   align-items: flex-end;
@@ -211,10 +247,12 @@
 .member-name strong {
   color: #fff;
 
-  font-size: 20px;
-  font-weight: 700;
+  font-family: "Pretendard-Regular";
 
-  line-height: 1;
+  font-size: 15px;
+  font-weight: 500;
+
+  line-height: 1.3;
 }
 
 .member-name span {
@@ -223,12 +261,17 @@
 
   color: rgba(255, 255, 255, 0.6);
 
+  font-family: "Pretendard-Regular";
+
   font-size: 10px;
   font-weight: 400;
 
-  line-height: 1;
+  line-height: 1.3;
 }
 
+/* ============================= */
+/* 회원 설정 */
+/* ============================= */
 
 .setting-section {
   margin-bottom: 23px;
@@ -249,6 +292,9 @@
   border-radius: 12px;
 }
 
+/* ============================= */
+/* 설정 항목 */
+/* ============================= */
 
 .setting-item {
   margin: 0;
@@ -261,10 +307,14 @@
 
   color: #fff;
 
+  font-family: "Pretendard-Regular";
+
   font-size: 14px;
   font-weight: 700;
 
   line-height: 1.3;
+
+  letter-spacing: 0.5px;
 }
 
 .setting-item label span {
@@ -286,8 +336,11 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Menu.css .menu-item과 동일 */
 .setting-value {
   color: #fff;
+
+  font-family: "Pretendard-Regular";
 
   font-size: 15px;
   font-weight: 500;
@@ -295,6 +348,9 @@
   line-height: 1.3;
 }
 
+/* ============================= */
+/* 수정 버튼 */
+/* ============================= */
 
 .edit-button {
   position: absolute;
@@ -303,6 +359,7 @@
   bottom: 6px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -325,14 +382,18 @@
   opacity: 0.8;
 }
 
-
+/* ============================= */
+/* 설명 문구 */
+/* ============================= */
 
 .name-description {
   margin: 8px 0 0;
 
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.6);
 
-  font-size: 9px;
+  font-family: "Pretendard-Regular";
+
+  font-size: 10px;
   font-weight: 400;
 
   line-height: 1.4;
@@ -340,6 +401,9 @@
   white-space: nowrap;
 }
 
+/* ============================= */
+/* Member Type */
+/* ============================= */
 
 .member-type {
   margin-top: 32px;
@@ -356,16 +420,21 @@
 
   color: #fff;
 
+  font-family: "Pretendard-Regular";
+
   font-size: 15px;
   font-weight: 500;
 
   line-height: 1.3;
 }
 
-
+/* ============================= */
+/* 메뉴로 돌아가기 버튼 */
+/* ============================= */
 
 .back-menu-button {
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -411,7 +480,9 @@
   box-shadow: none;
 }
 
-/*모달*/
+/* ============================= */
+/* 이름 변경 모달 */
+/* ============================= */
 
 .name-modal-overlay {
   position: fixed;
@@ -425,6 +496,7 @@
   height: calc(var(--vh, 1vh) * 100);
 
   display: flex;
+
   justify-content: center;
   align-items: center;
 
@@ -439,7 +511,6 @@
 
   z-index: 1000;
 }
-
 
 .name-modal {
   position: relative;
@@ -456,12 +527,14 @@
 
   color: #fff;
 
-  box-shadow:
-    0 6px 22px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55);
 
   font-family: "Pretendard-Regular";
 }
 
+/* ============================= */
+/* 모달 닫기 */
+/* ============================= */
 
 .name-modal-close {
   position: absolute;
@@ -502,46 +575,58 @@
   transform: rotate(-45deg);
 }
 
-
+/* ============================= */
+/* 모달 제목 */
+/* ============================= */
 
 .name-modal-title {
   margin: 0 0 3px;
 
   color: #fff;
 
-  font-size: 18px;
-  font-weight: 700;
+  font-family: "Pretendard-Regular";
+
+  font-size: 15px;
+  font-weight: 500;
 
   line-height: 1.3;
 }
 
-
-
+/* 모달 설명 */
 .name-modal-description {
   margin: 0 0 19px;
 
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.6);
 
-  font-size: 12px;
+  font-family: "Pretendard-Regular";
+
+  font-size: 10px;
   font-weight: 400;
 
   line-height: 1.4;
 }
 
-
-
+/* 입력 이름 */
 .name-modal-label {
   display: block;
 
   margin-bottom: 7px;
 
-  color: #b4ccff;
+  color: #fff;
 
-  font-size: 13px;
+  font-family: "Pretendard-Regular";
+
+  font-size: 14px;
   font-weight: 700;
+
+  line-height: 1.3;
+
+  letter-spacing: 0.5px;
 }
 
-
+/* ============================= */
+/* 입력창 */
+/* ============================= */
 
 .name-modal-input {
   width: 100%;
@@ -564,21 +649,28 @@
 
   font-family: "Pretendard-Regular";
 
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .name-modal-input::placeholder {
   color: rgba(255, 255, 255, 0.35);
+
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .name-modal-input:focus {
   border-color: #b5d2ff;
 }
 
-
+/* ============================= */
+/* 모달 저장 버튼 */
+/* ============================= */
 
 .name-modal-button {
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -588,7 +680,7 @@
   padding: 0;
 
   border: none;
-  border-radius: 16px;
+  border-radius: 12px;
 
   background: #b3d1ff;
 
@@ -597,7 +689,7 @@
   font-family: "Pretendard-Regular";
 
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
 
   cursor: pointer;
 }
@@ -611,7 +703,9 @@
   cursor: default;
 }
 
-
+/* ============================= */
+/* 확인 모달 */
+/* ============================= */
 
 .name-confirm-content {
   min-height: 210px;
@@ -625,20 +719,23 @@
 
   color: #fff;
 
-  font-size: 19px;
-  font-weight: 700;
+  font-family: "Pretendard-Regular";
 
-  line-height: 1.45;
+  font-size: 15px;
+  font-weight: 500;
+
+  line-height: 1.4;
 }
 
 .confirm-name-button {
   margin-top: auto;
 }
 
-
+/* ============================= */
+/* 작은 화면 */
+/* ============================= */
 
 @media screen and (max-width: 360px) {
-
   .settings-content {
     padding-left: 18px;
     padding-right: 18px;
@@ -663,7 +760,7 @@
   }
 
   .name-description {
-    font-size: 8px;
+    font-size: 9px;
   }
 
   .name-modal-overlay {
@@ -674,9 +771,5 @@
   .name-modal {
     padding-left: 18px;
     padding-right: 18px;
-  }
-
-  .name-confirm-title {
-    font-size: 18px;
   }
 }
