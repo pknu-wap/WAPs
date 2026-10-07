@@ -1,8 +1,8 @@
 package wap.web2.server.config;
 
-import jakarta.annotation.PostConstruct;
 import java.time.Clock;
 import java.util.TimeZone;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,8 +14,9 @@ public class TimeZoneConfig {
         return Clock.systemUTC();
     }
 
-    @PostConstruct
-    public void setTimeZone() {
-        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+    @Bean
+    public static BeanFactoryPostProcessor initializeTimeZone() {
+        // JDBC 연결이 기본 시간대를 캐시하기 전에 설정한다.
+        return beanFactory -> TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
     }
 }
