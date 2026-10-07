@@ -35,9 +35,7 @@ public class Attendance {
     }
 
     public AttendanceStatus statusOn(LocalDate today) {
-        if (date.isAfter(today)) return AttendanceStatus.SCHEDULED;
-        if (date.isBefore(today)) return AttendanceStatus.ENDED;
-        return AttendanceStatus.ONGOING;
+        return AttendanceStatus.on(date, today);
     }
 
     public void issueQr(String token, Instant now) {
