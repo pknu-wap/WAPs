@@ -6,6 +6,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -38,8 +39,7 @@ class SwaggerAccessTest {
         "/swagger-ui/swagger-ui-bundle.js",
         "/v3/api-docs",
         "/v3/api-docs.yaml",
-        "/v3/api-docs/swagger-config",
-        "/openapi.yaml"
+        "/v3/api-docs/swagger-config"
     };
 
     private final WebApplicationContextRunner context = new WebApplicationContextRunner()
@@ -78,6 +78,11 @@ class SwaggerAccessTest {
                 mvc.perform(get(path)).andExpect(status().isOk());
             }
             mvc.perform(get("/swagger-ui.html")).andExpect(status().is3xxRedirection());
+            mvc.perform(get("/v3/api-docs/swagger-config"))
+                .andExpect(jsonPath("$.url").value("/v3/api-docs"))
+                .andExpect(jsonPath("$.urls").doesNotExist());
+            mvc.perform(get("/openapi.yaml").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isNotFound());
         });
     }
 
