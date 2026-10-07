@@ -70,7 +70,7 @@ public class AttendanceService {
     @Transactional
     public void delete(long attendanceId) {
         var attendance = lockAttendance(attendanceId);
-        participants.deleteAllInBatch(participants.findByAttendanceId(attendanceId));
+        participants.deleteByAttendanceId(attendanceId);
         attendances.delete(attendance);
     }
 
@@ -78,9 +78,8 @@ public class AttendanceService {
     public Summary changeStatus(long attendanceId, AttendanceRequests.ChangeStatus request) {
         var attendance = lockAttendance(attendanceId);
         attendance.changeStatus(request.status());
-        var targets = participants.findByAttendanceId(attendanceId);
-        long present = targets.stream().filter(p -> p.getStatus() == PresenceStatus.PRESENT).count();
-        return summary(attendance, targets.size(), present);
+        var counts = participants.countForAttendance(attendanceId);
+        return summary(attendance, counts.getTotalCount(), counts.getPresentCount());
     }
 
     @Transactional

@@ -273,6 +273,40 @@ class AttendanceIntegrationTest {
     }
 
     @Test
+    void statusChangesAndDeletionDoNotLoadParticipantEntities() {
+        long empty = create(today);
+        var emptySummary = service.changeStatus(empty, new AttendanceRequests.ChangeStatus(AttendanceStatus.ENDED));
+        assertThat(emptySummary.totalCount()).isZero();
+        assertThat(emptySummary.presentCount()).isZero();
+        assertThat(emptySummary.absentCount()).isZero();
+
+        long userId = user("가", Role.ROLE_MEMBER);
+        user("나", Role.ROLE_USER);
+        long event = create(today);
+        long retained = create(today);
+        service.checkIn(event, userId, service.issueQr(event).qrToken());
+        var statistics = factory.getObject().unwrap(org.hibernate.SessionFactory.class).getStatistics();
+        statistics.setStatisticsEnabled(true);
+        statistics.clear();
+
+        var summary = service.changeStatus(event, new AttendanceRequests.ChangeStatus(AttendanceStatus.ENDED));
+        assertThat(summary.status()).isEqualTo(AttendanceStatus.ENDED);
+        assertThat(summary.totalCount()).isEqualTo(2);
+        assertThat(summary.presentCount()).isEqualTo(1);
+        assertThat(summary.absentCount()).isEqualTo(1);
+        assertThat(statistics.getEntityLoadCount()).isEqualTo(1); // 잠근 행사만 로딩한다.
+        assertThat(statistics.getEntityStatistics(AttendanceParticipant.class.getName()).getLoadCount()).isZero();
+
+        statistics.clear();
+        service.delete(event);
+        assertThat(statistics.getEntityLoadCount()).isEqualTo(1);
+        assertThat(statistics.getEntityStatistics(AttendanceParticipant.class.getName()).getLoadCount()).isZero();
+        assertThat(attendances.existsById(event)).isFalse();
+        assertThat(participants.findByAttendanceId(event)).isEmpty();
+        assertThat(participants.findByAttendanceId(retained)).hasSize(2);
+    }
+
+    @Test
     void deletionRemovesOnlyTheSelectedAttendanceAndItsParticipantsInEveryStatus() {
         long empty = create(today);
         service.delete(empty);
