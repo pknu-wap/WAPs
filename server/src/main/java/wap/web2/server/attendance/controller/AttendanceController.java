@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import wap.web2.server.attendance.dto.AttendanceRequests;
@@ -26,7 +25,7 @@ import wap.web2.server.global.security.UserPrincipal;
 @RequestMapping(value = "/attendances", produces = "application/json")
 @Validated
 @RequiredArgsConstructor
-@Tag(name = "사용자 출석", description = "출석 조회·QR 등록은 로그인 필요, 회원 등급 제한 없음. 출석체크 삭제는 ADMIN 전용입니다.")
+@Tag(name = "사용자 출석", description = "예정·진행 중인 출석 및 나의 출석 기록 조회, QR 출석 등록 (로그인 필요, 회원 등급 제한 없음)")
 @ApiResponses({
     @ApiResponse(responseCode = "400", description = "잘못된 입력 (COMMON_INVALID_INPUT)",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
@@ -51,27 +50,6 @@ public class AttendanceController {
         @RequestParam(defaultValue = "ONGOING") AttendanceStatus status
     ) {
         return service.listMine(user.getId(), status);
-    }
-
-    @DeleteMapping("/{attendanceId}")
-    @Operation(operationId = "deleteAttendance", summary = "출석체크 삭제 (ADMIN)", tags = "관리자 출석", description = """
-        관리자가 출석체크와 연결된 전체 대상자의 출석 기록·비고를 함께 삭제합니다.
-        SCHEDULED, ONGOING, ENDED 상태 모두 삭제할 수 있습니다. 삭제 후 기존 QR은 사용할 수 없습니다.
-        요청 본문은 필요하지 않으며, 성공 시 본문 없이 204를 반환합니다.
-        존재하지 않거나 이미 삭제된 출석체크는 404를 반환합니다.
-        """)
-    @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "출석체크 및 대상자 출석 기록 삭제 완료", content = @Content),
-        @ApiResponse(responseCode = "403", description = "관리자 권한이 없음 (AUTH_FORBIDDEN)",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "404", description = "출석체크를 찾을 수 없음 (COMMON_RESOURCE_NOT_FOUND)",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    public ResponseEntity<Void> delete(
-        @Parameter(description = "출석체크 ID", example = "1", schema = @Schema(minimum = "1")) @PathVariable @Positive long attendanceId
-    ) {
-        service.delete(attendanceId);
-        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{attendanceId}/check-in")

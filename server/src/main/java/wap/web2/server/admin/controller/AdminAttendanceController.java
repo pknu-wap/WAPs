@@ -28,7 +28,7 @@ import wap.web2.server.exception.ErrorResponse;
 @RequestMapping(value = "/admin/attendances", produces = "application/json")
 @Validated
 @RequiredArgsConstructor
-@Tag(name = "관리자 출석", description = "출석체크 생성·상태 변경, 현황·결과 조회, 수동 수정 및 QR 발급 (ADMIN)")
+@Tag(name = "관리자 출석", description = "출석체크 생성·상태 변경·삭제, 현황·결과 조회, 수동 수정 및 QR 발급 (ADMIN)")
 @ApiResponses({
     @ApiResponse(responseCode = "400", description = "입력값, 날짜 또는 정렬 조건이 잘못됨 (COMMON_INVALID_INPUT)",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
@@ -92,6 +92,25 @@ public class AdminAttendanceController {
         @RequestParam(defaultValue = "userName,asc") String sort
     ) {
         return service.detail(attendanceId, status, sort);
+    }
+
+    @DeleteMapping("/{attendanceId}")
+    @Operation(operationId = "deleteAttendance", summary = "출석체크 삭제", description = """
+        관리자가 출석체크와 연결된 전체 대상자의 출석 기록·비고를 함께 삭제합니다.
+        SCHEDULED, ONGOING, ENDED 상태 모두 삭제할 수 있습니다. 삭제 후 기존 QR은 사용할 수 없습니다.
+        요청 본문은 필요하지 않으며, 성공 시 본문 없이 204를 반환합니다.
+        존재하지 않거나 이미 삭제된 출석체크는 404를 반환합니다.
+        """)
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "출석체크 및 대상자 출석 기록 삭제 완료", content = @Content),
+        @ApiResponse(responseCode = "404", description = "출석체크를 찾을 수 없음 (COMMON_RESOURCE_NOT_FOUND)",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<Void> delete(
+        @Parameter(description = "출석체크 ID", example = "1", schema = @Schema(minimum = "1")) @PathVariable @Positive long attendanceId
+    ) {
+        service.delete(attendanceId);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{attendanceId}")

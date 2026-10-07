@@ -190,22 +190,22 @@ class AttendanceControllerTest {
     void deletesAttendancesOnlyForAdminsAndValidatesIds() {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
-            mvc.perform(delete("/attendances/1")).andExpect(status().isUnauthorized())
+            mvc.perform(delete("/admin/attendances/1")).andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("AUTH_UNAUTHORIZED"));
             for (String role : List.of("GUEST", "USER", "MEMBER")) {
-                mvc.perform(delete("/attendances/1").with(user("user").roles(role)))
+                mvc.perform(delete("/admin/attendances/1").with(user("user").roles(role)))
                     .andExpect(status().isForbidden()).andExpect(jsonPath("$.code").value("AUTH_FORBIDDEN"));
             }
             for (String id : List.of("0", "-1", "not-a-number")) {
-                mvc.perform(delete("/attendances/" + id).with(user("admin").roles("ADMIN")))
+                mvc.perform(delete("/admin/attendances/" + id).with(user("admin").roles("ADMIN")))
                     .andExpect(status().isBadRequest()).andExpect(jsonPath("$.code").value("COMMON_INVALID_INPUT"));
             }
             verifyNoInteractions(service);
-            mvc.perform(delete("/attendances/1").with(user("admin").roles("ADMIN")))
+            mvc.perform(delete("/admin/attendances/1").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isNoContent()).andExpect(content().string(""));
             verify(service).delete(1);
             doThrow(new ResourceNotFoundException("없음")).when(service).delete(99);
-            mvc.perform(delete("/attendances/99").with(user("admin").roles("ADMIN")))
+            mvc.perform(delete("/admin/attendances/99").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value("COMMON_RESOURCE_NOT_FOUND"));
         });
     }
@@ -303,17 +303,16 @@ class AttendanceControllerTest {
             assertThat(body).doesNotContain("UserPrincipal");
             var operations = Map.of(
                 "/admin/attendances", Map.of("get", "listAdminAttendances", "post", "createAttendance"),
-                "/admin/attendances/{attendanceId}", Map.of("get", "getAttendanceDetail", "patch", "updateAttendanceStatus"),
+                "/admin/attendances/{attendanceId}", Map.of("get", "getAttendanceDetail", "patch", "updateAttendanceStatus", "delete", "deleteAttendance"),
                 "/admin/attendances/{attendanceId}/users/{userId}", Map.of("patch", "updateAttendanceParticipant"),
                 "/admin/attendances/{attendanceId}/qr", Map.of("post", "issueAttendanceQr"),
                 "/attendances", Map.of("get", "listMyAttendances"),
-                "/attendances/{attendanceId}", Map.of("delete", "deleteAttendance"),
                 "/attendances/{attendanceId}/check-in", Map.of("post", "checkInAttendance"));
             operations.forEach((path, methods) -> methods.forEach((method, id) -> {
                 var operation = paths.path(path).path(method);
                 assertThat(operation.path("operationId").asText()).isEqualTo(id);
                 assertThat(operation.path("tags"))
-                    .contains(text(path.startsWith("/admin") || method.equals("delete") ? "관리자 출석" : "사용자 출석"));
+                    .contains(text(path.startsWith("/admin") ? "관리자 출석" : "사용자 출석"));
                 for (String code : List.of("400", "401")) {
                     assertThat(operation.at("/responses/" + code + "/content/application~1json/schema/$ref").asText())
                         .isEqualTo("#/components/schemas/ErrorResponse");
@@ -321,7 +320,8 @@ class AttendanceControllerTest {
                 if (!path.equals("/attendances")) assertThat(operation.at("/responses/403").isMissingNode()).isFalse();
                 if (path.contains("{attendanceId}")) assertThat(operation.at("/responses/404").isMissingNode()).isFalse();
             }));
-            var delete = paths.path("/attendances/{attendanceId}").path("delete");
+            assertThat(paths.path("/attendances/{attendanceId}").isMissingNode()).isTrue();
+            var delete = paths.path("/admin/attendances/{attendanceId}").path("delete");
             assertThat(delete.path("requestBody").isMissingNode()).isTrue();
             assertThat(delete.at("/responses/204").isMissingNode()).isFalse();
             assertThat(delete.at("/responses/204/content").isMissingNode()).isTrue();
