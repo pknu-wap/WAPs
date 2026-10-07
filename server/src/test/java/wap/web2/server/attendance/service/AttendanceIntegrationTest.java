@@ -3,6 +3,7 @@ package wap.web2.server.attendance.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.aop.framework.ProxyFactory;
@@ -32,7 +34,7 @@ import wap.web2.server.exception.*;
 import wap.web2.server.member.entity.*;
 import wap.web2.server.member.repository.UserRepository;
 
-/** Recreates tables: ATTENDANCE_TEST_URL must point to a disposable MySQL database. */
+/** Recreates tables: ATTENDANCE_TEST_URL must point to a disposable MySQL database whose name ends in _test. */
 @EnabledIfEnvironmentVariable(named = "ATTENDANCE_TEST_URL", matches = ".+")
 class AttendanceIntegrationTest {
     private LocalContainerEntityManagerFactoryBean factory;
@@ -51,6 +53,8 @@ class AttendanceIntegrationTest {
     @BeforeEach
     void setup() {
         var dataSource = new DriverManagerDataSource(System.getenv("ATTENDANCE_TEST_URL"), "root", "");
+        // Hibernate의 create-drop이 실행되기 전에 실제 연결 대상 DB를 검증한다.
+        requireTestDatabase(dataSource);
         factory = new LocalContainerEntityManagerFactoryBean();
         factory.setDataSource(dataSource);
         factory.setPackagesToScan("wap.web2.server");
@@ -77,6 +81,19 @@ class AttendanceIntegrationTest {
         proxy.addAdvice(new TransactionInterceptor(manager, new AnnotationTransactionAttributeSource()));
         service = (AttendanceService) proxy.getProxy();
         when(clock.instant()).thenReturn(now);
+    }
+
+    static void requireTestDatabase(DataSource dataSource) {
+        String database;
+        try (var connection = dataSource.getConnection()) {
+            database = connection.getCatalog();
+        } catch (SQLException exception) {
+            // 접속 URL이나 인증 정보가 포함될 수 있는 JDBC 예외를 노출하지 않는다.
+            throw new IllegalStateException("테스트 DB 이름을 확인할 수 없습니다. ATTENDANCE_TEST_URL 설정을 확인해 주세요.");
+        }
+        if (database == null || !database.endsWith("_test")) {
+            throw new IllegalStateException("ATTENDANCE_TEST_URL은 이름이 _test로 끝나는 삭제 가능한 테스트 전용 DB여야 합니다.");
+        }
     }
 
     @AfterEach
