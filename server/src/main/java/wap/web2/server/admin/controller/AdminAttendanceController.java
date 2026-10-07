@@ -28,7 +28,7 @@ import wap.web2.server.exception.ErrorResponse;
 @RequestMapping(value = "/admin/attendances", produces = "application/json")
 @Validated
 @RequiredArgsConstructor
-@Tag(name = "관리자 출석", description = "출석체크 생성, 현황·결과 조회, 수동 수정 및 QR 발급 (ADMIN)")
+@Tag(name = "관리자 출석", description = "출석체크 생성·상태 변경, 현황·결과 조회, 수동 수정 및 QR 발급 (ADMIN)")
 @ApiResponses({
     @ApiResponse(responseCode = "400", description = "입력값, 날짜 또는 정렬 조건이 잘못됨 (COMMON_INVALID_INPUT)",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
@@ -45,7 +45,7 @@ public class AdminAttendanceController {
         생성 시 가입된 전체 사용자를 등급과 무관하게 출석 대상자로 고정하고 ABSENT로 등록합니다.
         title은 앞뒤 공백 제거 후 1~100자, date는 한국 시간(Asia/Seoul) 기준 오늘 또는 미래 날짜여야 합니다.
         생성 시 항상 SCHEDULED 상태이며, 날짜가 바뀌어도 자동으로 시작·종료하지 않습니다.
-        진행 상태는 관리자가 직접 변경합니다.
+        진행 상태는 관리자가 PATCH /admin/attendances/{attendanceId}로 직접 변경합니다.
         """)
     @ApiResponse(responseCode = "201", description = "출석체크 생성 완료",
         headers = @Header(name = "Location", description = "생성한 출석체크 상세 조회 경로",
@@ -92,6 +92,27 @@ public class AdminAttendanceController {
         @RequestParam(defaultValue = "userName,asc") String sort
     ) {
         return service.detail(attendanceId, status, sort);
+    }
+
+    @PatchMapping("/{attendanceId}")
+    @Operation(operationId = "updateAttendanceStatus", summary = "출석체크 진행 상태 변경", description = """
+        관리자가 출석체크 상태를 SCHEDULED, ONGOING, ENDED 중 하나로 변경합니다.
+        날짜와 무관하게 변경할 수 있으며, 종료 후 재시작하거나 예정 상태로 되돌릴 수 있습니다.
+        ONGOING일 때만 QR 발급과 사용자 출석이 가능합니다. 날짜가 바뀌어도 지정한 상태는 유지됩니다.
+        상태가 실제로 바뀌면 기존 QR은 즉시 무효화되므로 재시작 후 새 QR을 발급해야 합니다.
+        같은 상태를 다시 전송하면 기존 QR을 유지합니다. 대상자 출석 기록과 비고는 유지됩니다.
+        """)
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "변경된 출석체크 요약 및 출석·미출석 인원",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = Summary.class))),
+        @ApiResponse(responseCode = "404", description = "출석체크를 찾을 수 없음 (COMMON_RESOURCE_NOT_FOUND)",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public Summary changeStatus(
+        @Parameter(description = "출석체크 ID", example = "1", schema = @Schema(minimum = "1")) @PathVariable @Positive long attendanceId,
+        @Valid @RequestBody AttendanceRequests.ChangeStatus request
+    ) {
+        return service.changeStatus(attendanceId, request);
     }
 
     @PatchMapping("/{attendanceId}/users/{userId}")

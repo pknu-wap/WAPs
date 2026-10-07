@@ -155,6 +155,74 @@ class AttendanceIntegrationTest {
     }
 
     @Test
+    void manualStatusChangesControlCheckInAndPreserveRecordsAcrossReopening() {
+        long userId = user("가", Role.ROLE_MEMBER);
+        user("나", Role.ROLE_USER);
+        var created = service.create(new AttendanceRequests.Create("미래 행사", today.plusDays(1)));
+        long event = created.attendanceId();
+        assertThat(created.status()).isEqualTo(AttendanceStatus.SCHEDULED);
+        assertThatThrownBy(() -> service.issueQr(event)).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(() -> service.checkIn(event, userId, "unissued")).isInstanceOf(ConflictException.class);
+
+        changeStatus(event, AttendanceStatus.ONGOING);
+        assertThat(service.listMine(userId, AttendanceStatus.ONGOING)).extracting(AttendanceResponses.MyAttendance::attendanceId)
+            .containsExactly(event);
+        String token = service.issueQr(event).qrToken();
+        changeStatus(event, AttendanceStatus.ONGOING);
+        var checkedIn = service.checkIn(event, userId, token);
+        service.update(event, userId, new AttendanceRequests.Update(null, "확인"));
+        var ended = service.changeStatus(event, new AttendanceRequests.ChangeStatus(AttendanceStatus.ENDED));
+        assertThat(ended.status()).isEqualTo(AttendanceStatus.ENDED);
+        assertThat(ended.totalCount()).isEqualTo(2);
+        assertThat(ended.presentCount()).isEqualTo(1);
+        assertThat(ended.absentCount()).isEqualTo(1);
+        assertThat(service.listMine(userId, AttendanceStatus.ONGOING)).isEmpty();
+        assertThat(service.listMine(userId, AttendanceStatus.ENDED)).extracting(AttendanceResponses.MyAttendance::attendanceId)
+            .containsExactly(event);
+        assertThatThrownBy(() -> service.issueQr(event)).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(() -> service.checkIn(event, userId, token)).isInstanceOf(ConflictException.class);
+
+        changeStatus(event, AttendanceStatus.ONGOING);
+        assertThatThrownBy(() -> service.checkIn(event, userId, token)).isInstanceOf(BadRequestException.class);
+        String newToken = service.issueQr(event).qrToken();
+        assertThat(service.checkIn(event, userId, newToken).checkedInAt()).isEqualTo(checkedIn.checkedInAt());
+        changeStatus(event, AttendanceStatus.SCHEDULED);
+        var detail = service.detail(event, null, "userName,asc");
+        assertThat(detail.summary().status()).isEqualTo(AttendanceStatus.SCHEDULED);
+        assertThat(detail.summary().presentCount()).isEqualTo(1);
+        assertThat(detail.participants().content().get(0).checkedInAt()).isEqualTo(checkedIn.checkedInAt());
+        assertThat(detail.participants().content().get(0).note()).isEqualTo("확인");
+        assertThat(service.listMine(userId, AttendanceStatus.ONGOING)).isEmpty();
+        assertThat(service.listMine(userId, AttendanceStatus.ENDED)).isEmpty();
+    }
+
+    @Test
+    void checkInAndQrIssueWaitForStatusChangeAndRejectAnEndedAttendance() throws Exception {
+        long userId = user("가", Role.ROLE_MEMBER);
+        long event = create(today);
+        String token = service.issueQr(event).qrToken();
+        var changed = new CountDownLatch(1);
+        var ending = executor.submit(() -> transaction.execute(ignored -> {
+            var result = service.changeStatus(event, new AttendanceRequests.ChangeStatus(AttendanceStatus.ENDED));
+            changed.countDown(); await(release); return result;
+        }));
+        await(changed);
+        var started = new CountDownLatch(2);
+        var checkIn = executor.submit(() -> { started.countDown(); return service.checkIn(event, userId, token); });
+        var issue = executor.submit(() -> { started.countDown(); return service.issueQr(event); });
+        await(started);
+        assertThatThrownBy(() -> checkIn.get(200, TimeUnit.MILLISECONDS)).isInstanceOf(TimeoutException.class);
+        assertThatThrownBy(() -> issue.get(200, TimeUnit.MILLISECONDS)).isInstanceOf(TimeoutException.class);
+        release.countDown();
+        assertThat(ending.get(10, TimeUnit.SECONDS).status()).isEqualTo(AttendanceStatus.ENDED);
+        assertThatThrownBy(() -> checkIn.get(10, TimeUnit.SECONDS))
+            .isInstanceOf(ExecutionException.class).hasCauseInstanceOf(ConflictException.class);
+        assertThatThrownBy(() -> issue.get(10, TimeUnit.SECONDS))
+            .isInstanceOf(ExecutionException.class).hasCauseInstanceOf(ConflictException.class);
+        assertThat(service.detail(event, null, "userName,asc").summary().presentCount()).isZero();
+    }
+
+    @Test
     void simultaneousCheckInsRecordOneTimestampAndPreserveNotes() throws Exception {
         long userId = user("가", Role.ROLE_USER);
         long otherId = user("나", Role.ROLE_MEMBER);
@@ -263,7 +331,7 @@ class AttendanceIntegrationTest {
     }
 
     private void changeStatus(long attendanceId, AttendanceStatus status) {
-        transaction.executeWithoutResult(ignored -> attendances.findByIdForUpdate(attendanceId).orElseThrow().changeStatus(status));
+        service.changeStatus(attendanceId, new AttendanceRequests.ChangeStatus(status));
     }
 
     private long user(String name, Role role) {

@@ -26,7 +26,7 @@ public class SwaggerConfig {
             if (schemas == null) return;
             // swagger-core 2.2.15 omits additionalProperties=false on these DTO schemas.
             for (Class<?> request : List.of(AttendanceRequests.Create.class,
-                AttendanceRequests.Update.class, AttendanceRequests.CheckIn.class)) {
+                AttendanceRequests.ChangeStatus.class, AttendanceRequests.Update.class, AttendanceRequests.CheckIn.class)) {
                 var declaration = request.getAnnotation(io.swagger.v3.oas.annotations.media.Schema.class);
                 var schema = schemas.get(declaration.name());
                 if (schema != null) schema.setAdditionalProperties(false);

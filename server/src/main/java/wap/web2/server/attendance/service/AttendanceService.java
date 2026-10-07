@@ -69,6 +69,15 @@ public class AttendanceService {
     }
 
     @Transactional
+    public Summary changeStatus(long attendanceId, AttendanceRequests.ChangeStatus request) {
+        var attendance = lockAttendance(attendanceId);
+        attendance.changeStatus(request.status());
+        var targets = participants.findByAttendanceId(attendanceId);
+        long present = targets.stream().filter(p -> p.getStatus() == PresenceStatus.PRESENT).count();
+        return summary(attendance, targets.size(), present);
+    }
+
+    @Transactional
     public Participant update(long attendanceId, long userId, AttendanceRequests.Update request) {
         var attendance = lockAttendance(attendanceId);
         Instant now = now();

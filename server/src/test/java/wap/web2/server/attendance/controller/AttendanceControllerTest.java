@@ -76,7 +76,8 @@ class AttendanceControllerTest {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
             for (var request : List.of(get("/admin/attendances"), post("/admin/attendances"),
-                get("/admin/attendances/1"), patch("/admin/attendances/1/users/10"), post("/admin/attendances/1/qr"))) {
+                get("/admin/attendances/1"), patch("/admin/attendances/1"),
+                patch("/admin/attendances/1/users/10"), post("/admin/attendances/1/qr"))) {
                 mvc.perform(request).andExpect(status().isUnauthorized()).andExpect(jsonPath("$.code").value("AUTH_UNAUTHORIZED"));
                 mvc.perform(request.with(user("member").roles("MEMBER"))).andExpect(status().isForbidden())
                     .andExpect(jsonPath("$.code").value("AUTH_FORBIDDEN"));
@@ -111,6 +112,18 @@ class AttendanceControllerTest {
             }
             mvc.perform(patch("/admin/attendances/1/users/0").with(user("admin").roles("ADMIN"))
                 .contentType("application/json").content("{\"note\":\"\"}")).andExpect(status().isBadRequest());
+            for (String body : List.of("{}", "null", "[]", "{\"status\":null}", "{\"status\":0}",
+                "{\"status\":\"\"}", "{\"status\":\"ongoing\"}", "{\"status\":\"PRESENT\"}",
+                "{\"status\":\"ONGOING\",\"date\":\"2026-10-10\"}")) {
+                mvc.perform(patch("/admin/attendances/1").with(user("admin").roles("ADMIN"))
+                    .contentType("application/json").content(body)).andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value("COMMON_INVALID_INPUT"));
+            }
+            for (String id : List.of("0", "-1", "not-a-number")) {
+                mvc.perform(patch("/admin/attendances/" + id).with(user("admin").roles("ADMIN"))
+                    .contentType("application/json").content("{\"status\":\"ONGOING\"}"))
+                    .andExpect(status().isBadRequest());
+            }
             verifyNoInteractions(service);
         });
     }
@@ -144,6 +157,32 @@ class AttendanceControllerTest {
             mvc.perform(patch("/admin/attendances/1/users/10").with(user("admin").roles("ADMIN"))
                 .contentType("application/json").content("{\"status\":\"PRESENT\"}")).andExpect(status().isOk());
             verify(service).update(1, 10, new AttendanceRequests.Update(PresenceStatus.PRESENT, null));
+        });
+    }
+
+    @Test
+    void changesAttendanceStatusAndReturnsSummaryOrNotFound() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            for (AttendanceStatus state : AttendanceStatus.values()) {
+                var request = new AttendanceRequests.ChangeStatus(state);
+                when(service.changeStatus(1, request)).thenReturn(
+                    new Summary(1L, "발표", LocalDate.of(2026, 10, 10), state, 3, 1, 2));
+                mvc.perform(patch("/admin/attendances/1").with(user("admin").roles("ADMIN"))
+                    .contentType("application/json").content("{\"status\":\"" + state + "\"}"))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.attendanceId").value(1))
+                    .andExpect(jsonPath("$.date").value("2026-10-10"))
+                    .andExpect(jsonPath("$.status").value(state.name()))
+                    .andExpect(jsonPath("$.totalCount").value(3))
+                    .andExpect(jsonPath("$.presentCount").value(1))
+                    .andExpect(jsonPath("$.absentCount").value(2));
+                verify(service).changeStatus(1, request);
+            }
+            when(service.changeStatus(eq(99L), any())).thenThrow(new ResourceNotFoundException("없음"));
+            mvc.perform(patch("/admin/attendances/99").with(user("admin").roles("ADMIN"))
+                .contentType("application/json").content("{\"status\":\"ONGOING\"}"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("COMMON_RESOURCE_NOT_FOUND"));
         });
     }
 
@@ -234,7 +273,7 @@ class AttendanceControllerTest {
             assertThat(body).doesNotContain("UserPrincipal");
             var operations = Map.of(
                 "/admin/attendances", Map.of("get", "listAdminAttendances", "post", "createAttendance"),
-                "/admin/attendances/{attendanceId}", Map.of("get", "getAttendanceDetail"),
+                "/admin/attendances/{attendanceId}", Map.of("get", "getAttendanceDetail", "patch", "updateAttendanceStatus"),
                 "/admin/attendances/{attendanceId}/users/{userId}", Map.of("patch", "updateAttendanceParticipant"),
                 "/admin/attendances/{attendanceId}/qr", Map.of("post", "issueAttendanceQr"),
                 "/attendances", Map.of("get", "listMyAttendances"),
@@ -262,6 +301,19 @@ class AttendanceControllerTest {
             assertThat(createSchema.at("/properties/title/minLength").asInt()).isEqualTo(1);
             assertThat(createSchema.at("/properties/title/maxLength").asInt()).isEqualTo(100);
             assertThat(createSchema.at("/properties/date/format").asText()).isEqualTo("date");
+
+            var changeStatus = paths.path("/admin/attendances/{attendanceId}").path("patch");
+            assertThat(changeStatus.at("/requestBody/required").asBoolean()).isTrue();
+            assertThat(changeStatus.at("/requestBody/content/application~1json/schema/$ref").asText())
+                .isEqualTo("#/components/schemas/UpdateAttendanceStatusRequest");
+            assertThat(changeStatus.at("/responses/200/content/application~1json/schema/$ref").asText())
+                .isEqualTo("#/components/schemas/AttendanceSummary");
+            assertThat(changeStatus.path("description").asText()).contains("기존 QR은 즉시 무효화", "같은 상태", "출석 기록과 비고는 유지");
+            var statusSchema = schemas.path("UpdateAttendanceStatusRequest");
+            assertThat(statusSchema.path("required")).containsExactly(text("status"));
+            assertThat(statusSchema.path("additionalProperties")).isEqualTo(ctx.getBean(ObjectMapper.class).valueToTree(false));
+            assertThat(statusSchema.at("/properties/status/enum"))
+                .containsExactly(text("SCHEDULED"), text("ONGOING"), text("ENDED"));
 
             var listSchema = resolve(document, paths.path("/admin/attendances").at("/get/responses/200/content/application~1json/schema"));
             assertThat(listSchema.at("/properties/content/items/$ref").asText()).isEqualTo("#/components/schemas/AttendanceSummary");

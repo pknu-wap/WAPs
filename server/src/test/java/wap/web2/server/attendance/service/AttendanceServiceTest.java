@@ -96,6 +96,27 @@ class AttendanceServiceTest {
     }
 
     @Test
+    void statusChangesReturnCountsWithoutChangingParticipantRecords() {
+        var present = new AttendanceParticipant(attendance, 10L, "가");
+        present.update(PresenceStatus.PRESENT, "확인", now);
+        var absent = new AttendanceParticipant(attendance, 20L, "나");
+        when(participants.findByAttendanceId(1)).thenReturn(List.of(present, absent));
+        attendance.issueQr("token", now);
+        var response = service.changeStatus(1, new AttendanceRequests.ChangeStatus(AttendanceStatus.ENDED));
+        assertThat(response.status()).isEqualTo(AttendanceStatus.ENDED);
+        assertThat(response.totalCount()).isEqualTo(2);
+        assertThat(response.presentCount()).isEqualTo(1);
+        assertThat(response.absentCount()).isEqualTo(1);
+        assertThat(attendance.getQrToken()).isNull();
+        assertThat(present.getCheckedInAt()).isEqualTo(now);
+        assertThat(present.getNote()).isEqualTo("확인");
+        assertThat(absent.getStatus()).isEqualTo(PresenceStatus.ABSENT);
+        verify(attendances).findByIdForUpdate(1);
+        assertThatThrownBy(() -> service.changeStatus(99, new AttendanceRequests.ChangeStatus(AttendanceStatus.ONGOING)))
+            .isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
     void manualUpdatesPermitEndedAttendancesAndKeepOmittedFields() {
         var participant = new AttendanceParticipant(attendance, 10L, "가");
         when(participants.findByAttendanceIdAndUserId(1, 10)).thenReturn(Optional.of(participant));

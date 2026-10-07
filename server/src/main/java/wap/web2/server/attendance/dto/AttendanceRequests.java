@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Set;
+import wap.web2.server.attendance.entity.AttendanceStatus;
 import wap.web2.server.attendance.entity.PresenceStatus;
 import wap.web2.server.exception.BadRequestException;
 
@@ -33,6 +34,19 @@ public final class AttendanceRequests {
                 throw new BadRequestException("출석 날짜는 YYYY-MM-DD 형식이어야 합니다.");
             }
             return new Create(text(body, "title"), date == null ? null : LocalDate.parse(date));
+        }
+    }
+
+    @Schema(name = "UpdateAttendanceStatusRequest", additionalProperties = Schema.AdditionalPropertiesValue.FALSE)
+    public record ChangeStatus(
+        @Schema(description = "변경할 출석체크 진행 상태. 날짜와 무관하게 지정한 상태를 유지합니다.", example = "ONGOING")
+        @NotNull AttendanceStatus status
+    ) {
+        @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
+        public static ChangeStatus from(JsonNode body) {
+            validateFields(body, Set.of("status"));
+            String status = text(body, "status");
+            return new ChangeStatus(status == null ? null : AttendanceStatus.valueOf(status));
         }
     }
 
