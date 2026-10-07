@@ -68,7 +68,8 @@ class AttendanceIntegrationTest {
         jdbc.execute("DROP TABLE attendance_participant");
         jdbc.execute("DROP TABLE attendance");
         new ResourceDatabasePopulator(new ClassPathResource("db/migration/V13__create_attendances.sql"),
-            new ClassPathResource("db/migration/V14__persist_attendance_status.sql"))
+            new ClassPathResource("db/migration/V14__persist_attendance_status.sql"),
+            new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"))
             .execute(dataSource);
         var entityManager = SharedEntityManagerCreator.createSharedEntityManager(factory.getObject());
         var repositories = new JpaRepositoryFactory(entityManager);
@@ -126,6 +127,28 @@ class AttendanceIntegrationTest {
             assertThat(service.detail(created.attendanceId(), null, "userName,asc").summary().status())
                 .isEqualTo(AttendanceStatus.SCHEDULED);
         }
+    }
+
+    @Test
+    void previousQrMigrationPreservesAnExistingTokensExpiry() {
+        long userId = user("가", Role.ROLE_MEMBER);
+        long event = create(today);
+        String token = service.issueQr(event).qrToken();
+        jdbc.execute("ALTER TABLE attendance DROP COLUMN previous_qr_token, DROP COLUMN previous_qr_expires_at");
+        jdbc.update("UPDATE attendance SET qr_expires_at = DATE_SUB(qr_expires_at, INTERVAL 30 SECOND) WHERE id = ?", event);
+        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"))
+            .execute(jdbc.getDataSource());
+        var migrated = attendances.findById(event).orElseThrow();
+        assertThat(migrated.getQrToken()).isEqualTo(token);
+        assertThat(migrated.getQrExpiresAt()).isEqualTo(now.plusSeconds(30));
+        assertThat(migrated.getPreviousQrToken()).isNull();
+        assertThat(migrated.getPreviousQrExpiresAt()).isNull();
+        when(clock.instant()).thenReturn(now.plusSeconds(10));
+        String current = service.issueQr(event).qrToken();
+        assertThat(service.checkIn(event, userId, token).status()).isEqualTo(PresenceStatus.PRESENT);
+        when(clock.instant()).thenReturn(now.plusSeconds(30));
+        assertThatThrownBy(() -> service.checkIn(event, userId, token)).isInstanceOf(BadRequestException.class);
+        assertThat(service.checkIn(event, userId, current).status()).isEqualTo(PresenceStatus.PRESENT);
     }
 
     @Test
@@ -217,9 +240,11 @@ class AttendanceIntegrationTest {
         changeStatus(event, AttendanceStatus.ONGOING);
         assertThat(service.listMine(userId, AttendanceStatus.ONGOING)).extracting(AttendanceResponses.MyAttendance::attendanceId)
             .containsExactly(event);
+        String previous = service.issueQr(event).qrToken();
         String token = service.issueQr(event).qrToken();
         changeStatus(event, AttendanceStatus.ONGOING);
-        var checkedIn = service.checkIn(event, userId, token);
+        var checkedIn = service.checkIn(event, userId, previous);
+        assertThat(service.checkIn(event, userId, token).checkedInAt()).isEqualTo(checkedIn.checkedInAt());
         service.update(event, userId, new AttendanceRequests.Update(null, "확인"));
         var ended = service.changeStatus(event, new AttendanceRequests.ChangeStatus(AttendanceStatus.ENDED));
         assertThat(ended.status()).isEqualTo(AttendanceStatus.ENDED);
@@ -233,6 +258,7 @@ class AttendanceIntegrationTest {
         assertThatThrownBy(() -> service.checkIn(event, userId, token)).isInstanceOf(ConflictException.class);
 
         changeStatus(event, AttendanceStatus.ONGOING);
+        assertThatThrownBy(() -> service.checkIn(event, userId, previous)).isInstanceOf(BadRequestException.class);
         assertThatThrownBy(() -> service.checkIn(event, userId, token)).isInstanceOf(BadRequestException.class);
         String newToken = service.issueQr(event).qrToken();
         assertThat(service.checkIn(event, userId, newToken).checkedInAt()).isEqualTo(checkedIn.checkedInAt());
@@ -409,10 +435,11 @@ class AttendanceIntegrationTest {
     }
 
     @Test
-    void checkInWaitsForReissueAndRejectsThePreviousToken() throws Exception {
+    void checkInWaitsForReissueAndAcceptsThePreviousTokenUntilItsOriginalExpiry() throws Exception {
         long userId = user("가", Role.ROLE_MEMBER);
         long event = create(today);
         String old = service.issueQr(event).qrToken();
+        when(clock.instant()).thenReturn(now.plusSeconds(30));
         var issued = new CountDownLatch(1);
         var reissue = executor.submit(() -> transaction.execute(ignored -> {
             var result = service.issueQr(event);
@@ -427,11 +454,14 @@ class AttendanceIntegrationTest {
         assertThatThrownBy(() -> checkIn.get(200, TimeUnit.MILLISECONDS)).isInstanceOf(TimeoutException.class);
         release.countDown();
         var latest = reissue.get(10, TimeUnit.SECONDS);
-        assertThatThrownBy(() -> checkIn.get(10, TimeUnit.SECONDS))
-            .isInstanceOf(ExecutionException.class).hasCauseInstanceOf(BadRequestException.class);
+        var checkedIn = checkIn.get(10, TimeUnit.SECONDS);
+        assertThat(checkedIn.status()).isEqualTo(PresenceStatus.PRESENT);
         assertThat(latest.qrToken()).isNotEqualTo(old).hasSize(43);
-        assertThat(latest.expiresAt()).isEqualTo(now.plusSeconds(30));
-        assertThat(service.checkIn(event, userId, latest.qrToken()).status()).isEqualTo(PresenceStatus.PRESENT);
+        assertThat(latest.expiresAt()).isEqualTo(now.plusSeconds(90));
+        assertThat(service.checkIn(event, userId, latest.qrToken()).checkedInAt()).isEqualTo(checkedIn.checkedInAt());
+        when(clock.instant()).thenReturn(now.plusSeconds(60));
+        assertThatThrownBy(() -> service.checkIn(event, userId, old)).isInstanceOf(BadRequestException.class);
+        assertThat(service.checkIn(event, userId, latest.qrToken()).checkedInAt()).isEqualTo(checkedIn.checkedInAt());
     }
 
     @Test
@@ -457,7 +487,7 @@ class AttendanceIntegrationTest {
         var result = checkIn.get(10, TimeUnit.SECONDS);
         String latest = reissue.get(10, TimeUnit.SECONDS).qrToken();
         assertThat(update.get(10, TimeUnit.SECONDS).checkedInAt()).isEqualTo(result.checkedInAt());
-        assertThatThrownBy(() -> service.checkIn(event, userId, old)).isInstanceOf(BadRequestException.class);
+        assertThat(service.checkIn(event, userId, old).checkedInAt()).isEqualTo(result.checkedInAt());
         assertThat(service.checkIn(event, userId, latest).checkedInAt()).isEqualTo(result.checkedInAt());
         assertThat(service.detail(event, null, "userName,asc").participants().content().get(0).note()).isEqualTo("확인");
     }
@@ -477,7 +507,7 @@ class AttendanceIntegrationTest {
         var checkIn = executor.submit(() -> { started.countDown(); return service.checkIn(event, userId, token); });
         await(started);
         assertThatThrownBy(() -> checkIn.get(200, TimeUnit.MILLISECONDS)).isInstanceOf(TimeoutException.class);
-        when(clock.instant()).thenReturn(now.plusSeconds(30));
+        when(clock.instant()).thenReturn(now.plusSeconds(60));
         release.countDown();
         holder.get(10, TimeUnit.SECONDS);
         assertThatThrownBy(() -> checkIn.get(10, TimeUnit.SECONDS))

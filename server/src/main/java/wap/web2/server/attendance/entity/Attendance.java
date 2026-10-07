@@ -33,6 +33,11 @@ public class Attendance {
 
     private Instant qrExpiresAt;
 
+    @Column(length = 43)
+    private String previousQrToken;
+
+    private Instant previousQrExpiresAt;
+
     public Attendance(String title, LocalDate date) {
         this.title = title;
         this.date = date;
@@ -43,16 +48,25 @@ public class Attendance {
         this.status = status;
         qrToken = null;
         qrExpiresAt = null;
+        previousQrToken = null;
+        previousQrExpiresAt = null;
     }
 
     public void issueQr(String token, Instant now) {
+        previousQrToken = qrToken;
+        previousQrExpiresAt = qrExpiresAt;
         qrToken = token;
-        qrExpiresAt = now.plusSeconds(30);
+        qrExpiresAt = now.plusSeconds(60);
     }
 
     public boolean acceptsQr(String token, Instant now) {
-        return qrToken != null && token != null && now.isBefore(qrExpiresAt)
-            && MessageDigest.isEqual(qrToken.getBytes(StandardCharsets.UTF_8),
+        return matchesQr(qrToken, qrExpiresAt, token, now)
+            || matchesQr(previousQrToken, previousQrExpiresAt, token, now);
+    }
+
+    private static boolean matchesQr(String storedToken, Instant expiresAt, String token, Instant now) {
+        return storedToken != null && token != null && expiresAt != null && now.isBefore(expiresAt)
+            && MessageDigest.isEqual(storedToken.getBytes(StandardCharsets.UTF_8),
                 token.getBytes(StandardCharsets.UTF_8));
     }
 }

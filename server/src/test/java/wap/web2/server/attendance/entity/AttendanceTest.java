@@ -18,33 +18,72 @@ class AttendanceTest {
     }
 
     @Test
-    void qrExpiresAtExactlyThirtySeconds() {
+    void qrExpiresAtExactlySixtySeconds() {
         var attendance = new Attendance("발표", date);
         assertThat(attendance.acceptsQr("first", now)).isFalse();
         attendance.issueQr("first", now);
-        assertThat(attendance.acceptsQr("first", now.plusSeconds(29))).isTrue();
-        assertThat(attendance.acceptsQr("first", now.plusSeconds(30))).isFalse();
+        assertThat(attendance.getQrExpiresAt()).isEqualTo(now.plusSeconds(60));
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(60).minusNanos(1))).isTrue();
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(60))).isFalse();
         assertThat(attendance.acceptsQr("FIRST", now)).isFalse();
-        attendance.issueQr("second", now.plusSeconds(1));
-        assertThat(attendance.acceptsQr("first", now.plusSeconds(2))).isFalse();
-        assertThat(attendance.acceptsQr("second", now.plusSeconds(2))).isTrue();
+        assertThat(attendance.acceptsQr(null, now)).isFalse();
+    }
+
+    @Test
+    void reissuePreservesThePreviousTokensOriginalExpiry() {
+        var attendance = new Attendance("발표", date);
+        attendance.issueQr("first", now);
+        attendance.issueQr("second", now.plusSeconds(30));
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(60).minusNanos(1))).isTrue();
+        assertThat(attendance.acceptsQr("second", now.plusSeconds(60).minusNanos(1))).isTrue();
+        assertThat(attendance.acceptsQr("FIRST", now.plusSeconds(30))).isFalse();
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(60))).isFalse();
+        assertThat(attendance.acceptsQr("second", now.plusSeconds(60))).isTrue();
+        assertThat(attendance.acceptsQr("second", now.plusSeconds(90))).isFalse();
+    }
+
+    @Test
+    void aThirdIssueDiscardsTheOldestTokenEvenBeforeExpiry() {
+        var attendance = new Attendance("발표", date);
+        attendance.issueQr("first", now);
+        attendance.issueQr("second", now.plusSeconds(10));
+        attendance.issueQr("third", now.plusSeconds(20));
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(20))).isFalse();
+        assertThat(attendance.acceptsQr("second", now.plusSeconds(20))).isTrue();
+        assertThat(attendance.acceptsQr("third", now.plusSeconds(20))).isTrue();
+    }
+
+    @Test
+    void reissueDoesNotReviveAnExpiredToken() {
+        var attendance = new Attendance("발표", date);
+        attendance.issueQr("first", now);
+        attendance.issueQr("second", now.plusSeconds(60));
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(60))).isFalse();
+        assertThat(attendance.acceptsQr("second", now.plusSeconds(60))).isTrue();
     }
 
     @Test
     void changingStatusInvalidatesQrButRepeatingTheSameStatusPreservesIt() {
         var attendance = new Attendance("발표", date);
         attendance.changeStatus(AttendanceStatus.ONGOING);
+        attendance.issueQr("previous", now);
         attendance.issueQr("token", now);
         attendance.changeStatus(AttendanceStatus.ONGOING);
+        assertThat(attendance.acceptsQr("previous", now)).isTrue();
         assertThat(attendance.acceptsQr("token", now)).isTrue();
         attendance.changeStatus(AttendanceStatus.ENDED);
         assertThat(attendance.getStatus()).isEqualTo(AttendanceStatus.ENDED);
         assertThat(attendance.getQrToken()).isNull();
         assertThat(attendance.getQrExpiresAt()).isNull();
+        assertThat(attendance.getPreviousQrToken()).isNull();
+        assertThat(attendance.getPreviousQrExpiresAt()).isNull();
         attendance.changeStatus(AttendanceStatus.ONGOING);
+        assertThat(attendance.acceptsQr("previous", now)).isFalse();
         assertThat(attendance.acceptsQr("token", now)).isFalse();
+        attendance.issueQr("new-previous", now);
         attendance.issueQr("new-token", now);
         attendance.changeStatus(AttendanceStatus.SCHEDULED);
+        assertThat(attendance.acceptsQr("new-previous", now)).isFalse();
         assertThat(attendance.acceptsQr("new-token", now)).isFalse();
     }
 

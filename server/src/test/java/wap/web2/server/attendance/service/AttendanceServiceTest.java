@@ -159,14 +159,15 @@ class AttendanceServiceTest {
     }
 
     @Test
-    void checkInRequiresTheLatestUnexpiredTokenEvenForPresentUsers() {
+    void checkInRequiresAnUnexpiredCurrentOrPreviousTokenEvenForPresentUsers() {
         var participant = new AttendanceParticipant(attendance, 10L, "가");
         when(participants.findByAttendanceIdAndUserId(1, 10)).thenReturn(Optional.of(participant));
         assertThatThrownBy(() -> service.checkIn(1, 10, "unissued")).isInstanceOf(BadRequestException.class);
+        String discarded = service.issueQr(1).qrToken();
         String old = service.issueQr(1).qrToken();
         String current = service.issueQr(1).qrToken();
         assertThat(current).isNotEqualTo(old);
-        assertThatThrownBy(() -> service.checkIn(1, 10, old)).isInstanceOf(BadRequestException.class);
+        assertThatThrownBy(() -> service.checkIn(1, 10, discarded)).isInstanceOf(BadRequestException.class);
         assertThatThrownBy(() -> service.checkIn(1, 10, "forged")).isInstanceOf(BadRequestException.class);
         assertThatThrownBy(() -> service.checkIn(1, 99, current)).isInstanceOf(ForbiddenException.class);
         assertThatThrownBy(() -> service.checkIn(99, 10, current)).isInstanceOf(ResourceNotFoundException.class);
@@ -175,11 +176,13 @@ class AttendanceServiceTest {
         when(attendances.findByIdForUpdate(2)).thenReturn(Optional.of(other));
         String otherToken = service.issueQr(2).qrToken();
         assertThatThrownBy(() -> service.checkIn(1, 10, otherToken)).isInstanceOf(BadRequestException.class);
-        var result = service.checkIn(1, 10, current);
+        var result = service.checkIn(1, 10, old);
         assertThat(result.status()).isEqualTo(PresenceStatus.PRESENT);
-        when(clock.instant()).thenReturn(now.plusSeconds(29));
+        when(clock.instant()).thenReturn(now.plusSeconds(59));
+        assertThat(service.checkIn(1, 10, old).checkedInAt()).isEqualTo(result.checkedInAt());
         assertThat(service.checkIn(1, 10, current).checkedInAt()).isEqualTo(result.checkedInAt());
-        when(clock.instant()).thenReturn(now.plusSeconds(30));
+        when(clock.instant()).thenReturn(now.plusSeconds(60));
+        assertThatThrownBy(() -> service.checkIn(1, 10, old)).isInstanceOf(BadRequestException.class);
         assertThatThrownBy(() -> service.checkIn(1, 10, current)).isInstanceOf(BadRequestException.class);
         assertThat(participant.getCheckedInAt()).isEqualTo(result.checkedInAt());
     }

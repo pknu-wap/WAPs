@@ -56,7 +56,8 @@ public class AttendanceController {
     @Operation(operationId = "checkInAttendance", summary = "QR 스캔으로 본인 출석 등록", description = """
         스캔한 QR의 attendanceId를 경로에, qrToken을 요청 본문에 넣습니다.
         서버는 JWT의 사용자 ID로 본인의 출석만 처리하며 타인의 userId는 받지 않습니다.
-        출석체크가 ONGOING이고 본인이 대상자이며, 해당 출석체크의 최신 QR 토큰이 유효해야 합니다.
+        출석체크가 ONGOING이고 본인이 대상자이며, 해당 출석체크의 현재 또는 직전 QR 토큰이 유효해야 합니다.
+        각 토큰은 발급 후 60초까지 유효하며 직전 토큰도 원래 만료 시각을 따릅니다. 만료 시각부터는 사용할 수 없습니다.
         최초 성공 시 PRESENT로 변경하고 서버의 현재 시각을 checkedInAt에 기록합니다.
         유효한 QR로 이미 출석한 사용자가 다시 요청하면 200과 기존 출석 시각을 반환합니다.
         동시 요청에도 (attendanceId, userId)별 출석은 한 번만 기록하며 집계가 중복 증가하지 않습니다.
@@ -65,7 +66,7 @@ public class AttendanceController {
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "본인 출석 완료 또는 이미 출석한 사용자의 기존 결과",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = CheckIn.class))),
-        @ApiResponse(responseCode = "400", description = "잘못된 입력 또는 위조·만료·재발급으로 무효화된 QR, 다른 출석체크의 토큰 (COMMON_INVALID_INPUT)",
+        @ApiResponse(responseCode = "400", description = "잘못된 입력 또는 위조·만료된 QR, 두 번 이전 토큰, 다른 출석체크의 토큰 (COMMON_INVALID_INPUT)",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
         @ApiResponse(responseCode = "403", description = "해당 출석체크의 대상자가 아님 (AUTH_FORBIDDEN)",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),

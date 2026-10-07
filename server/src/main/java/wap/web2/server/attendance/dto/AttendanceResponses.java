@@ -35,7 +35,7 @@ public final class AttendanceResponses {
     public record Qr(
         @Schema(minimum = "1", example = "1") Long attendanceId,
         @Schema(description = "사용자 정보나 로그인 JWT를 포함하지 않는 출석 전용 난수", example = "example-attendance-qr-token") String qrToken,
-        @Schema(description = "발급 시각으로부터 30초 후. 서버 시각이 이 시각 이상이면 만료됩니다.", example = "2026-10-10T10:00:30Z") Instant expiresAt
+        @Schema(description = "발급 시각으로부터 60초 후. 직전 토큰으로 보관되어도 연장되지 않으며, 서버 시각이 이 시각 이상이면 만료됩니다.", example = "2026-10-10T10:01:00Z") Instant expiresAt
     ) {}
 
     @Schema(name = "AttendanceCheckInResponse", requiredProperties = {"attendanceId", "userId", "status", "checkedInAt"})
