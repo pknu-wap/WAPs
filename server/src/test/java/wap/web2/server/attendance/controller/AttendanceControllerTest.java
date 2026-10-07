@@ -1,14 +1,18 @@
 package wap.web2.server.attendance.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
@@ -24,6 +28,7 @@ import wap.web2.server.attendance.dto.AttendanceResponses.*;
 import wap.web2.server.attendance.entity.AttendanceStatus;
 import wap.web2.server.attendance.entity.PresenceStatus;
 import wap.web2.server.attendance.service.AttendanceService;
+import wap.web2.server.config.SwaggerConfig;
 import wap.web2.server.exception.GlobalExceptionHandler;
 import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.exception.ConflictException;
@@ -41,6 +46,7 @@ class AttendanceControllerTest {
     private final AttendanceService service = mock(AttendanceService.class);
     private final WebApplicationContextRunner context = new WebApplicationContextRunner()
         .withPropertyValues(
+            "swagger.server-url=http://localhost",
             "spring.security.oauth2.client.registration.test.client-id=test",
             "spring.security.oauth2.client.registration.test.client-secret=test",
             "spring.security.oauth2.client.registration.test.provider=test",
@@ -61,7 +67,7 @@ class AttendanceControllerTest {
 
     @TestConfiguration(proxyBeanMethods = false)
     @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class, FlywayAutoConfiguration.class})
-    @Import({SecurityConfig.class, AdminAttendanceController.class, AttendanceController.class, GlobalExceptionHandler.class,
+    @Import({SecurityConfig.class, SwaggerConfig.class, AdminAttendanceController.class, AttendanceController.class, GlobalExceptionHandler.class,
         RestAuthenticationEntryPoint.class, RestAccessDeniedHandler.class, SecurityErrorResponseWriter.class})
     static class TestApplication {}
 
@@ -211,5 +217,107 @@ class AttendanceControllerTest {
     private UserPrincipal principal(String role) {
         return new UserPrincipal(10L, "user@example.com", "", List.of(
             new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + role)));
+    }
+
+    @Test
+    void generatedSwaggerPreservesTheAttendanceContract() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            var body = mvc.perform(get("/v3/api-docs")).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
+            var document = ctx.getBean(ObjectMapper.class).readTree(body);
+            var paths = document.path("paths");
+            var schemas = document.at("/components/schemas");
+            assertThat(document.at("/security/0/JWT").isArray()).isTrue();
+            assertThat(document.at("/components/securitySchemes/JWT/scheme").asText()).isEqualTo("bearer");
+            assertThat(body).doesNotContain("UserPrincipal");
+            var operations = Map.of(
+                "/admin/attendances", Map.of("get", "listAdminAttendances", "post", "createAttendance"),
+                "/admin/attendances/{attendanceId}", Map.of("get", "getAttendanceDetail"),
+                "/admin/attendances/{attendanceId}/users/{userId}", Map.of("patch", "updateAttendanceParticipant"),
+                "/admin/attendances/{attendanceId}/qr", Map.of("post", "issueAttendanceQr"),
+                "/attendances", Map.of("get", "listMyAttendances"),
+                "/attendances/{attendanceId}/check-in", Map.of("post", "checkInAttendance"));
+            operations.forEach((path, methods) -> methods.forEach((method, id) -> {
+                var operation = paths.path(path).path(method);
+                assertThat(operation.path("operationId").asText()).isEqualTo(id);
+                assertThat(operation.path("tags").get(0).asText())
+                    .isEqualTo(path.startsWith("/admin") ? "관리자 출석" : "사용자 출석");
+                for (String code : List.of("400", "401")) {
+                    assertThat(operation.at("/responses/" + code + "/content/application~1json/schema/$ref").asText())
+                        .isEqualTo("#/components/schemas/ErrorResponse");
+                }
+                if (!path.equals("/attendances")) assertThat(operation.at("/responses/403").isMissingNode()).isFalse();
+                if (path.contains("{attendanceId}")) assertThat(operation.at("/responses/404").isMissingNode()).isFalse();
+            }));
+            var create = paths.path("/admin/attendances").path("post");
+            assertThat(create.at("/responses/201/headers/Location/schema/example").asText()).isEqualTo("/admin/attendances/1");
+            assertThat(create.at("/responses/201/content/application~1json/schema/$ref").asText()).isEqualTo("#/components/schemas/AttendanceSummary");
+            assertThat(create.at("/requestBody/content/application~1json/schema/$ref").asText()).isEqualTo("#/components/schemas/CreateAttendanceRequest");
+            var createSchema = schemas.path("CreateAttendanceRequest");
+            assertThat(createSchema.path("additionalProperties")).isEqualTo(ctx.getBean(ObjectMapper.class).valueToTree(false));
+            assertThat(createSchema.path("required")).containsExactlyInAnyOrder(text("title"), text("date"));
+            assertThat(createSchema.at("/properties/title/minLength").asInt()).isEqualTo(1);
+            assertThat(createSchema.at("/properties/title/maxLength").asInt()).isEqualTo(100);
+            assertThat(createSchema.at("/properties/date/format").asText()).isEqualTo("date");
+
+            var listSchema = resolve(document, paths.path("/admin/attendances").at("/get/responses/200/content/application~1json/schema"));
+            assertThat(listSchema.at("/properties/content/items/$ref").asText()).isEqualTo("#/components/schemas/AttendanceSummary");
+            var detail = schemas.path("AttendanceDetail");
+            assertThat(detail.path("properties").has("summary")).isFalse();
+            for (String field : List.of("attendanceId", "title", "date", "status", "totalCount", "presentCount", "absentCount", "participants")) {
+                assertThat(detail.path("properties").has(field)).as(field).isTrue();
+                assertThat(detail.path("required")).contains(text(field));
+            }
+            var participants = resolve(document, detail.at("/properties/participants"));
+            assertThat(participants.at("/properties/content/items/$ref").asText()).isEqualTo("#/components/schemas/AttendanceParticipant");
+            assertThat(schemas.at("/AttendanceParticipant/properties/checkedInAt/nullable").asBoolean()).isTrue();
+            assertThat(schemas.at("/AttendanceParticipant/properties/note/maxLength").asInt()).isEqualTo(500);
+            var update = schemas.path("UpdateAttendanceParticipantRequest");
+            assertThat(update.path("additionalProperties").isBoolean()).isTrue();
+            assertThat(update.path("additionalProperties").asBoolean()).isFalse();
+            assertThat(update.path("minProperties").asInt()).isEqualTo(1);
+            assertThat(update.path("required").isMissingNode()).isTrue();
+
+            var detailOperation = paths.path("/admin/attendances/{attendanceId}").path("get");
+            assertThat(parameter(detailOperation, "sort").at("/schema/enum"))
+                .containsExactly(text("userName,asc"), text("userName,desc"), text("status,asc"), text("status,desc"));
+            assertThat(parameter(detailOperation, "sort").at("/schema/default").asText()).isEqualTo("userName,asc");
+            var mine = paths.path("/attendances").path("get");
+            assertThat(mine.path("parameters")).hasSize(1);
+            assertThat(parameter(mine, "status").at("/schema/enum")).containsExactly(text("ONGOING"), text("ENDED"));
+            assertThat(parameter(mine, "status").at("/schema/default").asText()).isEqualTo("ONGOING");
+            assertThat(mine.at("/responses/200/content/application~1json/schema/items/$ref").asText()).isEqualTo("#/components/schemas/MyAttendance");
+            assertThat(schemas.at("/MyAttendance/properties/checkedInAt/nullable").asBoolean()).isTrue();
+
+            var qr = paths.path("/admin/attendances/{attendanceId}/qr").path("post");
+            assertThat(qr.path("description").asText()).contains("30초", "재발급", "로그인 JWT");
+            assertThat(qr.at("/responses/200/headers/Cache-Control/schema/enum")).containsExactly(text("no-store"));
+            var checkIn = paths.path("/attendances/{attendanceId}/check-in").path("post");
+            assertThat(checkIn.path("parameters")).hasSize(1);
+            assertThat(checkIn.path("description").asText()).contains("동시 요청", "기존 출석 시각", "비고를 변경하지");
+            assertThat(checkIn.at("/requestBody/content/application~1json/schema/$ref").asText()).isEqualTo("#/components/schemas/AttendanceCheckInRequest");
+            assertThat(checkIn.at("/responses/200/content/application~1json/schema/$ref").asText()).isEqualTo("#/components/schemas/AttendanceCheckInResponse");
+            assertThat(checkIn.at("/responses/409").isMissingNode()).isFalse();
+            assertThat(schemas.at("/AttendanceCheckInRequest/properties/qrToken/maxLength").asInt()).isEqualTo(512);
+            assertThat(schemas.at("/AttendanceCheckInResponse/properties/status/enum")).containsExactly(text("PRESENT"));
+            assertThat(schemas.at("/ErrorResponse/required"))
+                .containsExactlyInAnyOrder(text("timestamp"), text("status"), text("code"), text("message"), text("path"));
+        });
+    }
+
+    private static JsonNode resolve(JsonNode document, JsonNode schema) {
+        return schema.has("$ref") ? document.at(schema.path("$ref").asText().substring(1)) : schema;
+    }
+
+    private static JsonNode parameter(JsonNode operation, String name) {
+        for (JsonNode parameter : operation.path("parameters")) {
+            if (parameter.path("name").asText().equals(name)) return parameter;
+        }
+        throw new AssertionError("Missing parameter: " + name);
+    }
+
+    private static JsonNode text(String value) {
+        return com.fasterxml.jackson.databind.node.TextNode.valueOf(value);
     }
 }
