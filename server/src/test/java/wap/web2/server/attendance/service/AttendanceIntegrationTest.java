@@ -176,6 +176,35 @@ class AttendanceIntegrationTest {
     }
 
     @Test
+    void statusFiltersLimitDatabaseResultsAndEntityLoadsWhilePreservingOrder() {
+        long userId = user("가", Role.ROLE_MEMBER);
+        long first = create(today);
+        long second = create(today);
+        service.create(new AttendanceRequests.Create("예정", today.plusDays(1)));
+        long ended = create(today);
+        changeStatus(ended, AttendanceStatus.ENDED);
+        service.checkIn(first, userId, service.issueQr(first).qrToken());
+        var statistics = factory.getObject().unwrap(org.hibernate.SessionFactory.class).getStatistics();
+        statistics.setStatisticsEnabled(true);
+        statistics.clear();
+
+        var summaries = service.listAdmin(AttendanceStatus.ONGOING).content();
+        assertThat(summaries).extracting(AttendanceResponses.Summary::attendanceId).containsExactly(second, first);
+        assertThat(summaries.get(1).presentCount()).isEqualTo(1);
+        assertThat(statistics.getQueryExecutionCount()).isEqualTo(1);
+        assertThat(statistics.getQueryStatistics(statistics.getQueries()[0]).getExecutionRowCount()).isEqualTo(2);
+        assertThat(statistics.getEntityLoadCount()).isZero();
+
+        statistics.clear();
+        var mine = service.listMine(userId, AttendanceStatus.ONGOING);
+        assertThat(mine).extracting(AttendanceResponses.MyAttendance::attendanceId).containsExactly(second, first);
+        assertThat(mine.get(1).myStatus()).isEqualTo(PresenceStatus.PRESENT);
+        assertThat(statistics.getQueryExecutionCount()).isEqualTo(1);
+        assertThat(statistics.getQueryStatistics(statistics.getQueries()[0]).getExecutionRowCount()).isEqualTo(2);
+        assertThat(statistics.getEntityLoadCount()).isEqualTo(4);
+    }
+
+    @Test
     void manualStatusChangesControlCheckInAndPreserveRecordsAcrossReopening() {
         long userId = user("가", Role.ROLE_MEMBER);
         user("나", Role.ROLE_USER);

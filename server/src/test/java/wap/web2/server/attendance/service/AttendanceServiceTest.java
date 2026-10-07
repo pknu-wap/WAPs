@@ -148,7 +148,8 @@ class AttendanceServiceTest {
         when(counts.getStatus()).thenReturn(AttendanceStatus.ONGOING);
         when(counts.getTotalCount()).thenReturn(3L);
         when(counts.getPresentCount()).thenReturn(1L);
-        when(attendances.findAllWithCounts()).thenReturn(List.of(counts));
+        when(attendances.findAllWithCounts(null)).thenReturn(List.of(counts));
+        when(attendances.findAllWithCounts(AttendanceStatus.ONGOING)).thenReturn(List.of(counts));
         assertThat(service.listAdmin(null).content()).hasSize(1);
         assertThat(service.listAdmin(AttendanceStatus.ONGOING).content().get(0).absentCount()).isEqualTo(2);
         assertThat(service.listAdmin(AttendanceStatus.ENDED).content()).isEmpty();
@@ -156,6 +157,7 @@ class AttendanceServiceTest {
         assertThat(service.listAdmin(AttendanceStatus.ONGOING).content()).hasSize(1);
         assertThat(service.listAdmin(AttendanceStatus.ENDED).content()).isEmpty();
         when(counts.getStatus()).thenReturn(AttendanceStatus.ENDED);
+        when(attendances.findAllWithCounts(AttendanceStatus.ENDED)).thenReturn(List.of(counts));
         assertThat(service.listAdmin(AttendanceStatus.ENDED).content()).hasSize(1);
     }
 
@@ -217,7 +219,9 @@ class AttendanceServiceTest {
         var ended = new AttendanceParticipant(new Attendance("과거", today.minusDays(1)), 10L, "가");
         ended.getAttendance().changeStatus(AttendanceStatus.ENDED);
         var future = new AttendanceParticipant(new Attendance("예정", today.plusDays(1)), 10L, "가");
-        when(participants.findAllForUser(10)).thenReturn(List.of(future, ongoing, ended));
+        when(participants.findAllForUser(10, AttendanceStatus.SCHEDULED)).thenReturn(List.of(future));
+        when(participants.findAllForUser(10, AttendanceStatus.ONGOING)).thenReturn(List.of(ongoing));
+        when(participants.findAllForUser(10, AttendanceStatus.ENDED)).thenReturn(List.of(ended));
         when(clock.instant()).thenReturn(now.plusSeconds(86400 * 2));
         assertThat(service.listMine(10, AttendanceStatus.ONGOING)).extracting(a -> a.title()).containsExactly("발표");
         assertThat(service.listMine(10, AttendanceStatus.ENDED)).extracting(a -> a.title()).containsExactly("과거");

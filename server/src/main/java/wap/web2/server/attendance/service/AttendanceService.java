@@ -52,10 +52,9 @@ public class AttendanceService {
     }
 
     public Content<Summary> listAdmin(AttendanceStatus status) {
-        return new Content<>(attendances.findAllWithCounts().stream()
+        return new Content<>(attendances.findAllWithCounts(status).stream()
             .map(a -> new Summary(a.getAttendanceId(), a.getTitle(), a.getDate(), a.getStatus(),
-                a.getTotalCount(), a.getPresentCount(), a.getTotalCount() - a.getPresentCount()))
-            .filter(a -> status == null || a.status() == status).toList());
+                a.getTotalCount(), a.getPresentCount(), a.getTotalCount() - a.getPresentCount())).toList());
     }
 
     public Detail detail(long attendanceId, PresenceStatus status, String sort) {
@@ -109,8 +108,7 @@ public class AttendanceService {
     }
 
     public List<MyAttendance> listMine(long userId, AttendanceStatus status) {
-        return participants.findAllForUser(userId).stream()
-            .filter(p -> p.getAttendance().getStatus() == status)
+        return participants.findAllForUser(userId, status).stream()
             .map(p -> new MyAttendance(p.getAttendance().getId(), p.getAttendance().getTitle(),
                 p.getAttendance().getDate(), status, p.getStatus(), p.getCheckedInAt())).toList();
     }

@@ -21,10 +21,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             count(p.id) as totalCount,
             sum(case when p.status = wap.web2.server.attendance.entity.PresenceStatus.PRESENT then 1 else 0 end) as presentCount
         from Attendance a left join AttendanceParticipant p on p.attendance = a
+        where :status is null or a.status = :status
         group by a.id, a.title, a.date, a.status
         order by a.date desc, a.id desc
         """)
-    List<Counts> findAllWithCounts();
+    List<Counts> findAllWithCounts(@Param("status") AttendanceStatus status);
 
     interface Counts {
         Long getAttendanceId();
