@@ -207,6 +207,36 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
               </div>
             </div>
 
+            <div className="menu-section">
+             <h3 className="section-title">ATTENDANCE CHECK</h3>
+
+             <div className="menu-items">
+               <button
+                 className="menu-item"
+                 onClick={() => handleNavigationWithAuth("/CheckIn")}
+               >
+                 <span>출석체크 Attendance Check</span>
+
+                 <span className="arrow">
+                   <FaChevronRight />
+                 </span>
+               </button>
+             </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             <button
               className="logout-button"
               onClick={() => {
