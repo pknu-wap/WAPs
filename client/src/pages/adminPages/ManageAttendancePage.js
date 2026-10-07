@@ -50,7 +50,7 @@ const ManageAttendancePage = () => {
   const [error, setError] = useState("");
 
   const selectedSession = sessions.find((session) => session.id === selectedSessionId);
-  const records = selectedSession?.members || [];
+  const records = useMemo(() => selectedSession?.members || [], [selectedSession]);
   const [sortBy, setSortBy] = useState("name");
 
   const refreshSessions = useCallback((preferredId, updatedSessions) => {
