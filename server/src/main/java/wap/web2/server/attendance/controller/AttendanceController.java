@@ -25,7 +25,7 @@ import wap.web2.server.global.security.UserPrincipal;
 @RequestMapping(value = "/attendances", produces = "application/json")
 @Validated
 @RequiredArgsConstructor
-@Tag(name = "사용자 출석", description = "진행 중인 출석·나의 출석 기록 조회 및 QR 출석 등록 (로그인 필요, 회원 등급 제한 없음)")
+@Tag(name = "사용자 출석", description = "예정·진행 중인 출석 및 나의 출석 기록 조회, QR 출석 등록 (로그인 필요, 회원 등급 제한 없음)")
 @ApiResponses({
     @ApiResponse(responseCode = "400", description = "잘못된 입력 (COMMON_INVALID_INPUT)",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
@@ -36,17 +36,17 @@ public class AttendanceController {
     private final AttendanceService service;
 
     @GetMapping
-    @Operation(operationId = "listMyAttendances", summary = "진행 중인 출석·나의 출석 기록 조회", description = """
+    @Operation(operationId = "listMyAttendances", summary = "예정·진행 중인 출석 및 나의 출석 기록 조회", description = """
         로그인 사용자가 대상자인 출석체크와 본인의 출석 상태를 반환합니다.
-        진행 중인 출석은 ONGOING, 종료된 기록은 ENDED로 요청합니다. 생략하면 ONGOING입니다.
+        예정된 출석은 SCHEDULED, 진행 중인 출석은 ONGOING, 종료된 기록은 ENDED로 요청합니다. 생략하면 ONGOING입니다.
         사용자 ID는 JWT에서 확인하며 요청 파라미터로 받지 않습니다.
         date 내림차순, 같은 날짜이면 attendanceId 내림차순으로 조건에 맞는 전체 목록을 반환하며, 결과가 없으면 빈 배열입니다.
         """)
     @ApiResponse(responseCode = "200", description = "출석체크 정보와 본인의 출석 상태를 포함한 카드 목록")
     public List<MyAttendance> list(
         @Parameter(hidden = true) @CurrentUser UserPrincipal user,
-        @Parameter(description = "진행 중인 출석 또는 종료된 나의 출석 기록 선택",
-            schema = @Schema(type = "string", allowableValues = {"ONGOING", "ENDED"}, defaultValue = "ONGOING"))
+        @Parameter(description = "예정·진행 중인 출석 또는 종료된 나의 출석 기록 선택",
+            schema = @Schema(type = "string", allowableValues = {"SCHEDULED", "ONGOING", "ENDED"}, defaultValue = "ONGOING"))
         @RequestParam(defaultValue = "ONGOING") AttendanceStatus status
     ) {
         return service.listMine(user.getId(), status);

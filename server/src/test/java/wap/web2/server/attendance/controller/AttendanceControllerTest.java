@@ -204,6 +204,8 @@ class AttendanceControllerTest {
                 when(service.listMine(10, AttendanceStatus.ONGOING)).thenReturn(List.of(
                     new MyAttendance(1L, "발표", LocalDate.of(2026, 10, 10), AttendanceStatus.ONGOING, PresenceStatus.ABSENT, null)));
                 when(service.listMine(10, AttendanceStatus.ENDED)).thenReturn(List.of());
+                when(service.listMine(10, AttendanceStatus.SCHEDULED)).thenReturn(List.of(
+                    new MyAttendance(2L, "예정", LocalDate.of(2026, 10, 11), AttendanceStatus.SCHEDULED, PresenceStatus.ABSENT, null)));
                 when(service.checkIn(1, 10, "token")).thenReturn(new CheckIn(1L, 10L, PresenceStatus.PRESENT, instant));
                 mvc.perform(get("/attendances?userId=99").with(user(principal)))
                     .andExpect(status().isOk()).andExpect(jsonPath("$[0].myStatus").value("ABSENT"))
@@ -211,12 +213,18 @@ class AttendanceControllerTest {
                     .andExpect(jsonPath("$[0].note").doesNotExist());
                 mvc.perform(get("/attendances?status=ENDED").with(user(principal)))
                     .andExpect(status().isOk()).andExpect(content().json("[]"));
+                mvc.perform(get("/attendances?status=SCHEDULED&userId=99").with(user(principal)))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$[0].attendanceId").value(2))
+                    .andExpect(jsonPath("$[0].status").value("SCHEDULED"))
+                    .andExpect(jsonPath("$[0].myStatus").value("ABSENT"))
+                    .andExpect(jsonPath("$[0].checkedInAt").value(org.hamcrest.Matchers.nullValue()));
                 mvc.perform(post("/attendances/1/check-in?userId=99").with(user(principal))
                     .contentType("application/json").content("{\"qrToken\":\"token\"}"))
                     .andExpect(status().isOk()).andExpect(jsonPath("$.userId").value(10))
                     .andExpect(jsonPath("$.checkedInAt").value("2026-10-10T10:00:00Z"));
             }
             verify(service, times(4)).checkIn(1, 10, "token");
+            verify(service, times(4)).listMine(10, AttendanceStatus.SCHEDULED);
             verify(service, never()).listMine(eq(99L), any());
         });
     }
@@ -238,8 +246,6 @@ class AttendanceControllerTest {
                 .andExpect(status().isBadRequest());
             mvc.perform(get("/attendances?status=INVALID").with(user(principal))).andExpect(status().isBadRequest());
             verifyNoInteractions(service);
-            when(service.listMine(10, AttendanceStatus.SCHEDULED)).thenThrow(new BadRequestException("예정 조회 불가"));
-            mvc.perform(get("/attendances?status=SCHEDULED").with(user(principal))).andExpect(status().isBadRequest());
             var errors = List.of(new BadRequestException("QR 오류"), new ForbiddenException("대상자 아님"),
                 new ResourceNotFoundException("없음"), new ConflictException("종료"));
             for (var error : errors) {
@@ -339,7 +345,7 @@ class AttendanceControllerTest {
             assertThat(parameter(detailOperation, "sort").at("/schema/default").asText()).isEqualTo("userName,asc");
             var mine = paths.path("/attendances").path("get");
             assertThat(mine.path("parameters")).hasSize(1);
-            assertThat(parameter(mine, "status").at("/schema/enum")).containsExactly(text("ONGOING"), text("ENDED"));
+            assertThat(parameter(mine, "status").at("/schema/enum")).containsExactly(text("SCHEDULED"), text("ONGOING"), text("ENDED"));
             assertThat(parameter(mine, "status").at("/schema/default").asText()).isEqualTo("ONGOING");
             assertThat(mine.at("/responses/200/content/application~1json/schema/items/$ref").asText()).isEqualTo("#/components/schemas/MyAttendance");
             assertThat(schemas.at("/MyAttendance/properties/checkedInAt/nullable").asBoolean()).isTrue();

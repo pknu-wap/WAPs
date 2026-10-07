@@ -212,7 +212,7 @@ class AttendanceServiceTest {
     }
 
     @Test
-    void userListsOnlyAllowOngoingOrEndedAttendances() {
+    void userListsFilterScheduledOngoingAndEndedAttendances() {
         var ongoing = new AttendanceParticipant(attendance, 10L, "가");
         var ended = new AttendanceParticipant(new Attendance("과거", today.minusDays(1)), 10L, "가");
         ended.getAttendance().changeStatus(AttendanceStatus.ENDED);
@@ -221,6 +221,10 @@ class AttendanceServiceTest {
         when(clock.instant()).thenReturn(now.plusSeconds(86400 * 2));
         assertThat(service.listMine(10, AttendanceStatus.ONGOING)).extracting(a -> a.title()).containsExactly("발표");
         assertThat(service.listMine(10, AttendanceStatus.ENDED)).extracting(a -> a.title()).containsExactly("과거");
-        assertThatThrownBy(() -> service.listMine(10, AttendanceStatus.SCHEDULED)).isInstanceOf(BadRequestException.class);
+        var scheduled = service.listMine(10, AttendanceStatus.SCHEDULED);
+        assertThat(scheduled).extracting(a -> a.title()).containsExactly("예정");
+        assertThat(scheduled.get(0).status()).isEqualTo(AttendanceStatus.SCHEDULED);
+        assertThat(scheduled.get(0).myStatus()).isEqualTo(PresenceStatus.ABSENT);
+        assertThat(scheduled.get(0).checkedInAt()).isNull();
     }
 }

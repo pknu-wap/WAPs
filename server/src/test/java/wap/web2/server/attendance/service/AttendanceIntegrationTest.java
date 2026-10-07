@@ -126,6 +126,9 @@ class AttendanceIntegrationTest {
         service.checkIn(event, first, token);
         assertThatThrownBy(() -> service.checkIn(event, outsider, token)).isInstanceOf(ForbiddenException.class);
         assertThat(service.listMine(outsider, AttendanceStatus.ONGOING)).isEmpty();
+        assertThat(service.listMine(outsider, AttendanceStatus.SCHEDULED)).isEmpty();
+        assertThat(service.listMine(first, AttendanceStatus.SCHEDULED)).extracting(AttendanceResponses.MyAttendance::attendanceId)
+            .containsExactly(future);
         assertThat(service.listMine(first, AttendanceStatus.ONGOING)).extracting(AttendanceResponses.MyAttendance::attendanceId)
             .containsExactly(laterId, event);
         assertThat(service.listAdmin(null).content()).extracting(AttendanceResponses.Summary::attendanceId)
@@ -148,6 +151,7 @@ class AttendanceIntegrationTest {
         changeStatus(event, AttendanceStatus.ENDED);
         changeStatus(laterId, AttendanceStatus.ENDED);
         changeStatus(future, AttendanceStatus.ONGOING);
+        assertThat(service.listMine(first, AttendanceStatus.SCHEDULED)).isEmpty();
         assertThat(service.listMine(first, AttendanceStatus.ENDED)).extracting(AttendanceResponses.MyAttendance::attendanceId)
             .containsExactly(laterId, event);
         assertThat(service.listMine(first, AttendanceStatus.ONGOING)).extracting(AttendanceResponses.MyAttendance::attendanceId)

@@ -102,9 +102,6 @@ public class AttendanceService {
     }
 
     public List<MyAttendance> listMine(long userId, AttendanceStatus status) {
-        if (status != AttendanceStatus.ONGOING && status != AttendanceStatus.ENDED) {
-            throw new BadRequestException("ONGOING 또는 ENDED 상태로 조회해 주세요.");
-        }
         return participants.findAllForUser(userId).stream()
             .filter(p -> p.getAttendance().getStatus() == status)
             .map(p -> new MyAttendance(p.getAttendance().getId(), p.getAttendance().getTitle(),
