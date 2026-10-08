@@ -8,6 +8,7 @@ import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.setting.dto.request.SettingUpdateRequest;
+import wap.web2.server.setting.dto.response.SettingResponse;
 import wap.web2.server.setting.dto.response.SettingUpdateResponse;
 
 @Service
@@ -15,6 +16,12 @@ import wap.web2.server.setting.dto.response.SettingUpdateResponse;
 public class SettingService {
 
     private final UserRepository userRepository;
+
+    @Transactional(readOnly = true)
+    public SettingResponse getSetting(UserPrincipal userPrincipal) {
+        User user = findUser(userPrincipal.getId());
+        return SettingResponse.from(user);
+    }
 
     @Transactional
     public SettingUpdateResponse updateSetting(
