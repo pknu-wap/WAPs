@@ -1,0 +1,29 @@
+name: waps-caddy
+
+services:
+  caddy:
+    container_name: caddy
+    image: caddy:2.11.4
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      CADDY_ENV: ${CADDY_ENV:-local}
+      SERVER_URL: ${SERVER_URL:-}
+      SERVER_URL_DEV: ${SERVER_URL_DEV:-http://localhost}
+    networks:
+      - waps-network
+    volumes:
+      - ./caddy:/etc/caddy:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+networks:
+  waps-network:
+    external: true
+
+volumes:
+  caddy_data:
+  caddy_config:

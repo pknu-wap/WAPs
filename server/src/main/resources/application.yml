@@ -60,6 +60,7 @@ app:
     authorizedRedirectUris:
       - https://waps.im/oauth2/redirect
       - https://dev.waps.im/oauth2/redirect
+      - https://*.dev.waps.im/oauth2/redirect
       - https://wapst.netlify.app/oauth2/redirect
       - https://waps-deploy.netlify.app/oauth2/redirect
       - https://waps-web.netlify.app/oauth2/redirect
@@ -69,7 +70,7 @@ app:
       - myiosapp://oauth2/redirect
 
 swagger:
-  server-url: ${SWAGGER_SERVER_URL}
+  server-url: ${SERVER_URL}
 
 project:
   password: 1248

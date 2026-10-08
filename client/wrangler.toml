@@ -1,0 +1,6 @@
+compatibility_date = "2026-09-30"
+previews = { }
+
+[assets]
+directory = "./build/"
+not_found_handling = "single-page-application"

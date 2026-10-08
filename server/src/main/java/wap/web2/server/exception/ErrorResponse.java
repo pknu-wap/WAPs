@@ -1,18 +1,21 @@
 package wap.web2.server.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Schema(description = "서버 공통 오류 응답. 비어 있는 선택 필드는 생략합니다.",
+    requiredProperties = {"timestamp", "status", "code", "message", "path"})
 public record ErrorResponse(
-    Instant timestamp,
-    int status,
-    String code,
-    String message,
-    String path,
+    @Schema(example = "2026-10-10T10:00:00Z") Instant timestamp,
+    @Schema(example = "400") int status,
+    @Schema(example = "COMMON_INVALID_INPUT") String code,
+    @Schema(example = "잘못된 요청입니다.") String message,
+    @Schema(example = "/admin/attendances") String path,
     List<FieldErrorResponse> errors,
-    String requestId
+    @Schema(description = "서버에서 제공하는 경우에만 포함되는 요청 추적 ID") String requestId
 ) {
     public ErrorResponse {
         timestamp = timestamp == null ? Instant.now() : timestamp;

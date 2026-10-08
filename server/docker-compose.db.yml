@@ -1,0 +1,30 @@
+name: waps-db
+
+services:
+  db:
+    container_name: db
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: mysql -u $$MYSQL_USER -p$$MYSQL_PASSWORD -e "SELECT 1" > /dev/null 2>&1
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      start_interval: 5s
+      retries: 3
+    networks:
+      - waps-network
+    volumes:
+      - db_data:/var/lib/mysql
+
+networks:
+  waps-network:
+    name: waps-network
+
+volumes:
+  db_data:

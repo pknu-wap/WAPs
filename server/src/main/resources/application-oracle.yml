@@ -3,5 +3,7 @@ oracle:
     namespace: ${OCI_NAMESPACE}
     bucketName: ${OCI_BUCKET_NAME}
     region: ${OCI_REGION}
-    configPath: ${OCI_CONFIG_PATH}
-    profile: DEFAULT
+    user: ${OCI_STORAGE_USER}
+    fingerprint: ${OCI_STORAGE_FINGERPRINT}
+    tenancy: ${OCI_TENANCY}
+    key: ${OCI_STORAGE_KEY}
