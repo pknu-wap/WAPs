@@ -75,7 +75,7 @@ const ManageAttendancePage = () => {
   const [error, setError] = useState("");
 
   const selectedSession = sessions.find((session) => session.id === selectedSessionId);
-  const records = selectedSession?.members || EMPTY_RECORDS;
+  const records = useMemo(() => selectedSession?.members || EMPTY_RECORDS, [selectedSession]);
   const visibleSourceMembers = editingClosed && draftMembers ? draftMembers : records;
   const [sortBy, setSortBy] = useState("role");
 
