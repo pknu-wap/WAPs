@@ -14,14 +14,28 @@ export const attendanceRoleLabel = (role) =>
     ROLE_GUEST: "신입",
   })[role] || role || "회원";
 
-export const createAttendanceSession = (title, eventDate, members = DEFAULT_MEMBERS) => {
-  const now = new Date().toISOString();
+const ATTENDANCE_ROLE_ORDER = {
+  ROLE_GUEST: 0,
+  ROLE_USER: 1,
+  ROLE_MEMBER: 2,
+  ROLE_ADMIN: 3,
+};
+
+export const compareAttendanceRoles = (firstRole, secondRole) =>
+  (ATTENDANCE_ROLE_ORDER[firstRole] ?? Number.MAX_SAFE_INTEGER) -
+  (ATTENDANCE_ROLE_ORDER[secondRole] ?? Number.MAX_SAFE_INTEGER);
+
+export const createAttendanceSession = (title, eventDate, deadlineTime, members = DEFAULT_MEMBERS) => {
+  const currentDate = new Date();
+  const now = currentDate.toISOString();
   return {
     id: `attendance-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     title: title.trim(),
     eventDate,
+    deadlineTime,
     status: "OPEN",
     createdAt: now,
+    endedAt: null,
     members: members.map((member) => ({
       userId: member.id,
       name: member.name,
@@ -53,5 +67,6 @@ export const writeAttendanceSessions = (sessions) => {
 
 export const attendanceCounts = (session) => ({
   presentCount: session.members.filter((member) => member.status === "PRESENT").length,
+  lateCount: session.members.filter((member) => member.status === "LATE").length,
   absentCount: session.members.filter((member) => member.status === "ABSENT").length,
 });
