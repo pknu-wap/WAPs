@@ -190,3 +190,35 @@ body:has(nav.menu) .App-header {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ===== 설정 버튼 ===== */
+.settings-button {
+  width: 100%;
+  padding: 8px 2px;
+
+  background: none;
+  border: none;
+
+  color: #fff;
+
+  font-size: 15px;
+  font-weight: 500;
+  text-align: left;
+
+  cursor: pointer;
+
+  font-family: "Pretendard-Regular";
+
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  transition: opacity 0.2s;
+}
+
+.settings-button:hover {
+  opacity: 0.8;
+}
+
+.settings-button + .logout-button {
+  margin-top: 4px;
+}
