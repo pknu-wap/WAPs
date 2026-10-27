@@ -53,6 +53,11 @@ export const adminPlanApi = {
     apiClient.post("/admin/calendar/event", eventBody),
 };
 
+// 관리자가 행사 목록을 불러와 출석 체크 대상을 선택할 때 사용합니다.
+export const adminAttendanceApi = {
+  getEvents: () => apiClient.get("/calendar/events"),
+};
+
 // 팀빌딩 관리 API
 export const adminTeamBuildApi = {
   // 지원 현황 반환
