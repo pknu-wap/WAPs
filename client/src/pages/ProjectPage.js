@@ -1,23 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import Header from "../components/Header";
-import Menu from "../components/Menu";
 import ContentBox from "../components/ContentBox";
 import FloatingButton from "../components/FloatingButton";
 
 const ProjectPage = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
   return (
     <div>
-      <Header menuOpen={menuOpen} toggleMenu={toggleMenu} />
-      <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
+      <Header />
+
       <main>
         <ContentBox />
       </main>
+
       <FloatingButton />
     </div>
   );

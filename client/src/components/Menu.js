@@ -11,7 +11,6 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!Cookies.get("authToken"));
   const [userRole, setUserRole] = useState(Cookies.get("userRole") || null);
 
-  // 메뉴 열릴 때 배경 스크롤만 막고, 화면 밀림(shift) 방지
   useEffect(() => {
     if (!menuOpen) return;
 
@@ -192,6 +191,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                     <FaChevronRight />
                   </span>
                 </button>
+
                 <button
                   className="menu-item"
                   onClick={() => {
@@ -215,7 +215,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                   toggleMenu();
                 }}
               >
-                <span>설정 Settings</span>          
+                <span>설정 Settings</span>
               </button>
             )}
 

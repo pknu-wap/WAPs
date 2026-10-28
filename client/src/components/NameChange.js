@@ -6,9 +6,7 @@ const NameChange = ({
   onChangeName,
 }) => {
   const [step, setStep] = useState(1);
-  const [newName, setNewName] = useState("");
-
-  // 1단계 → 2단계
+  const [newName, setNewName] = useState(""); 
   const handleNext = () => {
     const trimmedName = newName.trim();
 
@@ -26,7 +24,6 @@ const NameChange = ({
     setStep(2);
   };
 
-  // 최종 변경
   const handleConfirm = () => {
     onChangeName(newName);
   };
@@ -40,7 +37,6 @@ const NameChange = ({
         className="name-modal"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 닫기 버튼 */}
         <button
           type="button"
           className="name-modal-close"
