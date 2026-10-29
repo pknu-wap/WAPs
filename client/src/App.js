@@ -24,6 +24,7 @@ import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import CalendarPage from "./pages/CalendarPage";
 import AdminRoute from "./components/Login/PrivateRoute";
 import CheckIn from "./pages/CheckIn";
+import CheckInScan from "./pages/CheckInScan";
 
 // 관리자 페이지
 import ManagePermissionPage from "./pages/adminPages/ManagePermissionPage";
@@ -98,6 +99,7 @@ function App() {
           <Route path="/team-build/result" element={<TeamBuildResultPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/CheckIn" element={<CheckIn />} />
+          <Route path="/CheckIn/scan/:attendanceId" element={<CheckInScan />} />
           {/* 보호된 페이지 */}
           <Route path="/protected" element={<ProtectedPage />} />
         </Route>

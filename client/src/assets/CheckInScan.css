@@ -1,0 +1,175 @@
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+.qr-scan-page {
+  position: relative;
+
+  width: 100%;
+  max-width: 400px;
+  height: calc(var(--vh, 1vh) * 100);
+
+  margin: 0 auto;
+
+  box-sizing: border-box;
+  overflow: hidden;
+
+  background: #000;
+
+  font-family: "Pretendard-Regular";
+}
+
+#qr-reader {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  border: none !important;
+  background: #000 !important;
+
+  overflow: hidden;
+}
+
+#qr-reader video {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  object-fit: cover !important;
+}
+
+#qr-reader__dashboard {
+  display: none !important;
+}
+
+#qr-reader__scan_region {
+  width: 100% !important;
+  height: 100% !important;
+
+  min-height: 100% !important;
+
+  background: transparent !important;
+}
+
+#qr-reader__scan_region img {
+  display: none !important;
+}
+
+.qr-scan-close {
+  position: absolute;
+
+  top: 21px;
+  right: 20px;
+
+  z-index: 30;
+
+  padding: 0;
+
+  border: none;
+  background: none;
+
+  color: #fff;
+
+  font-family: "Pretendard-Regular";
+
+  font-size: 29px;
+  font-weight: 400;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.qr-scan-guide {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  z-index: 20;
+
+  transform: translate(-50%, -50%);
+
+  text-align: center;
+
+  pointer-events: none;
+}
+
+.qr-scan-guide > p {
+  margin: 0 0 18px;
+
+  color: #fff;
+
+  font-family: "Pretendard-Regular";
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.qr-frame {
+  position: relative;
+
+  width: 220px;
+  height: 220px;
+}
+
+.qr-frame > span {
+  position: absolute;
+
+  width: 42px;
+  height: 42px;
+
+  box-sizing: border-box;
+}
+
+.qr-frame .top-left {
+  top: 0;
+  left: 0;
+
+  border-top: 5px solid #abd4fd;
+  border-left: 5px solid #abd4fd;
+}
+
+.qr-frame .top-right {
+  top: 0;
+  right: 0;
+
+  border-top: 5px solid #abd4fd;
+  border-right: 5px solid #abd4fd;
+}
+
+.qr-frame .bottom-left {
+  bottom: 0;
+  left: 0;
+
+  border-bottom: 5px solid #abd4fd;
+  border-left: 5px solid #abd4fd;
+}
+
+.qr-frame .bottom-right {
+  right: 0;
+  bottom: 0;
+
+  border-right: 5px solid #abd4fd;
+  border-bottom: 5px solid #abd4fd;
+}
+
+.qr-error-message {
+  margin: 20px 0 0 !important;
+
+  color: #ff8e8e !important;
+
+  font-size: 11px !important;
+  font-weight: 400 !important;
+}
