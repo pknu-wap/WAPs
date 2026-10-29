@@ -6,7 +6,6 @@
   font-style: normal;
 }
 
-
 .checkin-page {
   position: relative;
 
@@ -39,7 +38,6 @@
   overflow-x: hidden;
 }
 
-
 .checkin-close {
   position: absolute;
 
@@ -64,15 +62,11 @@
   cursor: pointer;
 }
 
-
-
 .checkin-content {
-  padding: 88px 20px 80px;
+  padding: 88px 30px 80px;
 
   box-sizing: border-box;
 }
-
-
 
 .checkin-title-area {
   text-align: center;
@@ -85,7 +79,7 @@
 
   color: #fff;
 
-  font-size: 30px;
+  font-size: 36px;
   font-weight: 700;
 
   line-height: 0.95;
@@ -104,13 +98,12 @@
   line-height: 1.4;
 }
 
-
 .checkin-section {
   width: 100%;
 }
 
 .checkin-section-title {
-  margin: 0 0 8px 0;
+  margin: 0 0 8px;
 
   color: #fff;
 
@@ -120,11 +113,10 @@
   letter-spacing: 0.5px;
 }
 
-
 .ongoing-card {
   width: 100%;
 
-  padding: 16px 14px 14px;
+  padding: 16px 20px;
 
   box-sizing: border-box;
 
@@ -135,8 +127,6 @@
 
   border-radius: 12px;
 }
-
-
 
 .attendance-top {
   display: flex;
@@ -163,7 +153,7 @@
 
   min-width: 7px;
 
-  margin-top: 6px;
+  margin-top: 7px;
   margin-right: 9px;
 
   border-radius: 50%;
@@ -172,10 +162,8 @@
 }
 
 .attendance-dot-active {
-  background: #b4d7ff;
+  background: #abd4fd;
 }
-
-
 
 .attendance-text {
   min-width: 0;
@@ -233,11 +221,10 @@
 }
 
 .attendance-badge-active {
-  background: #c4dcff;
+  background: #abd4fd;
 
   color: #33445e;
 }
-
 
 .qr-button {
   width: 100%;
@@ -251,14 +238,14 @@
   border: none;
   border-radius: 12px;
 
-  background: #b4d1fb;
+  background: #abd4fd;
 
   color: #000;
 
   font-family: "Pretendard-Regular";
 
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
 
   text-align: center;
 
@@ -287,14 +274,13 @@
 
   font-family: "Pretendard-Regular";
 
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
 
   text-align: center;
 
   cursor: default;
 }
-
 
 .checkin-divider {
   width: 100%;
@@ -304,7 +290,6 @@
 
   background: rgba(255, 255, 255, 0.15);
 }
-
 
 .history-section {
   padding-bottom: 30px;
@@ -321,7 +306,7 @@
 .history-card {
   width: 100%;
 
-  padding: 16px 14px;
+  padding: 16px 20px;
 
   box-sizing: border-box;
 
