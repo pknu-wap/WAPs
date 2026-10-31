@@ -15,6 +15,10 @@ const Header = () => {
     const token = Cookies.get("authToken");
     const savedUserName = Cookies.get("userName");
     if (token && savedUserName) setUserName(savedUserName);
+    if (sessionStorage.getItem("openMenuAfterBack") === "true") {
+      setMenuOpen(true);
+      sessionStorage.removeItem("openMenuAfterBack");
+    }
   }, []);
 
   const handleLogout = () => {

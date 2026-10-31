@@ -207,6 +207,15 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
               </div>
             </div>
 
+            {isLoggedIn && (
+              <button className="menu-item" onClick={() => {
+                navigate("/settings");
+                toggleMenu();
+              }}>
+                설정 Settings
+              </button>
+            )}
+
             <button
               className="logout-button"
               onClick={() => {
