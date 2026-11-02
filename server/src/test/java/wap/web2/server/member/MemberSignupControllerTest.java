@@ -106,6 +106,41 @@ class MemberSignupControllerTest {
         });
     }
 
+    @Test
+    void openApiDocumentsSignupFlowConditionalFieldsExamplesAndErrors() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            String json = mvc.perform(get("/v3/api-docs")).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+            var document = ctx.getBean(com.fasterxml.jackson.databind.ObjectMapper.class).readTree(json);
+            var operation = document.at("/paths/~1user~1signup/post");
+            assertThat(operation.path("description").asText())
+                .contains("signupCompleted=false", "ROLE_GUEST", "ROLE_MEMBER", "409", "/auth/signup");
+            assertThat(operation.at("/security/0/JWT").isArray()).isTrue();
+            assertThat(operation.path("parameters").isMissingNode()).isTrue();
+            assertThat(operation.at("/requestBody/required").asBoolean()).isTrue();
+            var request = operation.at("/requestBody/content/application~1json");
+            assertThat(request.at("/schema/$ref").asText()).isEqualTo("#/components/schemas/MemberSignupRequest");
+            assertThat(request.path("examples").size()).isEqualTo(4);
+            assertThat(request.at("/examples/비회원/value/member").asBoolean()).isFalse();
+            for (String code : List.of("200", "400", "401", "403", "404", "409")) {
+                assertThat(operation.at("/responses/" + code).isMissingNode()).isFalse();
+                String schema = code.equals("200") ? "UserResponse" : "ErrorResponse";
+                assertThat(operation.at("/responses/" + code + "/content/application~1json/schema/$ref").asText())
+                    .isEqualTo("#/components/schemas/" + schema);
+            }
+            var schema = document.at("/components/schemas/MemberSignupRequest");
+            assertThat(schema.path("required")).containsExactly(com.fasterxml.jackson.databind.node.TextNode.valueOf("member"));
+            assertThat(schema.at("/properties/studentNumber/pattern").asText()).isEqualTo("[0-9]{1,20}");
+            assertThat(schema.at("/properties/memberType/enum")).containsExactly(
+                com.fasterxml.jackson.databind.node.TextNode.valueOf("NEW"),
+                com.fasterxml.jackson.databind.node.TextNode.valueOf("ASSOCIATE"),
+                com.fasterxml.jackson.databind.node.TextNode.valueOf("REGULAR"));
+            assertThat(document.at("/components/schemas/UserResponse/properties/signupCompleted/type").asText()).isEqualTo("boolean");
+            assertThat(document.at("/paths/~1user~1role~1{role}/post/deprecated").asBoolean()).isTrue();
+        });
+    }
+
     private UserPrincipal principal() {
         return new UserPrincipal(1L, "test@example.com", null,
             List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_GUEST")));
