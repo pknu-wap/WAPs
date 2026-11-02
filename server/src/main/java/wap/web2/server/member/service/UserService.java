@@ -44,7 +44,7 @@ public class UserService {
         User user = findUser(id);
         Role role = user.getRole();
         boolean isAssigned = role != null;
-        return new UserRoleResponse(role, isAssigned);
+        return new UserRoleResponse(role, user.getMembershipLevel(), isAssigned);
     }
 
     private User findUser(Long userId) {

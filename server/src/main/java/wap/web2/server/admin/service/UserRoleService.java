@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.dto.request.RoleChangeRequest;
+import wap.web2.server.admin.dto.request.MembershipLevelChangeRequest;
+import wap.web2.server.admin.dto.response.MembershipLevelChangeResponse;
 import wap.web2.server.admin.dto.response.RoleChangeResponse;
 import wap.web2.server.admin.dto.response.UserRolePageResponse;
 import wap.web2.server.admin.dto.response.UserRoleResponse;
@@ -29,6 +31,13 @@ public class UserRoleService {
 
         int updated = userRepository.updateRoleByIds(newRole, userIds);
         return new RoleChangeResponse(updated, newRole);
+    }
+
+    @Transactional
+    public MembershipLevelChangeResponse changeMembershipLevel(MembershipLevelChangeRequest request) {
+        int updated = request.userIds().isEmpty() ? 0
+            : userRepository.updateMembershipLevelByIds(request.newMembershipLevel(), request.userIds());
+        return new MembershipLevelChangeResponse(updated, request.newMembershipLevel());
     }
 
     @Transactional(readOnly = true)

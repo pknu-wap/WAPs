@@ -72,7 +72,7 @@ public class AuthController {
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(signUpRequest.getPassword());
         user.setProvider(AuthProvider.local);
-        user.setRole(Role.ROLE_USER);
+        user.setRole(Role.ROLE_GUEST);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 

@@ -1,5 +1,8 @@
 package wap.web2.server.admin.controller;
 
+import jakarta.validation.Valid;
+import wap.web2.server.admin.dto.request.MembershipLevelChangeRequest;
+import wap.web2.server.admin.dto.response.MembershipLevelChangeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +26,17 @@ public class AdminUserController {
 
     @PatchMapping("/user")
     public ResponseEntity<RoleChangeResponse> changeUserRole(
-        @RequestBody RoleChangeRequest roleChangeRequest
+        @Valid @RequestBody RoleChangeRequest roleChangeRequest
     ) {
         RoleChangeResponse response = userRoleService.change(roleChangeRequest);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/user/membership-level")
+    public ResponseEntity<MembershipLevelChangeResponse> changeMembershipLevel(
+        @Valid @RequestBody MembershipLevelChangeRequest request
+    ) {
+        return ResponseEntity.ok(userRoleService.changeMembershipLevel(request));
     }
 
     @GetMapping

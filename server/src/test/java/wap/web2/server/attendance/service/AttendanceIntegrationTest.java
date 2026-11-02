@@ -230,7 +230,7 @@ class AttendanceIntegrationTest {
     @Test
     void manualStatusChangesControlCheckInAndPreserveRecordsAcrossReopening() {
         long userId = user("가", Role.ROLE_MEMBER);
-        user("나", Role.ROLE_USER);
+        user("나", Role.ROLE_GUEST);
         var created = service.create(new AttendanceRequests.Create("미래 행사", today.plusDays(1)));
         long event = created.attendanceId();
         assertThat(created.status()).isEqualTo(AttendanceStatus.SCHEDULED);
@@ -307,7 +307,7 @@ class AttendanceIntegrationTest {
         assertThat(emptySummary.absentCount()).isZero();
 
         long userId = user("가", Role.ROLE_MEMBER);
-        user("나", Role.ROLE_USER);
+        user("나", Role.ROLE_GUEST);
         long event = create(today);
         long retained = create(today);
         service.checkIn(event, userId, service.issueQr(event).qrToken());
@@ -339,7 +339,7 @@ class AttendanceIntegrationTest {
         assertThat(attendances.existsById(empty)).isFalse();
 
         long first = user("가", Role.ROLE_MEMBER);
-        user("나", Role.ROLE_USER);
+        user("나", Role.ROLE_GUEST);
         long retained = create(today);
         service.update(retained, first, new AttendanceRequests.Update(PresenceStatus.PRESENT, "보존"));
         for (AttendanceStatus status : AttendanceStatus.values()) {
@@ -411,7 +411,7 @@ class AttendanceIntegrationTest {
 
     @Test
     void simultaneousCheckInsRecordOneTimestampAndPreserveNotes() throws Exception {
-        long userId = user("가", Role.ROLE_USER);
+        long userId = user("가", Role.ROLE_GUEST);
         long otherId = user("나", Role.ROLE_MEMBER);
         long event = create(today);
         service.update(event, userId, new AttendanceRequests.Update(null, "관리자 확인"));
