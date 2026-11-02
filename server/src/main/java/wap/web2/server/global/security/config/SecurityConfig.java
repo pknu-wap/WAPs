@@ -110,9 +110,18 @@ public class SecurityConfig {
                     // actuator
                     .requestMatchers("/actuator/**")
                     .permitAll()
+                    // Roles are assigned by administrators, never by the user themselves.
+                    .requestMatchers(HttpMethod.POST, "/user/role/**")
+                    .denyAll()
                     // admin
                     .requestMatchers("/admin/**")
                     .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/project", "/project/**", "/team-build/**")
+                    .hasAnyRole("MEMBER", "ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/project", "/project/**")
+                    .hasAnyRole("MEMBER", "ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/project", "/project/**")
+                    .hasAnyRole("MEMBER", "ADMIN")
                     .requestMatchers(HttpMethod.GET, "/project/list", "/project/*")
                     .permitAll()
                     .requestMatchers("/vote/result/**", "/techStack/**", "/calendar/**")

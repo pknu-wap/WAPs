@@ -34,12 +34,6 @@ public class UserService {
         return new UserVoteResponse(projectIds);
     }
 
-    public void setRole(UserPrincipal userPrincipal, String role) {
-        User user = findUser(userPrincipal.getId());
-        user.setRole(Role.from(role));
-        userRepository.save(user);
-    }
-
     public UserRoleResponse getMyRole(Long id) {
         User user = findUser(id);
         Role role = user.getRole();

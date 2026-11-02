@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.global.security.CurrentUser;
@@ -36,15 +35,6 @@ public class UserController {
     ) {
         UserVoteResponse response = userService.getUserVotedInfo(userPrincipal, semester);
         return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/role/{role}")
-    public ResponseEntity<String> setMyRole(
-        @CurrentUser UserPrincipal userPrincipal,
-        @PathVariable("role") String role
-    ) {
-        userService.setRole(userPrincipal, role);
-        return ResponseEntity.ok("회원 등록에 성공했습니다!");
     }
 
     @GetMapping("/role")
