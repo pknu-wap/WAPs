@@ -115,4 +115,21 @@ class RoleAccessTest {
         });
     }
 
+    @Test
+    void acceptsOptionalLevelFilterAndRejectsUnknownLevels() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            mvc.perform(get("/admin/role").with(user("admin").roles("ADMIN"))
+                .param("size", "12").param("page", "0")
+                .param("role", "ROLE_MEMBER").param("membershipLevel", "NEW"))
+                .andExpect(status().isOk());
+            org.mockito.Mockito.verify(ctx.getBean(UserRoleService.class)).getUsersForAdmin(
+                12, 0, wap.web2.server.member.entity.Role.ROLE_MEMBER,
+                wap.web2.server.member.entity.MembershipLevel.NEW);
+            mvc.perform(get("/admin/role").with(user("admin").roles("ADMIN"))
+                .param("size", "12").param("page", "0").param("membershipLevel", "UNKNOWN"))
+                .andExpect(status().isBadRequest());
+        });
+    }
+
 }

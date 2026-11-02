@@ -11,6 +11,7 @@ import wap.web2.server.admin.dto.response.RoleChangeResponse;
 import wap.web2.server.admin.dto.response.UserRolePageResponse;
 import wap.web2.server.admin.dto.response.UserRoleResponse;
 import wap.web2.server.member.entity.Role;
+import wap.web2.server.member.entity.MembershipLevel;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 
@@ -41,11 +42,11 @@ public class UserRoleService {
     }
 
     @Transactional(readOnly = true)
-    public UserRolePageResponse getUsersForAdmin(int size, int page, Role role) {
+    public UserRolePageResponse getUsersForAdmin(int size, int page, Role role, MembershipLevel membershipLevel) {
         int fetchSize = size + 1; // 다음 페이지 유무를 확인하기 위해 size보다 크게 가져옴
         int offset = page * size;
 
-        List<User> users = userRepository.findUserByOffset(fetchSize, offset, role);
+        List<User> users = userRepository.findUserByOffset(fetchSize, offset, role, membershipLevel);
 
         boolean hasNext = false;
         List<UserRoleResponse> content = users.stream().map(UserRoleResponse::from).toList();

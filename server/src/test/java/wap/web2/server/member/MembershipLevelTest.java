@@ -41,6 +41,20 @@ class MembershipLevelTest {
     }
 
     @Test
+    void passesCombinedFiltersToRepositoryBeforePagination() {
+        var users = mock(UserRepository.class);
+        var member = new User();
+        member.setMembershipLevel(MembershipLevel.NEW);
+        when(users.findUserByOffset(2, 2, Role.ROLE_MEMBER, MembershipLevel.NEW))
+            .thenReturn(List.of(member, member));
+        var result = new UserRoleService(users).getUsersForAdmin(1, 2, Role.ROLE_MEMBER, MembershipLevel.NEW);
+        assertThat(result.content()).hasSize(1);
+        assertThat(result.hasNext()).isTrue();
+        assertThat(result.content().get(0).membershipLevel()).isEqualTo(MembershipLevel.NEW);
+        verify(users).findUserByOffset(2, 2, Role.ROLE_MEMBER, MembershipLevel.NEW);
+    }
+
+    @Test
     void emptySelectionDoesNotUpdateAndInvalidInputIsRejected() {
         var users = mock(UserRepository.class);
         var result = new UserRoleService(users).changeMembershipLevel(
