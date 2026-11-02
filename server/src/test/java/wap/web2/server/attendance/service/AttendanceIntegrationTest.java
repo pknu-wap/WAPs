@@ -69,7 +69,8 @@ class AttendanceIntegrationTest {
         jdbc.execute("DROP TABLE attendance");
         new ResourceDatabasePopulator(new ClassPathResource("db/migration/V13__create_attendances.sql"),
             new ClassPathResource("db/migration/V14__persist_attendance_status.sql"),
-            new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"))
+            new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"),
+            new ClassPathResource("db/migration/V17__snapshot_attendance_membership_level.sql"))
             .execute(dataSource);
         var entityManager = SharedEntityManagerCreator.createSharedEntityManager(factory.getObject());
         var repositories = new JpaRepositoryFactory(entityManager);
@@ -136,7 +137,8 @@ class AttendanceIntegrationTest {
         String token = service.issueQr(event).qrToken();
         jdbc.execute("ALTER TABLE attendance DROP COLUMN previous_qr_token, DROP COLUMN previous_qr_expires_at");
         jdbc.update("UPDATE attendance SET qr_expires_at = DATE_SUB(qr_expires_at, INTERVAL 30 SECOND) WHERE id = ?", event);
-        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"))
+        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"),
+            new ClassPathResource("db/migration/V17__snapshot_attendance_membership_level.sql"))
             .execute(jdbc.getDataSource());
         var migrated = attendances.findById(event).orElseThrow();
         assertThat(migrated.getQrToken()).isEqualTo(token);
