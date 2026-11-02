@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import wap.web2.server.member.entity.User;
+import wap.web2.server.member.entity.MemberType;
 
 @Getter
 @Builder
@@ -16,11 +17,18 @@ public class UserResponse {
     private String userName;
     private String userEmail;
 
+    private String studentNumber;
+    private MemberType memberType;
+    private boolean signupCompleted;
+
     public static UserResponse of(User user) {
         return UserResponse.builder()
             .userId(user.getId())
             .userName(user.getName())
             .userEmail(user.getEmail())
+            .studentNumber(user.getStudentNumber())
+            .memberType(user.getMemberType())
+            .signupCompleted(user.isSignupCompleted())
             .build();
     }
 }
