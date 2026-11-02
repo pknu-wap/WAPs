@@ -1,7 +1,10 @@
 package wap.web2.server.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestBody;
+import wap.web2.server.member.dto.MemberSignupRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,13 +41,19 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/role/{role}")
-    public ResponseEntity<String> setMyRole(
+    @PostMapping("/signup")
+    public ResponseEntity<UserResponse> signup(
         @CurrentUser UserPrincipal userPrincipal,
-        @PathVariable("role") String role
+        @Valid @RequestBody MemberSignupRequest request
     ) {
-        userService.setRole(userPrincipal, role);
-        return ResponseEntity.ok("회원 등록에 성공했습니다!");
+        return ResponseEntity.ok(userService.signup(userPrincipal.getId(), request));
+    }
+
+    @PostMapping("/role/{role}")
+    @Operation(deprecated = true, summary = "사용 중단된 역할 선택 API",
+        description = "권한을 변경하지 않고 400을 반환합니다. POST /user/signup을 사용하세요.")
+    public ResponseEntity<Void> setMyRole() {
+        throw new wap.web2.server.exception.BadRequestException("POST /user/signup으로 회원가입해 주세요.");
     }
 
     @GetMapping("/role")
