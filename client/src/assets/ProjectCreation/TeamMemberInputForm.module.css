@@ -131,3 +131,10 @@
   background: #4a4a4a;
   color: #fff;
 }
+
+@media (max-width: 600px) {
+  .member_picker {
+    width: min(120px, 35%);
+    min-width: 0;
+  }
+}
