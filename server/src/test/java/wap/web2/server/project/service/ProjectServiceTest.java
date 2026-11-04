@@ -445,6 +445,42 @@ class ProjectServiceTest {
         });
     }
 
+    @Test
+    void thumbnailReplacementReleasesPreviousStorageReference() throws Exception {
+        User owner = owner();
+        Project project = project(owner);
+        project.updateThumbnail("https://cloud/old");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
+        when(projectRepository.findById(10L)).thenReturn(Optional.of(project));
+        var file = new MockMultipartFile("thumbnail", "new.png", "image/png", new byte[] {1});
+        when(objectStorageService.uploadImage("projects", "2026-01", "updated title", "thumbnail", file))
+            .thenReturn("https://cloud/new");
+        when(objectStorageService.supports("https://cloud/old")).thenReturn(true);
+
+        projectService.update(10L, baseRequestBuilder().thumbnailFiles(file).build(), principal(1L));
+
+        assertThat(project.getThumbnail()).isEqualTo("https://cloud/new");
+        verify(objectStorageService).deleteImage("https://cloud/old");
+    }
+
+    @Test
+    void projectDeletionReleasesImagesAndThumbnail() {
+        User owner = owner();
+        Project project = project(owner);
+        project.updateThumbnail("https://cloud/thumbnail");
+        project.addAllImage(Image.listOf(List.of("https://cloud/image")));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
+        when(projectRepository.findById(10L)).thenReturn(Optional.of(project));
+        when(objectStorageService.supports("https://cloud/thumbnail")).thenReturn(true);
+        when(objectStorageService.supports("https://cloud/image")).thenReturn(true);
+
+        projectService.delete(10L, principal(1L));
+
+        verify(projectRepository).delete(project);
+        verify(objectStorageService).deleteImage("https://cloud/thumbnail");
+        verify(objectStorageService).deleteImage("https://cloud/image");
+    }
+
     private ProjectRequest.ProjectRequestBuilder baseRequestBuilder() {
         return ProjectRequest.builder()
             .title("updated title")

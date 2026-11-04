@@ -13,13 +13,13 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import wap.web2.server.config.s3.S3Properties;
-import wap.web2.server.storage.ObjectStorageService;
+import wap.web2.server.storage.CloudObjectStorageService;
 import wap.web2.server.storage.StoragePathUtils;
 
 @Service
 @Profile("aws")
 @RequiredArgsConstructor
-public class S3ObjectStorageService implements ObjectStorageService {
+public class S3ObjectStorageService implements CloudObjectStorageService {
 
     private final S3Client s3Client;
     private final S3Properties s3Properties;
@@ -48,7 +48,7 @@ public class S3ObjectStorageService implements ObjectStorageService {
         MultipartFile imageFile
     ) throws IOException {
         String originalFileName = getOriginalFileName(imageFile);
-        String fileName = StoragePathUtils.createTimestampFileName(
+        String fileName = StoragePathUtils.createUniqueFileName(
             dirName,
             semester,
             projectName,
@@ -71,6 +71,18 @@ public class S3ObjectStorageService implements ObjectStorageService {
             .utilities()
             .getUrl(builder -> builder.bucket(s3Properties.getS3().getBucketName()).key(fileName))
             .toExternalForm();
+    }
+
+    @Override
+    public boolean exists(String imageUrl) {
+        try {
+            s3Client.headObject(software.amazon.awssdk.services.s3.model.HeadObjectRequest.builder()
+                .bucket(s3Properties.getS3().getBucketName()).key(extractKeyFromUrl(imageUrl)).build());
+            return true;
+        } catch (software.amazon.awssdk.services.s3.model.S3Exception failure) {
+            if (failure.statusCode() == 404) return false;
+            throw failure;
+        }
     }
 
     @Override

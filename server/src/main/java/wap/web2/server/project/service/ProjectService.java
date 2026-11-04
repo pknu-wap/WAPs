@@ -202,7 +202,11 @@ public class ProjectService {
                 THUMBNAIL,
                 request.getThumbnailFiles()
             );
+            String previousThumbnail = project.getThumbnail();
             project.updateThumbnail(thumbnailUrl);
+            if (previousThumbnail != null && objectStorageService.supports(previousThumbnail)) {
+                objectStorageService.deleteImage(previousThumbnail);
+            }
         }
 
         // 기존 프로젝트의 이미지 삭제
@@ -251,6 +255,14 @@ public class ProjectService {
             throw new ForbiddenException("프로젝트 삭제 권한이 없습니다.");
         }
         projectRepository.delete(project);
+        for (Image image : project.getImages()) {
+            if (objectStorageService.supports(image.getImageFile())) {
+                objectStorageService.deleteImage(image.getImageFile());
+            }
+        }
+        if (project.getThumbnail() != null && objectStorageService.supports(project.getThumbnail())) {
+            objectStorageService.deleteImage(project.getThumbnail());
+        }
     }
 
     @Transactional(readOnly = true)

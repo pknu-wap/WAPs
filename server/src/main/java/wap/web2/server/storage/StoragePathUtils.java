@@ -8,7 +8,7 @@ public class StoragePathUtils {
 
     private StoragePathUtils() {}
 
-    public static String createTimestampFileName(
+    public static String createUniqueFileName(
         String dirName,
         String semester,
         String projectName,
@@ -24,7 +24,7 @@ public class StoragePathUtils {
             "/" +
             imageType +
             "/" +
-            System.currentTimeMillis() +
+            java.util.UUID.randomUUID() +
             "_" +
             originName
         );
