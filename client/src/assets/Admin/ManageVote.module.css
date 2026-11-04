@@ -19,6 +19,12 @@
   font-size: 28px;
 }
 
+.semesterRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .voteSemester,
 .upperRight {
   color: #c5c5c5;

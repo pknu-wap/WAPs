@@ -13,11 +13,13 @@ const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
       <div className={styles.upperLeft}>
         <div>
           <h1 className={styles.pageTitle}>투표 관리</h1>
-          <div className={styles.voteSemester}>{semester} 학기</div>
+          <div className={styles.semesterRow}>
+            <span className={styles.voteSemester}>{semester} 학기</span>
+            <span className={styles.status}>
+              {isOpenButton ? "준비 중" : isCloseButton ? "진행 중" : "종료"}
+            </span>
+          </div>
         </div>
-        <span className={styles.status}>
-          {isOpenButton ? "준비 중" : isCloseButton ? "진행 중" : "종료"}
-        </span>
         <button
           disabled={isProcessing || (!isOpenButton && !isCloseButton)}
           onClick={onClick}
