@@ -148,20 +148,20 @@ const TeamMemberInputForm = ({
             삭제
           </button>
         )}
-        {/* 팀원 추가 버튼 */}
-        {index === teamMembers.length - 1 && (
-          <button
-            className={styles.teammember_add_btn}
-            type="button"
-            disabled={!member.userId}
-            onClick={() => {
-              if (roleRef.current.reportValidity()) addTeamMember();
-            }}
-          >
-            팀원 추가
-          </button>
-        )}
       </div>
+      {/* 팀원 추가 버튼 */}
+      {index === teamMembers.length - 1 && (
+        <button
+          className={styles.teammember_add_btn}
+          type="button"
+          disabled={!member.userId}
+          onClick={() => {
+            if (roleRef.current.reportValidity()) addTeamMember();
+          }}
+        >
+          팀원 추가
+        </button>
+      )}
     </div>
   );
 };

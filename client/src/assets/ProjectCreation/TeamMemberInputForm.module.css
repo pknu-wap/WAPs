@@ -70,11 +70,13 @@
 }
 
 .teammember_add_btn {
+  display: block;
+  margin: 6px auto 0;
   width: auto;
-  padding: 0 10px;
+  padding: 6px 16px;
   white-space: nowrap;
   flex-shrink: 0;
-  height: 25px;
+  min-height: 32px;
   background-color: #efefef;
   color: #000000;
   border: 0px;
