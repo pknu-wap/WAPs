@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import {
-  BrowserRouter as Router,
-  Routes,
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+  Outlet,
   Route,
   Navigate,
 } from "react-router-dom";
@@ -36,6 +38,79 @@ import AdminPageLayout from "./components/Admin/AdminPageLayout";
 import FullScreenLayout from "./components/FullScreenLayout";
 import "./App.css";
 
+function RouteLayout() {
+  return (
+    <>
+      <ScrollToTop />
+      <Outlet />
+    </>
+  );
+}
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route element={<RouteLayout />}>
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<SplashPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/login-dev" element={<LoginDev />} />
+        <Route path="/oauth/callback" element={<Callback />} />
+        <Route path="/project/create" element={<ProjectCreatePage />} />
+        <Route path="/vote" element={<VotePage />} />
+        <Route path="/vote/result" element={<VoteResultPage />} />
+        <Route
+          path="/vote/result/:semesterParam"
+          element={<VoteResultPage />}
+        />
+        <Route path="/ProjectPage" element={<ProjectPage />} />
+        <Route path="/project/:projectId" element={<ProjectDetailPage />} />
+        <Route
+          path="/project/edit/:projectId"
+          element={<ProjectCreatePage />}
+        />
+        <Route path="/select/role" element={<RoleSelectPage />} />
+        <Route path="/team-build" element={<TeamBuildEntryPage />} />
+        <Route
+          path="/team-build/projects"
+          element={<TeamBuildApplyPage key="first" round={1} />}
+        />
+        <Route
+          path="/team-build/projects/2nd"
+          element={<TeamBuildApplyPage key="second" round={2} />}
+        />
+        <Route
+          path="/team-build/recruit"
+          element={<TeamBuildPage key="recruit-first" round={1} />}
+        />
+        <Route
+          path="/team-build/recruit/2nd"
+          element={<TeamBuildPage key="recruit-second" round={2} />}
+        />
+        <Route path="/team-build/result" element={<TeamBuildResultPage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/protected" element={<ProtectedPage />} />
+      </Route>
+
+      <Route element={<FullScreenLayout />}>
+        <Route path="admin/*" element={<AdminRoute requireRole="ROLE_ADMIN" />}>
+          <Route element={<AdminPageLayout />}>
+            <Route index element={<Navigate to="vote" replace />}></Route>
+            <Route path="vote" element={<ManageVotePage />} />
+            <Route path="teambuild" element={<ManageTeamBuildPage />} />
+            <Route
+              path="teambuild/3rd"
+              element={<ManageThirdTeamBuildPage />}
+            />
+            <Route path="permission" element={<ManagePermissionPage />} />
+            <Route path="plan" element={<ManagePlanPage />} />
+          </Route>
+        </Route>
+      </Route>
+    </Route>,
+  ),
+);
+
 function App() {
   useEffect(() => {
     const setScreenSize = () => {
@@ -48,73 +123,7 @@ function App() {
 
     return () => window.removeEventListener("resize", setScreenSize);
   }, []);
-  return (
-    <Router>
-      <ScrollToTop />
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<SplashPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/login-dev" element={<LoginDev />} />
-          <Route path="/oauth/callback" element={<Callback />} />
-          <Route path="/project/create" element={<ProjectCreatePage />} />
-          <Route path="/vote" element={<VotePage />} />
-          <Route path="/vote/result" element={<VoteResultPage />} />
-          <Route
-            path="/vote/result/:semesterParam"
-            element={<VoteResultPage />}
-          />
-          <Route path="/ProjectPage" element={<ProjectPage />} />
-          <Route path="/project/:projectId" element={<ProjectDetailPage />} />
-          <Route
-            path="/project/edit/:projectId"
-            element={<ProjectCreatePage />}
-          />
-          <Route path="/select/role" element={<RoleSelectPage />} />
-          <Route path="/team-build" element={<TeamBuildEntryPage />} />
-          <Route
-            path="/team-build/projects"
-            element={<TeamBuildApplyPage key="first" round={1} />}
-          />
-          <Route
-            path="/team-build/projects/2nd"
-            element={<TeamBuildApplyPage key="second" round={2} />}
-          />
-          <Route
-            path="/team-build/recruit"
-            element={<TeamBuildPage key="recruit-first" round={1} />}
-          />
-          <Route
-            path="/team-build/recruit/2nd"
-            element={<TeamBuildPage key="recruit-second" round={2} />}
-          />
-          <Route path="/team-build/result" element={<TeamBuildResultPage />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/protected" element={<ProtectedPage />} />
-        </Route>
-
-        <Route element={<FullScreenLayout />}>
-          <Route
-            path="admin/*"
-            element={<AdminRoute requireRole="ROLE_ADMIN" />}
-          >
-            <Route element={<AdminPageLayout />}>
-              <Route index element={<Navigate to="vote" replace />}></Route>
-              <Route path="vote" element={<ManageVotePage />} />
-              <Route path="teambuild" element={<ManageTeamBuildPage />} />
-              <Route
-                path="teambuild/3rd"
-                element={<ManageThirdTeamBuildPage />}
-              />
-              <Route path="permission" element={<ManagePermissionPage />} />
-              <Route path="plan" element={<ManagePlanPage />} />
-            </Route>
-          </Route>
-        </Route>
-      </Routes>
-    </Router>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

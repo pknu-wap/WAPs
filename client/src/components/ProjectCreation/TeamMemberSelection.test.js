@@ -7,7 +7,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import MemoryRouter from "../../testUtils/ProjectRouter";
 import ProjectFormNew from "./ProjectFormNew";
 import { projectApi } from "../../api/project";
 import { userApi } from "../../api/user";
@@ -266,4 +266,39 @@ test("내 정보 조회 실패 후 다시 시도하면 기본 팀원을 선택�
   await waitFor(() =>
     expect(screen.getByLabelText("팀원 1 선택").value).toBe("1"),
   );
+});
+
+test("자동 선택된 팀원은 이탈 경고를 켜지 않고 역할 변경은 감지한다", async () => {
+  render(
+    <MemoryRouter>
+      <ProjectFormNew />
+    </MemoryRouter>,
+  );
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 선택").value).toBe("1"),
+  );
+  const beforeUnload = () => {
+    const event = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(event);
+    return event.defaultPrevented;
+  };
+  expect(beforeUnload()).toBe(false);
+  fireEvent.change(screen.getByLabelText("팀원 1 역할"), {
+    target: { value: "PM" },
+  });
+  expect(beforeUnload()).toBe(true);
+  fireEvent.change(screen.getByLabelText("팀원 1 역할"), {
+    target: { value: "" },
+  });
+  expect(beforeUnload()).toBe(false);
+});
+
+test("기존 프로젝트를 불러온 것만으로는 이탈 경고가 켜지지 않는다", async () => {
+  renderForm([{ userId: 3, memberName: "이회원", memberRole: "AI" }]);
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 선택").disabled).toBe(false),
+  );
+  const event = new Event("beforeunload", { cancelable: true });
+  window.dispatchEvent(event);
+  expect(event.defaultPrevented).toBe(false);
 });

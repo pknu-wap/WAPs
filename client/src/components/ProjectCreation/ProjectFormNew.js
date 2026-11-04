@@ -10,6 +10,9 @@ import { projectApi } from "../../api/project";
 import { userApi } from "../../api/user";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
+import useProjectLeaveWarning, {
+  projectDraftSnapshot,
+} from "../../hooks/ProjectCreation/useProjectLeaveWarning";
 import ImageUploader from "./ImageUploader";
 import RadioButton from "./RadioButton";
 import TextInputForm from "./TextInputForm";
@@ -58,6 +61,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const [membersLoading, setMembersLoading] = useState(true);
   const [membersError, setMembersError] = useState("");
   const [membersRetry, setMembersRetry] = useState(0);
+  const [defaultMember, setDefaultMember] = useState(null);
   const {
     title,
     setTitle,
@@ -95,6 +99,33 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     removalList,
     // setRemovalList,
   } = useProjectForm();
+
+  const initialDraft = isEdit
+    ? {
+        ...existingProject,
+        teamMembers: existingProject?.teamMember,
+        techStacks: existingProject?.techStack,
+        images: existingProject?.images?.map((image) => image.imageFile),
+      }
+    : { teamMembers: defaultMember ? [defaultMember] : [] };
+  const currentDraft = {
+    title,
+    summary,
+    content,
+    projectType,
+    password,
+    thumbnail,
+    images,
+    teamMembers,
+    techStacks: selectedTechStacks,
+    recruitmentPositions,
+  };
+  const markSaved = useProjectLeaveWarning(
+    isSubmitting ||
+      ((!isEdit || Boolean(existingProject)) &&
+        projectDraftSnapshot(currentDraft) !==
+          projectDraftSnapshot(initialDraft)),
+  );
 
   useEffect(() => {
     if (isEdit) {
@@ -146,6 +177,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           (member) => member.userId === currentUser?.userId,
         );
         if (!isEdit && defaultMember) {
+          setDefaultMember(defaultMember);
           setTeamMembers((previous) => {
             if (previous[0]?.userId || previous[0]?.memberName) return previous;
             return [{ ...previous[0], ...defaultMember }, ...previous.slice(1)];
@@ -283,10 +315,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       if (isEdit) {
         await projectApi.updateProject(projectId, formData, onUploadProgress);
 
+        markSaved();
         alert("프로젝트가 성공적으로 수정되었습니다.");
         navigate(`/project/${projectId}`);
       } else {
         await projectApi.createProject(formData, onUploadProgress);
+        markSaved();
         alert("프로젝트가 성공적으로 생성되었습니다.");
         navigate(`/ProjectPage`);
       }

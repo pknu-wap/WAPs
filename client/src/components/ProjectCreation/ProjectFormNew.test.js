@@ -6,7 +6,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import MemoryRouter from "../../testUtils/ProjectRouter";
 import { projectApi } from "../../api/project";
 import { userApi } from "../../api/user";
 
