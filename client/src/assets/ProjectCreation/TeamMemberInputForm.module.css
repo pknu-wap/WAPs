@@ -74,9 +74,10 @@
 }
 
 .teammember_add_btn {
+  box-sizing: border-box;
   display: block;
   margin: 6px auto 0;
-  width: auto;
+  width: 100px;
   padding: 6px 16px;
   white-space: nowrap;
   flex-shrink: 0;
@@ -86,7 +87,9 @@
   border: 0px;
   cursor: pointer;
   border-radius: 20px;
-  font-size: 13px;
+  font: inherit;
+  font-size: 12px;
+  line-height: 20px;
   text-align: center;
 }
 

@@ -270,6 +270,7 @@
 
 .recruitment > button {
   display: block;
+  width: 100px;
   margin: 16px auto 0;
   padding-right: 16px;
   padding-left: 16px;
