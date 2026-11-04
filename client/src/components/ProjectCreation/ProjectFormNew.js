@@ -280,7 +280,11 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       }
       resetForm();
     } catch (error) {
-      alert("프로젝트 요청에 실패했습니다. 다시 시도해 주세요.");
+      alert(
+        error.response?.data?.code === "PROJECT_PASSWORD_INVALID"
+          ? "올바른 인증번호를 입력해주세요."
+          : "프로젝트 요청에 실패했습니다. 다시 시도해 주세요.",
+      );
     } finally {
       setIsSubmitting(false);
     }

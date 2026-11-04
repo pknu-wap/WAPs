@@ -165,3 +165,28 @@ test.each([0, -1, 1.5, ""])(
   expect(projectApi.createProject).not.toHaveBeenCalled();
   expect(window.alert).toHaveBeenCalledWith("모집 직무와 인원을 최소 한 개 입력해 주세요.");
 });
+
+test.each([
+  [false, "PROJECT_PASSWORD_INVALID", "올바른 인증번호를 입력해주세요."],
+  [true, "PROJECT_PASSWORD_INVALID", "올바른 인증번호를 입력해주세요."],
+  [false, null, "프로젝트 요청에 실패했습니다. 다시 시도해 주세요."],
+  [true, null, "프로젝트 요청에 실패했습니다. 다시 시도해 주세요."],
+])("프로젝트 요청 실패 안내 (수정: %s, 오류: %s)", async (isEdit, code, message) => {
+  const request = isEdit ? projectApi.updateProject : projectApi.createProject;
+  request.mockRejectedValueOnce(code ? { response: { data: { code } } } : new Error("offline"));
+  render(
+    <MemoryRouter>
+      <ProjectFormNew isEdit={isEdit} existingProject={isEdit ? { semester: "2026-02" } : null} />
+    </MemoryRouter>,
+  );
+  await screen.findByText("2026년 2학기");
+  if (!isEdit) {
+    fireEvent.click(screen.getByRole("button", { name: "모집 직무 추가" }));
+    fireEvent.change(screen.getByLabelText("직무 1"), { target: { value: "BACKEND" } });
+  }
+  fireEvent.change(screen.getByLabelText("비밀번호"), { target: { value: "wrong" } });
+  fireEvent.click(screen.getByRole("button", { name: isEdit ? "프로젝트 수정" : "프로젝트 생성" }));
+  await waitFor(() => expect(window.alert).toHaveBeenCalledWith(message));
+  expect(request).toHaveBeenCalledTimes(1);
+  expect(screen.getByLabelText("비밀번호").value).toBe("wrong");
+});
