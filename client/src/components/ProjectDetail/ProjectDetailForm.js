@@ -114,7 +114,7 @@ const ProjectDetailForm = () => {
             {formatText(projectData.summary) || "요약 정보 없음"}
           </div>
           <div className={styles.content}>
-            <MarkdownContent value={projectData.content} allowRaw />
+            <MarkdownContent value={projectData.content} />
           </div>
         </div>
       </div>
