@@ -236,4 +236,71 @@
   .container td {
     padding: 12px 8px;
   }
+
+  .upperLeft {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .semesterRow {
+    gap: 8px;
+  }
+
+  .voteSemester,
+  .upperRight {
+    font-size: 14px;
+  }
+
+  .status {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
+  .bar {
+    margin: 20px 0;
+  }
+
+  .cardGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .card {
+    padding: 8px;
+    border-radius: 12px;
+  }
+
+  .thumbnail {
+    border-radius: 6px;
+  }
+
+  .title {
+    margin-top: 8px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .selection {
+    font-size: 12px;
+  }
+
+  .resultTitle {
+    font-size: 20px;
+  }
+
+  .container table {
+    min-width: 400px;
+    font-size: 14px;
+  }
+
+  .publicBtns button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 360px) {
+  .cardGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

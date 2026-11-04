@@ -109,7 +109,12 @@ const EndedView = ({ voteResult, isResultPublic, handleSetPublicStatus }) => {
       <div className={styles.resultTitle}>투표 결과</div>
 
       <div className={styles.resultBody}>
-        <div className={styles.tableWrapper}>
+        <div
+          className={styles.tableWrapper}
+          tabIndex={0}
+          role="region"
+          aria-label="투표 결과 표"
+        >
           <table>
             <thead>
               <tr>
