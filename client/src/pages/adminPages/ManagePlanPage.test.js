@@ -22,16 +22,23 @@ test("현지 날짜와 시간을 기본값으로 표시하고 선택한 일정�
   adminPlanApi.createEvent.mockResolvedValue({});
   render(<ManagePlanPage />);
   const dateInput = screen.getByLabelText("날짜");
-  const timeInput = screen.getByLabelText("시각");
+  const hourInput = screen.getByRole("combobox", { name: "시" });
+  const minuteInput = screen.getByRole("combobox", { name: "분" });
   expect(screen.getByRole("group", { name: "일정" })).toBeInTheDocument();
   expect(dateInput).toHaveAttribute("type", "date");
-  expect(timeInput).toHaveAttribute("type", "time");
-  expect(timeInput).toHaveValue("00:30");
+  expect(Array.from(hourInput.options, (option) => option.value)).toEqual(
+    Array.from({ length: 24 }, (_, hour) => String(hour).padStart(2, "0")),
+  );
+  expect(hourInput).toHaveValue("00");
+  expect(minuteInput).toHaveValue("30");
   expect(dateInput).toHaveValue("2026-11-04");
   fireEvent.change(dateInput, { target: { value: "2026-11-20" } });
-  expect(timeInput).toHaveValue("00:30");
-  fireEvent.change(timeInput, { target: { value: "18:30" } });
-  expect(screen.getByText("2026-11-20 18:30")).toBeInTheDocument();
+  expect(hourInput).toHaveValue("00");
+  expect(minuteInput).toHaveValue("30");
+  fireEvent.change(hourInput, { target: { value: "23" } });
+  expect(minuteInput).toHaveValue("30");
+  fireEvent.change(minuteInput, { target: { value: "59" } });
+  expect(screen.getByText("2026-11-20 23:59")).toBeInTheDocument();
   for (const [label, value] of [
     ["제목", "정기 모임"],
     ["내용", "프로젝트 발표"],
@@ -44,17 +51,18 @@ test("현지 날짜와 시간을 기본값으로 표시하고 선택한 일정�
   await waitFor(() => {
     expect(adminPlanApi.createEvent).toHaveBeenCalledWith({
       title: "정기 모임",
-      dateTime: "2026-11-20T18:30:00",
+      dateTime: "2026-11-20T23:59:00",
       content: "프로젝트 발표",
       target: "전체 회원",
       location: "동아리방",
     });
     expect(dateInput).toHaveValue("2026-11-04");
-    expect(timeInput).toHaveValue("00:30");
+    expect(hourInput).toHaveValue("00");
+    expect(minuteInput).toHaveValue("30");
   });
 });
 
-test.each(["날짜", "시각"])(
+test.each(["날짜"])(
   "%s을 지우면 발행하지 않고 필수 입력 안내를 표시한다",
   (label) => {
     render(<ManagePlanPage />);

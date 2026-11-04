@@ -95,11 +95,18 @@
   color: #aaa;
 }
 
+.container select:focus-visible,
 .container input:focus-visible,
 .container textarea:focus-visible,
 .publishButton:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 3px;
+}
+
+.timeInputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .dateInput {

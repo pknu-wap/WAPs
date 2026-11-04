@@ -117,18 +117,48 @@ const ManagePlanPage = () => {
                   }
                 />
               </div>
-              <div className={styles.inputRow}>
-                <input
+              <div className={styles.timeInputs} role="group" aria-label="시각">
+                <select
                   className={styles.dateInput}
-                  type="time"
-                  step="60"
-                  id="event-time"
-                  aria-label="시각"
-                  value={time}
+                  aria-label="시"
+                  value={time.split(":")[0]}
                   onChange={(e) =>
-                    setSchedule((prev) => ({ ...prev, time: e.target.value }))
+                    setSchedule((prev) => ({
+                      ...prev,
+                      time: `${e.target.value}:${prev.time.split(":")[1]}`,
+                    }))
                   }
-                />
+                >
+                  {Array.from({ length: 24 }, (_, hour) => {
+                    const value = String(hour).padStart(2, "0");
+                    return (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    );
+                  })}
+                </select>
+                <span aria-hidden="true">:</span>
+                <select
+                  className={styles.dateInput}
+                  aria-label="분"
+                  value={time.split(":")[1]}
+                  onChange={(e) =>
+                    setSchedule((prev) => ({
+                      ...prev,
+                      time: `${prev.time.split(":")[0]}:${e.target.value}`,
+                    }))
+                  }
+                >
+                  {Array.from({ length: 60 }, (_, minute) => {
+                    const value = String(minute).padStart(2, "0");
+                    return (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    );
+                  })}
+                </select>
               </div>
             </div>
           </fieldset>
