@@ -8,6 +8,7 @@
   flex-direction: column;
   gap: 24px;
   color: #fff;
+  font-family: "Pretendard-Regular", sans-serif;
 }
 
 .title {
