@@ -2,18 +2,18 @@ import React, { useState } from "react";
 import styles from "../../assets/Admin/ManagePlan.module.css";
 import { adminPlanApi } from "../../api/admin";
 
-const getCurrentDateTime = () => {
+const getDefaultSchedule = () => {
   const now = new Date();
   const pad = (value) => String(value).padStart(2, "0");
   return {
     date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
-    time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+    time: "18:30",
   };
 };
 
 const ManagePlanPage = () => {
   const [title, setTitle] = useState("");
-  const [{ date, time }, setSchedule] = useState(getCurrentDateTime);
+  const [{ date, time }, setSchedule] = useState(getDefaultSchedule);
   const [content, setContent] = useState("");
   const [target, setTarget] = useState("");
   const [location, setLocation] = useState("");
@@ -65,7 +65,7 @@ const ManagePlanPage = () => {
 
       // 입력 초기화
       setTitle("");
-      setSchedule(getCurrentDateTime());
+      setSchedule(getDefaultSchedule());
       setContent("");
       setTarget("");
       setLocation("");

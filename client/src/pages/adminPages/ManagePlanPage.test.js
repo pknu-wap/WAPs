@@ -18,7 +18,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-test("현지 날짜와 시간을 기본값으로 표시하고 선택한 일정을 서버 형식으로 발행한다", async () => {
+test("오늘 날짜와 18시 30분을 기본값으로 표시하고 선택한 일정을 서버 형식으로 발행한다", async () => {
   adminPlanApi.createEvent.mockResolvedValue({});
   render(<ManagePlanPage />);
   const dateInput = screen.getByLabelText("날짜");
@@ -29,11 +29,11 @@ test("현지 날짜와 시간을 기본값으로 표시하고 선택한 일정�
   expect(Array.from(hourInput.options, (option) => option.value)).toEqual(
     Array.from({ length: 24 }, (_, hour) => String(hour).padStart(2, "0")),
   );
-  expect(hourInput).toHaveValue("00");
+  expect(hourInput).toHaveValue("18");
   expect(minuteInput).toHaveValue("30");
   expect(dateInput).toHaveValue("2026-11-04");
   fireEvent.change(dateInput, { target: { value: "2026-11-20" } });
-  expect(hourInput).toHaveValue("00");
+  expect(hourInput).toHaveValue("18");
   expect(minuteInput).toHaveValue("30");
   fireEvent.change(hourInput, { target: { value: "23" } });
   expect(minuteInput).toHaveValue("30");
@@ -57,7 +57,7 @@ test("현지 날짜와 시간을 기본값으로 표시하고 선택한 일정�
       location: "동아리방",
     });
     expect(dateInput).toHaveValue("2026-11-04");
-    expect(hourInput).toHaveValue("00");
+    expect(hourInput).toHaveValue("18");
     expect(minuteInput).toHaveValue("30");
   });
 });
