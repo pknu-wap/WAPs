@@ -2,6 +2,7 @@
   --primary: #abd4fd;
   width: 100%;
   height: 100%;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -206,16 +207,81 @@ select.dateInput {
 }
 
 @media (max-width: 600px) {
+  .container,
+  .pageContent {
+    gap: 20px;
+  }
+
+  .container > header,
+  .pageContent {
+    flex-shrink: 0;
+  }
+
   .title {
     font-size: 24px;
+  }
+
+  .description {
+    font-size: 14px;
   }
 
   .inputSection,
   .previewSection {
     padding: 16px;
+    gap: 16px;
+    border-radius: 12px;
+  }
+
+  .scheduleInputs {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .timeInputs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  .titleInput,
+  .targetInput {
+    min-height: 50px;
+  }
+
+  .contentInput {
+    min-height: 140px;
+  }
+
+  .previewTitle,
+  .scheduleTitle {
+    font-size: 18px;
+  }
+
+  .scheduleBox {
+    padding: 16px;
+  }
+
+  .previewFixedHeight {
+    min-height: 160px;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .emptyPreview {
+    min-height: 120px;
   }
 
   .publishButton {
+    box-sizing: border-box;
     width: 100%;
+    min-height: 50px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .inputSection,
+  .previewSection,
+  .scheduleBox {
+    padding: 12px;
   }
 }
