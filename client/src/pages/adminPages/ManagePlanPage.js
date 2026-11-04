@@ -78,48 +78,65 @@ const ManagePlanPage = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.title}>행사 일정</div>
+      <header>
+        <h1 className={styles.title}>행사 일정 관리</h1>
+        <p className={styles.description}>
+          행사 정보를 입력하고 미리보기를 확인한 뒤 발행해주세요.
+        </p>
+      </header>
 
       <div className={styles.pageContent}>
         {/* 입력 섹션 */}
         <div className={styles.inputSection}>
           <div className={styles.inputRow}>
-            <label className={styles.label}>제목</label>
+            <label className={styles.label} htmlFor="event-title">
+              제목
+            </label>
             <input
               className={styles.titleInput}
               type="text"
               placeholder="제목을 입력하세요"
+              id="event-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
           <div className={styles.inputRow}>
-            <label className={styles.label}>날짜</label>
+            <label className={styles.label} htmlFor="event-date">
+              날짜
+            </label>
             <input
               className={styles.dateInput}
               type="text"
               placeholder="YYYY-MM-DD HH:mm"
+              id="event-date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
             />
           </div>
 
           <div className={styles.inputRow}>
-            <label className={styles.label}>내용</label>
+            <label className={styles.label} htmlFor="event-content">
+              내용
+            </label>
             <textarea
               className={styles.contentInput}
               placeholder="내용을 입력해주세요"
+              id="event-content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
           </div>
 
           <div className={styles.targetBox}>
-            <label className={styles.targetLabel}>필수 참여인원</label>
+            <label className={styles.targetLabel} htmlFor="event-target">
+              필수 참여인원
+            </label>
             <input
               className={styles.targetInput}
               type="text"
+              id="event-target"
               value={target}
               onChange={(e) => setTarget(e.target.value)}
               placeholder="신입은 필수!"
@@ -127,10 +144,13 @@ const ManagePlanPage = () => {
           </div>
 
           <div className={styles.inputRow}>
-            <label className={styles.label}>위치</label>
+            <label className={styles.label} htmlFor="event-location">
+              위치
+            </label>
             <input
               className={styles.targetInput}
               type="text"
+              id="event-location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="장소를 입력해주세요"
@@ -144,9 +164,11 @@ const ManagePlanPage = () => {
 
           <div className={`${styles.scheduleBox} ${styles.previewFixedHeight}`}>
             {!hasPreview ? (
-              <div className={styles.emptyPreview}></div>
+              <div className={styles.emptyPreview}>
+                입력한 행사 정보가 여기에 표시됩니다.
+              </div>
             ) : (
-              <div className={styles.previewContent}>
+              <div>
                 <div className={styles.scheduleDate}>{preview.date}</div>
                 <div className={styles.scheduleTitle}>{preview.title}</div>
                 <div className={styles.scheduleContent}>{preview.content}</div>
@@ -155,13 +177,15 @@ const ManagePlanPage = () => {
                     {preview.location}
                   </div>
                 )}
-                <div className={styles.miniTarget}>#{preview.target}</div>
+                {preview.target && (
+                  <div className={styles.miniTarget}>#{preview.target}</div>
+                )}
               </div>
             )}
           </div>
 
           <button className={styles.publishButton} onClick={handlePublish}>
-            발행
+            일정 발행
           </button>
         </div>
       </div>

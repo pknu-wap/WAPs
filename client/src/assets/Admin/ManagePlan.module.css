@@ -1,267 +1,182 @@
-@font-face {
-  font-family: "Pretendard-Bold";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2")
-    format("woff2");
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-    format("woff");
-  font-weight: 400;
-}
-
-/* 전체 컨테이너 */
 .container {
+  --primary: #abd4fd;
   width: 100%;
   height: 100%;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 29px;
-  padding: 30px;
-  box-sizing: border-box;
-  font-family: "Pretendard-Regular";
+  gap: 24px;
+  color: #fff;
 }
 
-/* 페이지 타이틀 */
 .title {
-  font-size: 50px;
+  margin: 0;
+  font-size: 28px;
   font-weight: 700;
-  color: white;
-  font-family: "Pretendard-Bold";
 }
 
-/* 좌우 영역 래퍼 */
+.description {
+  margin: 8px 0 0;
+  color: #c5c5c5;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
 .pageContent {
-  display: flex;
-  gap: 30px;
-  flex-grow: 1;
-  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 24px;
 }
 
-/* 입력 섹션 (왼쪽) */
-.inputSection {
-  flex: 0 0 45%;
+.inputSection,
+.previewSection {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #454545;
+  border-radius: 16px;
+  background: #272727;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* 그리드 정렬 */
-.inputRow {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 10px;
-  align-items: start;
-}
-
-/* 라벨 스타일 */
-.label {
-  font-size: 35px;
-  font-weight: 600;
-  color: #ffffff;
-  margin: 0;
+.inputRow,
+.targetBox {
   display: flex;
-  align-items: center;
-  white-space: nowrap;
-  padding-top: 12px;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* 입력 공통 */
+.label,
+.targetLabel {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
 .titleInput,
 .dateInput,
 .contentInput,
 .targetInput {
-  background-color: #353535;
-  border: none;
-  color: #ffffff;
-  padding: 12px 15px;
-  font-size: 20px;
-  outline: none;
-  box-sizing: border-box;
   width: 100%;
-  overflow: auto;
-}
-
-/* 높이 통일 */
-.titleInput,
-.targetInput,
-.dateInput {
-  height: 70px;
-}
-
-/* 제목 입력 상세 */
-.titleInput {
-  grid-column: 2 / 3;
-}
-
-/* 내용 입력 */
-.contentInput {
-  grid-column: 2 / 3;
-  min-height: 200px;
-  resize: none;
-  font-family: "Pretendard-Regular";
-  padding-top: 14px;
-}
-
-.targetBox {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.targetLabel {
-  font-size: 35px;
-  font-weight: 600;
-  color: #ffffff;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-right: 10px;
-}
-
-.targetInput {
-  padding: 8px 12px;
-  border: none;
-  outline: none;
+  min-width: 0;
   box-sizing: border-box;
-  flex: 1;
-}
-
-/* 미리보기 섹션 (오른쪽) */
-.previewSection {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 미리보기 제목 */
-.previewTitle {
-  font-size: 35px;
-  font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 15px;
-  font-family: "Pretendard-Bold";
-}
-
-/* 미리보기 내부 컨텐츠(기본 박스) */
-.previewContent {
-  margin: 20px;
-}
-
-/* 미리보기 내용 없을 때 */
-.emptyPreview {
-  min-height: 1px;
-}
-
-/* 미리보기 박스 */
-.scheduleBox {
-  width: 100%;
-  margin: 0;
+  border: 1px solid #626262;
+  border-radius: 10px;
+  padding: 12px;
   background: #353535;
-  padding: 20px;
-  box-sizing: border-box;
-  backdrop-filter: blur(8px);
-}
-
-/* 날짜 텍스트 */
-.scheduleDate {
-  color: #bbb;
-  font-size: 19px;
-  margin-bottom: 5px;
-}
-
-/* 제목 텍스트 */
-.scheduleTitle {
-  font-size: 22px;
   color: #fff;
-}
-
-/* 내용 (줄바꿈 유지) */
-.scheduleContent {
-  margin-top: 15px;
-  font-size: 20px;
-  color: #fff;
-  white-space: pre-line;
+  font: inherit;
+  font-size: 16px;
   line-height: 1.5;
 }
 
-/* 미리 보기 안의 타겟 영역 */
-.miniTarget {
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
-  margin-top: 15px;
-  padding-top: 10px;
-  text-align: right;
+.container input::placeholder,
+.container textarea::placeholder {
+  color: #aaa;
+}
+
+.container input:focus-visible,
+.container textarea:focus-visible,
+.publishButton:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.contentInput {
+  min-height: 160px;
+  resize: vertical;
+}
+
+.previewTitle {
   font-size: 20px;
-  color: #fff;
-  font-family: "Pretendard-Regular";
+  font-weight: 700;
 }
 
-.scheduleBox .scheduleDate {
-  margin-bottom: 6px;
+.scheduleBox {
+  padding: 20px;
+  border: 1px solid #454545;
+  border-radius: 12px;
+  background: #313131;
+  overflow-wrap: anywhere;
 }
 
-.scheduleBox .scheduleTitle {
-  margin-top: 2px;
-}
-
-/* 미리보기 박스 높이 고정 */
 .previewFixedHeight {
-  min-height: 360px;
-  height: 422px;
+  min-height: 280px;
+  max-height: 480px;
   overflow-y: auto;
 }
 
-/* 미리보기 비어 있을 때 빈 공간 유지 */
 .emptyPreview {
-  width: 100%;
-  height: 100%;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  text-align: center;
+  line-height: 1.6;
 }
 
-/* 발행 버튼 */
+.scheduleDate {
+  margin-bottom: 8px;
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.scheduleTitle {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.scheduleContent {
+  margin-top: 16px;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.miniTarget {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #626262;
+  color: #c5c5c5;
+  font-size: 14px;
+}
+
 .publishButton {
   align-self: flex-end;
-  background-color: transparent;
-  color: #a2a2a2;
-  border: 1px solid #a2a2a2;
-  padding: 10px 30px;
-  font-size: 25px;
-  border-radius: 25px;
+  min-height: 44px;
+  border: 1px solid var(--primary);
+  border-radius: 12px;
+  padding: 10px 24px;
+  background: var(--primary);
+  color: #202020;
+  font: inherit;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 20px;
-  transition: background-color 0.2s;
-  font-family: "Pretendard-Bold";
 }
 
 .publishButton:hover {
-  background-color: #333333;
+  background: #8db7e0;
 }
 
-/* 반응형 */
-@media (max-width: 800px) {
+@media (max-width: 1200px) {
   .pageContent {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
   }
+}
 
-  .inputSection {
-    flex: 1 1 auto;
-  }
-
-  .previewSection {
-    flex: 1 1 auto;
-  }
-
-  .inputRow,
-  .target {
-    grid-template-columns: 100px 1fr;
-  }
-
+@media (max-width: 600px) {
   .title {
-    font-size: 36px;
+    font-size: 24px;
+  }
+
+  .inputSection,
+  .previewSection {
+    padding: 16px;
+  }
+
+  .publishButton {
+    width: 100%;
   }
 }
