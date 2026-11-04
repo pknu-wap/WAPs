@@ -6,6 +6,13 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@tiptap/extension-image": "^3.32.2",
+    "@tiptap/extension-list": "^3.32.2",
+    "@tiptap/extension-table": "^3.32.2",
+    "@tiptap/markdown": "^3.32.2",
+    "@tiptap/pm": "^3.32.2",
+    "@tiptap/react": "^3.32.2",
+    "@tiptap/starter-kit": "^3.32.2",
     "axios": "^1.7.7",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
@@ -55,7 +62,12 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "^markdown-to-jsx/entities$": "<rootDir>/node_modules/markdown-to-jsx/dist/entities.browser.cjs"
-    }
+      "^markdown-to-jsx/entities$": "<rootDir>/node_modules/markdown-to-jsx/dist/entities.browser.cjs",
+      "^@tiptap/pm/(.*)$": "<rootDir>/node_modules/@tiptap/pm/dist/$1/index.cjs",
+      "^@tiptap/core/jsx-runtime$": "<rootDir>/node_modules/@tiptap/core/jsx-runtime/index.cjs"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!marked/)"
+    ]
   }
 }

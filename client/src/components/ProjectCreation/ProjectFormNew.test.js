@@ -57,7 +57,8 @@ test("모집 직무를 추가하고 인원을 숫자로 저장한다", async () 
     </MemoryRouter>,
   );
   await screen.findByText("2026년 2학기");
-  fireEvent.change(screen.getByLabelText("상세 설명"), { target: { value: "## 소개\n\n**프로젝트**" } });
+  fireEvent.click(screen.getByRole("button", { name: "Raw" }));
+  fireEvent.change(screen.getByRole("textbox", { name: "상세 설명", exact: true }), { target: { value: "## 소개\n\n**프로젝트**" } });
   fireEvent.click(screen.getByRole("button", { name: "모집 직무 추가" }));
   fireEvent.change(screen.getByLabelText("직무 1"), {
     target: { value: "FRONTEND" },

@@ -43,7 +43,8 @@
 .toolbar button:nth-child(2) {
   font-style: italic;
 }
-.editor textarea {
+.editor textarea,
+.richInput {
   box-sizing: border-box;
   display: block;
   width: 100%;
@@ -59,6 +60,7 @@
   overflow: auto;
 }
 .editor textarea:focus-visible,
+.richInput:focus-visible,
 .controls button:focus-visible,
 .toolbar button:focus-visible {
   outline: 2px solid #a9caff;
@@ -154,4 +156,37 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font: inherit;
+}
+
+.richInput {
+  white-space: pre-wrap;
+}
+.richInput p {
+  margin: 0 0 0.5em;
+}
+.richInput > :first-child {
+  margin-top: 0;
+}
+.linkControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.linkControls input {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px;
+}
+.linkControls button {
+  padding: 8px;
+  border-radius: 6px;
+}
+.richInput ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+.richInput li[data-type="taskItem"] {
+  display: flex;
+  gap: 8px;
 }

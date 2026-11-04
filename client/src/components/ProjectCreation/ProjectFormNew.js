@@ -350,6 +350,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           errorMessage={errorMessage}
         />
         <MarkdownEditor
+          disabled={isSubmitting}
           value={content}
           onChange={setContent}
           maxLength={MAX_PROJECT_CONTENT_LENGTH}
