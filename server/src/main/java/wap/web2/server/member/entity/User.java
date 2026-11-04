@@ -65,6 +65,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private MembershipLevel membershipLevel = MembershipLevel.NONE;
 
+    @Column(length = 20)
+    private String studentNumber;
+
+    // Existing and non-OAuth accounts do not need the Kakao signup flow.
+    @Column(nullable = false)
+    private boolean signupCompleted = true;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Project> projects = new ArrayList<>();
 

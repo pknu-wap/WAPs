@@ -3,6 +3,7 @@ package wap.web2.server.global.security.handler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +38,28 @@ class OAuth2AuthenticationSuccessHandlerTest {
         tokenProvider, properties, new HttpCookieOAuth2AuthorizationRequestRepository(),
         userRepository, refreshTokenRepository, new SecurityErrorResponseWriter(objectMapper)
     );
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void redirectIncludesPersistedSignupState(boolean completed) {
+        var account = new wap.web2.server.member.entity.User();
+        account.setId(1L);
+        account.setRole(wap.web2.server.member.entity.Role.ROLE_GUEST);
+        account.setSignupCompleted(completed);
+        var principal = wap.web2.server.global.security.UserPrincipal.create(account);
+        var authentication = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+            principal, null, principal.getAuthorities());
+        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(account));
+        when(tokenProvider.createToken(authentication)).thenReturn("access-token");
+        when(tokenProvider.createRefreshToken(authentication)).thenReturn("refresh-token");
+
+        String redirect = handler.addTokenCookiesTo(
+            "https://waps.im/oauth/callback?signupCompleted=untrusted",
+            new MockHttpServletResponse(), authentication);
+
+        assertThat(redirect).contains("token=access-token", "signupCompleted=" + completed)
+            .doesNotContain("untrusted");
+    }
 
     @BeforeEach
     void loadConfiguredRedirectUris() {
