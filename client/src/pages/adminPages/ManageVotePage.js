@@ -4,6 +4,165 @@ import { adminVoteApi } from "../../api/admin";
 import { projectApi } from "../../api/project";
 import { getCurrentSemester } from "../../utils/dateUtils";
 import SubmitModal from "./SubmitModal";
+const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
+  const isOpenButton = voteStatus === "NOT_CREATED";
+  const isCloseButton = voteStatus === "VOTING";
+
+  return (
+    <div>
+      <div className={styles.upperLeft}>
+        <div>
+          <h1 className={styles.pageTitle}>투표 관리</h1>
+          <div className={styles.voteSemester}>{semester} 학기</div>
+        </div>
+        <span className={styles.status}>
+          {isOpenButton ? "준비 중" : isCloseButton ? "진행 중" : "종료"}
+        </span>
+        <button
+          disabled={isProcessing || (!isOpenButton && !isCloseButton)}
+          onClick={onClick}
+          className={isOpenButton ? styles.openBtn : styles.closeBtn}
+        >
+          {isProcessing
+            ? isOpenButton
+              ? "시작 중..."
+              : "종료 중..."
+            : isOpenButton
+              ? "투표 시작"
+              : isCloseButton
+                ? "투표 종료"
+                : "투표 종료됨"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const NotCreatedView = ({
+  projects,
+  selectedProjects,
+  toggleProjectSelect,
+}) => {
+  return (
+    <>
+      <div className={styles.upperRight}>
+        투표에 참여할 프로젝트를 선택해주세요. ({selectedProjects.length}/
+        {projects.length}개 선택)
+      </div>
+      <div className={styles.cardGrid}>
+        {projects.length === 0 && (
+          <p className={styles.emptyState}>등록된 프로젝트가 없습니다.</p>
+        )}
+        {projects.map((p) => (
+          <button
+            type="button"
+            aria-pressed={selectedProjects.includes(p.projectId)}
+            key={p.projectId}
+            className={`${styles.card} ${!selectedProjects.includes(p.projectId) ? styles.deselected : ""}`}
+            onClick={() => toggleProjectSelect(p.projectId)}
+          >
+            <img src={p.thumbnail} className={styles.thumbnail} alt="" />
+            <span className={styles.title}>{p.title}</span>
+            <span className={styles.selection}>
+              {selectedProjects.includes(p.projectId) ? "선택됨" : "선택 안 됨"}
+            </span>
+          </button>
+        ))}
+      </div>
+    </>
+  );
+};
+
+const VotingView = () => {
+  return (
+    <div>
+      <div className={styles.resultTitle}>투표 결과</div>
+
+      <div className={styles.resultBody}>
+        <div className={styles.loadingBox}>투표를 기다려주세요</div>
+
+        <div className={styles.publicBtns}>
+          <button className={styles.publicBtnDisable} disabled>
+            공개
+          </button>
+          <button className={styles.publicBtnDisable} disabled>
+            비공개
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const EndedView = ({ voteResult, isResultPublic, handleSetPublicStatus }) => {
+  const publicBtnClass = isResultPublic
+    ? styles.publicBtnActive
+    : styles.publicBtn;
+  const privateBtnClass = isResultPublic
+    ? styles.publicBtn
+    : styles.publicBtnActive;
+
+  return (
+    <div>
+      <div className={styles.resultTitle}>투표 결과</div>
+
+      <div className={styles.resultBody}>
+        <div className={styles.tableWrapper}>
+          <table>
+            <thead>
+              <tr>
+                <th>등수</th>
+                <th>프로젝트명</th>
+                <th>득표수</th>
+                <th>득표율</th>
+              </tr>
+            </thead>
+            <tbody>
+              {voteResult.length === 0 ? (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    투표결과가 없습니다
+                  </td>
+                </tr>
+              ) : (
+                [...voteResult]
+                  .sort((a, b) => b.voteCount - a.voteCount)
+                  .map((result, idx) => (
+                    <tr key={result.projectName}>
+                      <td>{idx + 1}</td>
+                      <td>{result.projectName}</td>
+                      <td>{result.voteCount}</td>
+                      <td>{result.voteRate}%</td>
+                    </tr>
+                  ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className={styles.publicBtns}>
+          <button
+            className={publicBtnClass}
+            onClick={() => handleSetPublicStatus(true)}
+            aria-pressed={isResultPublic}
+            disabled={isResultPublic}
+          >
+            공개
+          </button>
+          <button
+            className={privateBtnClass}
+            onClick={() => handleSetPublicStatus(false)}
+            aria-pressed={!isResultPublic}
+            disabled={!isResultPublic}
+          >
+            비공개
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ManageVotePage = () => {
   const [voteStatus, setVoteStatus] = useState(""); // 투표 상태 (NOT_CREATED, VOTING, ENDED)
   const [semester, setSemester] = useState(null); // 현재 학기
@@ -156,147 +315,18 @@ const ManageVotePage = () => {
     }
   };
 
-  // 컴포넌트들
-  const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
-    const isOpenButton = voteStatus === "NOT_CREATED";
-    const isCloseButton = voteStatus === "VOTING";
-
+  if (isLoading)
     return (
-      <div className={styles.upperBox}>
-        <div className={styles.upperLeft}>
-          <div className={styles.voteSemester}>{semester}</div>
-          <button
-            disabled={isProcessing || (!isOpenButton && !isCloseButton)}
-            onClick={onClick}
-            className={isOpenButton ? styles.openBtn : styles.closeBtn}
-          >
-            {isProcessing
-              ? isOpenButton
-                ? "Opening..."
-                : "Closing..."
-              : isOpenButton
-                ? "OPEN"
-                : "CLOSE"}
-          </button>
-        </div>
+      <div className={styles.emptyState} role="status">
+        투표 정보를 불러오는 중입니다.
       </div>
     );
-  };
-
-  const NotCreatedView = ({
-    semester,
-    projects,
-    selectedProjects,
-    toggleProjectSelect,
-    openModal,
-  }) => {
+  if (error)
     return (
-      <>
-        <div className={styles.upperRight}>
-          투표에 참여할 프로젝트를 선택해주세요!
-        </div>
-        <div className={styles.cardGrid}>
-          {projects.map((p) => (
-            <div
-              key={p.projectId}
-              className={`${styles.card} ${!selectedProjects.includes(p.projectId) ? styles.deselected : ""}`}
-              onClick={() => toggleProjectSelect(p.projectId)}
-            >
-              <img src={p.thumbnail} className={styles.thumbnail} alt="" />
-              <div className={styles.title}>{p.title}</div>
-            </div>
-          ))}
-        </div>
-      </>
-    );
-  };
-
-  const VotingView = () => {
-    return (
-      <div className={styles.underBox}>
-        <div className={styles.resultTitle}>투표 결과</div>
-
-        <div className={styles.resultBody}>
-          <div className={styles.loadingBox}>투표를 기다려주세요</div>
-
-          <div className={styles.publicBtns}>
-            <button className={styles.publicBtnDisable}>공개</button>
-            <button className={styles.publicBtnDisable}>비공개</button>
-          </div>
-        </div>
+      <div className={styles.emptyState} role="alert">
+        {error}
       </div>
     );
-  };
-
-  const EndedView = ({ isResultPublic, handleSetPublicStatus }) => {
-    const publicBtnClass = isResultPublic
-      ? styles.publicBtnActive
-      : styles.publicBtn;
-    const privateBtnClass = isResultPublic
-      ? styles.publicBtn
-      : styles.publicBtnActive;
-
-    return (
-      <div className={styles.underBox}>
-        <div className={styles.resultTitle}>투표 결과</div>
-
-        <div className={styles.resultBody}>
-          <div className={styles.tableWrapper}>
-            <table>
-              <thead>
-                <tr>
-                  <th>등수</th>
-                  <th>프로젝트명</th>
-                  <th>득표수</th>
-                  <th>득표율</th>
-                </tr>
-              </thead>
-              <tbody>
-                {voteResult.length === 0 ? (
-                  <tr>
-                    <td colSpan="4" style={{ textAlign: "center" }}>
-                      투표결과가 없습니다
-                    </td>
-                  </tr>
-                ) : (
-                  [...voteResult]
-                    .sort((a, b) => b.voteCount - a.voteCount)
-                    .map((result, idx) => (
-                      <tr key={result.projectName}>
-                        <td>{idx + 1}</td>
-                        <td>{result.projectName}</td>
-                        <td>{result.voteCount}</td>
-                        <td>{result.voteRate}%</td>
-                      </tr>
-                    ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          <div className={styles.publicBtns}>
-            <button
-              className={publicBtnClass}
-              onClick={() => handleSetPublicStatus(true)}
-              disabled={isResultPublic}
-            >
-              공개
-            </button>
-            <button
-              className={privateBtnClass}
-              onClick={() => handleSetPublicStatus(false)}
-              disabled={!isResultPublic}
-            >
-              비공개
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
 
   return (
     <div className={styles.container}>
@@ -315,11 +345,9 @@ const ManageVotePage = () => {
 
       {voteStatus === "NOT_CREATED" && (
         <NotCreatedView
-          semester={semester}
           projects={projects}
           selectedProjects={selectedProjects}
           toggleProjectSelect={toggleProjectSelect}
-          openModal={handleSummitProjects}
         />
       )}
 
@@ -327,6 +355,7 @@ const ManageVotePage = () => {
 
       {voteStatus === "ENDED" && (
         <EndedView
+          voteResult={voteResult}
           isResultPublic={isResultPublic}
           handleSetPublicStatus={handleSetPublicStatus}
         />
