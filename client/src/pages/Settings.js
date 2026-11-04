@@ -7,7 +7,6 @@ import "../assets/Settings.css";
 
 const Settings = () => {
   const navigate = useNavigate();
-
   const [userName, setUserName] = useState("");
   const [userType, setUserType] = useState("");
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
@@ -20,7 +19,7 @@ const Settings = () => {
 
         const data = await userApi.getMe();
 
-        setUserName(data?.name ?? "");
+        setUserName(data?.userName ?? "");
         setUserType(data?.memberType ?? "");
       } catch (error) {
         console.error("회원 정보 조회 실패:", error);
