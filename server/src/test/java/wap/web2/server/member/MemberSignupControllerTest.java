@@ -97,11 +97,13 @@ class MemberSignupControllerTest {
             mvc.perform(post("/user/signup").with(user(principal())).contentType("application/json")
                 .content("{\"member\":true,\"name\":\"홍길동\",\"studentNumber\":\"20260001\",\"memberType\":\"NEW\"}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.signupCompleted").value(true))
-                .andExpect(jsonPath("$.studentNumber").value("20260001"));
+                .andExpect(jsonPath("$.studentNumber").value("20260001"))
+                .andExpect(jsonPath("$.membershipLevel").value("NEW"))
+                .andExpect(jsonPath("$.memberType").value("NEW"));
             mvc.perform(post("/user/signup").with(user(principal())).contentType("application/json")
                 .content("{\"member\":false}")).andExpect(status().isConflict());
             mvc.perform(post("/user/role/ROLE_ADMIN").with(user(principal())))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isForbidden());
             assertThat(account.getRole()).isEqualTo(Role.ROLE_MEMBER);
         });
     }
@@ -137,7 +139,7 @@ class MemberSignupControllerTest {
                 com.fasterxml.jackson.databind.node.TextNode.valueOf("ASSOCIATE"),
                 com.fasterxml.jackson.databind.node.TextNode.valueOf("REGULAR"));
             assertThat(document.at("/components/schemas/UserResponse/properties/signupCompleted/type").asText()).isEqualTo("boolean");
-            assertThat(document.at("/paths/~1user~1role~1{role}/post/deprecated").asBoolean()).isTrue();
+            assertThat(document.at("/paths/~1user~1role~1{role}/post").isMissingNode()).isTrue();
         });
     }
 

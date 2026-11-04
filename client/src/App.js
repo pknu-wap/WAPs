@@ -23,8 +23,8 @@ import TeamBuildEntryPage from "./pages/TeamBuildEntryPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import CalendarPage from "./pages/CalendarPage";
 import AdminRoute from "./components/Login/PrivateRoute";
+import Settings from "./pages/Settings";
 
-// 관리자 페이지
 import ManagePermissionPage from "./pages/adminPages/ManagePermissionPage";
 import ManagePlanPage from "./pages/adminPages/ManagePlanPage";
 import ManageTeamBuildPage from "./pages/adminPages/ManageTeamBuildPage";
@@ -32,7 +32,6 @@ import ManageThirdTeamBuildPage from "./pages/adminPages/ManageThirdTeamBuildPag
 import ManageVotePage from "./pages/adminPages/ManageVotePage";
 import MainLayout from "./components/MainLayout";
 
-// 레이아웃 컴포넌트들
 import AdminPageLayout from "./components/Admin/AdminPageLayout";
 import FullScreenLayout from "./components/FullScreenLayout";
 import "./App.css";
@@ -51,18 +50,13 @@ function App() {
   }, []);
   return (
     <Router>
-      <ScrollToTop /> {/* 페이지 전환 시 스크롤 위치 초기화 */}
+      <ScrollToTop />
       <Routes>
-        {/* 400px 폭 레이아웃 */}
         <Route element={<MainLayout />}>
-          {/* 기본 홈 화면 */}
           <Route path="/" element={<SplashPage />} />
-          {/* 로그인 화면 */}
           <Route path="/login" element={<Login />} />
           <Route path="/login-dev" element={<LoginDev />} />
-          {/* 카카오 인증 Callback */}
           <Route path="/oauth/callback" element={<Callback />} />
-          {/* 경로 */}
           <Route path="/project/create" element={<ProjectCreatePage />} />
           <Route path="/vote" element={<VotePage />} />
           <Route path="/vote/result" element={<VoteResultPage />} />
@@ -96,13 +90,11 @@ function App() {
           />
           <Route path="/team-build/result" element={<TeamBuildResultPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
-          {/* 보호된 페이지 */}
+          <Route path="/settings" element={<Settings />} />
           <Route path="/protected" element={<ProtectedPage />} />
         </Route>
 
-        {/* 전체화면 레이아웃 */}
         <Route element={<FullScreenLayout />}>
-          {/* 관리자 페이지 */}
           <Route
             path="admin/*"
             element={<AdminRoute requireRole="ROLE_ADMIN" />}

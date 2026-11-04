@@ -57,16 +57,16 @@ public class User {
     @Column
     private String providerId;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.ROLE_GUEST;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MembershipLevel membershipLevel = MembershipLevel.NONE;
 
     @Column(length = 20)
     private String studentNumber;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private MemberType memberType;
 
     // Existing and non-OAuth accounts do not need the Kakao signup flow.
     @Column(nullable = false)

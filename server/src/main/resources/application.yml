@@ -1,9 +1,13 @@
+server:
+  # Restore the external HTTPS scheme/host supplied by the Caddy reverse proxy.
+  forward-headers-strategy: framework
+
 spring:
   application:
     name: server
 
   config:
-    import: optional:file:.env[.yml]
+    import: optional:file:.env[.properties]
 
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?createDatabaseIfNotExist=true

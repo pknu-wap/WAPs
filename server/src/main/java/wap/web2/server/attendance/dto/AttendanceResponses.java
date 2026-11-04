@@ -3,6 +3,7 @@ package wap.web2.server.attendance.dto;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
+import wap.web2.server.member.entity.MembershipLevel;
 import java.time.LocalDate;
 import java.util.List;
 import wap.web2.server.attendance.entity.AttendanceParticipant;
@@ -56,16 +57,17 @@ public final class AttendanceResponses {
         @Schema(description = "출석 처리 시각. 미출석이면 null입니다.", nullable = true, example = "2026-10-10T10:00:15Z") Instant checkedInAt
     ) {}
 
-    @Schema(name = "AttendanceParticipant", requiredProperties = {"userId", "userName", "status", "checkedInAt", "note"})
+    @Schema(name = "AttendanceParticipant", requiredProperties = {"userId", "userName", "membershipLevel", "status", "checkedInAt", "note"})
     public record Participant(
         @Schema(minimum = "1", example = "10") Long userId,
         @Schema(example = "잔망루피") String userName,
+        @Schema(description = "출석 명단 생성 시점의 회원 단계") MembershipLevel membershipLevel,
         PresenceStatus status,
         @Schema(description = "출석 처리 시각. 미출석이면 null입니다.", nullable = true, example = "2026-10-10T10:00:15Z") Instant checkedInAt,
         @Schema(description = "관리자 비고. 비고가 없으면 빈 문자열입니다.", maxLength = 500) String note
     ) {
         public static Participant from(AttendanceParticipant participant) {
-            return new Participant(participant.getUserId(), participant.getUserName(), participant.getStatus(),
+            return new Participant(participant.getUserId(), participant.getUserName(), participant.getMembershipLevel(), participant.getStatus(),
                 participant.getCheckedInAt(), participant.getNote());
         }
     }

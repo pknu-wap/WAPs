@@ -9,6 +9,7 @@ import wap.web2.server.exception.ConflictException;
 import wap.web2.server.exception.ForbiddenException;
 import wap.web2.server.member.dto.MemberSignupRequest;
 import wap.web2.server.member.entity.AuthProvider;
+import wap.web2.server.member.entity.MembershipLevel;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.member.dto.UserResponse;
@@ -60,7 +61,7 @@ public class UserService {
             }
             user.setName(request.name().strip());
             user.setStudentNumber(request.studentNumber());
-            user.setMemberType(request.memberType());
+            user.setMembershipLevel(MembershipLevel.valueOf(request.memberType().name()));
             user.setRole(Role.ROLE_MEMBER);
         } else if (request.name() != null || request.studentNumber() != null || request.memberType() != null) {
             throw new BadRequestException("비회원은 회원 여부만 입력해 주세요.");
@@ -73,7 +74,7 @@ public class UserService {
         User user = findUser(id);
         Role role = user.getRole();
         boolean isAssigned = user.isSignupCompleted() && role != null;
-        return new UserRoleResponse(role, isAssigned);
+        return new UserRoleResponse(role, user.getMembershipLevel(), isAssigned);
     }
 
     private User findUser(Long userId) {

@@ -8,16 +8,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.exception.ErrorResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
 import wap.web2.server.member.dto.MemberSignupRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.global.security.CurrentUser;
@@ -38,7 +37,7 @@ public class UserController {
     @GetMapping("/me")
     @Operation(summary = "내 계정 및 가입 상태 조회",
         description = "카카오 로그인 후 signupCompleted=false이면 회원가입 창을 표시합니다. "
-            + "가입 완료 및 기존 계정은 true이며, 학번과 회원 구분은 수집되지 않았으면 null입니다.")
+            + "가입 완료 및 기존 계정은 true입니다. 학번은 미수집 시 null이며 회원 구분은 현재 회원 단계를 반환합니다.")
     public ResponseEntity<UserResponse> findUserDetail(@CurrentUser UserPrincipal userPrincipal) {
         UserResponse response = userService.getUserDetail(userPrincipal);
         return ResponseEntity.ok(response);
@@ -64,6 +63,7 @@ public class UserController {
             - 비회원: {"member":false}만 전송합니다. 추가 정보 없이 ROLE_GUEST로 가입합니다.
             - 회원: member=true와 이름(name), 학번(studentNumber), 회원 구분(memberType)을 모두 전송합니다.
               memberType은 NEW(신입회원), ASSOCIATE(준회원), REGULAR(정회원) 중 하나이며 ROLE_MEMBER로 가입합니다.
+              선택한 구분은 membershipLevel에 저장되어 관리자 및 출석 API에서도 동일하게 사용합니다.
             성공하면 signupCompleted=true를 반환합니다. 다음 로그인부터 회원가입 창을 표시하지 않습니다.
             가입 도중 이탈한 계정은 다음 로그인에서도 false를 반환하여 가입을 이어갑니다.
             중복·동시 제출은 한 번만 처리하며 이미 완료된 계정의 재요청은 409입니다.
@@ -101,13 +101,6 @@ public class UserController {
         @Valid @RequestBody MemberSignupRequest request
     ) {
         return ResponseEntity.ok(userService.signup(userPrincipal.getId(), request));
-    }
-
-    @PostMapping("/role/{role}")
-    @Operation(deprecated = true, summary = "사용 중단된 역할 선택 API",
-        description = "권한을 변경하지 않고 400을 반환합니다. POST /user/signup을 사용하세요.")
-    public ResponseEntity<Void> setMyRole() {
-        throw new BadRequestException("POST /user/signup으로 회원가입해 주세요.");
     }
 
     @GetMapping("/role")

@@ -1,5 +1,8 @@
 package wap.web2.server.admin.controller;
 
+import jakarta.validation.Valid;
+import wap.web2.server.admin.dto.request.MembershipLevelChangeRequest;
+import wap.web2.server.admin.dto.response.MembershipLevelChangeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +16,7 @@ import wap.web2.server.admin.dto.response.RoleChangeResponse;
 import wap.web2.server.admin.dto.response.UserRolePageResponse;
 import wap.web2.server.admin.service.UserRoleService;
 import wap.web2.server.member.entity.Role;
+import wap.web2.server.member.entity.MembershipLevel;
 
 @RestController
 @RequestMapping("/admin/role")
@@ -23,19 +27,27 @@ public class AdminUserController {
 
     @PatchMapping("/user")
     public ResponseEntity<RoleChangeResponse> changeUserRole(
-        @RequestBody RoleChangeRequest roleChangeRequest
+        @Valid @RequestBody RoleChangeRequest roleChangeRequest
     ) {
         RoleChangeResponse response = userRoleService.change(roleChangeRequest);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/user/membership-level")
+    public ResponseEntity<MembershipLevelChangeResponse> changeMembershipLevel(
+        @Valid @RequestBody MembershipLevelChangeRequest request
+    ) {
+        return ResponseEntity.ok(userRoleService.changeMembershipLevel(request));
     }
 
     @GetMapping
     public ResponseEntity<UserRolePageResponse> getAllUserInfos(
         @RequestParam("size") Integer size,
         @RequestParam("page") Integer page,
-        @RequestParam(value = "role", required = false) Role role
+        @RequestParam(value = "role", required = false) Role role,
+        @RequestParam(value = "membershipLevel", required = false) MembershipLevel membershipLevel
     ) {
-        UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page, role);
+        UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page, role, membershipLevel);
         return ResponseEntity.ok(response);
     }
 }

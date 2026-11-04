@@ -42,6 +42,8 @@ class MemberSignupTest {
         assertThat(result.getUserName()).isEqualTo("홍길동");
         assertThat(result.getStudentNumber()).isEqualTo("020260001");
         assertThat(result.getMemberType()).isEqualTo(type);
+        assertThat(account.getMembershipLevel()).isEqualTo(MembershipLevel.valueOf(type.name()));
+        assertThat(service.getMyRole(1L).getMembershipLevel()).isEqualTo(account.getMembershipLevel());
         assertThat(result.isSignupCompleted()).isTrue();
         assertThat(service.getMyRole(1L).isRoleAssigned()).isTrue();
         assertThatThrownBy(() -> service.signup(1L, new MemberSignupRequest(false, null, null, null)))
@@ -56,6 +58,7 @@ class MemberSignupTest {
         assertThat(result.getUserName()).isEqualTo("카카오 이름");
         assertThat(result.getStudentNumber()).isNull();
         assertThat(result.getMemberType()).isNull();
+        assertThat(account.getMembershipLevel()).isEqualTo(MembershipLevel.NONE);
         assertThat(result.isSignupCompleted()).isTrue();
     }
 
