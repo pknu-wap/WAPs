@@ -9,6 +9,7 @@
     "axios": "^1.7.7",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
+    "markdown-to-jsx": "^9.10.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
@@ -51,5 +52,10 @@
     "jest-worker": "27.5.1",
     "prettier": "^3.9.6",
     "react-scripts": "5.0.1"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^markdown-to-jsx/entities$": "<rootDir>/node_modules/markdown-to-jsx/dist/entities.browser.cjs"
+    }
   }
 }

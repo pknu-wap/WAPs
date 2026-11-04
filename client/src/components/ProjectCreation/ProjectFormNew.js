@@ -13,6 +13,7 @@ import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
 import ImageUploader from "./ImageUploader";
 import RadioButton from "./RadioButton";
 import TextInputForm from "./TextInputForm";
+import MarkdownEditor from "../Markdown/MarkdownEditor";
 import TechStackSelector from "./TechStackSelector";
 import TeamMemberInputForm from "./TeamMemberInputForm";
 import InputPin from "./InputPin";
@@ -348,16 +349,11 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           }}
           errorMessage={errorMessage}
         />
-        <TextInputForm
-          name="content"
-          placeholder="상세 설명"
-          maxLen={MAX_PROJECT_CONTENT_LENGTH}
+        <MarkdownEditor
           value={content}
-          onChange={(e) => {
-            setContent(e.target.value);
-            handleInputLimit(e);
-          }}
-          errorMessage={errorMessage}
+          onChange={setContent}
+          maxLength={MAX_PROJECT_CONTENT_LENGTH}
+          error={errorMessage.content}
         />
         <div className={styles.images}>
           {Array.from({ length: maxImageCount }).map((_, index) => (
