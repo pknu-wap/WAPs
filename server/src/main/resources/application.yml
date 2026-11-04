@@ -1,3 +1,7 @@
+server:
+  # Restore the external HTTPS scheme/host supplied by the Caddy reverse proxy.
+  forward-headers-strategy: framework
+
 spring:
   application:
     name: server
