@@ -1,7 +1,6 @@
 @font-face {
   font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-    format("woff");
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
 }
@@ -18,16 +17,12 @@
   box-sizing: border-box;
 
   background:
-    linear-gradient(
-      to bottom,
+    linear-gradient(to bottom,
       rgba(0, 0, 0, 0) 10%,
-      #000 42%
-    ),
-    linear-gradient(
-      135deg,
+      #000 42%),
+    linear-gradient(135deg,
       #a0aeff 0%,
-      #b4edfe 40%
-    );
+      #b4edfe 40%);
 
   background-color: #000;
 
@@ -316,4 +311,119 @@
   -webkit-backdrop-filter: blur(10px);
 
   border-radius: 12px;
+}
+
+
+/* ===Desktop Responsive=== */
+
+@media (min-width: 768px) {
+  .checkin-page {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    max-width: none;
+
+    min-height: 100vh;
+    height: 100vh;
+
+    margin: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    z-index: 1000;
+
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 5%,
+        #000 60%
+      ),
+      linear-gradient(
+        135deg,
+        #a0aeff 0%,
+        #b4edfe 45%
+      );
+
+    background-color: #000;
+  }
+
+  .checkin-close {
+    top: 42px;
+    right: 42px;
+
+    font-size: 30px;
+  }
+
+  .checkin-content {
+    width: 100%;
+    max-width: 620px;
+
+    margin: 0 auto;
+
+    padding: 100px 0 80px;
+
+    box-sizing: border-box;
+  }
+
+  .checkin-title-area {
+    margin-bottom: 42px;
+  }
+
+  .checkin-title-area h1 {
+    font-size: 38px;
+    line-height: 1;
+  }
+
+  .checkin-title-area p {
+    margin-top: 8px;
+    font-size: 10px;
+  }
+
+  .checkin-section-title {
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+
+  .ongoing-card,
+  .history-card {
+    padding: 18px 24px;
+    border-radius: 14px;
+  }
+
+  .attendance-text h3 {
+    font-size: 16px;
+  }
+
+  .attendance-text p {
+    font-size: 10px;
+  }
+
+  .attendance-badge {
+    min-width: 38px;
+    padding: 4px 9px;
+    font-size: 8px;
+  }
+
+  .qr-button,
+  .attendance-complete-button {
+    height: 42px;
+
+    margin-top: 14px;
+
+    border-radius: 12px;
+
+    font-size: 13px;
+  }
+
+  .checkin-divider {
+    margin: 18px 0 12px;
+  }
+
+  .history-list {
+    gap: 10px;
+  }
 }
