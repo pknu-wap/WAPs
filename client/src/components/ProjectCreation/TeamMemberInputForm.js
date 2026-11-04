@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "../../assets/ProjectCreation/TeamMemberInputForm.module.css"; // CSS 파일 경로 추가
 
 const TeamMemberInputForm = ({
@@ -14,15 +14,34 @@ const TeamMemberInputForm = ({
   handleRemoveTeamMember,
 }) => {
   const [query, setQuery] = useState("");
-  const options = memberOptions.filter(
+  const [expanded, setExpanded] = useState(false);
+  const selectRef = useRef(null);
+  const matches = memberOptions.filter(
     (option) =>
-      option.userId === member.userId ||
-      (option.memberName.includes(query.trim()) &&
-        !teamMembers.some(
-          (selected, selectedIndex) =>
-            selectedIndex !== index && selected.userId === option.userId,
-        )),
+      option.memberName.includes(query.trim()) &&
+      !teamMembers.some(
+        (selected, selectedIndex) =>
+          selectedIndex !== index && selected.userId === option.userId,
+      ),
   );
+  const options = expanded
+    ? matches
+    : memberOptions.filter(
+        (option) => option.userId === member.userId || matches.includes(option),
+      );
+  const handleSearchKeyDown = (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    if (event.nativeEvent.isComposing || event.keyCode === 229 || !query.trim())
+      return;
+    if (matches.length === 1) {
+      handleMemberSelect(matches[0], index);
+      setExpanded(false);
+    } else if (matches.length > 1) {
+      setExpanded(true);
+      selectRef.current?.focus();
+    }
+  };
   return (
     <div className={styles.teammember}>
       {index === teamMembers.length - 1 && (
@@ -35,22 +54,39 @@ const TeamMemberInputForm = ({
             aria-label={`팀원 ${index + 1} 검색`}
             placeholder="이름으로 검색"
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setExpanded(false);
+            }}
+            onKeyDown={handleSearchKeyDown}
             disabled={membersLoading}
           />
           <select
+            ref={selectRef}
             className={styles.member_select}
+            size={expanded ? Math.min(matches.length + 1, 6) : 1}
+            style={expanded ? { height: "auto" } : undefined}
+            onBlur={() => setExpanded(false)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                setExpanded(false);
+              } else if (event.key === "Escape") {
+                setExpanded(false);
+              }
+            }}
             aria-label={`팀원 ${index + 1} 선택`}
             value={member.userId || ""}
             disabled={membersLoading}
-            onChange={(event) =>
+            onChange={(event) => {
               handleMemberSelect(
                 memberOptions.find(
                   (option) => String(option.userId) === event.target.value,
                 ),
                 index,
-              )
-            }
+              );
+              setExpanded(false);
+            }}
           >
             <option value="">
               {membersLoading ? "회원 목록 로딩 중..." : "회원을 선택해 주세요"}

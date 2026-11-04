@@ -1,5 +1,12 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import {
+  createEvent,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import ProjectFormNew from "./ProjectFormNew";
 import { projectApi } from "../../api/project";
@@ -136,4 +143,72 @@ test("기존 계정 ID를 유지하고 마지막 입력 행을 삭제하면 초�
   expect(
     (await readProject(projectApi.updateProject.mock.calls[0][1])).teamMember,
   ).toEqual([{ userId: 1, memberRole: "PM" }]);
+});
+
+const searchWithEnter = (query) => {
+  const input = screen.getByLabelText("팀원 1 검색");
+  fireEvent.change(input, { target: { value: query } });
+  const event = createEvent.keyDown(input, {
+    key: "Enter",
+    bubbles: true,
+    cancelable: true,
+  });
+  fireEvent(input, event);
+  expect(event.defaultPrevented).toBe(true);
+};
+
+test("검색 후 엔터는 프로젝트를 제출하지 않고 유일한 회원을 선택한다", async () => {
+  render(
+    <MemoryRouter>
+      <ProjectFormNew />
+    </MemoryRouter>,
+  );
+  await screen.findByRole("option", { name: "이회원 (#3)" });
+  searchWithEnter("이회원");
+  expect(screen.getByLabelText("팀원 1 선택").value).toBe("3");
+  expect(projectApi.createProject).not.toHaveBeenCalled();
+  expect(window.alert).not.toHaveBeenCalled();
+});
+
+test("동명이인이면 엔터로 선택 목록을 펼친다", async () => {
+  renderForm();
+  await screen.findByRole("option", { name: "김회원 (#1)" });
+  searchWithEnter("김회원");
+  const picker = screen.getByRole("listbox", { name: "팀원 1 선택" });
+  expect(picker.value).toBe("");
+  expect(picker).toHaveFocus();
+  fireEvent.change(picker, { target: { value: "2" } });
+  expect(screen.getByRole("combobox", { name: "팀원 1 선택" }).value).toBe("2");
+  expect(window.alert).not.toHaveBeenCalled();
+});
+
+test("기존 선택과 다른 이름을 검색하면 새 검색 결과 한 명을 선택한다", async () => {
+  renderForm([{ userId: 1, memberName: "김회원", memberRole: "PM" }]);
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 검색").disabled).toBe(false),
+  );
+  searchWithEnter("이회원");
+  expect(screen.getByLabelText("팀원 1 선택").value).toBe("3");
+});
+
+test.each(["", "없는회원"])(
+  "빈 검색어나 결과 없는 검색에서는 엔터로 제출하지 않는다: %s",
+  async (query) => {
+    renderForm();
+    await screen.findByRole("option", { name: "김회원 (#1)" });
+    searchWithEnter(query);
+    expect(screen.getByLabelText("팀원 1 선택").value).toBe("");
+    expect(window.alert).not.toHaveBeenCalled();
+  },
+);
+
+test("한글 조합 확정 엔터는 선택하거나 제출하지 않는다", async () => {
+  renderForm();
+  await screen.findByRole("option", { name: "이회원 (#3)" });
+  const input = screen.getByLabelText("팀원 1 검색");
+  fireEvent.change(input, { target: { value: "이회원" } });
+  const event = createEvent.keyDown(input, { key: "Enter", isComposing: true });
+  fireEvent(input, event);
+  expect(event.defaultPrevented).toBe(true);
+  expect(screen.getByLabelText("팀원 1 선택").value).toBe("");
 });
