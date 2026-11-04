@@ -2,6 +2,8 @@ import apiClient from "./client";
 
 // 프로젝트 관련 API
 export const projectApi = {
+  getMemberOptions: () => apiClient.get("/project/members"),
+
   // 현재 서버 기준 학기
   getCurrentSemester: () => apiClient.get("/project/semester/current"),
 

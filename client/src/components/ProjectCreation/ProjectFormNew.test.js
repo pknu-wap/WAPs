@@ -13,6 +13,7 @@ import ProjectFormNew from "./ProjectFormNew";
 jest.mock("../../api/project", () => ({
   projectApi: {
     getCurrentSemester: jest.fn(),
+    getMemberOptions: jest.fn(),
     createProject: jest.fn(),
     updateProject: jest.fn(),
   },
@@ -31,6 +32,7 @@ jest.mock("./InputPin", () => ({ password, setPassword }) => (
 beforeEach(() => {
   jest.clearAllMocks();
   jest.spyOn(window, "alert").mockImplementation(() => {});
+  projectApi.getMemberOptions.mockResolvedValue([]);
   projectApi.getCurrentSemester.mockResolvedValue({ semester: "2026-02" });
   projectApi.createProject.mockResolvedValue({});
   projectApi.updateProject.mockResolvedValue({});

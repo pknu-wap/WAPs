@@ -51,6 +51,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSemesterLoading, setIsSemesterLoading] = useState(!isEdit);
   const [semesterError, setSemesterError] = useState("");
+  const [memberOptions, setMemberOptions] = useState([]);
+  const [membersLoading, setMembersLoading] = useState(true);
+  const [membersError, setMembersError] = useState("");
+  const [membersRetry, setMembersRetry] = useState(0);
   const {
     title,
     setTitle,
@@ -76,7 +80,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     password,
     handleImgUpload,
     handleRemoveImage,
-    handleMemberNameChange,
+    handleMemberSelect,
     handleRoleChange,
     addTeamMember,
     handleRemoveTeamMember,
@@ -124,6 +128,26 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     };
   }, [isEdit, setSemester]);
 
+  useEffect(() => {
+    let ignore = false;
+    setMembersLoading(true);
+    setMembersError("");
+    projectApi
+      .getMemberOptions()
+      .then((members) => {
+        if (!ignore) setMemberOptions(members);
+      })
+      .catch(() => {
+        if (!ignore) setMembersError("회원 목록을 불러오지 못했습니다.");
+      })
+      .finally(() => {
+        if (!ignore) setMembersLoading(false);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [membersRetry]);
+
   // 기존 데이터 초기화
   useEffect(() => {
     if (isEdit && existingProject) {
@@ -140,7 +164,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       }
       // 멤버가 존재하면 추가
       if (Array.isArray(existingProject.teamMember)) {
-        setTeamMembers(existingProject.teamMember.map((member) => member));
+        setTeamMembers([
+          ...existingProject.teamMember,
+          { userId: null, memberName: "", memberRole: "" },
+        ]);
       }
       setSelectedTechStacks(existingProject.techStack || []);
       setPassword("");
@@ -162,9 +189,29 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       return;
     }
 
-    const recruitmentError = recruitmentPositionsError(recruitmentPositions, !isEdit);
+    const recruitmentError = recruitmentPositionsError(
+      recruitmentPositions,
+      !isEdit,
+    );
     if (recruitmentError) {
       alert(recruitmentError);
+      return;
+    }
+
+    const selectedMembers = teamMembers.filter(
+      (member) => member.userId || member.memberName || member.memberRole,
+    );
+    if (
+      selectedMembers.some((member) => !member.userId || !member.memberRole)
+    ) {
+      alert("등록된 회원과 역할을 선택해 주세요.");
+      return;
+    }
+    if (
+      new Set(selectedMembers.map((member) => member.userId)).size !==
+      selectedMembers.length
+    ) {
+      alert("같은 회원을 중복 등록할 수 없습니다.");
       return;
     }
 
@@ -180,8 +227,8 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       projectType,
       content,
       summary,
-      teamMember: teamMembers.map((member) => ({
-        memberName: member.memberName,
+      teamMember: selectedMembers.map((member) => ({
+        userId: member.userId,
         memberRole: member.memberRole,
       })),
       techStack: selectedTechStacks.map((stack) => ({
@@ -310,12 +357,25 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           ))}
         </div>
         <div className="form-group">
+          {membersError && (
+            <p role="alert">
+              {membersError}{" "}
+              <button
+                type="button"
+                onClick={() => setMembersRetry((retry) => retry + 1)}
+              >
+                다시 시도
+              </button>
+            </p>
+          )}
           {teamMembers.map((member, index) => (
             <TeamMemberInputForm
               key={index}
               member={member}
               index={index}
-              handleMemberNameChange={handleMemberNameChange}
+              handleMemberSelect={handleMemberSelect}
+              memberOptions={memberOptions}
+              membersLoading={membersLoading}
               handleRoleChange={handleRoleChange}
               roleOptions={roleOptions}
               addTeamMember={addTeamMember}
