@@ -106,13 +106,11 @@ const ManagePlanPage = () => {
             <legend className={styles.label}>일정</legend>
             <div className={styles.scheduleInputs}>
               <div className={styles.inputRow}>
-                <label className={styles.label} htmlFor="event-date">
-                  날짜
-                </label>
                 <input
                   className={styles.dateInput}
                   type="date"
                   id="event-date"
+                  aria-label="날짜"
                   value={date}
                   onChange={(e) =>
                     setSchedule((prev) => ({ ...prev, date: e.target.value }))
@@ -120,14 +118,12 @@ const ManagePlanPage = () => {
                 />
               </div>
               <div className={styles.inputRow}>
-                <label className={styles.label} htmlFor="event-time">
-                  시각
-                </label>
                 <input
                   className={styles.dateInput}
                   type="time"
                   step="60"
                   id="event-time"
+                  aria-label="시각"
                   value={time}
                   onChange={(e) =>
                     setSchedule((prev) => ({ ...prev, time: e.target.value }))
