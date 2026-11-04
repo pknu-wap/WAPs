@@ -5,19 +5,22 @@ import { adminPlanApi } from "../../api/admin";
 const getCurrentDateTime = () => {
   const now = new Date();
   const pad = (value) => String(value).padStart(2, "0");
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  return {
+    date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+    time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+  };
 };
 
 const ManagePlanPage = () => {
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState(getCurrentDateTime);
+  const [{ date, time }, setSchedule] = useState(getCurrentDateTime);
   const [content, setContent] = useState("");
   const [target, setTarget] = useState("");
   const [location, setLocation] = useState("");
 
   const generatePreview = () => {
     return {
-      date: date.replace("T", " "),
+      date: [date, time].filter(Boolean).join(" "),
       title: title.trim(),
       content: content.trim(),
       target: target.trim(),
@@ -34,12 +37,12 @@ const ManagePlanPage = () => {
     preview.target;
 
   const handlePublish = async () => {
-    if (!title || !date || !content || !target || !location) {
+    if (!title || !date || !time || !content || !target || !location) {
       alert("항목을 모두 입력해 주세요.");
       return;
     }
 
-    const isoString = `${date}:00`;
+    const isoString = `${date}T${time}:00`;
 
     // 유효한 날짜인지 체크
     const dateObj = new Date(isoString);
@@ -62,7 +65,7 @@ const ManagePlanPage = () => {
 
       // 입력 초기화
       setTitle("");
-      setDate(getCurrentDateTime());
+      setSchedule(getCurrentDateTime());
       setContent("");
       setTarget("");
       setLocation("");
@@ -99,19 +102,40 @@ const ManagePlanPage = () => {
             />
           </div>
 
-          <div className={styles.inputRow}>
-            <label className={styles.label} htmlFor="event-date">
-              날짜
-            </label>
-            <input
-              className={styles.dateInput}
-              type="datetime-local"
-              step="60"
-              id="event-date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
+          <fieldset className={styles.scheduleFields}>
+            <legend className={styles.label}>일정</legend>
+            <div className={styles.scheduleInputs}>
+              <div className={styles.inputRow}>
+                <label className={styles.label} htmlFor="event-date">
+                  날짜
+                </label>
+                <input
+                  className={styles.dateInput}
+                  type="date"
+                  id="event-date"
+                  value={date}
+                  onChange={(e) =>
+                    setSchedule((prev) => ({ ...prev, date: e.target.value }))
+                  }
+                />
+              </div>
+              <div className={styles.inputRow}>
+                <label className={styles.label} htmlFor="event-time">
+                  시각
+                </label>
+                <input
+                  className={styles.dateInput}
+                  type="time"
+                  step="60"
+                  id="event-time"
+                  value={time}
+                  onChange={(e) =>
+                    setSchedule((prev) => ({ ...prev, time: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+          </fieldset>
 
           <div className={styles.inputRow}>
             <label className={styles.label} htmlFor="event-content">

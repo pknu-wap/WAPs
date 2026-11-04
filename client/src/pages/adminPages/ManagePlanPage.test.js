@@ -22,9 +22,15 @@ test("현지 날짜와 시간을 기본값으로 표시하고 선택한 일정�
   adminPlanApi.createEvent.mockResolvedValue({});
   render(<ManagePlanPage />);
   const dateInput = screen.getByLabelText("날짜");
-  expect(dateInput).toHaveAttribute("type", "datetime-local");
-  expect(dateInput).toHaveValue("2026-11-04T00:30");
-  fireEvent.change(dateInput, { target: { value: "2026-11-20T18:30" } });
+  const timeInput = screen.getByLabelText("시각");
+  expect(screen.getByRole("group", { name: "일정" })).toBeInTheDocument();
+  expect(dateInput).toHaveAttribute("type", "date");
+  expect(timeInput).toHaveAttribute("type", "time");
+  expect(timeInput).toHaveValue("00:30");
+  expect(dateInput).toHaveValue("2026-11-04");
+  fireEvent.change(dateInput, { target: { value: "2026-11-20" } });
+  expect(timeInput).toHaveValue("00:30");
+  fireEvent.change(timeInput, { target: { value: "18:30" } });
   expect(screen.getByText("2026-11-20 18:30")).toBeInTheDocument();
   for (const [label, value] of [
     ["제목", "정기 모임"],
@@ -43,14 +49,23 @@ test("현지 날짜와 시간을 기본값으로 표시하고 선택한 일정�
       target: "전체 회원",
       location: "동아리방",
     });
-    expect(dateInput).toHaveValue("2026-11-04T00:30");
+    expect(dateInput).toHaveValue("2026-11-04");
+    expect(timeInput).toHaveValue("00:30");
   });
 });
 
-test("날짜를 지우면 발행하지 않고 필수 입력 안내를 표시한다", () => {
-  render(<ManagePlanPage />);
-  fireEvent.change(screen.getByLabelText("날짜"), { target: { value: "" } });
-  fireEvent.click(screen.getByRole("button", { name: "일정 발행" }));
-  expect(adminPlanApi.createEvent).not.toHaveBeenCalled();
-  expect(window.alert).toHaveBeenCalledWith("항목을 모두 입력해 주세요.");
-});
+test.each(["날짜", "시각"])(
+  "%s을 지우면 발행하지 않고 필수 입력 안내를 표시한다",
+  (label) => {
+    render(<ManagePlanPage />);
+    for (const field of ["제목", "내용", "필수 참여인원", "위치"]) {
+      fireEvent.change(screen.getByLabelText(field), {
+        target: { value: "테스트" },
+      });
+    }
+    fireEvent.change(screen.getByLabelText(label), { target: { value: "" } });
+    fireEvent.click(screen.getByRole("button", { name: "일정 발행" }));
+    expect(adminPlanApi.createEvent).not.toHaveBeenCalled();
+    expect(window.alert).toHaveBeenCalledWith("항목을 모두 입력해 주세요.");
+  },
+);

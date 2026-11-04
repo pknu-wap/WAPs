@@ -48,6 +48,24 @@
   gap: 8px;
 }
 
+.scheduleFields {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.scheduleFields legend {
+  margin-bottom: 12px;
+  padding: 0;
+}
+
+.scheduleInputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 12px;
+}
+
 .label,
 .targetLabel {
   font-size: 15px;
