@@ -228,8 +228,12 @@ test("새 프로젝트는 로그인한 계정을 첫 번째 팀원으로 선택�
     expect(screen.getByLabelText("팀원 1 선택").value).toBe("2"),
   );
   expect(screen.getByLabelText("팀원 1 역할").value).toBe("");
+  const roleSelect = screen.getByLabelText("팀원 1 역할");
+  const reportValidity = jest.spyOn(roleSelect, "reportValidity");
   fireEvent.click(screen.getByRole("button", { name: "등록" }));
-  expect(window.alert).toHaveBeenCalledWith("역할을 선택해주세요.");
+  expect(reportValidity).toHaveBeenCalledTimes(1);
+  expect(roleSelect.validity.valueMissing).toBe(true);
+  expect(window.alert).not.toHaveBeenCalled();
   expect(screen.queryByLabelText("팀원 2 선택")).toBeNull();
   fireEvent.change(screen.getByLabelText("팀원 1 역할"), {
     target: { value: "PM" },

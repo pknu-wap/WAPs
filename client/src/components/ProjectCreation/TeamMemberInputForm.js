@@ -16,6 +16,7 @@ const TeamMemberInputForm = ({
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState(false);
   const selectRef = useRef(null);
+  const roleRef = useRef(null);
   const matches = memberOptions.filter(
     (option) =>
       option.memberName.includes(query.trim()) &&
@@ -117,6 +118,8 @@ const TeamMemberInputForm = ({
 
         {/* 팀원 역할 선택 */}
         <select
+          ref={roleRef}
+          required={Boolean(member.userId || member.memberName)}
           className={styles.teammember_role_select_field}
           aria-label={`팀원 ${index + 1} 역할`}
           value={member.memberRole}
@@ -151,7 +154,9 @@ const TeamMemberInputForm = ({
             className={styles.teammember_add_btn}
             type="button"
             disabled={!member.userId}
-            onClick={addTeamMember}
+            onClick={() => {
+              if (roleRef.current.reportValidity()) addTeamMember();
+            }}
           >
             등록
           </button>
