@@ -79,7 +79,7 @@ const AdminPageLayout = () => {
               onClick={closeMobileMenu}
             />
             <div className={styles.mobileSidebarContent}>
-              <SideBar />
+              <SideBar onSelect={closeMobileMenu} />
             </div>
           </>
         )}
