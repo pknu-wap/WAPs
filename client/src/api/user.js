@@ -13,7 +13,7 @@ export const userApi = {
   getMe: () => apiClient.get("/user/me"),
 
   updateName: (name) =>
-    apiClient.patch("/user/me", {
+    apiClient.patch("/api/member/name", {
       name,
     }),
 };
