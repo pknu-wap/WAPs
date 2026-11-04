@@ -2,16 +2,22 @@ import React, { useState } from "react";
 import styles from "../../assets/Admin/ManagePlan.module.css";
 import { adminPlanApi } from "../../api/admin";
 
+const getCurrentDateTime = () => {
+  const now = new Date();
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+};
+
 const ManagePlanPage = () => {
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(getCurrentDateTime);
   const [content, setContent] = useState("");
   const [target, setTarget] = useState("");
   const [location, setLocation] = useState("");
 
   const generatePreview = () => {
     return {
-      date: date,
+      date: date.replace("T", " "),
       title: title.trim(),
       content: content.trim(),
       target: target.trim(),
@@ -33,16 +39,7 @@ const ManagePlanPage = () => {
       return;
     }
 
-    // 날짜 형식: YYYY-MM-DD HH:mm
-    const pattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
-    if (!pattern.test(date)) {
-      alert("날짜 형식을 지켜주세요! (예: 2025-11-20 18:30)");
-      return;
-    }
-
-    // 프런트에서 ISO 타입으로 변환: 2025-11-20 18:30 → 2025-11-20T18:30:00
-    const [datePart, timePart] = date.split(" ");
-    const isoString = `${datePart}T${timePart}:00`;
+    const isoString = `${date}:00`;
 
     // 유효한 날짜인지 체크
     const dateObj = new Date(isoString);
@@ -65,7 +62,7 @@ const ManagePlanPage = () => {
 
       // 입력 초기화
       setTitle("");
-      setDate("");
+      setDate(getCurrentDateTime());
       setContent("");
       setTarget("");
       setLocation("");
@@ -108,8 +105,8 @@ const ManagePlanPage = () => {
             </label>
             <input
               className={styles.dateInput}
-              type="text"
-              placeholder="YYYY-MM-DD HH:mm"
+              type="datetime-local"
+              step="60"
               id="event-date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
