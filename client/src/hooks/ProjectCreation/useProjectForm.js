@@ -113,6 +113,10 @@ const useProjectForm = () => {
   // 팀원 추가 핸들러
   const addTeamMember = () => {
     const lastMember = teamMembers[teamMembers.length - 1];
+    if (!lastMember.memberRole.trim()) {
+      alert("역할을 선택해주세요.");
+      return;
+    }
     // 마지막 팀원의 이름이 비어있지 않고, 역할이 비어있지 않은 경우에만 추가
     if (lastMember.userId && lastMember.memberRole.trim() !== "") {
       if (

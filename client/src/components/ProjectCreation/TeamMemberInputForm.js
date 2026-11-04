@@ -150,7 +150,7 @@ const TeamMemberInputForm = ({
           <button
             className={styles.teammember_add_btn}
             type="button"
-            disabled={!member.userId || !member.memberRole}
+            disabled={!member.userId}
             onClick={addTeamMember}
           >
             등록
