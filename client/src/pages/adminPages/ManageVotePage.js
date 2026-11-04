@@ -135,7 +135,7 @@ const EndedView = ({ voteResult, isResultPublic, handleSetPublicStatus }) => {
                 [...voteResult]
                   .sort((a, b) => b.voteCount - a.voteCount)
                   .map((result, idx) => (
-                    <tr key={result.projectName}>
+                    <tr key={result.projectId}>
                       <td>{idx + 1}</td>
                       <td>{result.projectName}</td>
                       <td>{result.voteCount}</td>
