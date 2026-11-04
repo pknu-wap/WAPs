@@ -56,6 +56,10 @@
 }
 
 .hamburger {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  flex-shrink: 0;
   display: none;
   cursor: pointer;
   flex-direction: column;
