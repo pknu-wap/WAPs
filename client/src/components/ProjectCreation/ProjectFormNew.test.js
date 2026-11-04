@@ -61,14 +61,14 @@ test("모집 직무를 추가하고 인원을 숫자로 저장한다", async () 
   fireEvent.change(screen.getByLabelText("직무 1"), {
     target: { value: "FRONTEND" },
   });
-  fireEvent.change(screen.getByLabelText("모집 인원 1 (명)"), {
+  fireEvent.change(screen.getAllByLabelText("모집 인원 수")[0], {
     target: { value: "3" },
   });
   fireEvent.click(screen.getByRole("button", { name: "모집 직무 추가" }));
   fireEvent.change(screen.getByLabelText("직무 2"), {
     target: { value: "BACKEND" },
   });
-  fireEvent.change(screen.getByLabelText("모집 인원 2 (명)"), {
+  fireEvent.change(screen.getAllByLabelText("모집 인원 수")[1], {
     target: { value: "2" },
   });
   fireEvent.change(screen.getByLabelText("비밀번호"), {
@@ -104,7 +104,7 @@ test("수정 화면에서 기존 모집 정보를 불러오고 모두 삭제할 
     </MemoryRouter>,
   );
   expect(screen.getByLabelText("직무 1").value).toBe("BACKEND");
-  expect(screen.getByLabelText("모집 인원 1 (명)").value).toBe("2");
+  expect(screen.getAllByLabelText("모집 인원 수")[0].value).toBe("2");
   fireEvent.click(screen.getByRole("button", { name: "모집 직무 1 삭제" }));
   fireEvent.change(screen.getByLabelText("비밀번호"), {
     target: { value: "pw" },
@@ -136,7 +136,7 @@ test.each([0, -1, 1.5, ""])(
     fireEvent.change(screen.getByLabelText("직무 1"), {
       target: { value: "BACKEND" },
     });
-    fireEvent.change(screen.getByLabelText("모집 인원 1 (명)"), {
+    fireEvent.change(screen.getAllByLabelText("모집 인원 수")[0], {
       target: { value: count },
     });
     fireEvent.change(screen.getByLabelText("비밀번호"), {
