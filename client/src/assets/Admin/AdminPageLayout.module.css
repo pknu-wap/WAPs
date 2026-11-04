@@ -11,6 +11,7 @@
   gap: 29px;
   width: 100%;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -116,7 +117,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 350px; /* 모바일 사이드바 너비 */
+  width: min(350px, 100%); /* 모바일 사이드바 너비 */
   height: 100%;
   background-color: #1a1a1a; /* 배경색 지정 */
   padding: 30px;
@@ -166,5 +167,37 @@
   }
   .adminUser {
     font-size: 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  .contentsBox {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .headerLeft,
+  .headerRight {
+    gap: 12px;
+  }
+
+  .headerRight {
+    min-width: 0;
+    align-items: center;
+  }
+
+  .adminUser {
+    min-width: 0;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+
+  .exitBtn {
+    flex-shrink: 0;
   }
 }

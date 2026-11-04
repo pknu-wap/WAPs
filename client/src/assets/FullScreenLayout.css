@@ -8,3 +8,9 @@
   z-index: 1000;
   overflow: auto; /* 페이지 내용이 길어질 경우 스크롤 */
 }
+
+/* 관리자 화면에서는 기본 문서의 400px 고정 너비를 해제한다. */
+html:has(.full-screen-wrapper),
+body:has(.full-screen-wrapper) {
+  width: 100%;
+}
