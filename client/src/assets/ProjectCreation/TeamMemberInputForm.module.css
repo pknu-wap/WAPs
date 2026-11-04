@@ -1,18 +1,22 @@
-.teammember {
+.teammember_section {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 20px;
   border-radius: 10px;
   width: 90%;
-  height: 100%;
   padding-top: 20px;
   padding-bottom: 20px;
   background-color: #2a2a2a;
   color: #7e7e7e;
-  margin: 0 auto;
+  margin: 0 auto 5px;
+  text-align: left;
+}
+
+.teammember {
   display: flex;
   flex-direction: column;
-  text-align: left;
-  margin-bottom: 5px;
+  gap: 10px;
+  width: 100%;
 }
 
 .teammember_form {
@@ -25,9 +29,9 @@
 
 .teammember_label {
   text-align: left;
-  margin-left: 33px;
-  margin-bottom: 3px;
+  margin: 0 0 3px 33px;
   font-size: 12px;
+  font-weight: normal;
   color: #ebebeb;
 }
 

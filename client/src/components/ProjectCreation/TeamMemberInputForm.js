@@ -45,9 +45,6 @@ const TeamMemberInputForm = ({
   };
   return (
     <div className={styles.teammember}>
-      {index === teamMembers.length - 1 && (
-        <label className={styles.teammember_label}>팀원 등록</label>
-      )}
       <div className={styles.teammember_form}>
         <div className={styles.member_picker}>
           <input

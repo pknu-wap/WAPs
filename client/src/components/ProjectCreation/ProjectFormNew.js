@@ -9,6 +9,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { projectApi } from "../../api/project";
 import { userApi } from "../../api/user";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
+import teamStyles from "../../assets/ProjectCreation/TeamMemberInputForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
 import useProjectLeaveWarning, {
   projectDraftSnapshot,
@@ -419,7 +420,11 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
             />
           ))}
         </div>
-        <div className="form-group">
+        <section
+          className={teamStyles.teammember_section}
+          aria-label="팀원 등록"
+        >
+          <h2 className={teamStyles.teammember_label}>팀원 등록</h2>
           {membersError && (
             <p role="alert">
               {membersError}{" "}
@@ -446,7 +451,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
               teamMembers={teamMembers}
             />
           ))}
-        </div>
+        </section>
 
         <RecruitmentPositionInput
           required={!isEdit}
