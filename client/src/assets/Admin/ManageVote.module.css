@@ -68,7 +68,7 @@
   color: #202020;
 }
 
-.container button:hover:not(:disabled) {
+.container button:hover:not(:disabled):not(.card) {
   border-color: var(--primary);
   background-color: #353535;
   color: #fff;
