@@ -373,6 +373,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         <RadioButton
           labelname={"프로젝트 타입"}
           name="projectType"
+          required={!isEdit}
           options={projectTypeOptions}
           selected={projectType}
           setSelected={setProjectType}

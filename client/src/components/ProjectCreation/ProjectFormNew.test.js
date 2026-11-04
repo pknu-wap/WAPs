@@ -318,3 +318,18 @@ test.each([false, true])(
     expect(screen.queryByRole("progressbar")).toBeNull();
   },
 );
+
+test("프로젝트 타입을 선택해야 생성 폼의 필수 검증을 통과한다", async () => {
+  render(
+    <MemoryRouter>
+      <ProjectFormNew />
+    </MemoryRouter>,
+  );
+  await screen.findByText("2026년 2학기");
+  const types = screen.getAllByRole("radio", { name: /WEB|APP|GAME|기타/ });
+  expect(types.every((radio) => radio.validity.valueMissing)).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "프로젝트 생성" }));
+  expect(projectApi.createProject).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("radio", { name: "WEB" }));
+  expect(types.every((radio) => radio.checkValidity())).toBe(true);
+});

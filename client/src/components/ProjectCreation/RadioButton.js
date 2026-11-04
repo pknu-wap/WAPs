@@ -1,7 +1,14 @@
 import React from "react";
 import styles from "../../assets/ProjectCreation/RadioButton.module.css"; // CSS 파일 경로 추가
 
-const RadioButton = ({ labelname, name, options, selected, setSelected }) => {
+const RadioButton = ({
+  labelname,
+  name,
+  options,
+  selected,
+  setSelected,
+  required = false,
+}) => {
   return (
     <div className={styles.radio_button}>
       <label className={styles.radio_button_label}>{labelname}</label>
@@ -23,6 +30,7 @@ const RadioButton = ({ labelname, name, options, selected, setSelected }) => {
               <input
                 id={`${name}-${option}`} // ID 추가
                 type="radio"
+                required={required}
                 name={name}
                 value={option}
                 checked={selected === option}
