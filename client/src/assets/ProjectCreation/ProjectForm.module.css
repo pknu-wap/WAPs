@@ -301,3 +301,22 @@
     justify-self: end;
   }
 }
+
+.upload_progress {
+  width: 90%;
+  margin: 20px auto 0;
+  color: #ebebeb;
+  text-align: center;
+}
+
+.upload_progress progress {
+  display: block;
+  width: 100%;
+  height: 12px;
+  accent-color: #abd4fd;
+}
+
+.upload_progress p {
+  margin: 8px 0 0;
+  font-size: 13px;
+}

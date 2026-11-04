@@ -51,6 +51,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const navigate = useNavigate(); // navigate 함수
   const [recruitmentPositions, setRecruitmentPositions] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null);
   const [isSemesterLoading, setIsSemesterLoading] = useState(!isEdit);
   const [semesterError, setSemesterError] = useState("");
   const [memberOptions, setMemberOptions] = useState([]);
@@ -229,7 +230,17 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       return;
     }
 
+    setUploadProgress(null);
     setIsSubmitting(true);
+    let requestActive = true;
+    const onUploadProgress = ({ loaded, total }) => {
+      if (!requestActive) return;
+      setUploadProgress(
+        Number.isFinite(total) && total > 0 && Number.isFinite(loaded)
+          ? Math.min(100, Math.max(0, Math.floor((loaded / total) * 100)))
+          : null,
+      );
+    };
 
     const formData = new FormData();
     const projectData = {
@@ -270,12 +281,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     });
     try {
       if (isEdit) {
-        await projectApi.updateProject(projectId, formData);
+        await projectApi.updateProject(projectId, formData, onUploadProgress);
 
         alert("프로젝트가 성공적으로 수정되었습니다.");
         navigate(`/project/${projectId}`);
       } else {
-        await projectApi.createProject(formData);
+        await projectApi.createProject(formData, onUploadProgress);
         alert("프로젝트가 성공적으로 생성되었습니다.");
         navigate(`/ProjectPage`);
       }
@@ -284,10 +295,14 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       alert(
         error.response?.data?.code === "PROJECT_PASSWORD_INVALID"
           ? "올바른 인증번호를 입력해주세요."
-          : "프로젝트 요청에 실패했습니다. 다시 시도해 주세요.",
+          : error.code === "ECONNABORTED" || error.code === "ETIMEDOUT"
+            ? "업로드 요청 시간이 초과되었습니다. 다시 시도해 주세요."
+            : "프로젝트 요청에 실패했습니다. 다시 시도해 주세요.",
       );
     } finally {
+      requestActive = false;
       setIsSubmitting(false);
+      setUploadProgress(null);
     }
   };
 
@@ -410,6 +425,22 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         />
         <InputPin password={password} setPassword={setPassword} />
         {uploadError && <p className="error-message">{uploadError}</p>}
+        {isSubmitting && (
+          <div className={styles.upload_progress}>
+            <progress
+              aria-label="프로젝트 업로드 진행률"
+              max="100"
+              value={uploadProgress ?? undefined}
+            />
+            <p role="status">
+              {uploadProgress === 100
+                ? "저장 처리 중…"
+                : uploadProgress === null
+                  ? "업로드 중…"
+                  : `업로드 중… ${uploadProgress}%`}
+            </p>
+          </div>
+        )}
         <button
           type="submit"
           className={styles.submit_button}
@@ -424,7 +455,9 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           }}
         >
           {isSubmitting
-            ? "업로드 중..."
+            ? uploadProgress === 100
+              ? "저장 처리 중…"
+              : "업로드 중..."
             : isEdit
               ? "프로젝트 수정"
               : "프로젝트 생성"}
