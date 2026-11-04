@@ -17,6 +17,7 @@ import wap.web2.server.attendance.entity.*;
 import wap.web2.server.attendance.repository.*;
 import wap.web2.server.exception.*;
 import wap.web2.server.member.entity.User;
+import wap.web2.server.member.entity.MembershipLevel;
 import wap.web2.server.member.repository.UserRepository;
 
 class AttendanceServiceTest {
@@ -43,6 +44,8 @@ class AttendanceServiceTest {
     void creationSnapshotsEveryUserAsAbsentAndRejectsPastKoreanDates() {
         var first = new User(); first.setId(10L); first.setName("가");
         var second = new User(); second.setId(20L); second.setName("나");
+        first.setMembershipLevel(MembershipLevel.NEW);
+        second.setMembershipLevel(MembershipLevel.ASSOCIATE);
         when(users.findAll()).thenReturn(List.of(first, second));
         when(attendances.save(any())).thenAnswer(call -> {
             Attendance a = call.getArgument(0);
@@ -57,6 +60,12 @@ class AttendanceServiceTest {
         ArgumentCaptor<List<AttendanceParticipant>> captured = ArgumentCaptor.forClass((Class) List.class);
         verify(participants).saveAll(captured.capture());
         assertThat(captured.getValue()).extracting(AttendanceParticipant::getUserId).containsExactly(10L, 20L);
+        first.setMembershipLevel(MembershipLevel.REGULAR);
+        assertThat(captured.getValue()).extracting(AttendanceParticipant::getMembershipLevel)
+            .containsExactly(MembershipLevel.NEW, MembershipLevel.ASSOCIATE);
+        when(participants.findByAttendanceId(1L)).thenReturn(captured.getValue());
+        assertThat(service.detail(1, null, "userName,asc").participants().content())
+            .extracting(p -> p.membershipLevel()).containsExactly(MembershipLevel.NEW, MembershipLevel.ASSOCIATE);
         assertThat(captured.getValue()).allSatisfy(p -> {
             assertThat(p.getStatus()).isEqualTo(PresenceStatus.ABSENT);
             assertThat(p.getCheckedInAt()).isNull();

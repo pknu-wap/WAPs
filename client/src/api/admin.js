@@ -40,9 +40,19 @@ export const adminPermissonApi = {
     }),
 
   // 사용자 권한 목록 가져오기
-  getUserRoleList: (page, size, role) =>
+  getUserRoleList: (page, size, role, membershipLevel) =>
     apiClient.get("/admin/role", {
-      params: { page: page, size: size, ...(role ? { role: role } : {}) },
+      params: {
+        page,
+        size,
+        ...(role ? { role } : {}),
+        ...(membershipLevel ? { membershipLevel } : {}),
+      },
+    }),
+  updateMembershipLevel: (newMembershipLevel, selectedUserMap) =>
+    apiClient.patch("/admin/role/user/membership-level", {
+      newMembershipLevel,
+      userIds: Array.from(selectedUserMap.keys()),
     }),
 };
 
@@ -82,5 +92,6 @@ export const adminTeamBuildApi = {
   // 현재 학기 배정 결과와 진행 단계 초기화
   resetTeamBuild: () => apiClient.post("/admin/team/building/reset/current"),
   // 현재 학기의 모든 차수 지원·모집을 포함한 완전 초기화
-  resetTeamBuildCompletely: () => apiClient.post("/admin/team/building/reset/current/complete"),
+  resetTeamBuildCompletely: () =>
+    apiClient.post("/admin/team/building/reset/current/complete"),
 };

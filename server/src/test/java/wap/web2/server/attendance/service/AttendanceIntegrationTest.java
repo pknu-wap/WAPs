@@ -69,7 +69,8 @@ class AttendanceIntegrationTest {
         jdbc.execute("DROP TABLE attendance");
         new ResourceDatabasePopulator(new ClassPathResource("db/migration/V13__create_attendances.sql"),
             new ClassPathResource("db/migration/V14__persist_attendance_status.sql"),
-            new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"))
+            new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"),
+            new ClassPathResource("db/migration/V17__snapshot_attendance_membership_level.sql"))
             .execute(dataSource);
         var entityManager = SharedEntityManagerCreator.createSharedEntityManager(factory.getObject());
         var repositories = new JpaRepositoryFactory(entityManager);
@@ -136,7 +137,8 @@ class AttendanceIntegrationTest {
         String token = service.issueQr(event).qrToken();
         jdbc.execute("ALTER TABLE attendance DROP COLUMN previous_qr_token, DROP COLUMN previous_qr_expires_at");
         jdbc.update("UPDATE attendance SET qr_expires_at = DATE_SUB(qr_expires_at, INTERVAL 30 SECOND) WHERE id = ?", event);
-        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"))
+        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"),
+            new ClassPathResource("db/migration/V17__snapshot_attendance_membership_level.sql"))
             .execute(jdbc.getDataSource());
         var migrated = attendances.findById(event).orElseThrow();
         assertThat(migrated.getQrToken()).isEqualTo(token);
@@ -230,7 +232,7 @@ class AttendanceIntegrationTest {
     @Test
     void manualStatusChangesControlCheckInAndPreserveRecordsAcrossReopening() {
         long userId = user("가", Role.ROLE_MEMBER);
-        user("나", Role.ROLE_USER);
+        user("나", Role.ROLE_GUEST);
         var created = service.create(new AttendanceRequests.Create("미래 행사", today.plusDays(1)));
         long event = created.attendanceId();
         assertThat(created.status()).isEqualTo(AttendanceStatus.SCHEDULED);
@@ -307,7 +309,7 @@ class AttendanceIntegrationTest {
         assertThat(emptySummary.absentCount()).isZero();
 
         long userId = user("가", Role.ROLE_MEMBER);
-        user("나", Role.ROLE_USER);
+        user("나", Role.ROLE_GUEST);
         long event = create(today);
         long retained = create(today);
         service.checkIn(event, userId, service.issueQr(event).qrToken());
@@ -339,7 +341,7 @@ class AttendanceIntegrationTest {
         assertThat(attendances.existsById(empty)).isFalse();
 
         long first = user("가", Role.ROLE_MEMBER);
-        user("나", Role.ROLE_USER);
+        user("나", Role.ROLE_GUEST);
         long retained = create(today);
         service.update(retained, first, new AttendanceRequests.Update(PresenceStatus.PRESENT, "보존"));
         for (AttendanceStatus status : AttendanceStatus.values()) {
@@ -411,7 +413,7 @@ class AttendanceIntegrationTest {
 
     @Test
     void simultaneousCheckInsRecordOneTimestampAndPreserveNotes() throws Exception {
-        long userId = user("가", Role.ROLE_USER);
+        long userId = user("가", Role.ROLE_GUEST);
         long otherId = user("나", Role.ROLE_MEMBER);
         long event = create(today);
         service.update(event, userId, new AttendanceRequests.Update(null, "관리자 확인"));

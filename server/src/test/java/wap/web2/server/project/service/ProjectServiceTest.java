@@ -212,7 +212,7 @@ class ProjectServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "ROLE_MEMBER", "ROLE_USER", "ROLE_GUEST" })
+    @CsvSource({ "ROLE_MEMBER", "ROLE_GUEST" })
     void 작성자가_아닌_일반_사용자는_수정_조회와_수정_삭제가_금지된다(Role role) {
         User user = new User();
         user.setId(2L);

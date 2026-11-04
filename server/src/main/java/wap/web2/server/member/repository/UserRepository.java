@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import wap.web2.server.member.entity.Role;
+import wap.web2.server.member.entity.MembershipLevel;
 import wap.web2.server.member.entity.User;
 
 @Repository
@@ -30,18 +31,24 @@ public interface UserRepository extends JpaRepository<User, Long> {
     )
     int updateRoleByIds(@Param("role") Role role, @Param("ids") List<Long> ids);
 
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE User u SET u.membershipLevel = :level WHERE u.id in :ids")
+    int updateMembershipLevelByIds(@Param("level") MembershipLevel level, @Param("ids") List<Long> ids);
+
     @Query(
         """
         SELECT u
         FROM User u
         WHERE (:role IS NULL OR u.role = :role)
-        ORDER BY u.name
+        AND (:membershipLevel IS NULL OR u.membershipLevel = :membershipLevel)
+        ORDER BY u.name, u.id
         LIMIT :limit OFFSET :offset
         """
     )
     List<User> findUserByOffset(
         @Param("limit") Integer limit,
         @Param("offset") Integer offset,
-        @Param("role") Role role
+        @Param("role") Role role,
+        @Param("membershipLevel") MembershipLevel membershipLevel
     );
 }
