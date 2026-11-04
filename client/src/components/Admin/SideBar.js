@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../../assets/Admin/SideBar.module.css";
 import { IconVote, IconTeamBuild, IconPermission, IconPlan } from "./icons";
+import { FiUserCheck } from "react-icons/fi";
 
 // 어드민 페이지 사이드바 컴포넌트
 const SideBar = () => {
@@ -26,6 +27,7 @@ const SideBar = () => {
       icon: IconPermission,
     },
     { text: "주요 행사 일정 관리", path: "/admin/plan", icon: IconPlan },
+    { text: "출석체크", path: "/admin/attendance", icon: FiUserCheck },
   ];
 
   return (

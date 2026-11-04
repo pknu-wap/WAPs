@@ -30,6 +30,7 @@ import ManagePlanPage from "./pages/adminPages/ManagePlanPage";
 import ManageTeamBuildPage from "./pages/adminPages/ManageTeamBuildPage";
 import ManageThirdTeamBuildPage from "./pages/adminPages/ManageThirdTeamBuildPage";
 import ManageVotePage from "./pages/adminPages/ManageVotePage";
+import ManageAttendancePage from "./pages/adminPages/ManageAttendancePage";
 import MainLayout from "./components/MainLayout";
 
 import AdminPageLayout from "./components/Admin/AdminPageLayout";
@@ -109,6 +110,7 @@ function App() {
               />
               <Route path="permission" element={<ManagePermissionPage />} />
               <Route path="plan" element={<ManagePlanPage />} />
+              <Route path="attendance" element={<ManageAttendancePage />} />
             </Route>
           </Route>
         </Route>
