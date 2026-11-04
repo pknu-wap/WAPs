@@ -13,8 +13,6 @@ const useProjectForm = () => {
   const [password, setPassword] = useState("");
   const [removalList, setRemovalList] = useState([]); // 삭제된 이미지 URL들 저장용
 
-  // 팀장 선택 상태관리
-  const [isLeader, setIsLeader] = useState(false);
   const [teamMembers, setTeamMembers] = useState([
     { memberName: "", image: null, memberRole: "" },
   ]);
@@ -81,14 +79,6 @@ const useProjectForm = () => {
       const updatedImages = [...images];
       updatedImages[indexOrNull] = null;
       setImages(updatedImages);
-    }
-  };
-
-  // 팀원 이름 입력 포커스 핸들러
-  const handleMemberNameFocus = (e, index) => {
-    if (index === 0 && !isLeader) {
-      alert("첫 번째 팀원으로는 팀장을 입력해주세요.");
-      setIsLeader(true);
     }
   };
 
@@ -185,7 +175,6 @@ const useProjectForm = () => {
     setContent("");
     setSummary("");
     setSemester("");
-    setIsLeader(false);
     setTeamMembers([{ memberName: "", image: null, memberRole: "" }]); // 이름을 일관되게 수정(기존: name, role)
     setThumbnail(null);
     setImages([null, null, null, null]);
@@ -268,7 +257,6 @@ const useProjectForm = () => {
     // 핸들러
     handleImgUpload,
     handleRemoveImage,
-    handleMemberNameFocus,
     handleMemberNameChange,
     handleMemberImageUpload,
     handleRoleChange,

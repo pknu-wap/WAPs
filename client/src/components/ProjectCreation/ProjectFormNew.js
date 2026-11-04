@@ -76,7 +76,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     password,
     handleImgUpload,
     handleRemoveImage,
-    handleMemberNameFocus,
     handleMemberNameChange,
     handleRoleChange,
     addTeamMember,
@@ -318,7 +317,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
               index={index}
               handleMemberNameChange={handleMemberNameChange}
               handleRoleChange={handleRoleChange}
-              handleMemberNameFocus={handleMemberNameFocus}
               roleOptions={roleOptions}
               addTeamMember={addTeamMember}
               handleRemoveTeamMember={handleRemoveTeamMember}

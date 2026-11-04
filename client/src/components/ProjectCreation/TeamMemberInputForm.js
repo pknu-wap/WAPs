@@ -6,7 +6,6 @@ const TeamMemberInputForm = ({
   index,
   handleMemberNameChange,
   handleRoleChange,
-  handleMemberNameFocus,
   roleOptions,
   addTeamMember,
   teamMembers,
@@ -24,7 +23,6 @@ const TeamMemberInputForm = ({
         placeholder="팀원 이름"
         value={member.memberName}
         onChange={(e) => handleMemberNameChange(e, index)}
-        onFocus={(e) => handleMemberNameFocus(e, index)}
       />
 
       {/* 팀원 역할 선택 */}
