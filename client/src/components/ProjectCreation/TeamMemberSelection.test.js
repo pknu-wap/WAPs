@@ -10,6 +10,9 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import ProjectFormNew from "./ProjectFormNew";
 import { projectApi } from "../../api/project";
+import { userApi } from "../../api/user";
+
+jest.mock("../../api/user", () => ({ userApi: { getMe: jest.fn() } }));
 
 jest.mock("../../api/project", () => ({
   projectApi: {
@@ -32,6 +35,7 @@ const members = [
 ];
 beforeEach(() => {
   jest.clearAllMocks();
+  userApi.getMe.mockResolvedValue({ userId: 1, userName: "김회원" });
   jest.spyOn(window, "alert").mockImplementation(() => {});
   projectApi.getMemberOptions.mockResolvedValue(members);
   projectApi.getCurrentSemester.mockResolvedValue({ semester: "2026-02" });
@@ -211,4 +215,48 @@ test("한글 조합 확정 엔터는 선택하거나 제출하지 않는다", as
   fireEvent(input, event);
   expect(event.defaultPrevented).toBe(true);
   expect(screen.getByLabelText("팀원 1 선택").value).toBe("");
+});
+
+test("새 프로젝트는 로그인한 계정을 첫 번째 팀원으로 선택하며 역할은 직접 고른다", async () => {
+  userApi.getMe.mockResolvedValue({ userId: 2, userName: "김회원" });
+  render(
+    <MemoryRouter>
+      <ProjectFormNew />
+    </MemoryRouter>,
+  );
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 선택").value).toBe("2"),
+  );
+  expect(screen.getByLabelText("팀원 1 역할").value).toBe("");
+  fireEvent.change(screen.getByLabelText("팀원 1 역할"), {
+    target: { value: "PM" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "등록" }));
+  expect(
+    Array.from(screen.getByLabelText("팀원 2 선택").options).map(
+      (option) => option.value,
+    ),
+  ).not.toContain("2");
+});
+
+test("수정 화면은 로그인 사용자 대신 기존 첫 번째 팀원을 유지한다", async () => {
+  renderForm([{ userId: 3, memberName: "이회원", memberRole: "AI" }]);
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 선택").disabled).toBe(false),
+  );
+  expect(screen.getByLabelText("팀원 1 선택").value).toBe("3");
+  expect(userApi.getMe).not.toHaveBeenCalled();
+});
+
+test("내 정보 조회 실패 후 다시 시도하면 기본 팀원을 선택한다", async () => {
+  userApi.getMe.mockRejectedValueOnce(new Error("offline"));
+  render(
+    <MemoryRouter>
+      <ProjectFormNew />
+    </MemoryRouter>,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "다시 시도" }));
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 선택").value).toBe("1"),
+  );
 });

@@ -8,6 +8,9 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { projectApi } from "../../api/project";
+import { userApi } from "../../api/user";
+
+jest.mock("../../api/user", () => ({ userApi: { getMe: jest.fn() } }));
 import ProjectFormNew from "./ProjectFormNew";
 
 jest.mock("../../api/project", () => ({
@@ -31,6 +34,7 @@ jest.mock("./InputPin", () => ({ password, setPassword }) => (
 
 beforeEach(() => {
   jest.clearAllMocks();
+  userApi.getMe.mockResolvedValue({ userId: 1, userName: "김회원" });
   jest.spyOn(window, "alert").mockImplementation(() => {});
   projectApi.getMemberOptions.mockResolvedValue([]);
   projectApi.getCurrentSemester.mockResolvedValue({ semester: "2026-02" });

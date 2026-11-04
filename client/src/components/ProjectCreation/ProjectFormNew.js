@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { projectApi } from "../../api/project";
+import { userApi } from "../../api/user";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
 import ImageUploader from "./ImageUploader";
@@ -132,10 +133,22 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     let ignore = false;
     setMembersLoading(true);
     setMembersError("");
-    projectApi
-      .getMemberOptions()
-      .then((members) => {
-        if (!ignore) setMemberOptions(members);
+    Promise.all([
+      projectApi.getMemberOptions(),
+      isEdit ? Promise.resolve(null) : userApi.getMe(),
+    ])
+      .then(([members, currentUser]) => {
+        if (ignore) return;
+        setMemberOptions(members);
+        const defaultMember = members.find(
+          (member) => member.userId === currentUser?.userId,
+        );
+        if (!isEdit && defaultMember) {
+          setTeamMembers((previous) => {
+            if (previous[0]?.userId || previous[0]?.memberName) return previous;
+            return [{ ...previous[0], ...defaultMember }, ...previous.slice(1)];
+          });
+        }
       })
       .catch(() => {
         if (!ignore) setMembersError("회원 목록을 불러오지 못했습니다.");
@@ -146,7 +159,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     return () => {
       ignore = true;
     };
-  }, [membersRetry]);
+  }, [membersRetry, isEdit, setTeamMembers]);
 
   // 기존 데이터 초기화
   useEffect(() => {
