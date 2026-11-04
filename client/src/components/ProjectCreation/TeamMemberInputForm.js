@@ -148,7 +148,7 @@ const TeamMemberInputForm = ({
             삭제
           </button>
         )}
-        {/* 등록 버튼 */}
+        {/* 팀원 추가 버튼 */}
         {index === teamMembers.length - 1 && (
           <button
             className={styles.teammember_add_btn}
@@ -158,7 +158,7 @@ const TeamMemberInputForm = ({
               if (roleRef.current.reportValidity()) addTeamMember();
             }}
           >
-            등록
+            팀원 추가
           </button>
         )}
       </div>

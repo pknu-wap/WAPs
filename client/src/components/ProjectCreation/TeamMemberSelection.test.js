@@ -81,7 +81,7 @@ test("동명이인을 ID로 선택하고 중복 후보와 빈 행을 제외해 �
   fireEvent.change(screen.getByLabelText("팀원 1 역할"), {
     target: { value: "Server" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "등록" }));
+  fireEvent.click(screen.getByRole("button", { name: "팀원 추가" }));
   expect(
     Array.from(screen.getByLabelText("팀원 2 선택").options).map(
       (o) => o.value,
@@ -103,7 +103,7 @@ test("검색어만 입력해서는 팀원을 등록할 수 없다", async () => 
   fireEvent.change(screen.getByLabelText("팀원 1 역할"), {
     target: { value: "PM" },
   });
-  expect(screen.getByRole("button", { name: "등록" }).disabled).toBe(true);
+  expect(screen.getByRole("button", { name: "팀원 추가" }).disabled).toBe(true);
   await submit();
   expect(projectApi.updateProject).not.toHaveBeenCalled();
 });
@@ -230,7 +230,7 @@ test("새 프로젝트는 로그인한 계정을 첫 번째 팀원으로 선택�
   expect(screen.getByLabelText("팀원 1 역할").value).toBe("");
   const roleSelect = screen.getByLabelText("팀원 1 역할");
   const reportValidity = jest.spyOn(roleSelect, "reportValidity");
-  fireEvent.click(screen.getByRole("button", { name: "등록" }));
+  fireEvent.click(screen.getByRole("button", { name: "팀원 추가" }));
   expect(reportValidity).toHaveBeenCalledTimes(1);
   expect(roleSelect.validity.valueMissing).toBe(true);
   expect(window.alert).not.toHaveBeenCalled();
@@ -238,7 +238,7 @@ test("새 프로젝트는 로그인한 계정을 첫 번째 팀원으로 선택�
   fireEvent.change(screen.getByLabelText("팀원 1 역할"), {
     target: { value: "PM" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "등록" }));
+  fireEvent.click(screen.getByRole("button", { name: "팀원 추가" }));
   expect(
     Array.from(screen.getByLabelText("팀원 2 선택").options).map(
       (option) => option.value,
