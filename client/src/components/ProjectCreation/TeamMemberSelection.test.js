@@ -70,23 +70,20 @@ const readProject = (data) =>
 
 test("동명이인을 ID로 선택하고 중복 후보와 빈 행을 제외해 저장한다", async () => {
   renderForm();
-  await screen.findByRole("option", { name: "김회원 (#2)" });
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 검색")).toBeEnabled(),
+  );
   fireEvent.change(screen.getByLabelText("팀원 1 검색"), {
     target: { value: "김" },
   });
   expect(screen.queryByRole("option", { name: "이회원 (#3)" })).toBeNull();
-  fireEvent.change(screen.getByLabelText("팀원 1 선택"), {
-    target: { value: "2" },
-  });
+  fireEvent.click(screen.getByRole("option", { name: "김회원 (#2)" }));
   fireEvent.change(screen.getByLabelText("팀원 1 역할"), {
     target: { value: "Server" },
   });
   fireEvent.click(screen.getByRole("button", { name: "팀원 추가" }));
-  expect(
-    Array.from(screen.getByLabelText("팀원 2 선택").options).map(
-      (o) => o.value,
-    ),
-  ).not.toContain("2");
+  fireEvent.focus(screen.getByLabelText("팀원 2 검색"));
+  expect(screen.queryByRole("option", { name: "김회원 (#2)" })).toBeNull();
   await submit();
   expect(projectApi.updateProject).toHaveBeenCalledTimes(1);
   expect(
@@ -96,7 +93,9 @@ test("동명이인을 ID로 선택하고 중복 후보와 빈 행을 제외해 �
 
 test("검색어만 입력해서는 팀원을 등록할 수 없다", async () => {
   renderForm();
-  await screen.findByRole("option", { name: "김회원 (#1)" });
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 검색")).toBeEnabled(),
+  );
   fireEvent.change(screen.getByLabelText("팀원 1 검색"), {
     target: { value: "없는이름" },
   });
@@ -124,24 +123,25 @@ test("회원 조회 실패 시 재시도할 수 있다", async () => {
   projectApi.getMemberOptions.mockRejectedValueOnce(new Error("offline"));
   renderForm();
   fireEvent.click(await screen.findByRole("button", { name: "다시 시도" }));
-  await screen.findByRole("option", { name: "김회원 (#1)" });
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 검색")).toBeEnabled(),
+  );
   expect(projectApi.getMemberOptions).toHaveBeenCalledTimes(2);
 });
 
 test("기존 계정 ID를 유지하고 마지막 입력 행을 삭제하면 초기화한다", async () => {
   renderForm([{ userId: 1, memberName: "김회원", memberRole: "PM" }]);
   await waitFor(() =>
-    expect(screen.getByLabelText("팀원 1 선택").disabled).toBe(false),
+    expect(screen.getByLabelText("팀원 1 검색").disabled).toBe(false),
   );
-  expect(screen.getByLabelText("팀원 1 선택").value).toBe("1");
-  fireEvent.change(screen.getByLabelText("팀원 2 선택"), {
-    target: { value: "3" },
-  });
+  expect(screen.getByLabelText("팀원 1 검색").value).toBe("김회원 (#1)");
+  fireEvent.focus(screen.getByLabelText("팀원 2 검색"));
+  fireEvent.click(screen.getByRole("option", { name: "이회원 (#3)" }));
   fireEvent.change(screen.getByLabelText("팀원 2 역할"), {
     target: { value: "AI" },
   });
   fireEvent.click(screen.getByLabelText("팀원 2 삭제"));
-  expect(screen.getByLabelText("팀원 2 선택").value).toBe("");
+  expect(screen.getByLabelText("팀원 2 검색").value).toBe("");
   expect(screen.getByLabelText("팀원 2 역할").value).toBe("");
   await submit();
   expect(
@@ -167,22 +167,27 @@ test("검색 후 엔터는 프로젝트를 제출하지 않고 유일한 회원�
       <ProjectFormNew />
     </MemoryRouter>,
   );
-  await screen.findByRole("option", { name: "이회원 (#3)" });
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 검색")).toBeEnabled(),
+  );
   searchWithEnter("이회원");
-  expect(screen.getByLabelText("팀원 1 선택").value).toBe("3");
+  expect(screen.getByLabelText("팀원 1 검색").value).toBe("이회원 (#3)");
   expect(projectApi.createProject).not.toHaveBeenCalled();
   expect(window.alert).not.toHaveBeenCalled();
 });
 
 test("동명이인이면 엔터로 선택 목록을 펼친다", async () => {
   renderForm();
-  await screen.findByRole("option", { name: "김회원 (#1)" });
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 검색")).toBeEnabled(),
+  );
   searchWithEnter("김회원");
-  const picker = screen.getByRole("listbox", { name: "팀원 1 선택" });
-  expect(picker.value).toBe("");
-  expect(picker).toHaveFocus();
-  fireEvent.change(picker, { target: { value: "2" } });
-  expect(screen.getByRole("combobox", { name: "팀원 1 선택" }).value).toBe("2");
+  expect(screen.getByRole("listbox", { name: "팀원 1 선택" })).toBeVisible();
+  fireEvent.click(screen.getByRole("option", { name: "김회원 (#2)" }));
+  expect(screen.getByRole("combobox", { name: "팀원 1 검색" }).value).toBe(
+    "김회원 (#2)",
+  );
+  expect(screen.queryByRole("listbox")).toBeNull();
   expect(window.alert).not.toHaveBeenCalled();
 });
 
@@ -192,29 +197,34 @@ test("기존 선택과 다른 이름을 검색하면 새 검색 결과 한 명�
     expect(screen.getByLabelText("팀원 1 검색").disabled).toBe(false),
   );
   searchWithEnter("이회원");
-  expect(screen.getByLabelText("팀원 1 선택").value).toBe("3");
+  expect(screen.getByLabelText("팀원 1 검색").value).toBe("이회원 (#3)");
 });
 
 test.each(["", "없는회원"])(
   "빈 검색어나 결과 없는 검색에서는 엔터로 제출하지 않는다: %s",
   async (query) => {
     renderForm();
-    await screen.findByRole("option", { name: "김회원 (#1)" });
+    await waitFor(() =>
+      expect(screen.getByLabelText("팀원 1 검색")).toBeEnabled(),
+    );
     searchWithEnter(query);
-    expect(screen.getByLabelText("팀원 1 선택").value).toBe("");
+    expect(screen.getByLabelText("팀원 1 검색").value).toBe(query);
     expect(window.alert).not.toHaveBeenCalled();
   },
 );
 
 test("한글 조합 확정 엔터는 선택하거나 제출하지 않는다", async () => {
   renderForm();
-  await screen.findByRole("option", { name: "이회원 (#3)" });
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 검색")).toBeEnabled(),
+  );
   const input = screen.getByLabelText("팀원 1 검색");
   fireEvent.change(input, { target: { value: "이회원" } });
   const event = createEvent.keyDown(input, { key: "Enter", isComposing: true });
   fireEvent(input, event);
   expect(event.defaultPrevented).toBe(true);
-  expect(screen.getByLabelText("팀원 1 선택").value).toBe("");
+  expect(screen.getByLabelText("팀원 1 검색").value).toBe("이회원");
+  expect(screen.getByRole("button", { name: "팀원 추가" })).toBeDisabled();
 });
 
 test("새 프로젝트는 로그인한 계정을 첫 번째 팀원으로 선택하며 역할은 직접 고른다", async () => {
@@ -225,7 +235,7 @@ test("새 프로젝트는 로그인한 계정을 첫 번째 팀원으로 선택�
     </MemoryRouter>,
   );
   await waitFor(() =>
-    expect(screen.getByLabelText("팀원 1 선택").value).toBe("2"),
+    expect(screen.getByLabelText("팀원 1 검색").value).toBe("김회원 (#2)"),
   );
   expect(screen.getByLabelText("팀원 1 역할").value).toBe("");
   const roleSelect = screen.getByLabelText("팀원 1 역할");
@@ -234,24 +244,21 @@ test("새 프로젝트는 로그인한 계정을 첫 번째 팀원으로 선택�
   expect(reportValidity).toHaveBeenCalledTimes(1);
   expect(roleSelect.validity.valueMissing).toBe(true);
   expect(window.alert).not.toHaveBeenCalled();
-  expect(screen.queryByLabelText("팀원 2 선택")).toBeNull();
+  expect(screen.queryByLabelText("팀원 2 검색")).toBeNull();
   fireEvent.change(screen.getByLabelText("팀원 1 역할"), {
     target: { value: "PM" },
   });
   fireEvent.click(screen.getByRole("button", { name: "팀원 추가" }));
-  expect(
-    Array.from(screen.getByLabelText("팀원 2 선택").options).map(
-      (option) => option.value,
-    ),
-  ).not.toContain("2");
+  fireEvent.focus(screen.getByLabelText("팀원 2 검색"));
+  expect(screen.queryByRole("option", { name: "김회원 (#2)" })).toBeNull();
 });
 
 test("수정 화면은 로그인 사용자 대신 기존 첫 번째 팀원을 유지한다", async () => {
   renderForm([{ userId: 3, memberName: "이회원", memberRole: "AI" }]);
   await waitFor(() =>
-    expect(screen.getByLabelText("팀원 1 선택").disabled).toBe(false),
+    expect(screen.getByLabelText("팀원 1 검색").disabled).toBe(false),
   );
-  expect(screen.getByLabelText("팀원 1 선택").value).toBe("3");
+  expect(screen.getByLabelText("팀원 1 검색").value).toBe("이회원 (#3)");
   expect(userApi.getMe).not.toHaveBeenCalled();
 });
 
@@ -264,7 +271,7 @@ test("내 정보 조회 실패 후 다시 시도하면 기본 팀원을 선택�
   );
   fireEvent.click(await screen.findByRole("button", { name: "다시 시도" }));
   await waitFor(() =>
-    expect(screen.getByLabelText("팀원 1 선택").value).toBe("1"),
+    expect(screen.getByLabelText("팀원 1 검색").value).toBe("김회원 (#1)"),
   );
 });
 
@@ -275,7 +282,7 @@ test("자동 선택된 팀원은 이탈 경고를 켜지 않고 역할 변경은
     </MemoryRouter>,
   );
   await waitFor(() =>
-    expect(screen.getByLabelText("팀원 1 선택").value).toBe("1"),
+    expect(screen.getByLabelText("팀원 1 검색").value).toBe("김회원 (#1)"),
   );
   const beforeUnload = () => {
     const event = new Event("beforeunload", { cancelable: true });
@@ -296,9 +303,26 @@ test("자동 선택된 팀원은 이탈 경고를 켜지 않고 역할 변경은
 test("기존 프로젝트를 불러온 것만으로는 이탈 경고가 켜지지 않는다", async () => {
   renderForm([{ userId: 3, memberName: "이회원", memberRole: "AI" }]);
   await waitFor(() =>
-    expect(screen.getByLabelText("팀원 1 선택").disabled).toBe(false),
+    expect(screen.getByLabelText("팀원 1 검색").disabled).toBe(false),
   );
   const event = new Event("beforeunload", { cancelable: true });
   window.dispatchEvent(event);
   expect(event.defaultPrevented).toBe(false);
+});
+
+test("방향키로 동명이인을 선택하고 포커스를 벗어나면 확정한 이름을 표시한다", async () => {
+  renderForm();
+  await waitFor(() =>
+    expect(screen.getByLabelText("팀원 1 검색")).toBeEnabled(),
+  );
+  const input = screen.getByRole("combobox", { name: "팀원 1 검색" });
+  fireEvent.change(input, { target: { value: "김회원" } });
+  fireEvent.keyDown(input, { key: "ArrowDown" });
+  fireEvent.keyDown(input, { key: "ArrowDown" });
+  fireEvent.keyDown(input, { key: "Enter" });
+  expect(input).toHaveValue("김회원 (#2)");
+  fireEvent.change(input, { target: { value: "없는이름" } });
+  fireEvent.blur(input);
+  expect(input).toHaveValue("김회원 (#2)");
+  expect(screen.queryByRole("listbox")).toBeNull();
 });

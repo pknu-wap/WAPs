@@ -120,6 +120,7 @@
 }
 
 .member_picker {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -132,17 +133,38 @@
   width: 100%;
 }
 
-.member_select {
-  width: 100%;
-  height: 28px;
-  border: 0;
+.member_results {
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: 240px;
+  max-height: 180px;
+  overflow-y: auto;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  list-style: none;
   border-radius: 8px;
   background: #4a4a4a;
   color: #fff;
+  box-shadow: 0 4px 12px #0006;
+}
+
+.member_results li {
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.member_results li:hover,
+.member_results .active_option {
+  background: #626262;
 }
 
 @media (max-width: 600px) {
   .member_picker {
+    position: relative;
     width: min(120px, 35%);
     min-width: 0;
   }

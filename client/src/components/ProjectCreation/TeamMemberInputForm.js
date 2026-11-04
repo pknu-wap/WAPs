@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useId, useRef, useState } from "react";
 import styles from "../../assets/ProjectCreation/TeamMemberInputForm.module.css"; // CSS 파일 경로 추가
 
 const TeamMemberInputForm = ({
@@ -13,34 +13,45 @@ const TeamMemberInputForm = ({
   teamMembers,
   handleRemoveTeamMember,
 }) => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(null);
   const [expanded, setExpanded] = useState(false);
-  const selectRef = useRef(null);
+  const listId = useId();
+  const [activeIndex, setActiveIndex] = useState(-1);
   const roleRef = useRef(null);
   const matches = memberOptions.filter(
     (option) =>
-      option.memberName.includes(query.trim()) &&
+      option.memberName.includes((query || "").trim()) &&
       !teamMembers.some(
         (selected, selectedIndex) =>
           selectedIndex !== index && selected.userId === option.userId,
       ),
   );
-  const options = expanded
-    ? matches
-    : memberOptions.filter(
-        (option) => option.userId === member.userId || matches.includes(option),
-      );
+  const selectMember = (option) => {
+    handleMemberSelect(option, index);
+    setQuery(null);
+    setExpanded(false);
+    setActiveIndex(-1);
+  };
   const handleSearchKeyDown = (event) => {
-    if (event.key !== "Enter") return;
-    event.preventDefault();
-    if (event.nativeEvent.isComposing || event.keyCode === 229 || !query.trim())
-      return;
-    if (matches.length === 1) {
-      handleMemberSelect(matches[0], index);
+    if (event.key === "Enter") event.preventDefault();
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
       setExpanded(false);
-    } else if (matches.length > 1) {
+      setQuery(null);
+      setActiveIndex(-1);
+    } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
       setExpanded(true);
-      selectRef.current?.focus();
+      setActiveIndex((current) =>
+        event.key === "ArrowDown"
+          ? Math.min(current + 1, matches.length - 1)
+          : Math.max(current - 1, 0),
+      );
+    } else if (event.key === "Enter") {
+      if (expanded && matches[activeIndex]) selectMember(matches[activeIndex]);
+      else if (query?.trim() && matches.length === 1) selectMember(matches[0]);
+      else setExpanded(true);
     }
   };
   return (
@@ -49,68 +60,83 @@ const TeamMemberInputForm = ({
         <div className={styles.member_picker}>
           <input
             className={styles.teammember_input}
+            role="combobox"
             aria-label={`팀원 ${index + 1} 검색`}
-            placeholder="이름으로 검색"
-            value={query}
+            aria-autocomplete="list"
+            aria-expanded={expanded}
+            aria-controls={expanded ? listId : undefined}
+            aria-activedescendant={
+              expanded && matches[activeIndex]
+                ? `${listId}-${matches[activeIndex].userId}`
+                : undefined
+            }
+            autoComplete="off"
+            placeholder={
+              membersLoading ? "회원 목록 로딩 중..." : "이름으로 검색"
+            }
+            value={
+              query ??
+              (member.userId
+                ? `${member.memberName} (#${member.userId})`
+                : member.memberName || "")
+            }
+            onFocus={() => setExpanded(true)}
+            onClick={() => setExpanded(true)}
+            onBlur={() => {
+              setExpanded(false);
+              setQuery(null);
+              setActiveIndex(-1);
+            }}
             onChange={(event) => {
               setQuery(event.target.value);
-              setExpanded(false);
+              setExpanded(true);
+              setActiveIndex(-1);
             }}
             onKeyDown={handleSearchKeyDown}
             disabled={membersLoading}
           />
-          <select
-            ref={selectRef}
-            className={styles.member_select}
-            size={expanded ? Math.min(matches.length + 1, 6) : 1}
-            style={expanded ? { height: "auto" } : undefined}
-            onBlur={() => setExpanded(false)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                setExpanded(false);
-              } else if (event.key === "Escape") {
-                setExpanded(false);
-              }
-            }}
-            aria-label={`팀원 ${index + 1} 선택`}
-            value={member.userId || ""}
-            disabled={membersLoading}
-            onChange={(event) => {
-              handleMemberSelect(
-                memberOptions.find(
-                  (option) => String(option.userId) === event.target.value,
-                ),
-                index,
-              );
-              setExpanded(false);
-            }}
-          >
-            <option value="">
-              {membersLoading ? "회원 목록 로딩 중..." : "회원을 선택해 주세요"}
-            </option>
-            {member.userId &&
-              !memberOptions.some(
-                (option) => option.userId === member.userId,
-              ) && (
-                <option value={member.userId} disabled>
-                  {member.memberName} (다시 선택 필요)
-                </option>
+          {expanded && (
+            <ul
+              id={listId}
+              role="listbox"
+              aria-label={`팀원 ${index + 1} 선택`}
+              className={styles.member_results}
+            >
+              {matches.map((option, optionIndex) => (
+                <li
+                  id={`${listId}-${option.userId}`}
+                  key={option.userId}
+                  role="option"
+                  aria-selected={member.userId === option.userId}
+                  className={
+                    optionIndex === activeIndex
+                      ? styles.active_option
+                      : undefined
+                  }
+                  ref={(node) => {
+                    if (optionIndex === activeIndex)
+                      node?.scrollIntoView?.({ block: "nearest" });
+                  }}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => selectMember(option)}
+                >
+                  {option.memberName} (#{option.userId})
+                </li>
+              ))}
+              {!matches.length && (
+                <li role="presentation">선택할 회원이 없습니다.</li>
               )}
-            {options.map((option) => (
-              <option key={option.userId} value={option.userId}>
-                {option.memberName} (#{option.userId})
-              </option>
-            ))}
-          </select>
-          {!membersLoading && options.length === 0 && (
-            <span role="status">선택할 회원이 없습니다.</span>
+            </ul>
           )}
-          {member.memberName && !member.userId && (
-            <span role="status">
-              {member.memberName}: 회원을 다시 선택해 주세요.
-            </span>
-          )}
+          {member.memberName &&
+            !membersLoading &&
+            !memberOptions.some(
+              (option) => option.userId === member.userId,
+            ) && (
+              <span role="status">
+                {member.memberName}: 회원을 다시 선택해 주세요.
+              </span>
+            )}
         </div>
 
         {/* 팀원 역할 선택 */}
