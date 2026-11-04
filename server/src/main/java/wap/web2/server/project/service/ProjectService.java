@@ -7,6 +7,7 @@ import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +26,11 @@ import wap.web2.server.member.entity.Role;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.project.dto.RecruitmentPositionDto;
+import wap.web2.server.project.dto.TeamMemberDto;
 import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
+import wap.web2.server.project.dto.response.ProjectMemberOption;
 import wap.web2.server.project.entity.Image;
 import wap.web2.server.project.entity.Project;
 import wap.web2.server.project.repository.ProjectRepository;
@@ -65,6 +68,7 @@ public class ProjectService {
         }
         RecruitmentPositionDto.toEntities(request.getRecruitmentPositions());
         User user = findUser(userPrincipal.getId());
+        validateTeamMembers(request.getTeamMember());
         String semester = getCurrentSemester();
 
         List<MultipartFile> imageFiles = getNonEmptyImageFiles(request);
@@ -186,6 +190,8 @@ public class ProjectService {
 
         RecruitmentPositionDto.toEntities(request.getRecruitmentPositions());
 
+        validateTeamMembers(request.getTeamMember());
+
         // 썸네일 이미지가 없으면 유지 or 있으면 변경
         if (hasFile(request.getThumbnailFiles())) {
             log.info("[프로젝트 수정] ({})의 thumbnail 이미지 변경", project.getTitle());
@@ -264,6 +270,36 @@ public class ProjectService {
             .findProjectsBySemester(generateSemester())
             .stream()
             .anyMatch(project -> project.isOwner(user));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProjectMemberOption> getMemberOptions() {
+        return userRepository.findBySignupCompletedTrueAndRoleInOrderByNameAscIdAsc(
+            List.of(Role.ROLE_MEMBER, Role.ROLE_ADMIN))
+            .stream().map(user -> new ProjectMemberOption(user.getId(), user.getName())).toList();
+    }
+
+    private void validateTeamMembers(List<TeamMemberDto> members) {
+        if (members == null) return;
+        var ids = new HashSet<Long>();
+        for (TeamMemberDto member : members) {
+            if (member == null || member.getUserId() == null) {
+                throw new BadRequestException("등록된 회원을 팀원으로 선택해 주세요.");
+            }
+            if (!ids.add(member.getUserId())) {
+                throw new BadRequestException("같은 회원을 중복 등록할 수 없습니다.");
+            }
+            User user = userRepository.findById(member.getUserId())
+                .orElseThrow(() -> new BadRequestException("선택한 회원을 찾을 수 없습니다."));
+            if (!user.isSignupCompleted() ||
+                (user.getRole() != Role.ROLE_MEMBER && user.getRole() != Role.ROLE_ADMIN)) {
+                throw new BadRequestException("가입을 완료한 회원만 팀원으로 선택할 수 있습니다.");
+            }
+            if (member.getMemberRole() == null || member.getMemberRole().isBlank()) {
+                throw new BadRequestException("팀원의 역할을 선택해 주세요.");
+            }
+            member.resolveName(user.getName());
+        }
     }
 
     private boolean canManage(Project project, User user) {
