@@ -1,6 +1,20 @@
 import React, { useState } from "react";
-import Markdown from "markdown-to-jsx";
+import Markdown, { sanitizer } from "markdown-to-jsx";
 import styles from "./Markdown.module.css";
+
+function sanitizeMarkdownUrl(value, tag, attribute) {
+  const safeUrl = sanitizer(value, tag, attribute);
+  if (safeUrl == null || tag !== "a" || attribute !== "href") return safeUrl;
+
+  try {
+    // A fixed HTTPS base allows relative URLs and fragments without trusting
+    // additional schemes such as data: or blob: for clickable links.
+    const { protocol } = new URL(safeUrl, "https://markdown.invalid/");
+    return ["http:", "https:", "mailto:"].includes(protocol) ? safeUrl : null;
+  } catch {
+    return null;
+  }
+}
 
 export default function MarkdownContent({ value, allowRaw = false }) {
   const [raw, setRaw] = useState(false);
@@ -30,6 +44,7 @@ export default function MarkdownContent({ value, allowRaw = false }) {
             wrapper: "div",
             disableParsingRawHTML: true,
             enforceAtxHeadings: true,
+            sanitizer: sanitizeMarkdownUrl,
           }}
         >
           {value || "내용이 없습니다."}
