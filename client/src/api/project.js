@@ -2,6 +2,8 @@ import apiClient from "./client";
 
 // 프로젝트 관련 API
 export const projectApi = {
+  getMemberOptions: () => apiClient.get("/project/members"),
+
   // 현재 서버 기준 학기
   getCurrentSemester: () => apiClient.get("/project/semester/current"),
 
@@ -17,14 +19,18 @@ export const projectApi = {
     apiClient.get(`/project/${projectId}/update`),
 
   // 프로젝트 생성
-  createProject: (projectData) =>
+  createProject: (projectData, onUploadProgress) =>
     apiClient.post("/project", projectData, {
+      timeout: 10000,
+      onUploadProgress,
       headers: { "Content-Type": "multipart/form-data" },
     }),
 
   // 프로젝트 수정
-  updateProject: (projectId, projectData) =>
+  updateProject: (projectId, projectData, onUploadProgress) =>
     apiClient.put(`/project/${projectId}`, projectData, {
+      timeout: 10000,
+      onUploadProgress,
       headers: { "Content-Type": "multipart/form-data" },
     }),
 

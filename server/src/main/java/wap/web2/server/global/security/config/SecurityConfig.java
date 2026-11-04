@@ -122,6 +122,8 @@ public class SecurityConfig {
                     .hasAnyRole("MEMBER", "ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/project", "/project/**")
                     .hasAnyRole("MEMBER", "ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/project/members")
+                    .hasAnyRole("MEMBER", "ADMIN")
                     .requestMatchers(HttpMethod.GET, "/project/list", "/project/*")
                     .permitAll()
                     .requestMatchers("/vote/result/**", "/techStack/**", "/calendar/**")

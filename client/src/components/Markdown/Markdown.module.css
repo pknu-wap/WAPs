@@ -1,0 +1,192 @@
+.editor {
+  box-sizing: border-box;
+  width: 90%;
+  margin: 10px auto 0;
+  padding: 16px;
+  border-radius: 10px;
+  background: #2a2a2a;
+  color: #ebebeb;
+  text-align: left;
+}
+.header,
+.controls,
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.header {
+  justify-content: space-between;
+}
+.controls button,
+.toolbar button {
+  border: 1px solid #626262;
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: #383838;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+}
+.controls button[aria-pressed="true"] {
+  background: #efefef;
+  color: #171717;
+}
+.toolbar {
+  margin: 12px 0;
+}
+.toolbar button:first-child {
+  font-weight: bold;
+}
+.toolbar button:nth-child(2) {
+  font-style: italic;
+}
+.editor textarea,
+.richInput {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: 200px;
+  padding: 10px;
+  border: 1px solid #626262;
+  border-radius: 6px;
+  background: #242424;
+  color: #fff;
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  overflow: auto;
+}
+.editor textarea:focus-visible,
+.richInput:focus-visible,
+.controls button:focus-visible,
+.toolbar button:focus-visible {
+  outline: 2px solid #a9caff;
+  outline-offset: 2px;
+}
+.preview {
+  min-height: 200px;
+  margin-top: 12px;
+}
+.count {
+  margin-top: 8px;
+  color: #aaa;
+  text-align: right;
+  font-size: 12px;
+}
+.viewer {
+  min-width: 0;
+  text-align: left;
+}
+.markdown {
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+.markdown p {
+  white-space: pre-wrap;
+}
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+  line-height: 1.4;
+  margin: 1em 0 0.5em;
+  font-weight: bold;
+}
+.markdown h1 {
+  font-size: 1.8em;
+}
+.markdown h2 {
+  font-size: 1.5em;
+}
+.markdown h3 {
+  font-size: 1.2em;
+}
+.markdown strong {
+  font-weight: bold;
+}
+.markdown em {
+  font-style: italic;
+}
+.markdown ul,
+.markdown ol {
+  padding-left: 1.6em;
+}
+.markdown ul {
+  list-style: disc;
+}
+.markdown ol {
+  list-style: decimal;
+}
+.markdown a {
+  color: #9bc7ff;
+  text-decoration: underline;
+}
+.markdown blockquote {
+  margin-left: 0;
+  padding-left: 14px;
+  border-left: 3px solid #999;
+}
+.markdown pre {
+  overflow-x: auto;
+  padding: 12px;
+  border-radius: 6px;
+  background: #181818;
+}
+.markdown code {
+  font-family: monospace;
+  background: #181818;
+}
+.markdown img {
+  max-width: 100%;
+  height: auto;
+}
+.markdown table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.markdown td,
+.markdown th {
+  border: 1px solid #626262;
+  padding: 6px;
+}
+.raw {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+}
+
+.richInput {
+  white-space: pre-wrap;
+}
+.richInput p {
+  margin: 0 0 0.5em;
+}
+.richInput > :first-child {
+  margin-top: 0;
+}
+.linkControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.linkControls input {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px;
+}
+.linkControls button {
+  padding: 8px;
+  border-radius: 6px;
+}
+.richInput ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+.richInput li[data-type="taskItem"] {
+  display: flex;
+  gap: 8px;
+}

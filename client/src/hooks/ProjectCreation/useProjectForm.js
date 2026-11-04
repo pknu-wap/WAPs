@@ -13,10 +13,8 @@ const useProjectForm = () => {
   const [password, setPassword] = useState("");
   const [removalList, setRemovalList] = useState([]); // 삭제된 이미지 URL들 저장용
 
-  // 팀장 선택 상태관리
-  const [isLeader, setIsLeader] = useState(false);
   const [teamMembers, setTeamMembers] = useState([
-    { memberName: "", image: null, memberRole: "" },
+    { userId: null, memberName: "", image: null, memberRole: "" },
   ]);
 
   const [thumbnail, setThumbnail] = useState(null);
@@ -84,18 +82,14 @@ const useProjectForm = () => {
     }
   };
 
-  // 팀원 이름 입력 포커스 핸들러
-  const handleMemberNameFocus = (e, index) => {
-    if (index === 0 && !isLeader) {
-      alert("첫 번째 팀원으로는 팀장을 입력해주세요.");
-      setIsLeader(true);
-    }
-  };
-
   // 팀원 이름 변경 핸들러
-  const handleMemberNameChange = (e, index) => {
+  const handleMemberSelect = (member, index) => {
     const newTeamMembers = [...teamMembers];
-    newTeamMembers[index].memberName = e.target.value;
+    newTeamMembers[index] = {
+      ...newTeamMembers[index],
+      userId: member?.userId || null,
+      memberName: member?.memberName || "",
+    };
     setTeamMembers(newTeamMembers);
   };
 
@@ -120,11 +114,19 @@ const useProjectForm = () => {
   const addTeamMember = () => {
     const lastMember = teamMembers[teamMembers.length - 1];
     // 마지막 팀원의 이름이 비어있지 않고, 역할이 비어있지 않은 경우에만 추가
-    if (
-      lastMember.memberName.trim() !== "" &&
-      lastMember.memberRole.trim() !== ""
-    ) {
-      setTeamMembers([...teamMembers, { memberName: "", memberRole: "" }]);
+    if (lastMember.userId && lastMember.memberRole.trim() !== "") {
+      if (
+        teamMembers
+          .slice(0, -1)
+          .some((member) => member.userId === lastMember.userId)
+      ) {
+        alert("같은 회원을 중복 등록할 수 없습니다.");
+        return;
+      }
+      setTeamMembers([
+        ...teamMembers,
+        { userId: null, memberName: "", memberRole: "" },
+      ]);
       // console.log(teamMembers);
     } else {
       alert("모든 필드를 입력해 주세요."); // 사용자에게 알림 추가
@@ -133,7 +135,14 @@ const useProjectForm = () => {
 
   // 팀원 삭제 핸들러
   const handleRemoveTeamMember = (index) => {
-    const newTeamMembers = teamMembers.filter((_, i) => i !== index);
+    const newTeamMembers =
+      index === teamMembers.length - 1
+        ? teamMembers.map((member, i) =>
+            i === index
+              ? { userId: null, memberName: "", memberRole: "" }
+              : member,
+          )
+        : teamMembers.filter((_, i) => i !== index);
     setTeamMembers(newTeamMembers);
     // console.log(teamMembers);
   };
@@ -185,8 +194,9 @@ const useProjectForm = () => {
     setContent("");
     setSummary("");
     setSemester("");
-    setIsLeader(false);
-    setTeamMembers([{ memberName: "", image: null, memberRole: "" }]); // 이름을 일관되게 수정(기존: name, role)
+    setTeamMembers([
+      { userId: null, memberName: "", image: null, memberRole: "" },
+    ]); // 이름을 일관되게 수정(기존: name, role)
     setThumbnail(null);
     setImages([null, null, null, null]);
     setErrorMessage({});
@@ -268,8 +278,7 @@ const useProjectForm = () => {
     // 핸들러
     handleImgUpload,
     handleRemoveImage,
-    handleMemberNameFocus,
-    handleMemberNameChange,
+    handleMemberSelect,
     handleMemberImageUpload,
     handleRoleChange,
     addTeamMember,
