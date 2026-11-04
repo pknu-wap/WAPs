@@ -77,7 +77,7 @@
   box-sizing: border-box;
   display: block;
   margin: 6px auto 0;
-  width: 100px;
+  width: auto;
   padding: 6px 16px;
   white-space: nowrap;
   flex-shrink: 0;
