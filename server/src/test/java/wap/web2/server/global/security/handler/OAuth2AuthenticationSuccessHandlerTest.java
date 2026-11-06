@@ -75,23 +75,28 @@ class OAuth2AuthenticationSuccessHandlerTest {
         "https://feat-698-allow-preview-domains.dev.waps.im/oauth/callback",
         "https://a1b2c3.dev.waps.im/oauth/callback",
         "https://FEAT-698.DEV.WAPS.IM/oauth/callback",
+        "https://feat-698-dev.waps.im/oauth/callback",
+        "https://feat-698.waps.im/oauth/callback",
+        "https://FEAT-698.WAPS.IM/oauth/callback",
         "https://waps.im/oauth/callback", "https://dev.waps.im/oauth/callback",
         "https://wapst.netlify.app/oauth/callback", "https://waps-deploy.netlify.app/oauth/callback",
         "https://waps-web.netlify.app/oauth/callback", "https://waps-develop.netlify.app/oauth/callback",
         "http://localhost:3000/oauth/callback",
         "myandroidapp://oauth2/redirect", "myiosapp://oauth2/redirect"
     })
-    void acceptsPreviewAndExistingRedirects(String uri) {
+    void acceptsWapsSubdomainsAndExistingRedirects(String uri) {
         assertThat(determineTargetUrl(uri)).isEqualTo(uri);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
         "http://feat-698.dev.waps.im/oauth/callback",
+        "http://feat-698.waps.im/oauth/callback",
+        "https://feat-698.waps.im:8443/oauth/callback",
+        "https://waps.im.evil.example/oauth/callback",
+        "https://evilwaps.im/oauth/callback",
         "https://feat-698.dev.waps.im:8443/oauth/callback",
         "https://feat-698.dev.waps.im.evil.example/oauth/callback",
-        "https://feat-698-dev.waps.im/oauth/callback",
-        "https://feat-698.waps.im/oauth/callback",
         "https://feat-698.dev.waps.im@evil.example/oauth/callback",
         "https://evil.example/oauth/callback",
         "//feat-698.dev.waps.im/oauth/callback",
