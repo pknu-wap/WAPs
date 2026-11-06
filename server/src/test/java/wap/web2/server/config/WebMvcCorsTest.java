@@ -65,6 +65,8 @@ class WebMvcCorsTest {
     @ParameterizedTest
     @ValueSource(strings = {
         "http://feat-698.dev.waps.im",
+        "http://feat-698.waps.im",
+        "https://feat-698.waps.im:8443",
         "https://feat-698.dev.waps.im:8443",
         "https://feat-698.dev.waps.im.evil.example",
         "https://waps.im.evil.example",
