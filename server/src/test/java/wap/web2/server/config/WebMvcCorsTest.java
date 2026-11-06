@@ -37,12 +37,14 @@ class WebMvcCorsTest {
     @ValueSource(strings = {
         "https://feat-698-allow-preview-domains.dev.waps.im",
         "https://a1b2c3.dev.waps.im",
+        "https://feat-698-dev.waps.im",
+        "https://feat-698.waps.im",
         "https://waps.store", "https://www.waps.store", "https://wapst.netlify.app",
         "https://waps.im", "https://dev.waps.im", "https://waps-deploy.netlify.app",
         "https://waps-web.netlify.app", "https://waps-develop.netlify.app",
         "http://localhost:3000", "http://localhost:8080"
     })
-    void allowsPreviewAndExistingOriginsWithCredentials(String origin) {
+    void allowsWapsSubdomainsAndExistingOriginsWithCredentials(String origin) {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).build();
             mvc.perform(options("/cors-test")
@@ -65,8 +67,8 @@ class WebMvcCorsTest {
         "http://feat-698.dev.waps.im",
         "https://feat-698.dev.waps.im:8443",
         "https://feat-698.dev.waps.im.evil.example",
-        "https://feat-698-dev.waps.im",
-        "https://feat-698.waps.im",
+        "https://waps.im.evil.example",
+        "https://evilwaps.im",
         "https://evil.example", "null"
     })
     void rejectsOriginsOutsideAllowedDomains(String origin) {
