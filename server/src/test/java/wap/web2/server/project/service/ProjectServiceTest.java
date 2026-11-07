@@ -129,7 +129,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void 삭제_요청된_이미지는_프로젝트_컬렉션에서_제거하고_스토리지에서도_삭제한다()
+    void 삭제_요청된_이미지는_프로젝트_컬렉션에서_제거하고_스토리지에는_보존한다()
         throws Exception {
         // given
         User owner = owner();
@@ -141,7 +141,6 @@ class ProjectServiceTest {
 
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
-        when(objectStorageService.supports("https://cdn.example.com/a.png")).thenReturn(true);
 
         ProjectRequest request = baseRequestBuilder()
             .removal(
@@ -156,8 +155,7 @@ class ProjectServiceTest {
         assertThat(project.getImages())
             .extracting(Image::getImageFile)
             .containsExactly("https://cdn.example.com/b.png");
-        verify(objectStorageService).deleteImage("https://cdn.example.com/a.png");
-        verify(objectStorageService, never()).deleteImage("https://cdn.example.com/missing.png");
+        verifyNoInteractions(objectStorageService);
     }
 
     @Test
@@ -173,7 +171,6 @@ class ProjectServiceTest {
 
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
-        when(objectStorageService.supports(legacyS3Url)).thenReturn(false);
 
         ProjectRequest request = baseRequestBuilder().removal(List.of(legacyS3Url)).build();
 
@@ -182,7 +179,7 @@ class ProjectServiceTest {
 
         // then
         assertThat(project.getImages()).isEmpty();
-        verify(objectStorageService, never()).deleteImage(legacyS3Url);
+        verifyNoInteractions(objectStorageService);
     }
 
     @ParameterizedTest
@@ -446,7 +443,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void thumbnailReplacementReleasesPreviousStorageReference() throws Exception {
+    void thumbnailReplacementPreservesPreviousImageInStorage() throws Exception {
         User owner = owner();
         Project project = project(owner);
         project.updateThumbnail("https://cloud/old");
@@ -455,30 +452,26 @@ class ProjectServiceTest {
         var file = new MockMultipartFile("thumbnail", "new.png", "image/png", new byte[] {1});
         when(objectStorageService.uploadImage("projects", "2026-01", "updated title", "thumbnail", file))
             .thenReturn("https://cloud/new");
-        when(objectStorageService.supports("https://cloud/old")).thenReturn(true);
 
         projectService.update(10L, baseRequestBuilder().thumbnailFiles(file).build(), principal(1L));
 
         assertThat(project.getThumbnail()).isEqualTo("https://cloud/new");
-        verify(objectStorageService).deleteImage("https://cloud/old");
+        verify(objectStorageService, never()).deleteImage(org.mockito.ArgumentMatchers.anyString());
     }
 
     @Test
-    void projectDeletionReleasesImagesAndThumbnail() {
+    void projectDeletionPreservesImagesAndThumbnailInStorage() {
         User owner = owner();
         Project project = project(owner);
         project.updateThumbnail("https://cloud/thumbnail");
         project.addAllImage(Image.listOf(List.of("https://cloud/image")));
         when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
         when(projectRepository.findById(10L)).thenReturn(Optional.of(project));
-        when(objectStorageService.supports("https://cloud/thumbnail")).thenReturn(true);
-        when(objectStorageService.supports("https://cloud/image")).thenReturn(true);
 
         projectService.delete(10L, principal(1L));
 
         verify(projectRepository).delete(project);
-        verify(objectStorageService).deleteImage("https://cloud/thumbnail");
-        verify(objectStorageService).deleteImage("https://cloud/image");
+        verifyNoInteractions(objectStorageService);
     }
 
     private ProjectRequest.ProjectRequestBuilder baseRequestBuilder() {
