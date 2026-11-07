@@ -22,13 +22,14 @@ const SubmitModal = ({ selectedProjects, projects, onConfirm, onCancel }) => {
           <div className={styles.headerTop}>
             <div style={{ fontWeight: "700" }}>제출확인</div>
             <button
-              style={{ cursor: "pointer", marginTop: "-15px" }}
+              className={styles.closeButton}
+              aria-label="닫기"
               onClick={onCancel}
             >
               ✕
             </button>
           </div>
-          <div>선택한 프로젝트를 다시 한번 확인해주세요. 아 제발요.</div>
+          <div>선택한 프로젝트를 다시 한번 확인해주세요.</div>
         </div>
 
         {/* 선택된 프로젝트 목록 */}

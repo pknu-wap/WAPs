@@ -43,11 +43,18 @@ const AdminPageLayout = () => {
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           {/* 햄버거 아이콘 (CSS에서 1024px 이하일 때만 보임) */}
-          <div className={styles.hamburger} onClick={toggleMobileMenu}>
+          <button
+            type="button"
+            className={styles.hamburger}
+            aria-label="관리자 메뉴"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="admin-mobile-navigation"
+            onClick={toggleMobileMenu}
+          >
             <span></span>
             <span></span>
             <span></span>
-          </div>
+          </button>
           <span className={styles.logo} onClick={handleExit}>
             WAPs
           </span>
@@ -78,9 +85,13 @@ const AdminPageLayout = () => {
               className={styles.mobileSidebarOverlay}
               onClick={closeMobileMenu}
             />
-            <div className={styles.mobileSidebarContent}>
-              <SideBar />
-            </div>
+            <nav
+              id="admin-mobile-navigation"
+              aria-label="모바일 관리자 메뉴"
+              className={styles.mobileSidebarContent}
+            >
+              <SideBar onSelect={closeMobileMenu} />
+            </nav>
           </>
         )}
 
