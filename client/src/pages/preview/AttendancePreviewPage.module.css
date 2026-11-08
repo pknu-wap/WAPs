@@ -1,0 +1,50 @@
+.qrDialog {
+  border: 0;
+  border-radius: 20px;
+  padding: 0;
+  width: min(640px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  color: #172033;
+  background: white;
+  box-shadow: 0 24px 80px #0004;
+}
+
+.qrDialog::backdrop {
+  background: #101828b3;
+}
+
+.dialogContent {
+  position: relative;
+  padding: 48px 24px 28px;
+  text-align: center;
+}
+
+.dialogContent h2 {
+  margin: 0 0 12px;
+}
+
+.dialogContent p {
+  line-height: 1.5;
+}
+
+.closeModal {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: #f0f2f5;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.largeQr {
+  display: block;
+  width: min(480px, 100%);
+  height: auto;
+  margin: 20px auto;
+}
