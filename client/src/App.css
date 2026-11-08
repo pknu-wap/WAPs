@@ -1,23 +1,26 @@
 @font-face {
   font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-    format("woff");
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
 }
 
 /* 본문과 헤더 폭을 맞추는 공통 값 */
 :root {
-  --container-max: 400px; /* 필요 시 한 곳만 수정 */
+  --container-max: 400px;
+  /* 필요 시 한 곳만 수정 */
 }
 
 /* ===== 헤더: 전폭 fixed + 내부 래퍼로 실제 표시 폭 제한 ===== */
 .App-header {
   position: absolute;
   width: var(--container-max);
-  z-index: 101; /* 메뉴(100)보다 위 */
-  background: transparent; /* 완전 투명 */
-  height: 60px; /* 기존 높이에 맞게 조정 */
+  z-index: 101;
+  /* 메뉴(100)보다 위 */
+  background: transparent;
+  /* 완전 투명 */
+  height: 60px;
+  /* 기존 높이에 맞게 조정 */
 }
 
 /* 컨테이너 폭 안에서 로고–아이콘 양끝 배치 */
@@ -84,17 +87,20 @@ ul {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 15px; /* 필요 시 조정 */
+  margin-top: 15px;
+  /* 필요 시 조정 */
   font-family: "Pretendard-Regular";
 }
 
 .mount1 {
   animation: 0.7s ease-in-out loadEffect1;
 }
+
 @keyframes loadEffect1 {
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -122,6 +128,7 @@ ul {
   height: 100%;
   overflow: hidden;
 }
+
 .project-image,
 .project1 {
   width: 100%;
@@ -149,10 +156,12 @@ ul {
   left: 0;
   color: #ffffff;
 }
+
 .titlebox h2 {
   margin: 0;
   font-size: 25px;
 }
+
 .titlebox p {
   margin: 5px 0 0;
   font-size: 15px;
@@ -165,10 +174,176 @@ ul {
   border-radius: 10px;
   padding: 20px;
   margin: 20px auto;
-  max-width: 800px; /* 카드 영역은 별도 폭 사용 시 유지 */
+  max-width: 800px;
+  /* 카드 영역은 별도 폭 사용 시 유지 */
+}
+
+.desktop-nav {
+  display: none;
 }
 
 /* ===== 주의 =====
    - 중복 .App-header(position: sticky) 정의는 삭제한다.
    - 아이콘 위치는 컨테이너 폭 안에서 .header-inner의 flex로 결정된다.
 */
+
+/* ========================================
+   ProjectPage - Desktop
+======================================== */
+
+@media (min-width: 1024px) {
+
+  /*
+    부모 .container가 400px이어도
+    ProjectPage만 viewport 전체 폭으로 빠져나오게 함
+  */
+  .project-page .desktop-nav {
+    display: flex;
+  }
+}
+
+.project-page {
+  width: 100vw;
+  max-width: none;
+
+  min-height: 100vh;
+
+  margin-left: calc(50% - 50vw);
+
+  background: #000;
+
+  overflow-x: hidden;
+}
+
+.project-page main {
+  width: 100%;
+  max-width: none;
+
+  margin: 0;
+  padding: 0;
+}
+
+/* Header도 ProjectPage 폭에 맞춤 */
+.project-page .App-header {
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  max-width: none;
+
+  height: 90px;
+}
+
+.project-page .header-inner {
+  width: calc(100% - 80px);
+  max-width: 1200px;
+
+  margin: 0 auto;
+  padding: 20px 0 0;
+
+  box-sizing: border-box;
+}
+
+.project-page .waplogo img {
+  height: 18px !important;
+}
+
+
+.project-page .header-inner {
+  width: calc(100% - 80px);
+  max-width: 1200px;
+
+  margin: 0 auto;
+  padding: 20px 0 0;
+
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-page .desktop-nav {
+  display: flex;
+
+  align-items: center;
+
+  margin-left: auto;
+  margin-right: 24px;
+
+  gap: 34px;
+}
+
+.project-page .desktop-nav button {
+  padding: 0;
+
+  border: none;
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.55);
+
+  font-family: "Pretendard-Regular";
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+}
+
+.project-page .desktop-nav button:hover {
+  color: #ffffff;
+}
+
+.project-page .desktop-nav .desktop-login {
+  padding: 7px 13px;
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.28);
+
+  color: rgba(255, 255, 255, 0.55);
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+
+  .project-page .App-header {
+    width: 100%;
+    height: 80px;
+  }
+
+  .project-page .header-inner {
+    width: calc(100% - 56px);
+    max-width: none;
+
+    margin: 0 auto;
+    padding: 16px 0 0;
+
+    display: flex;
+    align-items: center;
+  }
+
+  .project-page .desktop-nav {
+    display: flex;
+
+    margin-left: auto;
+    margin-right: 20px;
+
+    gap: 22px;
+  }
+
+  .project-page .desktop-nav button {
+    font-size: 11px;
+
+    white-space: nowrap;
+  }
+
+  .project-page .desktop-login {
+    padding: 6px 11px !important;
+  }
+
+  .project-page .menu-icon {
+    flex-shrink: 0;
+  }
+}

@@ -72,6 +72,27 @@ const Header = () => {
             </p>
           </div>
 
+          <nav className="desktop-nav">
+            <button onClick={() => navigate("/ProjectPage")}>
+              PROJECT
+            </button>
+
+            <button onClick={() => navigate("/TeamBuilding")}>
+              TEAMBUILDING
+            </button>
+
+            <button onClick={() => navigate("/vote")}>
+              VOTE
+            </button>
+
+            <button
+              className="desktop-login"
+              onClick={handleLogin}
+            >
+              LOGIN
+            </button>
+          </nav>
+
           <div
             className="menu-icon"
             onClick={toggleMenu}
