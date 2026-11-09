@@ -25,6 +25,7 @@ import wap.web2.server.project.dto.request.ProjectRequest;
 import wap.web2.server.project.dto.response.ProjectCurrentSemesterResponse;
 import wap.web2.server.project.dto.response.ProjectDetailsResponse;
 import wap.web2.server.project.dto.response.ProjectInfoResponse;
+import wap.web2.server.project.dto.response.ProjectMemberOption;
 import wap.web2.server.project.dto.response.ProjectsResponse;
 import wap.web2.server.project.service.ProjectService;
 import wap.web2.server.util.Semester;
@@ -35,6 +36,11 @@ import wap.web2.server.util.Semester;
 public class ProjectController {
 
     private final ProjectService projectService;
+
+    @GetMapping("/members")
+    public ResponseEntity<List<ProjectMemberOption>> getMemberOptions() {
+        return ResponseEntity.ok(projectService.getMemberOptions());
+    }
 
     // TODO: ProjectsResponse를 만들기 전에 검사하거나 별도로 할까?
     //  또는 컨트롤러에서는 try catch를 두고 ProjectResponse안에서 throw 하는 것은?

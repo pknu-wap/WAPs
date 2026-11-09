@@ -13,13 +13,13 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import wap.web2.server.config.oracle.OracleObjectStorageProperties;
-import wap.web2.server.storage.ObjectStorageService;
+import wap.web2.server.storage.CloudObjectStorageService;
 import wap.web2.server.storage.StoragePathUtils;
 
 @Service
 @Profile("oracle")
 @RequiredArgsConstructor
-public class OracleObjectStorageService implements ObjectStorageService {
+public class OracleObjectStorageService implements CloudObjectStorageService {
 
     private static final String ORACLE_OBJECT_PATH_SEGMENT = "/o/";
 
@@ -50,7 +50,7 @@ public class OracleObjectStorageService implements ObjectStorageService {
         MultipartFile imageFile
     ) throws IOException {
         String originalFileName = getOriginalFileName(imageFile);
-        String objectName = StoragePathUtils.createTimestampFileName(
+        String objectName = StoragePathUtils.createUniqueFileName(
             dirName,
             semester,
             projectName,
@@ -69,6 +69,19 @@ public class OracleObjectStorageService implements ObjectStorageService {
         objectStorageClient.putObject(putObjectRequest);
 
         return buildPublicObjectUrl(objectName);
+    }
+
+    @Override
+    public boolean exists(String imageUrl) {
+        try {
+            objectStorageClient.headObject(com.oracle.bmc.objectstorage.requests.HeadObjectRequest.builder()
+                .namespaceName(properties.getNamespace()).bucketName(properties.getBucketName())
+                .objectName(extractObjectNameFromUrl(imageUrl)).build());
+            return true;
+        } catch (com.oracle.bmc.model.BmcException failure) {
+            if (failure.getStatusCode() == 404) return false;
+            throw failure;
+        }
     }
 
     @Override

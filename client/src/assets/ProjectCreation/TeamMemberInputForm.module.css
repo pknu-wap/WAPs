@@ -1,18 +1,22 @@
-.teammember {
+.teammember_section {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 20px;
   border-radius: 10px;
   width: 90%;
-  height: 100%;
   padding-top: 20px;
   padding-bottom: 20px;
   background-color: #2a2a2a;
   color: #7e7e7e;
-  margin: 0 auto;
+  margin: 0 auto 5px;
+  text-align: left;
+}
+
+.teammember {
   display: flex;
   flex-direction: column;
-  text-align: left;
-  margin-bottom: 5px;
+  gap: 10px;
+  width: 100%;
 }
 
 .teammember_form {
@@ -25,9 +29,9 @@
 
 .teammember_label {
   text-align: left;
-  margin-left: 33px;
-  margin-bottom: 3px;
+  margin: 0 0 3px 33px;
   font-size: 12px;
+  font-weight: normal;
   color: #ebebeb;
 }
 
@@ -70,14 +74,22 @@
 }
 
 .teammember_add_btn {
-  width: 43px;
-  height: 25px;
+  box-sizing: border-box;
+  display: block;
+  margin: 6px auto 0;
+  width: auto;
+  padding: 6px 16px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-height: 32px;
   background-color: #efefef;
   color: #000000;
   border: 0px;
   cursor: pointer;
   border-radius: 20px;
-  font-size: 13px;
+  font: inherit;
+  font-size: 12px;
+  line-height: 20px;
   text-align: center;
 }
 
@@ -108,4 +120,55 @@
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.member_picker {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(220px, 50%);
+  font-size: 12px;
+}
+
+.member_picker .teammember_input {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.member_results {
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: 240px;
+  max-height: 180px;
+  overflow-y: auto;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  list-style: none;
+  border-radius: 8px;
+  background: #4a4a4a;
+  color: #fff;
+  box-shadow: 0 4px 12px #0006;
+}
+
+.member_results li {
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.member_results li:hover,
+.member_results .active_option {
+  background: #626262;
+}
+
+@media (max-width: 600px) {
+  .member_picker {
+    position: relative;
+    width: min(120px, 35%);
+    min-width: 0;
+  }
 }

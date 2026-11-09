@@ -133,7 +133,7 @@ class AttendanceControllerTest {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
             var summary = new Summary(1L, "발표", LocalDate.of(2026, 10, 10), AttendanceStatus.SCHEDULED, 1, 0, 1);
-            var participant = new Participant(10L, "가", PresenceStatus.ABSENT, null, "");
+            var participant = new Participant(10L, "가", wap.web2.server.member.entity.MembershipLevel.NEW, PresenceStatus.ABSENT, null, "");
             when(service.create(any())).thenReturn(summary);
             when(service.listAdmin(null)).thenReturn(new Content<>(List.of(summary)));
             when(service.detail(1, null, "userName,asc")).thenReturn(new Detail(summary, new Content<>(List.of(participant))));

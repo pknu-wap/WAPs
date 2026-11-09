@@ -6,13 +6,17 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import MemoryRouter from "../../testUtils/ProjectRouter";
 import { projectApi } from "../../api/project";
+import { userApi } from "../../api/user";
+
+jest.mock("../../api/user", () => ({ userApi: { getMe: jest.fn() } }));
 import ProjectFormNew from "./ProjectFormNew";
 
 jest.mock("../../api/project", () => ({
   projectApi: {
     getCurrentSemester: jest.fn(),
+    getMemberOptions: jest.fn(),
     createProject: jest.fn(),
     updateProject: jest.fn(),
   },
@@ -30,7 +34,9 @@ jest.mock("./InputPin", () => ({ password, setPassword }) => (
 
 beforeEach(() => {
   jest.clearAllMocks();
+  userApi.getMe.mockResolvedValue({ userId: 1, userName: "김회원" });
   jest.spyOn(window, "alert").mockImplementation(() => {});
+  projectApi.getMemberOptions.mockResolvedValue([]);
   projectApi.getCurrentSemester.mockResolvedValue({ semester: "2026-02" });
   projectApi.createProject.mockResolvedValue({});
   projectApi.updateProject.mockResolvedValue({});
@@ -51,18 +57,23 @@ test("모집 직무를 추가하고 인원을 숫자로 저장한다", async () 
     </MemoryRouter>,
   );
   await screen.findByText("2026년 2학기");
+  fireEvent.click(screen.getByRole("button", { name: "Raw" }));
+  fireEvent.change(
+    screen.getByRole("textbox", { name: "상세 설명", exact: true }),
+    { target: { value: "## 소개\n\n**프로젝트**" } },
+  );
   fireEvent.click(screen.getByRole("button", { name: "모집 직무 추가" }));
   fireEvent.change(screen.getByLabelText("직무 1"), {
     target: { value: "FRONTEND" },
   });
-  fireEvent.change(screen.getByLabelText("모집 인원 1 (명)"), {
+  fireEvent.change(screen.getAllByLabelText("모집 인원 수")[0], {
     target: { value: "3" },
   });
   fireEvent.click(screen.getByRole("button", { name: "모집 직무 추가" }));
   fireEvent.change(screen.getByLabelText("직무 2"), {
     target: { value: "BACKEND" },
   });
-  fireEvent.change(screen.getByLabelText("모집 인원 2 (명)"), {
+  fireEvent.change(screen.getAllByLabelText("모집 인원 수")[1], {
     target: { value: "2" },
   });
   fireEvent.change(screen.getByLabelText("비밀번호"), {
@@ -76,6 +87,9 @@ test("모집 직무를 추가하고 인원을 숫자로 저장한다", async () 
   await waitFor(() =>
     expect(projectApi.createProject).toHaveBeenCalledTimes(1),
   );
+  expect(
+    (await readProject(projectApi.createProject.mock.calls[0][0])).content,
+  ).toBe("## 소개\n\n**프로젝트**");
   expect(
     (await readProject(projectApi.createProject.mock.calls[0][0]))
       .recruitmentPositions,
@@ -98,7 +112,7 @@ test("수정 화면에서 기존 모집 정보를 불러오고 모두 삭제할 
     </MemoryRouter>,
   );
   expect(screen.getByLabelText("직무 1").value).toBe("BACKEND");
-  expect(screen.getByLabelText("모집 인원 1 (명)").value).toBe("2");
+  expect(screen.getAllByLabelText("모집 인원 수")[0].value).toBe("2");
   fireEvent.click(screen.getByRole("button", { name: "모집 직무 1 삭제" }));
   fireEvent.change(screen.getByLabelText("비밀번호"), {
     target: { value: "pw" },
@@ -130,7 +144,7 @@ test.each([0, -1, 1.5, ""])(
     fireEvent.change(screen.getByLabelText("직무 1"), {
       target: { value: "BACKEND" },
     });
-    fireEvent.change(screen.getByLabelText("모집 인원 1 (명)"), {
+    fireEvent.change(screen.getAllByLabelText("모집 인원 수")[0], {
       target: { value: count },
     });
     fireEvent.change(screen.getByLabelText("비밀번호"), {
@@ -146,16 +160,176 @@ test.each([0, -1, 1.5, ""])(
   },
 );
 
- test.each([false, true])("신규 작성은 모집 정보가 비어 있으면 제출하지 않는다 (추가 후 삭제: %s)", async (remove) => {
-  render(<MemoryRouter><ProjectFormNew /></MemoryRouter>);
+test.each([false, true])(
+  "신규 작성은 모집 정보가 비어 있으면 제출하지 않는다 (추가 후 삭제: %s)",
+  async (remove) => {
+    render(
+      <MemoryRouter>
+        <ProjectFormNew />
+      </MemoryRouter>,
+    );
+    await screen.findByText("2026년 2학기");
+    expect(
+      screen.getByText("모집할 직무와 인원을 최소 한 개 입력해 주세요. (필수)"),
+    ).toBeTruthy();
+    if (remove) {
+      fireEvent.click(screen.getByRole("button", { name: "모집 직무 추가" }));
+      fireEvent.click(screen.getByRole("button", { name: "모집 직무 1 삭제" }));
+    }
+    fireEvent.change(screen.getByLabelText("비밀번호"), {
+      target: { value: "pw" },
+    });
+    fireEvent.submit(
+      screen.getByRole("button", { name: "프로젝트 생성" }).closest("form"),
+    );
+    expect(projectApi.createProject).not.toHaveBeenCalled();
+    expect(window.alert).toHaveBeenCalledWith(
+      "모집 직무와 인원을 최소 한 개 입력해 주세요.",
+    );
+  },
+);
+
+test.each([
+  [false, "PROJECT_PASSWORD_INVALID", "올바른 인증번호를 입력해주세요."],
+  [true, "PROJECT_PASSWORD_INVALID", "올바른 인증번호를 입력해주세요."],
+  [false, null, "프로젝트 요청에 실패했습니다. 다시 시도해 주세요."],
+  [true, null, "프로젝트 요청에 실패했습니다. 다시 시도해 주세요."],
+])(
+  "프로젝트 요청 실패 안내 (수정: %s, 오류: %s)",
+  async (isEdit, code, message) => {
+    const request = isEdit
+      ? projectApi.updateProject
+      : projectApi.createProject;
+    request.mockRejectedValueOnce(
+      code ? { response: { data: { code } } } : new Error("offline"),
+    );
+    render(
+      <MemoryRouter>
+        <ProjectFormNew
+          isEdit={isEdit}
+          existingProject={isEdit ? { semester: "2026-02" } : null}
+        />
+      </MemoryRouter>,
+    );
+    await screen.findByText("2026년 2학기");
+    if (!isEdit) {
+      fireEvent.click(screen.getByRole("button", { name: "모집 직무 추가" }));
+      fireEvent.change(screen.getByLabelText("직무 1"), {
+        target: { value: "BACKEND" },
+      });
+    }
+    fireEvent.change(screen.getByLabelText("비밀번호"), {
+      target: { value: "wrong" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: isEdit ? "프로젝트 수정" : "프로젝트 생성",
+      }),
+    );
+    await waitFor(() => expect(window.alert).toHaveBeenCalledWith(message));
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText("비밀번호").value).toBe("wrong");
+  },
+);
+
+test.each([false, true])(
+  "업로드 진행률, 저장 대기, 시간 초과 후 재시도 (수정: %s)",
+  async (isEdit) => {
+    const request = isEdit
+      ? projectApi.updateProject
+      : projectApi.createProject;
+    let rejectRequest;
+    request.mockImplementationOnce(
+      () =>
+        new Promise((resolve, reject) => {
+          rejectRequest = reject;
+        }),
+    );
+    render(
+      <MemoryRouter>
+        <ProjectFormNew
+          isEdit={isEdit}
+          existingProject={isEdit ? { semester: "2026-02" } : null}
+        />
+      </MemoryRouter>,
+    );
+    await screen.findByText("2026년 2학기");
+    if (!isEdit) {
+      fireEvent.click(screen.getByRole("button", { name: "모집 직무 추가" }));
+      fireEvent.change(screen.getByLabelText("직무 1"), {
+        target: { value: "BACKEND" },
+      });
+    }
+    fireEvent.change(screen.getByLabelText("비밀번호"), {
+      target: { value: "pw" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("프로젝트 명"), {
+      target: { value: "업로드 테스트" },
+    });
+    const submitLabel = isEdit ? "프로젝트 수정" : "프로젝트 생성";
+    fireEvent.click(screen.getByRole("button", { name: submitLabel }));
+    const onProgress = request.mock.calls[0][isEdit ? 2 : 1];
+    expect(screen.getByRole("progressbar").hasAttribute("value")).toBe(false);
+    act(() => onProgress({ loaded: 30 }));
+    expect(screen.getByRole("status").textContent).toBe("업로드 중…");
+    act(() => onProgress({ loaded: 45, total: 100 }));
+    expect(screen.getByRole("progressbar").value).toBe(45);
+    expect(screen.getByRole("status").textContent).toBe("업로드 중… 45%");
+    act(() => onProgress({ loaded: 999, total: 1000 }));
+    expect(screen.getByRole("progressbar").value).toBe(99);
+    act(() => onProgress({ loaded: 100, total: 100 }));
+    expect(screen.getByRole("status").textContent).toBe("저장 처리 중…");
+    expect(screen.getByRole("button", { name: "저장 처리 중…" }).disabled).toBe(
+      true,
+    );
+    expect(window.alert).not.toHaveBeenCalled();
+    await act(async () =>
+      rejectRequest({ code: isEdit ? "ETIMEDOUT" : "ECONNABORTED" }),
+    );
+    expect(window.alert).toHaveBeenCalledWith(
+      "업로드 요청 시간이 초과되었습니다. 다시 시도해 주세요.",
+    );
+    expect(screen.queryByRole("progressbar")).toBeNull();
+    expect(screen.getByPlaceholderText("프로젝트 명").value).toBe(
+      "업로드 테스트",
+    );
+    expect(screen.getByRole("button", { name: submitLabel }).disabled).toBe(
+      false,
+    );
+
+    let resolveRetry;
+    request.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveRetry = resolve;
+        }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: submitLabel }));
+    act(() => onProgress({ loaded: 100, total: 100 }));
+    expect(screen.getByRole("progressbar").hasAttribute("value")).toBe(false);
+    expect(screen.getByRole("status").textContent).toBe("업로드 중…");
+    await act(async () => resolveRetry({}));
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(window.alert).toHaveBeenLastCalledWith(
+      isEdit
+        ? "프로젝트가 성공적으로 수정되었습니다."
+        : "프로젝트가 성공적으로 생성되었습니다.",
+    );
+    expect(screen.queryByRole("progressbar")).toBeNull();
+  },
+);
+
+test("프로젝트 타입을 선택해야 생성 폼의 필수 검증을 통과한다", async () => {
+  render(
+    <MemoryRouter>
+      <ProjectFormNew />
+    </MemoryRouter>,
+  );
   await screen.findByText("2026년 2학기");
-  expect(screen.getByText("모집할 직무와 인원을 최소 한 개 입력해 주세요. (필수)")).toBeTruthy();
-  if (remove) {
-    fireEvent.click(screen.getByRole("button", { name: "모집 직무 추가" }));
-    fireEvent.click(screen.getByRole("button", { name: "모집 직무 1 삭제" }));
-  }
-  fireEvent.change(screen.getByLabelText("비밀번호"), { target: { value: "pw" } });
-  fireEvent.submit(screen.getByRole("button", { name: "프로젝트 생성" }).closest("form"));
+  const types = screen.getAllByRole("radio", { name: /WEB|APP|GAME|기타/ });
+  expect(types.every((radio) => radio.validity.valueMissing)).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "프로젝트 생성" }));
   expect(projectApi.createProject).not.toHaveBeenCalled();
-  expect(window.alert).toHaveBeenCalledWith("모집 직무와 인원을 최소 한 개 입력해 주세요.");
+  fireEvent.click(screen.getByRole("radio", { name: "WEB" }));
+  expect(types.every((radio) => radio.checkValidity())).toBe(true);
 });

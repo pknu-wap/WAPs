@@ -78,7 +78,7 @@ export default function RecruitmentPositionInput({ positions, onChange, required
             </select>
           </label>
           <label>
-            모집 인원 {index + 1} (명)
+            모집 인원 수
             <input
               type="number"
               min="1"

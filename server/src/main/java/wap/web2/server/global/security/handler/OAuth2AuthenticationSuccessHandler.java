@@ -104,6 +104,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         return UriComponentsBuilder.fromUriString(targetUrl)
             .queryParam("token", token)
+            .replaceQueryParam("signupCompleted", user.isSignupCompleted())
             .build()
             .toUriString();
     }
