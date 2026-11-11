@@ -67,7 +67,6 @@ function PreviewQr({ ongoing }) {
         {sequence ? "테스트 QR 재발급" : "QR 생성 (테스트용)"}
       </button>
       <p className={styles.storageNote}>출석 페이지 링크 연결용 테스트 QR입니다. 실제 출석 토큰과 개인정보는 전송하지 않습니다.</p>
-      <p className={styles.storageNote}>생성 후 60초마다 테스트 QR이 자동으로 갱신됩니다.</p>
       {ongoing && isOpen && <dialog ref={dialogRef} className={previewStyles.qrDialog}
         aria-labelledby="preview-qr-title" aria-describedby="preview-qr-description"
         onCancel={(event) => { event.preventDefault(); closeModal(); }}
@@ -76,12 +75,15 @@ function PreviewQr({ ongoing }) {
         <button type="button" className={previewStyles.closeModal} onClick={closeModal} autoFocus aria-label="QR 모달 닫기">✕</button>
         <h2 id="preview-qr-title">테스트용 출석 QR</h2>
         <p id="preview-qr-description">waps.im 출석 페이지로 연결합니다. 실제 출석 토큰이 없는 테스트 링크입니다.</p>
+        <div className={previewStyles.qrFrame}>
         <QRCodeSVG className={previewStyles.largeQr} size={480} marginSize={4} title="출석 처리 불가 · 테스트용 QR"
           value={memberUrl.href} />
-        <p><a href={memberUrl.href} target="_blank" rel="noreferrer">waps.im 출석 페이지 열기</a></p>
-        <p role="timer">테스트 QR 남은 시간: {remaining}초</p>
-        <p>60초마다 새 테스트 QR로 자동 갱신됩니다.</p>
-        <button type="button" className={styles.closeButton} onClick={generate}>지금 새 QR 생성</button>
+        </div>
+        <p className={previewStyles.pageLink}><a href={memberUrl.href} target="_blank" rel="noreferrer">waps.im 출석 페이지 열기</a></p>
+        <div className={previewStyles.timerRow}>
+          <span role="timer">테스트 QR 남은 시간: {remaining}초</span>
+        </div>
+        <button type="button" className={previewStyles.regenerateButton} onClick={generate}>지금 새 QR 생성</button>
         </div>
       </dialog>}
     </section>

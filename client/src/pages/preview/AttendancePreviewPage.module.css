@@ -1,50 +1,37 @@
 .qrDialog {
-  border: 0;
-  border-radius: 20px;
+  --qr-accent: #abd4fd;
+  border: 1px solid #555;
+  border-radius: 36px;
   padding: 0;
-  width: min(640px, calc(100vw - 32px));
+  width: min(540px, calc(100vw - 32px));
   max-width: calc(100vw - 32px);
   max-height: calc(100dvh - 32px);
+  box-sizing: border-box;
   overflow: auto;
-  color: #172033;
-  background: white;
-  box-shadow: 0 24px 80px #0004;
+  color: #f5f5f5;
+  background: #303030;
+  font-family: "Pretendard-Regular", Pretendard, Arial, sans-serif;
+  box-shadow: 0 28px 90px #0006;
 }
-
-.qrDialog::backdrop {
-  background: #101828b3;
-}
-
-.dialogContent {
-  position: relative;
-  padding: 48px 24px 28px;
-  text-align: center;
-}
-
-.dialogContent h2 {
-  margin: 0 0 12px;
-}
-
-.dialogContent p {
-  line-height: 1.5;
-}
-
-.closeModal {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: #f0f2f5;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.largeQr {
-  display: block;
-  width: min(480px, 100%);
-  height: auto;
-  margin: 20px auto;
+.qrDialog::backdrop { background: #141414b8; backdrop-filter: blur(6px); }
+.dialogContent { position: relative; padding: 38px 36px 30px; text-align: center; }
+.dialogContent h2 { margin: 0 0 12px; font-size: 26px; font-weight: 900; -webkit-text-stroke: .6px currentColor; letter-spacing: -.8px; }
+.dialogContent p { margin: 0 auto; max-width: 340px; color: #bbb; font-size: 13px; line-height: 1.7; word-break: keep-all; }
+.closeModal { position: absolute; top: 18px; right: 18px; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #626262; border-radius: 50%; background: #414141; color: #ddd; cursor: pointer; font-size: 15px; }
+.closeModal:hover { background: #595959; }
+.qrFrame { margin: 26px auto 18px; padding: 12px; max-width: 340px; border: 1px solid #ddd; border-radius: 26px; background: #fff; }
+.largeQr { display: block; width: 100%; height: auto; border-radius: 14px; }
+.dialogContent .pageLink { margin-bottom: 24px; }
+.pageLink a { color: var(--qr-accent); text-underline-offset: 4px; }
+.pageLink a:hover { color: #d2e8ff; }
+.timerRow { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 24px; color: #ccc; font-size: 12px; }
+.regenerateButton { width: 100%; min-height: 48px; border: 0; border-radius: 24px; background: #484848; color: #ddd; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.regenerateButton:hover { background: #595959; }
+.qrDialog :focus-visible { outline: 2px solid var(--qr-accent); outline-offset: 4px; }
+.regenerateButton:focus-visible { outline-color: white; }
+@media (max-width: 480px) {
+  .qrDialog { border-radius: 28px; }
+  .dialogContent { padding: 38px 22px 24px; }
+  .dialogContent h2 { font-size: 23px; }
+  .qrFrame { margin-top: 22px; padding: 8px; border-radius: 22px; }
 }
