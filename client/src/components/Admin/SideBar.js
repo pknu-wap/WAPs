@@ -46,7 +46,7 @@ const SideBar = () => {
               className={isActive ? styles.active : ""}
               onClick={() => navigate(button.path)}
             >
-              <IconComponent color={iconColor} size="1" />
+              <IconComponent color={iconColor} size="24px" />
               {button.text}
             </button>
           );
