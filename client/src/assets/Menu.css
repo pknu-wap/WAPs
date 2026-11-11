@@ -1,10 +1,8 @@
 @font-face {
   font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-    format("woff");
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
   font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-    format("woff");
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
 }
@@ -35,10 +33,12 @@ body:has(nav.menu) .App-header {
   position: fixed;
   top: 0;
   left: 50%;
-  transform: translateX(-50%); /* 정확히 중앙 정렬 */
+  transform: translateX(-50%);
+  /* 정확히 중앙 정렬 */
 
   width: 100%;
-  max-width: var(--container-max, 400px); /* App.css 변수 사용, 없으면 400px */
+  max-width: var(--container-max, 400px);
+  /* App.css 변수 사용, 없으면 400px */
   height: calc(var(--vh, 1vh) * 100);
 
   /* 배경 투명도 제거 및 기본 검정 배경 추가 */
@@ -219,7 +219,7 @@ body:has(nav.menu) .App-header {
   opacity: 0.8;
 }
 
-.settings-button + .logout-button {
+.settings-button+.logout-button {
   margin-top: 4px;
 }
 
@@ -304,16 +304,13 @@ body:has(nav.menu) .App-header {
   }
 
   .menu-content {
-    width: clamp(430px, 42vw, 600px);
-
-    max-width: calc(100vw - 48px);
+    width: calc(100% - 48px);
+    max-width: 620px;
 
     margin: 0 auto;
 
     padding:
-      clamp(85px, 10vh, 105px)
-      0
-      60px;
+      clamp(85px, 10vh, 105px) 0 60px;
 
     box-sizing: border-box;
   }
