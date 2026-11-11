@@ -32,10 +32,12 @@ import ManagePlanPage from "./pages/adminPages/ManagePlanPage";
 import ManageTeamBuildPage from "./pages/adminPages/ManageTeamBuildPage";
 import ManageThirdTeamBuildPage from "./pages/adminPages/ManageThirdTeamBuildPage";
 import ManageVotePage from "./pages/adminPages/ManageVotePage";
+import ManageAttendancePage from "./pages/adminPages/ManageAttendancePage";
 import MainLayout from "./components/MainLayout";
 
 import AdminPageLayout from "./components/Admin/AdminPageLayout";
 import FullScreenLayout from "./components/FullScreenLayout";
+import attendancePreviewRoute from "./routes/attendancePreviewRoute";
 import "./App.css";
 
 function RouteLayout() {
@@ -93,6 +95,7 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<FullScreenLayout />}>
+        {attendancePreviewRoute()}
         <Route path="admin/*" element={<AdminRoute requireRole="ROLE_ADMIN" />}>
           <Route element={<AdminPageLayout />}>
             <Route index element={<Navigate to="vote" replace />}></Route>
@@ -104,6 +107,7 @@ const router = createBrowserRouter(
             />
             <Route path="permission" element={<ManagePermissionPage />} />
             <Route path="plan" element={<ManagePlanPage />} />
+            <Route path="attendance" element={<ManageAttendancePage />} />
           </Route>
         </Route>
       </Route>

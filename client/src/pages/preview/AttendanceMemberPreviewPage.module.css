@@ -1,0 +1,41 @@
+.page {
+  min-height: 100dvh;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  background: #f3f5f9;
+  color: #172033;
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px 24px;
+  box-sizing: border-box;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 12px 40px #17203312;
+}
+
+.brand {
+  font-weight: 800;
+  color: #5459d6;
+  letter-spacing: 1px;
+}
+
+.notice {
+  padding: 14px;
+  border-radius: 12px;
+  background: #f0efff;
+  line-height: 1.6;
+}
+
+.details { margin: 24px 0; }
+.details div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #e8eaf0; }
+.details dt { color: #626c80; }
+.details dd { margin: 0; }
+.button { width: 100%; padding: 16px; border: 0; border-radius: 12px; background: #5459d6; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+.button:disabled { background: #697386; cursor: default; }
+.footer { margin-top: 24px; color: #626c80; font-size: 13px; line-height: 1.6; }
