@@ -543,14 +543,9 @@ button {
   text-align: left;
 }
 
-/* ========================================
-   ProjectPage Responsive
-======================================== */
+/* ===Responsive=== */
 
-/* ========================================
-   600px ~ 1023px
-   중간 화면
-======================================== */
+/* ===600px ~ 1023px=== */
 
 @media (min-width: 600px) and (max-width: 1023px) {
 
@@ -704,10 +699,7 @@ button {
 }
 
 
-/* ========================================
-   1024px 이상
-   데스크톱
-======================================== */
+/* ===1024px 이상=== */
 
 @media (min-width: 1024px) {
 
@@ -750,8 +742,6 @@ button {
     box-sizing: border-box;
   }
 
-
-  /* 제목 */
   .project-page .hero__title {
     grid-area: title;
 
@@ -774,8 +764,6 @@ button {
     display: none;
   }
 
-
-  /* 영어 부제 */
   .project-page .hero__subtitle {
     grid-area: subtitle;
 
@@ -793,8 +781,6 @@ button {
     white-space: nowrap;
   }
 
-
-  /* PROJECTS */
   .project-page .hero__badge {
     grid-area: badge;
 
@@ -813,8 +799,6 @@ button {
     white-space: nowrap;
   }
 
-
-  /* 검색창 */
   .project-page .hero__search {
     grid-area: search;
 
@@ -831,8 +815,6 @@ button {
     height: 38px;
   }
 
-
-  /* 필터 */
   .project-page .hero .filter-container {
     grid-area: filter;
 
@@ -881,11 +863,6 @@ button {
 
     white-space: nowrap;
   }
-
-
-  /* ========================================
-     프로젝트 4열
-  ======================================== */
 
   .project-page .content-box {
     position: relative;
