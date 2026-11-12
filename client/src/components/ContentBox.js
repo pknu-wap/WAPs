@@ -146,12 +146,16 @@ const ContentBox = () => {
       <div className="hero">
         <div className="hero__inner">
           <h1 className="hero__title">
-            WAP의
+            WAP의{" "}
             <br />
             다양한 활동들을 만나보세요
           </h1>
           <p className="hero__subtitle">Discover WAP's diverse activities</p>
-
+          
+          <div className="hero__badge">
+            PROJECTS
+          </div>
+          
           {/* 검색창 */}
           <div className="hero__search">
             <div className="search-bar">

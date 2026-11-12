@@ -5,7 +5,7 @@ import FloatingButton from "../components/FloatingButton";
 
 const ProjectPage = () => {
   return (
-    <div>
+    <div className="project-page">
       <Header />
 
       <main>

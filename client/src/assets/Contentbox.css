@@ -1,7 +1,6 @@
 @font-face {
   font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-    format("woff");
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
 }
@@ -43,11 +42,13 @@
   flex-wrap: nowrap;
   flex: 0 0 auto;
 }
+
 .pill:hover {
   color: #000000;
   background: #abd4fd;
   border-color: #abd4fd;
 }
+
 .pill.active {
   background: #abd4fd;
   border-color: #abd4fd;
@@ -94,25 +95,29 @@
 .dropdown-content::-webkit-scrollbar {
   width: 6px;
 }
+
 .dropdown-content::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .dropdown-content::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 3px;
 }
+
 .dropdown-content::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
 }
 
-.dropdown-content > div {
+.dropdown-content>div {
   border-bottom: 1px solid rgba(229, 229, 229, 0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 }
-.dropdown-content > div:last-child {
+
+.dropdown-content>div:last-child {
   border-bottom: none;
 }
 
@@ -134,6 +139,7 @@
   font-weight: 500;
   box-sizing: border-box;
 }
+
 .dropdown-content button:hover {
   background: rgba(171, 212, 253, 0.3);
   color: #0f172a;
@@ -176,6 +182,7 @@
   font-size: 11px;
   color: rgba(255, 255, 255, 0.7);
 }
+
 .content-box .box {
   width: 100%;
   max-width: 700px;
@@ -191,6 +198,7 @@
   gap: 20px;
   position: relative;
 }
+
 .content-box .box .image {
   width: 170px;
   height: 100px;
@@ -202,6 +210,7 @@
   margin-top: 0;
   align-self: flex-start;
 }
+
 .content-box .box .project-image {
   width: 100%;
   height: 100%;
@@ -224,6 +233,7 @@
   color: #ffffff;
   position: relative;
 }
+
 /* 제목+태그를 한 줄로 묶는 래퍼 */
 .content-box .box .titlebox .title-row {
   display: inline-flex;
@@ -236,6 +246,7 @@
   justify-content: flex-start;
   text-align: left;
 }
+
 /* 제목 */
 .content-box .box .titlebox h2 {
   margin: 0;
@@ -252,6 +263,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 /* 본문: 제목/태그 아래 줄 */
 .content-box .box .titlebox p {
   margin: 2px 0 0 0;
@@ -265,6 +277,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 /* 태그 공통 스타일(색상은 아래 유형별로) */
 .content-box .box .project-type-tag {
   display: inline-flex;
@@ -291,19 +304,19 @@
   overflow: visible;
   z-index: 1;
 }
+
 /* 아래→위 명암 오버레이 */
 .hero::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(30, 30, 30, 0.6) 40%,
-    rgba(102, 102, 102, 0) 100%
-  );
+  background: linear-gradient(0deg,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(30, 30, 30, 0.6) 40%,
+      rgba(102, 102, 102, 0) 100%);
   z-index: -1;
 }
+
 .hero__inner {
   width: 100%;
   max-width: 1040px;
@@ -311,6 +324,7 @@
   margin: 0 auto;
   color: #fff;
 }
+
 .hero__badge {
   font-weight: 800;
   letter-spacing: 0.5px;
@@ -318,6 +332,7 @@
   margin-bottom: 8px;
   font-size: 18px;
 }
+
 .hero__title {
   margin: 0;
   margin-left: 5px;
@@ -326,6 +341,7 @@
   font-weight: 600;
   text-align: left;
 }
+
 .hero__subtitle {
   margin-top: 6px;
   margin-left: 5px;
@@ -365,14 +381,14 @@
 }
 
 /* 드롭다운 래퍼를 오른쪽 끝으로 밀기 + 기준점 설정 */
-.hero .filter-container > .filter-dropdown {
+.hero .filter-container>.filter-dropdown {
   margin-left: auto !important;
   position: relative !important;
   flex: 0 0 auto;
 }
 
 /* Hero 내부 드롭다운 메뉴 */
-.hero .filter-container > .filter-dropdown .dropdown-content {
+.hero .filter-container>.filter-dropdown .dropdown-content {
   position: absolute;
   top: calc(100% + 6px);
   left: 50%;
@@ -400,11 +416,13 @@
     border-color 0.15s ease,
     color 0.15s ease;
 }
+
 .hero .pill:hover {
   background: #abd4fd;
   border-color: rgba(255, 255, 255, 0);
   color: #0f172a;
 }
+
 .hero .pill.active {
   background: #abd4fd;
   border-color: #abd4fd;
@@ -419,6 +437,7 @@
   box-sizing: border-box;
   align-self: flex-start;
 }
+
 .hero__search .search-bar {
   position: relative;
   width: 100%;
@@ -435,6 +454,7 @@
   box-sizing: border-box;
   overflow: hidden;
 }
+
 .hero__search .search-icon {
   position: absolute;
   left: 14px;
@@ -446,6 +466,7 @@
   align-items: center;
   justify-content: center;
 }
+
 .hero__search .search-icon-img {
   width: 100%;
   height: 100%;
@@ -453,6 +474,7 @@
   opacity: 0.8;
   filter: grayscale(20%);
 }
+
 .hero__search .search-input {
   width: 100%;
   height: 100%;
@@ -462,6 +484,7 @@
   color: #1f2937;
   font-size: 11px;
 }
+
 .hero__search .search-input::placeholder {
   color: rgba(31, 41, 55, 0.72);
 }
@@ -470,9 +493,11 @@
   .hero__search {
     max-width: 100%;
   }
+
   .hero__search .search-bar {
     height: 42px;
   }
+
   .hero__search .search-icon {
     width: 20px;
     height: 20px;
@@ -484,14 +509,17 @@
   background-color: #9b95cc;
   color: #0f172a;
 }
+
 .content-box .box .project-type-tag.tag--app {
   background-color: #8aa788;
   color: #0b3a2a;
 }
+
 .content-box .box .project-type-tag.tag--game {
   background-color: #d1aa6b;
   color: #111827;
 }
+
 .content-box .box .project-type-tag.tag--etc {
   background-color: #68a6c7;
   color: #1f2937;
@@ -513,4 +541,445 @@
 
 button {
   text-align: left;
+}
+
+/* ===Responsive=== */
+
+/* ===600px ~ 1023px=== */
+
+@media (min-width: 600px) and (max-width: 1023px) {
+
+  .project-page .hero {
+    width: 100%;
+    min-height: auto;
+    padding: 110px 28px 48px;
+    box-sizing: border-box;
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  .project-page .hero__inner {
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .project-page .hero__title {
+    position: static;
+    width: 100%;
+    margin: 0;
+
+    font-size: clamp(22px, 3vw, 27px);
+    line-height: 1.25;
+
+    text-align: center;
+    white-space: normal;
+  }
+
+  .project-page .hero__title br {
+    display: none;
+  }
+
+  .project-page .hero__subtitle {
+    position: static;
+    width: 100%;
+
+    margin: 8px 0 0;
+
+    font-size: 16px;
+
+    text-align: center;
+    white-space: normal;
+  }
+
+  .project-page .hero__badge {
+    display: block;
+    position: static;
+
+    margin: 45px 0 12px;
+
+    font-size: 15px;
+
+    color: rgba(255, 255, 255, 0.632);
+  }
+
+  .project-page .hero__search {
+    position: static;
+
+    width: 100%;
+    max-width: none;
+
+    margin: 0;
+  }
+
+  .project-page .hero__search .search-bar {
+    width: 100%;
+    height: 42px;
+  }
+
+  .project-page .hero .filter-container {
+    position: static;
+
+    width: 100% !important;
+
+    margin: 14px 0 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px !important;
+
+    flex-wrap: wrap;
+  }
+
+  .project-page .hero .pill-filter {
+    margin: 0 !important;
+
+    display: flex;
+
+    gap: 5px;
+
+    flex-wrap: wrap;
+  }
+
+  .project-page .hero .filter-dropdown {
+    margin-left: auto !important;
+    flex-shrink: 0;
+  }
+
+  .project-page .content-box {
+    width: calc(100% - 56px);
+    max-width: 850px;
+
+    margin: 35px auto 0;
+    padding: 0 0 80px;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    column-gap: 22px;
+    row-gap: 50px;
+
+    box-sizing: border-box;
+  }
+
+  .project-page .content-box .box {
+    width: 100%;
+    max-width: none;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+  .project-page .content-box .box .image {
+    width: 100%;
+    height: auto;
+
+    aspect-ratio: 1.56 / 1;
+
+    border-radius: 12px;
+  }
+
+  .project-page .content-box .box .titlebox {
+    position: relative;
+
+    width: 100%;
+    height: auto;
+
+    padding: 0;
+  }
+}
+
+
+/* ===1024px 이상=== */
+
+@media (min-width: 1024px) {
+
+  .project-page .hero {
+    width: 100%;
+    min-height: 440px;
+
+    padding: 0 40px;
+
+    box-sizing: border-box;
+
+    align-items: stretch;
+
+    overflow: hidden;
+  }
+
+  .project-page .hero__inner {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 440px;
+
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns:
+      110px
+      minmax(300px, 1fr)
+      auto;
+
+    grid-template-areas:
+      "title title title"
+      "subtitle subtitle subtitle"
+      "badge search filter";
+
+    column-gap: 18px;
+
+    align-items: center;
+
+    box-sizing: border-box;
+  }
+
+  .project-page .hero__title {
+    grid-area: title;
+
+    position: static;
+
+    width: 100%;
+
+    margin: 150px 0 0;
+
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.2;
+
+    text-align: center;
+
+    white-space: nowrap;
+  }
+
+  .project-page .hero__title br {
+    display: none;
+  }
+
+  .project-page .hero__subtitle {
+    grid-area: subtitle;
+
+    position: static;
+
+    width: 100%;
+
+    margin: 8px 0 0;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    text-align: center;
+
+    white-space: nowrap;
+  }
+
+  .project-page .hero__badge {
+    grid-area: badge;
+
+    display: block;
+    position: static;
+
+    width: auto;
+
+    margin: 55px 0 0;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: rgba(255, 255, 255, 0.632);
+
+    white-space: nowrap;
+  }
+
+  .project-page .hero__search {
+    grid-area: search;
+
+    position: static;
+
+    width: 100%;
+    max-width: none;
+
+    margin: 55px 0 0;
+  }
+
+  .project-page .hero__search .search-bar {
+    width: 100%;
+    height: 38px;
+  }
+
+  .project-page .hero .filter-container {
+    grid-area: filter;
+
+    position: static;
+
+    width: auto !important;
+
+    margin: 55px 0 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px !important;
+
+    flex-wrap: nowrap;
+  }
+
+  .project-page .hero .pill-filter {
+    margin: 0 !important;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    flex-wrap: nowrap;
+  }
+
+  .project-page .hero .pill {
+    padding: 8px 15px;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+  }
+
+  .project-page .hero .filter-dropdown {
+    margin-left: 8px !important;
+
+    flex-shrink: 0;
+  }
+
+  .project-page .hero .dropdown-button {
+    font-size: 11px;
+
+    white-space: nowrap;
+  }
+
+  .project-page .content-box {
+    position: relative;
+
+    z-index: 5;
+
+    width: calc(100% - 80px);
+    max-width: 1200px;
+
+    margin: 30px auto 0;
+
+    padding: 0 0 100px;
+
+    display: grid;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    column-gap: 22px;
+    row-gap: 68px;
+
+    box-sizing: border-box;
+  }
+
+  .project-page .content-box .box {
+    width: 100%;
+    max-width: none;
+
+    height: auto;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 14px;
+
+    background: transparent;
+  }
+
+  .project-page .content-box .box .image {
+    width: 100%;
+    height: auto;
+
+    aspect-ratio: 1.56 / 1;
+
+    margin: 0;
+
+    border-radius: 14px;
+
+    overflow: hidden;
+  }
+
+  .project-page .content-box .box .project-image,
+  .project-page .content-box .box .thumbnail {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+  }
+
+  .project-page .content-box .box .titlebox {
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+    height: auto;
+
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 7px;
+
+    background: transparent;
+  }
+
+  .project-page .content-box .box .titlebox .title-row {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    flex-wrap: nowrap;
+  }
+
+  .project-page .content-box .box .titlebox h2 {
+    margin: 0;
+    padding: 0;
+
+    min-width: 0;
+
+    flex-basis: auto;
+    flex-shrink: 1;
+
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.15;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .project-page .content-box .box .project-type-tag {
+    flex-shrink: 0;
+  }
+
+  .project-page .content-box .box .titlebox p {
+    margin: 0;
+
+    font-size: 10px;
+    line-height: 1.45;
+  }
 }
