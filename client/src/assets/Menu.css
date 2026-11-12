@@ -222,3 +222,7 @@ body:has(nav.menu) .App-header {
 .settings-button + .logout-button {
   margin-top: 4px;
 }
+
+body:has(nav.menu) .desktop-nav {
+  display: none !important;
+}

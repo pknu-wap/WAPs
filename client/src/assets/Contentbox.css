@@ -544,414 +544,42 @@ button {
 }
 
 /* ========================================
-   ProjectPage Desktop Responsive
+   ProjectPage Responsive
 ======================================== */
-
-@media (min-width: 1024px) {
-
-  /* =========================
-     HERO
-  ========================= */
-
-  .project-page .hero {
-    width: 100%;
-    min-height: 440px;
-
-    padding: 0 40px;
-
-    box-sizing: border-box;
-
-    align-items: stretch;
-
-    overflow: visible;
-  }
-
-  .project-page .hero__inner {
-    position: relative;
-
-    width: 100%;
-    max-width: 1200px;
-    min-height: 440px;
-
-    margin: 0 auto;
-
-    box-sizing: border-box;
-  }
-
-
-  /* =========================
-     가운데 제목
-  ========================= */
-
-  .project-page .hero__title {
-    position: absolute;
-
-    top: 170px;
-    left: 0;
-
-    width: 100%;
-
-    margin: 0;
-
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 1.2;
-
-    text-align: center;
-    white-space: nowrap;
-
-    word-spacing: 3px;
-  }
-
-  .project-page .hero__subtitle {
-    position: absolute;
-
-    top: 215px;
-    left: 0;
-
-    width: 100%;
-
-    margin: 0;
-
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 1.2;
-
-    text-align: center;
-
-    white-space: mowrap;
-  }
-
-
-  /* =========================
-     PROJECTS
-  ========================= */
-
-  .project-page .hero__badge {
-    position: absolute;
-
-    left: 0;
-    top: 300px;
-
-    width: 120px;
-
-    margin: 0;
-
-    font-size: 17px;
-    font-weight: 700;
-
-    line-height: 38px;
-
-    text-align: left;
-
-    color: rgba(255, 255, 255, 0.632);
-  }
-
-
-  /* =========================
-     검색창
-  ========================= */
-
-  .project-page .hero__search {
-    position: absolute;
-
-    left: 150px;
-    top: 300px;
-
-    width: 535px;
-    max-width: 535px;
-
-    margin: 0;
-  }
-
-  .project-page .hero__search .search-bar {
-    width: 100%;
-    height: 38px;
-
-    box-sizing: border-box;
-  }
-
-  .project-page .hero__search .search-input {
-    font-size: 12px;
-  }
-
-
-  /* =========================
-     필터 전체
-  ========================= */
-
-  .project-page .hero .filter-container {
-    position: absolute;
-
-    left: 710px;
-    right: 0;
-    top: 300px;
-
-    width: auto !important;
-
-    margin: 0;
-    padding: 0;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: flex-start !important;
-
-    gap: 7px !important;
-
-    flex-wrap: nowrap;
-  }
-
-
-  /* 전체 / 웹 / 앱 / 게임 / 임베디드 */
-  .project-page .hero .pill-filter {
-    display: flex;
-
-    align-items: center;
-
-    margin: 0 !important;
-
-    gap: 7px;
-
-    flex-wrap: nowrap;
-
-    flex-shrink: 0;
-  }
-
-  .project-page .hero .pill {
-    padding: 9px 18px;
-
-    font-size: 12px;
-
-    white-space: nowrap;
-  }
-
-
-  /* 년도 / 학기 */
-  .project-page .hero .filter-dropdown {
-    position: relative !important;
-
-    margin-left: auto !important;
-
-    flex-shrink: 0;
-  }
-
-  .project-page .hero .dropdown-button {
-    padding: 8px 0;
-
-    font-size: 12px;
-
-    white-space: nowrap;
-  }
-
-
-  /* =========================
-     프로젝트 목록
-  ========================= */
-
-  .project-page .content-box {
-    position: relative;
-
-    z-index: 5;
-
-    width: calc(100% - 80px);
-    max-width: 1200px;
-
-    /*
-      핵심:
-      Hero가 끝난 뒤 시작하지 않고
-      Hero 하단으로 끌어올림
-    */
-    margin: -88px auto 0;
-
-    padding: 0 0 100px;
-
-    box-sizing: border-box;
-
-    display: grid;
-
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-
-    column-gap: 22px;
-    row-gap: 68px;
-
-    align-items: start;
-  }
-
-
-  /* =========================
-     프로젝트 카드
-  ========================= */
-
-  .project-page .content-box .box {
-    width: 100%;
-    max-width: none;
-
-    height: auto;
-
-    margin: 0;
-    padding: 0;
-
-    display: flex;
-
-    flex-direction: column;
-    align-items: stretch;
-
-    gap: 16px;
-
-    background: transparent;
-
-    border-radius: 0;
-  }
-
-
-  /* 프로젝트 이미지 */
-  .project-page .content-box .box .image {
-    width: 100%;
-    height: auto;
-
-    aspect-ratio: 1.56 / 1;
-
-    margin: 0;
-
-    flex-shrink: 0;
-
-    border-radius: 14px;
-
-    overflow: hidden;
-  }
-
-  .project-page .content-box .box .project-image,
-  .project-page .content-box .box .thumbnail {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-  }
-
-
-  /* =========================
-     프로젝트 설명
-  ========================= */
-
-  .project-page .content-box .box .titlebox {
-    position: relative;
-
-    width: 100%;
-    min-width: 0;
-    height: auto;
-
-    padding: 0;
-
-    display: flex;
-
-    flex-direction: column;
-    align-items: flex-start;
-
-    gap: 7px;
-
-    background: transparent;
-  }
-
-
-  /* 제목 + 태그 */
-  .project-page .content-box .box .titlebox .title-row {
-    width: 100%;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 5px;
-
-    flex-wrap: nowrap;
-  }
-
-
-  /* 제목 */
-  .project-page .content-box .box .titlebox h2 {
-    margin: 0;
-    padding: 0;
-
-    min-width: 0;
-
-    flex-basis: auto;
-    flex-shrink: 1;
-
-    font-size: 23px;
-    font-weight: 700;
-    line-height: 1.15;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-
-  /* 태그 */
-  .project-page .content-box .box .project-type-tag {
-    flex-shrink: 0;
-
-    padding: 3px 5px;
-
-    font-size: 6px;
-  }
-
-
-  /* 설명 */
-  .project-page .content-box .box .titlebox p {
-    margin: 0;
-
-    font-size: 10px;
-    line-height: 1.45;
-  }
-
-  .project-page .hero__title br,
-  .project-page .hero__subtitle br {
-    display: none;
-  }
-}
 
 /* ========================================
-   중간 화면 대응
-   768px ~ 1199px
+   600px ~ 1023px
+   중간 화면
 ======================================== */
 
-@media (min-width: 768px) and (max-width: 1199px) {
+@media (min-width: 600px) and (max-width: 1023px) {
 
-  /* Hero 높이 확보 */
   .project-page .hero {
-    min-height: 400px;
-    padding: 0 28px;
-    overflow: visible;
+    width: 100%;
+    min-height: auto;
+    padding: 110px 28px 48px;
+    box-sizing: border-box;
+    align-items: stretch;
+    overflow: hidden;
   }
 
   .project-page .hero__inner {
-    position: relative;
     width: 100%;
-    max-width: 100%;
-    min-height: 400px;
+    max-width: 850px;
     margin: 0 auto;
+    box-sizing: border-box;
   }
 
-  /* 제목이 로고와 겹치지 않도록 가운데 배치 */
   .project-page .hero__title {
-    position: absolute;
-    top: 125px;
-    left: 0;
-
+    position: static;
     width: 100%;
     margin: 0;
 
-    font-size: 27px;
+    font-size: clamp(22px, 3vw, 27px);
     line-height: 1.25;
-    font-weight: 700;
 
     text-align: center;
-    white-space: nowrap;
-
-    word-spacing: 4px;
+    white-space: normal;
   }
 
   .project-page .hero__title br {
@@ -959,75 +587,56 @@ button {
   }
 
   .project-page .hero__subtitle {
-    position: absolute;
-    top: 168px;
-    left: 0;
-
+    position: static;
     width: 100%;
-    margin: 0;
 
-    font-size: 17px;
-    line-height: 1.2;
+    margin: 8px 0 0;
+
+    font-size: 16px;
 
     text-align: center;
-    white-space: nowrap;
+    white-space: normal;
   }
 
-  /* PROJECTS */
   .project-page .hero__badge {
     display: block;
+    position: static;
 
-    position: absolute;
-    top: 225px;
-    left: 0;
-
-    margin: 0;
+    margin: 45px 0 12px;
 
     font-size: 15px;
-    font-weight: 700;
-    line-height: 38px;
 
     color: rgba(255, 255, 255, 0.632);
   }
 
-  /* 검색창 */
   .project-page .hero__search {
-    position: absolute;
+    position: static;
 
-    top: 225px;
-    left: 120px;
-
-    width: calc(100% - 120px);
+    width: 100%;
     max-width: none;
 
     margin: 0;
   }
 
   .project-page .hero__search .search-bar {
-    height: 38px;
+    width: 100%;
+    height: 42px;
   }
 
-  /* 필터는 검색창 아래 한 줄 */
   .project-page .hero .filter-container {
-    position: absolute;
-
-    top: 285px;
-    left: 0;
-    right: 0;
+    position: static;
 
     width: 100% !important;
 
-    margin: 0;
+    margin: 14px 0 0;
     padding: 0;
 
     display: flex;
-
     align-items: center;
-    justify-content: space-between !important;
 
-    gap: 10px !important;
+    gap: 8px !important;
 
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
   }
 
   .project-page .hero .pill-filter {
@@ -1035,17 +644,9 @@ button {
 
     display: flex;
 
-    gap: 6px;
+    gap: 5px;
 
-    flex-wrap: nowrap;
-  }
-
-  .project-page .hero .pill {
-    padding: 8px 15px;
-
-    font-size: 11px;
-
-    white-space: nowrap;
+    flex-wrap: wrap;
   }
 
   .project-page .hero .filter-dropdown {
@@ -1053,17 +654,11 @@ button {
     flex-shrink: 0;
   }
 
-  .project-page .hero .dropdown-button {
-    white-space: nowrap;
-    font-size: 11px;
-  }
-
-  /* 카드 영역 */
   .project-page .content-box {
     width: calc(100% - 56px);
-    max-width: none;
+    max-width: 850px;
 
-    margin: -55px auto 0;
+    margin: 35px auto 0;
     padding: 0 0 80px;
 
     display: grid;
@@ -1071,7 +666,9 @@ button {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
     column-gap: 22px;
-    row-gap: 55px;
+    row-gap: 50px;
+
+    box-sizing: border-box;
   }
 
   .project-page .content-box .box {
@@ -1097,19 +694,315 @@ button {
   }
 
   .project-page .content-box .box .titlebox {
+    position: relative;
+
     width: 100%;
+    height: auto;
+
     padding: 0;
+  }
+}
+
+
+/* ========================================
+   1024px 이상
+   데스크톱
+======================================== */
+
+@media (min-width: 1024px) {
+
+  .project-page .hero {
+    width: 100%;
+    min-height: 440px;
+
+    padding: 0 40px;
+
+    box-sizing: border-box;
+
+    align-items: stretch;
+
+    overflow: hidden;
+  }
+
+  .project-page .hero__inner {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 440px;
+
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns:
+      110px
+      minmax(300px, 1fr)
+      auto;
+
+    grid-template-areas:
+      "title title title"
+      "subtitle subtitle subtitle"
+      "badge search filter";
+
+    column-gap: 18px;
+
+    align-items: center;
+
+    box-sizing: border-box;
+  }
+
+
+  /* 제목 */
+  .project-page .hero__title {
+    grid-area: title;
+
+    position: static;
+
+    width: 100%;
+
+    margin: 150px 0 0;
+
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.2;
+
+    text-align: center;
+
+    white-space: nowrap;
+  }
+
+  .project-page .hero__title br {
+    display: none;
+  }
+
+
+  /* 영어 부제 */
+  .project-page .hero__subtitle {
+    grid-area: subtitle;
+
+    position: static;
+
+    width: 100%;
+
+    margin: 8px 0 0;
+
+    font-size: 18px;
+    font-weight: 600;
+
+    text-align: center;
+
+    white-space: nowrap;
+  }
+
+
+  /* PROJECTS */
+  .project-page .hero__badge {
+    grid-area: badge;
+
+    display: block;
+    position: static;
+
+    width: auto;
+
+    margin: 55px 0 0;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: rgba(255, 255, 255, 0.632);
+
+    white-space: nowrap;
+  }
+
+
+  /* 검색창 */
+  .project-page .hero__search {
+    grid-area: search;
+
+    position: static;
+
+    width: 100%;
+    max-width: none;
+
+    margin: 55px 0 0;
+  }
+
+  .project-page .hero__search .search-bar {
+    width: 100%;
+    height: 38px;
+  }
+
+
+  /* 필터 */
+  .project-page .hero .filter-container {
+    grid-area: filter;
+
+    position: static;
+
+    width: auto !important;
+
+    margin: 55px 0 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px !important;
+
+    flex-wrap: nowrap;
+  }
+
+  .project-page .hero .pill-filter {
+    margin: 0 !important;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    flex-wrap: nowrap;
+  }
+
+  .project-page .hero .pill {
+    padding: 8px 15px;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+  }
+
+  .project-page .hero .filter-dropdown {
+    margin-left: 8px !important;
+
+    flex-shrink: 0;
+  }
+
+  .project-page .hero .dropdown-button {
+    font-size: 11px;
+
+    white-space: nowrap;
+  }
+
+
+  /* ========================================
+     프로젝트 4열
+  ======================================== */
+
+  .project-page .content-box {
+    position: relative;
+
+    z-index: 5;
+
+    width: calc(100% - 80px);
+    max-width: 1200px;
+
+    margin: 30px auto 0;
+
+    padding: 0 0 100px;
+
+    display: grid;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    column-gap: 22px;
+    row-gap: 68px;
+
+    box-sizing: border-box;
+  }
+
+  .project-page .content-box .box {
+    width: 100%;
+    max-width: none;
+
+    height: auto;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 14px;
+
+    background: transparent;
+  }
+
+  .project-page .content-box .box .image {
+    width: 100%;
+    height: auto;
+
+    aspect-ratio: 1.56 / 1;
+
+    margin: 0;
+
+    border-radius: 14px;
+
+    overflow: hidden;
+  }
+
+  .project-page .content-box .box .project-image,
+  .project-page .content-box .box .thumbnail {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+  }
+
+  .project-page .content-box .box .titlebox {
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+    height: auto;
+
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 7px;
+
+    background: transparent;
+  }
+
+  .project-page .content-box .box .titlebox .title-row {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    flex-wrap: nowrap;
   }
 
   .project-page .content-box .box .titlebox h2 {
-    font-size: 20px;
+    margin: 0;
+    padding: 0;
+
+    min-width: 0;
+
+    flex-basis: auto;
+    flex-shrink: 1;
+
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.15;
 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
+  .project-page .content-box .box .project-type-tag {
+    flex-shrink: 0;
+  }
+
   .project-page .content-box .box .titlebox p {
+    margin: 0;
+
     font-size: 10px;
+    line-height: 1.45;
   }
 }
