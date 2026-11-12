@@ -5,6 +5,7 @@ import { getDevSessionId, saveDevSession } from "../utils/authStorage";
 import { authApi } from "../api/auth";
 import LoadingPage from "../components/LoadingPage";
 import { isDevLoginEnabled } from "../utils/devLogin";
+import "../assets/Login.css";
 
 export default function LoginDev() {
   const [searchParams] = useSearchParams();

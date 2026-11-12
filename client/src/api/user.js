@@ -12,6 +12,9 @@ export const userApi = {
 
   getMe: () => apiClient.get("/user/me"),
 
+  completeRegistration: (registration) =>
+    apiClient.post("/user/registration", registration),
+
   updateName: (name) =>
     apiClient.patch("/api/member/name", {
       name,

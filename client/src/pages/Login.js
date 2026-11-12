@@ -1,80 +1,76 @@
-import "../assets/Login.css";
-import wapsLogo from "../assets/img/waps_logo.png";
-import img from "../assets/img/pngwing.com.png";
 import { useNavigate } from "react-router-dom";
-import Cookies from "../utils/authStorage";
 import { authApi } from "../api/auth";
+import styles from "../assets/Account.module.css";
+import wapsLogo from "../assets/img/waps_logo.png";
+import kakaoLogo from "../assets/img/pngwing.com.png";
+import authStorage from "../utils/authStorage";
 
-const Login = () => {
+export default function Login() {
   const navigate = useNavigate();
-  const isLoggedIn = !!Cookies.get("authToken");
+  const isLoggedIn = Boolean(authStorage.get("authToken"));
 
-  const handleKakaoLogin = () => {
-    try {
-      const redirectUri = encodeURIComponent(
-        `${window.location.origin}/oauth/callback`,
-      );
-      const kakaoLoginUrl = authApi.getKakaoLoginUrl(redirectUri);
-      window.location.href = kakaoLoginUrl;
-    } catch (error) {
-      console.error("Error during Kakao login redirect:", error);
-    }
-  };
-
-  const handleProceedWithoutLogin = () => {
-    navigate("/"); // 메인 페이지로 이동
+  const handleKakaoLogin = (event) => {
+    event.preventDefault();
+    const redirectUri = encodeURIComponent(
+      `${window.location.origin}/oauth/callback`,
+    );
+    window.location.href = authApi.getKakaoLoginUrl(redirectUri);
   };
 
   const handleLogout = () => {
-    Cookies.remove("authToken");
-    Cookies.remove("userName");
-    alert("로그아웃 되었습니다.");
-    navigate("/login");
+    authStorage.remove("authToken");
+    authStorage.remove("userName");
+    authStorage.remove("userRole");
+    authStorage.remove("lastPage");
+    navigate("/login", { replace: true });
   };
 
   return (
-    <div className="login-page">
-      <button className="close-button" onClick={() => navigate("/ProjectPage")}>
-        &times;
+    <main className={styles.page}>
+      <button
+        type="button"
+        className={styles.closeButton}
+        aria-label="로그인 닫기"
+        onClick={() => navigate("/ProjectPage")}
+      >
+        ×
       </button>
-      <div>
-        <img
-          src={wapsLogo}
-          alt="WAPs"
-          className="waplogo"
-          onClick={() => navigate("/ProjectPage")}
-          style={{ cursor: "pointer", height: "75px" }} // 크기 조절
-        />
-      </div>
-      <div className="login-caption">
-        <p>WAP에서의</p>
-        <p>프로젝트를 만나보세요</p>
-      </div>
-      <div className="login-buttons">
+      <div className={`${styles.content} ${styles.loginContent}`}>
+        <header className={`${styles.header} ${styles.loginHeader}`}>
+          <h1 className={styles.eyebrow}>SIGN IN</h1>
+          <img src={wapsLogo} alt="WAPs" className={styles.logo} />
+        </header>
         {isLoggedIn ? (
-          <button className="login-button logout" onClick={handleLogout}>
+          <button
+            type="button"
+            className={styles.primaryButton}
+            onClick={handleLogout}
+          >
             로그아웃
           </button>
         ) : (
-          <>
-            <button className="login-button kakao" onClick={handleKakaoLogin}>
-              <img src={img} alt="Kakao Logo" className="Kakao-image" />
-              <span>카카오로 로그인</span>
+          <form className={styles.loginForm} onSubmit={handleKakaoLogin}>
+            <p className={styles.loginPrompt}>
+              카카오로 간편하게 로그인을 진행하세요
+              <span>Sign in with KAKAO</span>
+            </p>
+            <div className={styles.providerOption}>
+              <img src={kakaoLogo} alt="" />
+              <span>KAKAO</span>
+            </div>
+            <button type="submit" className={styles.primaryButton}>
+              로그인
             </button>
             <button
-              className="login-button no-login"
-              onClick={handleProceedWithoutLogin}
+              type="button"
+              className={styles.guestLink}
+              onClick={() => navigate("/")}
             >
-              <span>로그인 없이 진행</span>
+              로그인 없이 계속하기
             </button>
-            <div className="login-mini-caption">
-              WAPs는 카카오로 로그인이 가능합니다.
-            </div>
-          </>
+          </form>
         )}
       </div>
-    </div>
+    </main>
   );
-};
-
-export default Login;
+}
