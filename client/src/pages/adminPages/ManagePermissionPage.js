@@ -1,360 +1,326 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "../../assets/Admin/ManagePermission.module.css";
 import { adminPermissonApi } from "../../api/admin";
 
-const ROLES = ["ROLE_ADMIN", "ROLE_MEMBER", "ROLE_GUEST"];
-const LEVELS = ["NONE", "NEW", "ASSOCIATE", "REGULAR"];
+const ROLES = [
+  { value: "ROLE_GUEST", label: "게스트" },
+  { value: "ROLE_MEMBER", label: "회원" },
+  { value: "ROLE_ADMIN", label: "임원" },
+];
+const LEVELS = [
+  { value: "UNDECIDED", label: "미정" },
+  { value: "NEW", label: "신입" },
+  { value: "ASSOCIATE", label: "준회원" },
+  { value: "REGULAR", label: "정회원" },
+];
+const levelLabel = (value) =>
+  LEVELS.find((item) => item.value === value)?.label || value || "미정";
+const roleLabel = (value) =>
+  ROLES.find((item) => item.value === value)?.label ||
+  (value === "ROLE_USER" ? "비회원" : value || "미지정");
 
-// 데이터 로딩
-const ManagePermissionPage = () => {
-  const [users, setUsers] = useState([]); // 유저 상태
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // 페이지네이션 상태
+export default function ManagePermissionPage() {
+  const [users, setUsers] = useState([]);
+  const [selected, setSelected] = useState(new Map());
   const [page, setPage] = useState(0);
-  const [size] = useState(12); // 12개 고정
-  const [hasNext, setHasNext] = useState(false); // 다음 페이지 존재 여부
-
-  // 권한 변경 상태
-  const [selectedUserMap, setSelectedUserMap] = useState(new Map()); // 선택된 사용자 ID
-  const [newRole, setNewRole] = useState(""); // 선택된 새 권한;
-  const [newLevel, setNewLevel] = useState("");
+  const [hasNext, setHasNext] = useState(false);
+  const [roleFilter, setRoleFilter] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
-  const [isUpdating, setIsUpdating] = useState(false); // 적용 버튼 로딩 상태
-  const [updateError, setUpdateError] = useState(null); // 적용 시 에러 상태
-  const [roleFilter, setRoleFilter] = useState(""); // 역할 필터를 위한 상태
-
-  // 사용자 권한 목록 가져오기
-  const fetchUserRoles = useCallback(
-    async (currentPage, currentSize, selectedRole, selectedLevel) => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await adminPermissonApi.getUserRoleList(
-          currentPage,
-          currentSize,
-          selectedRole,
-          selectedLevel,
-        );
-        setUsers(data.content || []); // 유저 목록 저장
-        setHasNext(data.hasNext || false); // 다음 페이지 여부 저장
-      } catch (err) {
-        console.error("사용자 권한 목록 불러오기 실패:", err);
-        setError("사용자 권한 목록을 불러오는 데 실패했습니다.");
-        setUsers([]);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [],
-  );
+  const [newRole, setNewRole] = useState("");
+  const [newLevel, setNewLevel] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [revision, setRevision] = useState(0);
+  const requestId = useRef(0);
 
   useEffect(() => {
-    fetchUserRoles(page, size, roleFilter, levelFilter);
-  }, [fetchUserRoles, page, size, roleFilter, levelFilter]);
+    const id = ++requestId.current;
+    let active = true;
+    setLoading(true);
+    setError("");
+    adminPermissonApi
+      .getUserRoleList(page, 12, roleFilter, levelFilter)
+      .then((data) => {
+        if (!active || id !== requestId.current) return;
+        setUsers(data.content || []);
+        setHasNext(Boolean(data.hasNext));
+      })
+      .catch(() => {
+        if (!active || id !== requestId.current) return;
+        setUsers([]);
+        setHasNext(false);
+        setError("사용자 목록을 불러오지 못했습니다.");
+      })
+      .finally(() => {
+        if (active && id === requestId.current) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [page, roleFilter, levelFilter, revision]);
 
-  // 이전 페이지 버튼 핸들러
-  const handlePrevPage = () => {
-    // 0보다 클 때만 1 감수
-    if (page > 0) {
-      setPage(page - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    // hasNext가 true일때만 1증가
-    if (hasNext) {
-      setPage(page + 1);
-    }
-  };
-
-  // 사용자 선택 핸들러
-  const handleUserRowClick = (user) => {
-    setSelectedUserMap((prevMap) => {
-      const newMap = new Map(prevMap);
-      if (newMap.has(user.id)) {
-        // 이미 선택된 유저면 선택 해제
-        newMap.delete(user.id);
-      } else {
-        // 선택되지 않은 유저면 선택
-        newMap.set(user.id, user);
-      }
-      return newMap;
+  const toggle = (user) => {
+    if (updating) return;
+    setSelected((previous) => {
+      const next = new Map(previous);
+      if (next.has(user.id)) next.delete(user.id);
+      else next.set(user.id, user);
+      return next;
     });
+    setMessage("");
   };
 
-  // 적용 버튼 핸들러
-  const handleSubmitChange = async (changeLevel) => {
-    const value = changeLevel ? newLevel : newRole;
-    const category = changeLevel ? "LEVEL" : "권한";
-    if (!value) {
-      alert(`먼저 변경할 ${category}을 선택하세요`);
+  const apply = async () => {
+    if (updating || loading || (!newRole && !newLevel) || !selected.size)
       return;
-    }
-    // Map의 size로 선택 여부 확인
-    if (selectedUserMap.size === 0) {
-      alert("변경할 사용자를 한 명 이상 선택하세요");
-      return;
-    }
-
-    setIsUpdating(true);
-    setUpdateError(null);
-
+    const snapshot = new Map(selected);
+    setUpdating(true);
+    setError("");
+    setMessage("");
+    ++requestId.current;
     try {
-      // 맵의 키 목록을 array로 변환하여 API 호출
-      const update = changeLevel
-        ? adminPermissonApi.updateMembershipLevel
-        : adminPermissonApi.updateUserRole;
-      const data = await update(value, selectedUserMap);
-
-      alert(
-        `${data.updatedUserCount}명의 ${category}이 ${data.changeTo}(으)로 변경되었습니다.`,
+      const response = await adminPermissonApi.updateUserAttributes({
+        userIds: Array.from(snapshot.keys()),
+        ...(newRole ? { role: newRole } : {}),
+        ...(newLevel ? { memberType: newLevel } : {}),
+      });
+      if (
+        !Array.isArray(response) ||
+        response.length !== snapshot.size ||
+        new Set(response.map((user) => user.id)).size !== snapshot.size ||
+        response.some(
+          (user) =>
+            !snapshot.has(user.id) ||
+            (newRole && user.role !== newRole) ||
+            (newLevel && user.memberType !== newLevel),
+        )
+      )
+        throw new Error("Invalid response");
+      const changed = new Map(response.map((user) => [user.id, user]));
+      setUsers((previous) =>
+        previous.map((user) => changed.get(user.id) || user),
       );
-
-      // 상태 초기화
-      setSelectedUserMap(new Map()); // 오른쪽 박스의 목록 초기화
+      setSelected(
+        (previous) =>
+          new Map(
+            Array.from(previous, ([id, user]) => [id, changed.get(id) || user]),
+          ),
+      );
+      const changes = [
+        newRole && `ROLE: ${roleLabel(newRole)}`,
+        newLevel && `LEVEL: ${levelLabel(newLevel)}`,
+      ]
+        .filter(Boolean)
+        .join(", ");
+      setMessage(`${changed.size}명의 정보를 변경했습니다. (${changes})`);
       setNewRole("");
       setNewLevel("");
-
-      // 목록 새로고침
-      fetchUserRoles(page, size, roleFilter, levelFilter);
-    } catch (err) {
-      console.error(`${category} 변경 실패: `, err);
-      const errMsg =
-        err.response?.data?.message || `${category} 변경에 실패했습니다.`;
-      setUpdateError(errMsg);
-      alert(`${category} 변경 실패: ${errMsg}`);
+      if (roleFilter || levelFilter) setRevision((previous) => previous + 1);
+    } catch (failure) {
+      setError(
+        failure.response?.data?.message ||
+          "권한 및 LEVEL 변경에 실패했습니다. 다시 시도해주세요.",
+      );
     } finally {
-      setIsUpdating(false);
+      setUpdating(false);
+      setLoading(false);
     }
   };
 
-  // 필터 변경 핸들러
-  const handleRoleFilterChange = (e) => {
-    setRoleFilter(e.target.value);
-    setPage(0); // 중요: 필터가 바뀌면 반드시 1페이지(index 0)로 돌아가야 함
+  const filter = (event, setter) => {
+    setter(event.target.value);
+    setPage(0);
+    setMessage("");
   };
+  const options = (items) =>
+    items.map((item) => (
+      <option key={item.value} value={item.value}>
+        {item.label}
+      </option>
+    ));
+  const cells = (user) => (
+    <>
+      <td>{user.name}</td>
+      <td>{user.email}</td>
+      <td>{roleLabel(user.role)}</td>
+      <td>{levelLabel(user.memberType)}</td>
+    </>
+  );
+  const headings = (
+    <tr>
+      <th>NAME</th>
+      <th>EMAIL</th>
+      <th>ROLE</th>
+      <th>LEVEL</th>
+    </tr>
+  );
 
   return (
     <div className={styles.container}>
-      {/* 사용자 목록 박스 */}
-      <div className={styles.Box}>
-        {/* 헤더 */}
+      <section
+        className={`${styles.Box} ${styles.listBox}`}
+        aria-label="사용자 목록"
+      >
         <div className={styles.header}>
           <span>목록</span>
           <div className={styles.filters}>
             <label>
-              ROLE
+              ROLE{" "}
               <select
                 aria-label="ROLE 필터"
                 className={styles.filterSelect}
                 value={roleFilter}
-                onChange={handleRoleFilterChange}
+                disabled={Boolean(updating)}
+                onChange={(event) => filter(event, setRoleFilter)}
               >
                 <option value="">ALL</option>
-                {ROLES.map((role) => (
-                  <option key={role} value={role}>
-                    {role.replace("ROLE_", "")}
-                  </option>
-                ))}
+                {options(ROLES)}
               </select>
             </label>
             <label>
-              LEVEL
+              LEVEL{" "}
               <select
                 aria-label="LEVEL 필터"
                 className={styles.filterSelect}
                 value={levelFilter}
-                onChange={(e) => {
-                  setLevelFilter(e.target.value);
-                  setPage(0);
-                }}
+                disabled={Boolean(updating)}
+                onChange={(event) => filter(event, setLevelFilter)}
               >
                 <option value="">ALL</option>
-                {LEVELS.map((level) => (
-                  <option key={level} value={level}>
-                    {level}
-                  </option>
-                ))}
+                {options(LEVELS)}
               </select>
             </label>
           </div>
         </div>
-
-        {/* 유저 목록 */}
         <div className={styles.userContent}>
           <div className={styles.userList}>
-            {isLoading ? (
-              <table>
-                <thead></thead>
-              </table>
-            ) : error ? (
-              <p>{error}</p>
+            {loading ? (
+              <p role="status">목록을 불러오는 중...</p>
             ) : (
-              <table>
-                <thead>
-                  <tr>
-                    <th>NAME</th>
-                    <th>EMAIL</th>
-                    <th>ROLE</th>
-                    <th>LEVEL</th>
-                  </tr>
-                </thead>
+              <table aria-label="사용자 목록">
+                <thead>{headings}</thead>
                 <tbody>
-                  {users.length > 0 ? (
-                    users.map((user) => (
-                      <tr
-                        key={user.id}
-                        onClick={() => handleUserRowClick(user)}
-                        className={
-                          selectedUserMap.has(user.id) ? styles.selectedRow : ""
+                  {users.map((user) => (
+                    <tr
+                      key={user.id}
+                      tabIndex={0}
+                      aria-selected={selected.has(user.id)}
+                      onClick={() => toggle(user)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          toggle(user);
                         }
-                        style={{ cursor: "pointer" }}
-                      >
-                        <td style={{ textAlign: "right" }}>{user.name}</td>
-                        <td>{user.email}</td>
-                        <td>{user.role}</td>
-                        <td>{user.membershipLevel}</td>
-                      </tr>
-                    ))
-                  ) : (
+                      }}
+                      className={
+                        selected.has(user.id) ? styles.selectedRow : ""
+                      }
+                    >
+                      {cells(user)}
+                    </tr>
+                  ))}
+                  {!users.length && (
                     <tr>
-                      <td colSpan="4">불러올 데이터가 없습니다.</td>
+                      <td colSpan={4}>해당하는 사용자가 없습니다.</td>
                     </tr>
                   )}
                 </tbody>
               </table>
             )}
           </div>
-
-          {/* 페이지 네이션 UI */}
           <div className={styles.pageNation}>
             <button
-              onClick={handlePrevPage}
-              disabled={page === 0 || isLoading}
-              className={styles.prevPage}
+              aria-label="이전 페이지"
+              disabled={!page || loading || Boolean(updating)}
+              onClick={() => setPage(page - 1)}
             >
               &lt;&lt;
             </button>
-
-            {/* 0부터 시작하므로 +1 해서 보여줌 */}
-            <span style={{ margin: "0 15px" }}>{page + 1}</span>
-
+            <span>{page + 1}</span>
             <button
-              onClick={handleNextPage}
-              disabled={!hasNext || isLoading}
-              className={styles.nextPage}
+              aria-label="다음 페이지"
+              disabled={!hasNext || loading || Boolean(updating)}
+              onClick={() => setPage(page + 1)}
             >
               &gt;&gt;
             </button>
           </div>
         </div>
-      </div>
-      {/* 권한 변경 박스 */}
-      <div className={styles.Box}>
-        <span className={styles.header}>권한 / LEVEL 변경</span>
+      </section>
+      <section
+        className={`${styles.Box} ${styles.editBox}`}
+        aria-label="권한과 레벨 변경"
+      >
+        <h2 className={styles.header}>권한 / LEVEL 변경</h2>
         <div className={styles.changeContent}>
-          {/* 권한 선택 및 적용 버튼 UI */}
-          <div className={styles.controler}>
-            <span
-              style={{ fontSize: "18px", fontWeight: "700", minWidth: "77px" }}
-            >
-              다음으로 권한 변경:
-            </span>
-
-            {/* Role 선택 드롭다운 */}
-            <select
-              aria-label="변경할 ROLE"
-              value={newRole}
-              onChange={(e) => setNewRole(e.target.value)}
-              className={styles.roleDropdown}
-            >
-              <option value="">권한 선택</option>
-              {ROLES.map((role) => (
-                <option key={role} value={role}>
-                  {role.replace("ROLE_", "")}
-                </option>
-              ))}
-            </select>
-
-            {/* 적용 버튼 */}
-            <button
-              className={styles.adjust}
-              onClick={() => handleSubmitChange(false)}
-              disabled={isUpdating}
-            >
-              {isUpdating ? "적용 중..." : "적용"}
-            </button>
-          </div>
-
-          <div className={styles.controler}>
-            <span
-              style={{ fontSize: "18px", fontWeight: "700", minWidth: "77px" }}
-            >
-              다음으로 LEVEL 변경:
-            </span>
-            <select
-              aria-label="변경할 LEVEL"
-              value={newLevel}
-              onChange={(e) => setNewLevel(e.target.value)}
-              className={styles.roleDropdown}
-            >
-              <option value="">LEVEL 선택</option>
-              {LEVELS.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </select>
-            <button
-              className={styles.adjust}
-              onClick={() => handleSubmitChange(true)}
-              disabled={isUpdating}
-            >
-              {isUpdating ? "적용 중..." : "적용"}
-            </button>
-          </div>
-
-          {/* 선택된 사용자 목록 */}
           <div className={styles.changeList}>
-            {selectedUserMap.size === 0 ? (
-              <p
-                style={{
-                  textAlign: "center",
-                  color: "#888",
-                  marginTop: "20px",
-                }}
-              >
+            {!selected.size ? (
+              <p className={styles.emptySelection}>
                 왼쪽 목록에서 사용자를 클릭하여 추가하세요.
               </p>
             ) : (
-              <table>
+              <table aria-label="선택한 사용자">
+                <thead>{headings}</thead>
                 <tbody>
-                  {/* Map에 저장된 user 객체들을 순회하며 행 생성 */}
-                  {Array.from(selectedUserMap.values()).map((user) => (
-                    <tr
-                      key={user.id}
-                      onClick={() => handleUserRowClick(user)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <td style={{ textAlign: "right" }}>{user.name}</td>
-                      <td>{user.email}</td>
-                      <td>{user.role}</td>
-                      <td>{user.membershipLevel}</td>
+                  {Array.from(selected.values()).map((user) => (
+                    <tr key={user.id} onClick={() => toggle(user)}>
+                      {cells(user)}
                     </tr>
                   ))}
                 </tbody>
               </table>
             )}
           </div>
-          {updateError && (
-            <p style={{ color: "red", textAlign: "center" }}>{updateError}</p>
+          <div className={styles.changeControls}>
+            <div className={styles.controler}>
+              <label htmlFor="next-role">다음으로 권한 변경:</label>
+              <select
+                id="next-role"
+                aria-label="변경할 권한"
+                className={styles.roleDropdown}
+                value={newRole}
+                onChange={(event) => setNewRole(event.target.value)}
+                disabled={Boolean(updating)}
+              >
+                <option value="">권한 선택</option>
+                {options(ROLES)}
+              </select>
+            </div>
+            <div className={styles.controler}>
+              <label htmlFor="next-level">다음으로 LEVEL 변경:</label>
+              <select
+                id="next-level"
+                aria-label="변경할 회원 구분"
+                className={styles.roleDropdown}
+                value={newLevel}
+                onChange={(event) => setNewLevel(event.target.value)}
+                disabled={Boolean(updating)}
+              >
+                <option value="">LEVEL 선택</option>
+                {options(LEVELS)}
+              </select>
+            </div>
+          </div>
+          <button
+            aria-label="선택한 사용자에게 적용"
+            className={styles.adjust}
+            disabled={
+              updating || loading || (!newRole && !newLevel) || !selected.size
+            }
+            onClick={apply}
+          >
+            {updating ? "적용 중..." : "적용"}
+          </button>
+          {error && (
+            <p role="alert" className={styles.error}>
+              {error}
+            </p>
           )}
+          {message && <p role="status">{message}</p>}
         </div>
-      </div>
+      </section>
     </div>
   );
-};
-
-export default ManagePermissionPage;
+}

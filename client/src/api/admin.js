@@ -32,6 +32,8 @@ export const adminVoteApi = {
 
 // 권한 관리 API
 export const adminPermissonApi = {
+  updateUserAttributes: (changes) =>
+    apiClient.patch("/admin/role/attributes", changes),
   // 사용자 권한 변경
   updateUserRole: (newRole, selectedUserMap) =>
     apiClient.patch("/admin/role/user", {
@@ -40,13 +42,13 @@ export const adminPermissonApi = {
     }),
 
   // 사용자 권한 목록 가져오기
-  getUserRoleList: (page, size, role, membershipLevel) =>
+  getUserRoleList: (page, size, role, memberType) =>
     apiClient.get("/admin/role", {
       params: {
         page,
         size,
         ...(role ? { role } : {}),
-        ...(membershipLevel ? { membershipLevel } : {}),
+        ...(memberType ? { memberType } : {}),
       },
     }),
   updateMembershipLevel: (newMembershipLevel, selectedUserMap) =>
