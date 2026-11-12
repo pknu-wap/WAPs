@@ -10,6 +10,7 @@ import {
 import ProjectPage from "./pages/ProjectPage";
 import Login from "./pages/Login";
 import LoginDev from "./pages/LoginDev";
+import RegistrationPage from "./pages/RegistrationPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import SplashPage from "./pages/SplashPage";
 import Callback from "./components/Login/Callback";
@@ -18,7 +19,6 @@ import VotePage from "./pages/VotePage";
 import ProjectCreatePage from "./pages/ProjectCreatePage";
 import ScrollToTop from "./components/ScrollToTop";
 import VoteResultPage from "./pages/VoteResultPage";
-import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildApplyPage from "./pages/TeamBuildApplyPage";
 import TeamBuildEntryPage from "./pages/TeamBuildEntryPage";
@@ -52,7 +52,6 @@ const router = createBrowserRouter(
     <Route element={<RouteLayout />}>
       <Route element={<MainLayout />}>
         <Route path="/" element={<SplashPage />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/login-dev" element={<LoginDev />} />
         <Route path="/oauth/callback" element={<Callback />} />
         <Route path="/project/create" element={<ProjectCreatePage />} />
@@ -68,7 +67,6 @@ const router = createBrowserRouter(
           path="/project/edit/:projectId"
           element={<ProjectCreatePage />}
         />
-        <Route path="/select/role" element={<RoleSelectPage />} />
         <Route path="/team-build" element={<TeamBuildEntryPage />} />
         <Route
           path="/team-build/projects"
@@ -92,7 +90,10 @@ const router = createBrowserRouter(
         <Route path="/protected" element={<ProtectedPage />} />
       </Route>
 
+      <Route path="/select/role" element={<Navigate to="/signup" replace />} />
       <Route element={<FullScreenLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<RegistrationPage />} />
         <Route path="admin/*" element={<AdminRoute requireRole="ROLE_ADMIN" />}>
           <Route element={<AdminPageLayout />}>
             <Route index element={<Navigate to="vote" replace />}></Route>
