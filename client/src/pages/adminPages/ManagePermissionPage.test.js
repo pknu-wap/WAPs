@@ -13,6 +13,7 @@ jest.mock("../../api/admin", () => ({
   adminPermissonApi: {
     getUserRoleList: jest.fn(),
     updateUserAttributes: jest.fn(),
+    deleteUsers: jest.fn(),
   },
 }));
 
@@ -188,4 +189,59 @@ test("combined ROLE and undecided LEVEL filters are requested from the server", 
     ),
   );
   await screen.findByRole("table", { name: "사용자 목록" });
+});
+
+
+test("page selection can be toggled without selecting unseen users", async () => {
+  render(<ManagePermissionPage />);
+  const selectAll = await screen.findByRole("button", { name: "현재 페이지 전체 선택" });
+  await screen.findByText(user.name);
+  fireEvent.click(selectAll);
+  expect(within(screen.getByRole("table", { name: "선택한 사용자" })).getByText(user.name)).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "현재 페이지 전체 선택 해제" }));
+  expect(screen.queryByRole("table", { name: "선택한 사용자" })).not.toBeInTheDocument();
+});
+
+test("account deletion requires confirmation and retains selection on failure", async () => {
+  const confirm = jest.spyOn(window, "confirm").mockReturnValue(false);
+  render(<ManagePermissionPage />);
+  await selectUser();
+  fireEvent.click(screen.getByRole("button", { name: "삭제", exact: true }));
+  expect(adminPermissonApi.deleteUsers).not.toHaveBeenCalled();
+  confirm.mockReturnValue(true);
+  adminPermissonApi.deleteUsers.mockRejectedValue(new Error("failed"));
+  fireEvent.click(screen.getByRole("button", { name: "삭제", exact: true }));
+  await screen.findByRole("alert");
+  expect(adminPermissonApi.deleteUsers).toHaveBeenCalledWith([1]);
+  expect(screen.getByRole("table", { name: "선택한 사용자" })).toBeInTheDocument();
+  confirm.mockRestore();
+});
+
+test("successful deletion clears selection and reloads the first page", async () => {
+  const confirm = jest.spyOn(window, "confirm").mockReturnValue(true);
+  render(<ManagePermissionPage />);
+  await selectUser();
+  adminPermissonApi.deleteUsers.mockResolvedValue(undefined);
+  adminPermissonApi.getUserRoleList.mockResolvedValue({ content: [], hasNext: false });
+  fireEvent.click(screen.getByRole("button", { name: "삭제", exact: true }));
+  await screen.findByText("해당하는 사용자가 없습니다.");
+  expect(screen.queryByRole("table", { name: "선택한 사용자" })).not.toBeInTheDocument();
+  confirm.mockRestore();
+});
+
+test("changing a filtered member returns to the first page before reloading", async () => {
+  adminPermissonApi.getUserRoleList.mockResolvedValue({ content: [user], hasNext: true });
+  adminPermissonApi.updateUserAttributes.mockResolvedValue([{ ...user, memberType: "REGULAR" }]);
+  render(<ManagePermissionPage />);
+  await screen.findByText(user.name);
+  fireEvent.change(screen.getByLabelText("LEVEL 필터"), { target: { value: "NEW" } });
+  await waitFor(() => expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "", "NEW"));
+  await screen.findByRole("table", { name: "사용자 목록" });
+  fireEvent.click(screen.getByRole("button", { name: "다음 페이지" }));
+  await waitFor(() => expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(1, 12, "", "NEW"));
+  await selectUser();
+  chooseLevel("REGULAR");
+  fireEvent.click(applyButton());
+  await waitFor(() => expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "", "NEW"));
+  expect(screen.getByRole("table", { name: "선택한 사용자" })).toHaveTextContent("정회원");
 });

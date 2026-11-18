@@ -72,6 +72,36 @@ export default function ManagePermissionPage() {
     setMessage("");
   };
 
+  const allOnPageSelected = users.length > 0 && users.every((user) => selected.has(user.id));
+  const togglePage = () => {
+    if (loading || updating) return;
+    setSelected((previous) => {
+      const next = new Map(previous);
+      users.forEach((user) => allOnPageSelected ? next.delete(user.id) : next.set(user.id, user));
+      return next;
+    });
+    setMessage("");
+  };
+
+  const deleteSelected = async () => {
+    if (loading || updating || !selected.size) return;
+    if (!window.confirm(`선택한 ${selected.size}명의 계정을 영구 삭제합니다. 되돌릴 수 없습니다. 삭제할까요?`)) return;
+    setUpdating(true);
+    setError("");
+    setMessage("");
+    try {
+      await adminPermissonApi.deleteUsers(Array.from(selected.keys()));
+      setMessage(`${selected.size}명의 계정을 삭제했습니다.`);
+      setSelected(new Map());
+      setPage(0);
+      setRevision((value) => value + 1);
+    } catch (failure) {
+      setError(failure.response?.data?.message || "계정 삭제에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const apply = async () => {
     if (updating || loading || (!newRole && !newLevel) || !selected.size)
       return;
@@ -117,7 +147,10 @@ export default function ManagePermissionPage() {
       setMessage(`${changed.size}명의 정보를 변경했습니다. (${changes})`);
       setNewRole("");
       setNewLevel("");
-      if (roleFilter || levelFilter) setRevision((previous) => previous + 1);
+      if (roleFilter || levelFilter) {
+        setPage(0);
+        setRevision((previous) => previous + 1);
+      }
     } catch (failure) {
       setError(
         failure.response?.data?.message ||
@@ -165,6 +198,9 @@ export default function ManagePermissionPage() {
       >
         <div className={styles.header}>
           <span>목록</span>
+          <button type="button" disabled={loading || updating || !users.length} onClick={togglePage}>
+            {allOnPageSelected ? "현재 페이지 전체 선택 해제" : "현재 페이지 전체 선택"}
+          </button>
           <div className={styles.filters}>
             <label>
               ROLE{" "}
@@ -253,7 +289,17 @@ export default function ManagePermissionPage() {
         className={`${styles.Box} ${styles.editBox}`}
         aria-label="권한과 레벨 변경"
       >
-        <h2 className={styles.header}>권한 / LEVEL 변경</h2>
+        <div className={styles.editHeader}>
+          <h2 className={styles.header}>권한 / LEVEL 변경</h2>
+          <button
+            type="button"
+            className={styles.deleteButton}
+            disabled={loading || updating || !selected.size}
+            onClick={deleteSelected}
+          >
+            삭제
+          </button>
+        </div>
         <div className={styles.changeContent}>
           <div className={styles.changeList}>
             {!selected.size ? (

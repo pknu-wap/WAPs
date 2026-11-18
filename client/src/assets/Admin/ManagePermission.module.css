@@ -40,8 +40,9 @@
 
 /* 테이블 관련 */
 .container table {
-  min-width: 386px;
+  min-width: 0;
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   border-left: none;
   border-right: none;
@@ -55,19 +56,40 @@
   z-index: 10;
 }
 .container th {
+  box-sizing: border-box;
   border: 2px solid var(--tableLine);
   background-color: var(--primary);
   color: black;
   font-size: 15px;
   font-weight: 700;
   text-align: center;
-  padding: 10px 13px;
+  padding: 10px 4px;
 }
 
 .container td {
+  box-sizing: border-box;
   border: 2px solid var(--tableLine);
   font-size: 15px;
   padding: 10px 5px 10px 10px;
+}
+
+.container th:first-child {
+  width: 24%;
+}
+
+.container th:nth-child(2) {
+  width: 40%;
+}
+
+.container th:nth-child(3),
+.container th:nth-child(4) {
+  width: 18%;
+}
+
+.container th,
+.container td {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .container th:first-child,
@@ -125,7 +147,7 @@
 .userList {
   width: 100%;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
   margin-top: 13px;
   flex: 1;
   min-height: 0;
@@ -138,7 +160,7 @@
 /* 스크롤바 스타일*/
 .userList::-webkit-scrollbar {
   width: 6px;
-  height: 71px;
+  height: 6px;
 }
 
 .userList::-webkit-scrollbar-thumb {
@@ -153,7 +175,22 @@
 /* 권한 변경 박스 */
 .editBox {
   min-height: 0;
-  overflow: auto;
+  padding: clamp(18px, 2vw, 32px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.editHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.editHeader .header {
+  min-width: 0;
+  flex: 1;
+  line-height: 1.35;
 }
 
 .changeContent {
@@ -200,9 +237,21 @@
 .changeList {
   width: 100%;
   flex: none;
+  min-width: 0;
   min-height: 0;
   max-height: min(30vh, 260px);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.changeList th {
+  padding: 8px 2px;
+  font-size: 11px;
+}
+
+.changeList td {
+  padding: 8px 2px;
+  font-size: 12px;
 }
 
 .adjust {
@@ -243,7 +292,8 @@
 
   .userList {
     max-height: 480px;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .changeControls {
@@ -354,4 +404,38 @@
   .container {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+.deleteButton {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 72px;
+  height: 45px;
+  padding: 0 16px;
+  border: 1px solid #626262;
+  border-radius: 26px;
+  background-color: #bcbcbc;
+  color: #000;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: #d0d0d0;
+}
+
+.deleteButton:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: default;
 }

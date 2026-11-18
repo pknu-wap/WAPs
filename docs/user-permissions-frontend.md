@@ -3,27 +3,24 @@
 ## 화면 동작
 
 - 사용자 행을 클릭하거나 Enter/Space로 선택한다.
-- ROLE과 LEVEL을 각각 선택하고 LEVEL 아래의 적용 버튼으로 한 번에 저장한다.
-- 선택하지 않은 속성은 요청에서 생략하여 기존 값을 유지한다.
-- 서버 응답의 사용자 ID와 변경 값을 확인한 뒤 양쪽 목록에 반영한다.
-- 실패하면 선택한 사용자와 변경 전 값, 입력 중인 선택을 유지한다.
-- LEVEL 미정은 UNDECIDED이며, null도 미정으로 표시한다.
+- 현재 페이지 전체 선택/해제를 지원하며 다른 페이지에서 선택한 사용자는 유지한다.
+- ROLE과 LEVEL을 각각 선택한 뒤 하나의 적용 버튼으로 저장한다.
+- ROLE만, LEVEL만 또는 두 값을 함께 변경할 수 있으며 실패 시 선택과 입력을 유지한다.
+- 필터가 적용된 목록에서 변경 후에는 첫 페이지부터 다시 조회한다.
+- 계정 삭제는 확인창을 거치며 성공 후 선택을 비우고 목록을 다시 조회한다.
 
-## 필요한 API 계약 (백엔드 협의 필요)
+## 목록 조회 호환
 
-- GET /admin/role: role, memberType 필터와 page, size를 받는다.
-- 목록의 각 사용자는 id, name, email, role, memberType을 반환한다.
-- PATCH /admin/role/attributes: { userIds, role?, memberType? }를 받는다.
-- 응답은 변경된 사용자 배열이며 요청한 ID와 변경 값을 모두 포함한다.
-- role은 ROLE_GUEST, ROLE_MEMBER, ROLE_ADMIN을 사용한다.
-- memberType은 UNDECIDED, NEW, ASSOCIATE, REGULAR를 사용한다.
-- 두 값을 함께 변경할 때 서버가 하나의 트랜잭션으로 적용해야 한다.
+- GET /admin/role에 role과 함께 memberType 및 membershipLevel 필터를 전달한다.
+- UNDECIDED는 기존 서버에 membershipLevel=NONE으로 전달한다.
+- 응답의 membershipLevel을 화면의 memberType으로 변환하되 memberType 값이 있으면 우선한다.
+- ALL 선택 시 두 LEVEL 필터를 생략한다. 서버에서 필터링한 다음 페이지를 분할한다.
+- 기존 updateMembershipLevel 함수와 개별 LEVEL 변경 API는 유지한다.
 
-## 현재 main과의 차이 및 배포 조건
+## 저장 및 삭제 API 계약
 
-현재 main은 membershipLevel 필드와 NONE 값을 사용하며,
-PATCH /admin/role/user/membership-level로 LEVEL을 별도로 변경한다.
-이 화면이 사용하는 memberType 필드와 통합 변경 API는 현재 main에 없다.
-따라서 프론트 코드만 병합/배포하면 LEVEL 필터와 통합 저장을 사용할 수 없다.
-백엔드 담당자와 계약을 확정하고 서버 배포 후 실제 API로 검증해야 한다.
-백엔드 및 DB 변경은 이 프론트 작업에 포함하지 않는다.
+- PATCH /admin/role/attributes: { userIds, role?, memberType? }. 변경된 사용자 배열이 필요하다.
+- DELETE /admin/role/users: { userIds }. 계정 삭제 성공 시 204를 반환해야 한다.
+- 현재 main의 개별 ROLE/LEVEL 변경 API만으로 통합 저장과 계정 삭제가 제공되는 것은 아니다.
+- 서버 API 및 DB 변경, 실제 저장/재조회 검증 후 통합해야 한다.
+- 서버 작업은 codex/member-type-management 브랜치에 보존하며 이 PR에는 프론트엔드와 문서만 포함한다.
