@@ -1,63 +1,83 @@
+:global(html):has(.page),
+:global(body):has(.page) {
+  width: 100%;
+}
+
+:global(.full-screen-wrapper):has(.page) {
+  width: 100%;
+  height: 100dvh;
+}
+
 .page {
   position: relative;
   box-sizing: border-box;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   width: 100%;
   min-height: 100vh;
   min-height: 100dvh;
-  padding: 72px 0 48px;
-  background: linear-gradient(160deg, #767eb0, #80a7b0);
+  padding: 0 0 48px;
+  background: linear-gradient(155deg, #6f7ab2, #7ea6b2);
+  background-image: linear-gradient(
+    calc(180deg - atan2(18dvh, 82vw)),
+    #6f7ab2,
+    #7ea6b2
+  );
   color: #fff;
   font-family: "Pretendard-Regular", sans-serif;
 }
 
 .content {
-  width: min(78%, 400px);
+  box-sizing: border-box;
+  flex: none;
+  width: 75%;
+  max-width: 472px;
   margin-inline: auto;
 }
 
 .registrationContent {
-  align-self: flex-start;
-  margin-block-start: clamp(0px, calc(17dvh - 72px), 140px);
+  padding-top: 25.7dvh;
 }
 
 .closeButton {
   position: absolute;
-  top: clamp(12px, 3vw, 36px);
-  right: clamp(12px, 3vw, 36px);
+  top: clamp(16px, 2.3dvh, 32px);
+  right: clamp(16px, 4.6vw, 40px);
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 0;
   background: none;
   color: inherit;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 300;
   line-height: 1;
   cursor: pointer;
 }
 
 .header {
-  margin-bottom: 38px;
+  margin-bottom: 6.4dvh;
   text-align: center;
 }
 
 .eyebrow {
   margin: 0 0 12px;
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1.2;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .logo {
   display: block;
-  width: min(60%, 210px);
+  width: 60.7%;
   height: auto;
   margin-inline: auto;
+  /* The source PNG already has 80% alpha; keep the visible logo at 60%. */
+  opacity: 0.75;
 }
 
 .registrationForm,
@@ -77,14 +97,14 @@
 
 .fieldLabel,
 .loginPrompt {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .fieldLabel span,
 .loginPrompt span {
-  color: rgba(255, 255, 255, 0.84);
+  color: rgba(255, 255, 255, 0.4);
   font-weight: 400;
 }
 
@@ -93,61 +113,67 @@
 .providerOption {
   box-sizing: border-box;
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
 }
 
 .membershipOptions {
   margin-top: 5px;
-  padding: 0 12px;
+  padding: 0 10px;
 }
 
 .membershipOptions label {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 40px;
+  min-height: 39px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .membershipOptions label + label {
-  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .membershipOptions input {
   flex: none;
   margin: 0;
-  accent-color: #344364;
+  accent-color: #fff;
 }
 
 .fieldLabel input {
   display: block;
   min-width: 0;
-  min-height: 48px;
+  min-height: 45px;
   margin-top: 5px;
-  padding: 10px 14px;
+  padding: 10px 12px;
   background: transparent;
   color: inherit;
-  font:
-    400 16px/1.25 "Pretendard-Regular",
-    sans-serif;
+  font: 400 16px/1.25 "Pretendard-Regular", sans-serif;
 }
 
 .fieldLabel input::placeholder {
-  color: rgba(255, 255, 255, 0.87);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.fieldHint {
+  margin: -6px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .primaryButton {
   box-sizing: border-box;
   width: 100%;
-  min-height: 48px;
+  min-height: 45px;
   padding: 10px 12px;
   border: 0;
-  border-radius: 12px;
-  background: #aad5f9;
+  border-radius: 10px;
+  background: #abd4fd;
   color: #101820;
   font: inherit;
+  font-size: 12px;
   font-weight: 700;
   text-align: center;
   cursor: pointer;
@@ -183,18 +209,22 @@
 }
 
 .loginContent {
-  max-width: 350px;
+  padding-top: 28.8dvh;
 }
 
 .loginHeader {
-  margin-bottom: 35px;
+  margin-bottom: 4.4dvh;
+}
+
+.loginHeader .eyebrow {
+  color: #fff;
 }
 
 .loginHeader::after {
   display: block;
-  width: min(60%, 210px);
+  width: 60.7%;
   height: 1px;
-  margin: 44px auto 0;
+  margin: 5.4dvh auto 0;
   background: rgba(255, 255, 255, 0.5);
   content: "";
 }
@@ -204,12 +234,14 @@
 }
 
 .loginPrompt {
-  margin: 0;
+  margin: 0 0 -6px;
 }
 
 .loginPrompt span {
   display: block;
-  font-size: 12px;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 10px;
 }
 
 .providerOption {
@@ -217,7 +249,7 @@
   align-items: center;
   justify-content: center;
   gap: 9px;
-  min-height: 48px;
+  min-height: 45px;
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.24);
 }
@@ -232,30 +264,120 @@
 
 .providerOption span {
   padding-left: 9px;
-  border-left: 1px solid rgba(255, 255, 255, 0.55);
-  font-size: 14px;
+  border-left: 1px solid rgba(255, 255, 255, 0.7);
+  font-size: 12px;
   font-weight: 700;
 }
 
 .guestLink {
   align-self: center;
-  padding: 8px 6px;
+  padding: 4px 6px;
   border: 0;
   background: none;
   color: inherit;
   font: inherit;
-  font-size: 14px;
+  font-size: 12px;
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
 }
 
-@media (max-width: 600px) {
+@media (min-width: 768px) {
+  .content {
+    width: 32.7%;
+    min-width: 320px;
+    max-width: 640px;
+  }
+
   .registrationContent {
-    margin-block-start: clamp(0px, calc(26dvh - 72px), 160px);
+    padding-top: 17.2dvh;
+  }
+
+  .eyebrow {
+    margin-bottom: 22px;
+    font-size: 18px;
+  }
+
+  .logo {
+    width: 53.2%;
+  }
+
+  .fieldLabel,
+  .loginPrompt,
+  .membershipOptions label,
+  .primaryButton,
+  .providerOption span,
+  .guestLink {
+    font-size: 16px;
+  }
+
+  .registrationForm,
+  .memberFields {
+    gap: 20px;
+  }
+
+  .membershipOptions,
+  .fieldLabel input,
+  .providerOption,
+  .primaryButton {
+    border-radius: 14px;
+  }
+
+  .membershipOptions {
+    padding-inline: 16px;
+  }
+
+  .membershipOptions label {
+    min-height: 56px;
+  }
+
+  .fieldLabel input,
+  .providerOption,
+  .primaryButton {
+    min-height: 64px;
+  }
+
+  .fieldLabel input {
+    padding: 14px 20px;
+  }
+
+  .fieldHint {
+    font-size: 13px;
+  }
+
+  .loginContent {
+    width: 28.6%;
+    min-width: 300px;
+    max-width: 560px;
+    padding-top: 25.7dvh;
+  }
+
+  .loginHeader .logo,
+  .loginHeader::after {
+    width: 60.7%;
+  }
+
+  .loginPrompt span {
+    font-size: 12px;
+  }
+
+  .loginForm {
+    gap: 16px;
+  }
+
+  .providerOption img {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+@media (max-height: 640px) {
+  .registrationContent,
+  .loginContent {
+    padding-top: 48px;
   }
 
   .header {
-    margin-bottom: 35px;
+    margin-bottom: 32px;
   }
 }

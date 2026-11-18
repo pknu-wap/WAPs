@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LoadingPage from "../LoadingPage";
 import authStorage, { clearDevSession } from "../../utils/authStorage";
+import { registrationRequired } from "../../utils/accountProfile";
 
 const apiBaseUrl =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
@@ -45,7 +46,7 @@ export default function Callback() {
         else authStorage.remove("userRole");
 
         let destination = "/ProjectPage";
-        if (profile.registrationRequired === true) {
+        if (registrationRequired(profile) === true) {
           destination = "/signup";
         }
         navigate(destination, { replace: true });

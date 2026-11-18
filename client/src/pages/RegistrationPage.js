@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { userApi } from "../api/user";
 import styles from "../assets/Account.module.css";
 import wapsLogo from "../assets/img/waps_logo.png";
 import authStorage from "../utils/authStorage";
+import { registrationRequired } from "../utils/accountProfile";
+
+function normalizeStudentYear(value) {
+  const digits = String(value ?? "").replace(/[^0-9]/g, "");
+  return digits.length === 4 || digits.length === 9
+    ? digits.slice(2, 4)
+    : digits.slice(0, 2);
+}
 
 export default function RegistrationPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const editing = searchParams.get("edit") === "true";
   const token = authStorage.get("authToken");
   const [registrationStatus, setRegistrationStatus] = useState("loading");
   const [lookupAttempt, setLookupAttempt] = useState(0);
@@ -23,9 +33,14 @@ export default function RegistrationPage() {
     userApi.getMe().then(
       (user) => {
         if (!active) return;
-        if (user.registrationRequired === false) {
+        if (editing) {
+          setMembership(user.wapMember === true ? "yes" : user.wapMember === false ? "no" : "");
+          setName(user.userName ?? user.name ?? "");
+          setStudentId(normalizeStudentYear(user.studentId ?? user.studentNumber));
+          setRegistrationStatus("pending");
+        } else if (registrationRequired(user) === false) {
           navigate("/ProjectPage", { replace: true });
-        } else if (user.registrationRequired === true) {
+        } else if (registrationRequired(user) === true) {
           setRegistrationStatus("pending");
         } else {
           setRegistrationStatus("failed");
@@ -39,7 +54,7 @@ export default function RegistrationPage() {
     return () => {
       active = false;
     };
-  }, [token, navigate, lookupAttempt]);
+  }, [token, navigate, lookupAttempt, editing]);
 
   function retryLookup() {
     setRegistrationStatus("loading");
@@ -47,6 +62,7 @@ export default function RegistrationPage() {
   }
 
   function closeRegistration() {
+    if (editing) { navigate("/settings"); return; }
     for (const key of ["authToken", "userName", "userRole", "lastPage"]) {
       authStorage.remove(key);
     }
@@ -63,25 +79,29 @@ export default function RegistrationPage() {
       setErrorMessage("WAP 회원 여부를 선택해주세요.");
       return;
     }
-    if (wapMember && (!trimmedName || !/^[0-9]{9}$/.test(studentId))) {
-      setErrorMessage("본명과 9자리 학번을 입력해주세요.");
+    if (wapMember && trimmedName.length > 4) {
+      setErrorMessage("이름은 4자 이내로 입력해주세요.");
+      return;
+    }
+    if (wapMember && (!trimmedName || !/^[0-9]{2}$/.test(studentId))) {
+      setErrorMessage("본명과 학번(입학 연도 뒤 두 자리)을 입력해주세요.");
       return;
     }
 
     setErrorMessage("");
     setSubmitting(true);
     try {
-      const user = await userApi.completeRegistration(
+      const user = await (editing ? userApi.updateRegistration : userApi.completeRegistration)(
         wapMember ? { wapMember, name: trimmedName, studentId } : { wapMember },
       );
-      if (user.registrationRequired !== false) {
+      if (registrationRequired(user) !== false) {
         setErrorMessage("가입이 완료되지 않았습니다. 다시 시도해주세요.");
         return;
       }
       if (user.userName) {
         authStorage.set("userName", user.userName, { expires: 7 });
       }
-      navigate("/ProjectPage", { replace: true });
+      navigate(editing ? "/settings" : "/ProjectPage", { replace: true });
     } catch {
       setErrorMessage("가입 정보를 저장하지 못했습니다. 다시 시도해주세요.");
     } finally {
@@ -167,8 +187,9 @@ export default function RegistrationPage() {
                     type="text"
                     name="name"
                     autoComplete="name"
-                    placeholder="이름은 반드시 본명으로 설정해주세요."
-                    maxLength={50}
+                    placeholder="본명을 4자 이내로 입력해주세요."
+                    maxLength={4}
+                    title="본명 최대 4자"
                     required
                     disabled={submitting}
                     value={name}
@@ -181,16 +202,24 @@ export default function RegistrationPage() {
                     type="text"
                     name="studentId"
                     inputMode="numeric"
-                    pattern="[0-9]{9}"
-                    maxLength={9}
-                    title="숫자 9자리"
-                    placeholder="ex) 202612345"
+                    pattern="[0-9]{2}"
+                    maxLength={2}
+                    title="입학 연도 뒤 두 자리 (예: 2026 → 26)"
+                    placeholder="학번을 입력해주세요. (예: 26)"
+                    aria-describedby="student-id-help"
                     required
                     disabled={submitting}
                     value={studentId}
-                    onChange={(event) => setStudentId(event.target.value)}
+                    onChange={(event) => setStudentId(event.target.value.replace(/[^0-9]/g, "").slice(0, 2))}
+                    onPaste={(event) => {
+                      event.preventDefault();
+                      setStudentId(normalizeStudentYear(event.clipboardData.getData("text")));
+                    }}
                   />
                 </label>
+                <p id="student-id-help" className={styles.fieldHint}>
+                  입학 연도 뒤 두 자리를 입력해주세요. 예: 2026 → 26
+                </p>
               </div>
             )}
             {errorMessage && (
@@ -203,7 +232,7 @@ export default function RegistrationPage() {
               type="submit"
               disabled={submitting}
             >
-              {submitting ? "저장 중…" : "회원가입하기"}
+              {submitting ? "저장 중…" : editing ? "가입 정보 저장" : "회원가입하기"}
             </button>
           </form>
         )}
