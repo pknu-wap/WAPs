@@ -24,6 +24,7 @@ import TeamBuildApplyPage from "./pages/TeamBuildApplyPage";
 import TeamBuildEntryPage from "./pages/TeamBuildEntryPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import CalendarPage from "./pages/CalendarPage";
+import AttendanceCheckInPage from "./pages/AttendanceCheckInPage";
 import AdminRoute from "./components/Login/PrivateRoute";
 import Settings from "./pages/Settings";
 
@@ -95,6 +96,7 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<FullScreenLayout />}>
+        <Route path="/attendance" element={<AttendanceCheckInPage />} />
         {attendancePreviewRoute()}
         <Route path="admin/*" element={<AdminRoute requireRole="ROLE_ADMIN" />}>
           <Route element={<AdminPageLayout />}>

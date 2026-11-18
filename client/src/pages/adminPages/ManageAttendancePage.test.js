@@ -147,11 +147,10 @@ test("시작 → 실제 ID QR 발급 → 종료하면 QR이 제거된다", async
   await waitFor(() => expect(close).toBeEnabled());
   expect(adminAttendanceApi.changeStatus).toHaveBeenCalledWith(4, "ONGOING");
   fireEvent.click(screen.getByRole("button", { name: "QR 생성" }));
-  expect(
-    JSON.parse(
-      (await screen.findByTestId("attendance-qr")).getAttribute("data-value"),
-    ),
-  ).toEqual({ attendanceId: 4, qrToken: "test-token" });
+  expect(await screen.findByTestId("attendance-qr")).toHaveAttribute(
+    "data-value",
+    `${window.location.origin}/attendance?attendanceId=4&token=test-token`,
+  );
   fireEvent.click(close);
   await screen.findByRole("button", { name: "수정" });
   expect(adminAttendanceApi.changeStatus).toHaveBeenCalledWith(4, "ENDED");

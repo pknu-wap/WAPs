@@ -113,10 +113,10 @@ export default function AttendanceQr({ attendanceId, closed }) {
       {qr && remaining > 0 && !closed ? (
         <>
           <QRCodeSVG
-            value={JSON.stringify({
+            value={`${window.location.origin}/attendance?${new URLSearchParams({
               attendanceId: qr.attendanceId,
-              qrToken: qr.qrToken,
-            })}
+              token: qr.qrToken,
+            })}`}
             size={192}
             marginSize={4}
             title="출석체크 QR 코드"

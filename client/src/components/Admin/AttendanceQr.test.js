@@ -45,16 +45,17 @@ test("실제 서버 ID가 없는 로컬 출석은 발급하지 않는다", () =>
   expect(adminAttendanceApi.issueQr).not.toHaveBeenCalled();
 });
 
-test("사전 상세 조회 없이 실제 ID로 발급하고 응답의 두 필드만 인코딩한다", async () => {
+test("사전 상세 조회 없이 실제 ID로 발급하고 출석 링크를 인코딩한다", async () => {
   render(<AttendanceQr attendanceId={4} closed={false} />);
   fireEvent.click(screen.getByRole("button", { name: "QR 생성" }));
   const qr = await screen.findByTestId("attendance-qr");
   expect(adminAttendanceApi.getDetail).not.toHaveBeenCalled();
   expect(adminAttendanceApi.issueQr).toHaveBeenCalledWith(4);
-  expect(JSON.parse(qr.getAttribute("data-value"))).toEqual({
-    attendanceId: 4,
-    qrToken: "test-attendance-token",
-  });
+  const url = new URL(qr.getAttribute("data-value"));
+  expect(url.origin).toBe(window.location.origin);
+  expect(url.pathname).toBe("/attendance");
+  expect(url.searchParams.get("attendanceId")).toBe("4");
+  expect(url.searchParams.get("token")).toBe("test-attendance-token");
   expect(screen.getByRole("timer")).toHaveTextContent("남은 시간: 60초");
   fireEvent.click(screen.getByRole("button", { name: "QR 재발급" }));
   await waitFor(() =>
