@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const NameChange = ({ currentName, onClose, onChangeName }) => {
+const NameChange = ({ currentName, onClose, onChangeName, isSaving = false }) => {
   const [step, setStep] = useState(1);
   const [newName, setNewName] = useState("");
   const handleNext = () => {
@@ -8,6 +8,10 @@ const NameChange = ({ currentName, onClose, onChangeName }) => {
 
     if (!trimmedName) {
       alert("변경할 이름을 입력해주세요.");
+      return;
+    }
+    if (trimmedName.length > 4) {
+      alert("이름은 4자 이내로 입력해주세요.");
       return;
     }
 
@@ -25,7 +29,7 @@ const NameChange = ({ currentName, onClose, onChangeName }) => {
   };
 
   return (
-    <div className="name-modal-overlay" onClick={onClose}>
+    <div className="name-modal-overlay" onClick={() => { if (!isSaving) onClose(); }}>
       <div
         className="name-modal"
         role="dialog"
@@ -38,6 +42,7 @@ const NameChange = ({ currentName, onClose, onChangeName }) => {
           className="name-modal-close"
           aria-label="이름 변경 닫기"
           onClick={onClose}
+          disabled={isSaving}
         >
           <span></span>
           <span></span>
@@ -60,6 +65,7 @@ const NameChange = ({ currentName, onClose, onChangeName }) => {
               type="text"
               className="name-modal-input"
               placeholder="변경할 이름을 입력해주세요."
+              maxLength={4}
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => {
@@ -96,8 +102,9 @@ const NameChange = ({ currentName, onClose, onChangeName }) => {
               type="button"
               className="name-modal-button confirm-name-button"
               onClick={handleConfirm}
+              disabled={isSaving}
             >
-              이름 변경하기
+              {isSaving ? "저장 중..." : "이름 변경하기"}
             </button>
           </div>
         )}
