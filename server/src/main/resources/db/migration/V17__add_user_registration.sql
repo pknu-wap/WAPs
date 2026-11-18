@@ -1,0 +1,4 @@
+ALTER TABLE `user`
+    ADD COLUMN registration_required BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN wap_member BOOLEAN NULL,
+    ADD COLUMN student_id VARCHAR(9) NULL;

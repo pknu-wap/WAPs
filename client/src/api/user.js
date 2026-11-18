@@ -9,5 +9,8 @@ export const userApi = {
   },
   // 내 정보 조회
   getMe: () => apiClient.get("/user/me"),
-  updateName: (name) => apiClient.patch("/user/me", { name }),
+  completeRegistration: (registration) =>
+    apiClient.post("/user/registration", registration),
+  updateRegistration: (registration) => apiClient.patch("/user/registration", registration),
+  updateName: (name) => apiClient.patch("/api/member/name", { name }),
 };

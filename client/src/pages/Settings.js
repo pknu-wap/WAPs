@@ -4,6 +4,8 @@ import { FaUser } from "react-icons/fa";
 import { FiEdit2 } from "react-icons/fi";
 import NameChange from "../components/NameChange";
 import { userApi } from "../api/user";
+import authStorage from "../utils/authStorage";
+import { memberTypeLabel } from "../utils/accountProfile";
 import wapsLogo from "../assets/img/waps_logo.png";
 import "../assets/Settings.css";
 
@@ -15,47 +17,62 @@ const Settings = () => {
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isNameSaved, setIsNameSaved] = useState(false);
+  const [isSavingName, setIsSavingName] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
+    let active = true;
     const fetchUserInfo = async () => {
       try {
         setIsLoading(true);
+        setLoadError("");
 
         const data = await userApi.getMe();
+        if (!active) return;
 
-        setUserName(data?.name ?? "");
-        setUserType(data?.memberType ?? "");
+        setUserName(data?.name ?? data?.userName ?? "");
+        setUserType(memberTypeLabel(data));
       } catch (error) {
-        console.error("회원 정보 조회 실패:", error);
+        if (active) setLoadError("회원 정보를 불러오지 못했습니다.");
       } finally {
-        setIsLoading(false);
+        if (active) setIsLoading(false);
       }
     };
 
     fetchUserInfo();
-  }, []);
+    return () => { active = false; };
+  }, [reload]);
 
   const handleEditClick = () => {
     setIsNameModalOpen(true);
   };
 
   const handleNameChange = async (newName) => {
+    if (isSavingName) return;
     const trimmedName = newName.trim();
 
-    if (!trimmedName) {
-      alert("이름을 입력해주세요.");
+    if (!trimmedName || trimmedName.length > 4) {
+      alert("이름은 1자 이상 4자 이하로 입력해주세요.");
       return;
     }
 
+    setIsSavingName(true);
     try {
       const data = await userApi.updateName(trimmedName);
+      const savedName = data?.userName ?? data?.name;
+      if (typeof savedName !== "string" || !savedName.trim())
+        throw new Error("Missing saved name");
 
-      setUserName(data?.name ?? trimmedName);
+      setUserName(savedName);
+      authStorage.set("userName", savedName, { expires: 7 });
       setIsNameSaved(true);
       setIsNameModalOpen(false);
     } catch (error) {
       console.error("이름 변경 실패:", error);
       alert("이름 변경에 실패했습니다.");
+    } finally {
+      setIsSavingName(false);
     }
   };
 
@@ -89,6 +106,14 @@ const Settings = () => {
           <p>설정을 변경해보세요.</p>
           <h1>SETTINGS</h1>
         </header>
+        {loadError && (
+          <p role="alert">
+            {loadError}{" "}
+            <button type="button" onClick={() => setReload((value) => value + 1)}>
+              다시 불러오기
+            </button>
+          </p>
+        )}
 
         <section className="settings-section information-section">
           <h3>
@@ -134,7 +159,7 @@ const Settings = () => {
                   className="edit-button"
                   onClick={handleEditClick}
                   aria-label="이름 변경"
-                  disabled={isLoading}
+                  disabled={isLoading || Boolean(loadError) || isSavingName}
                 >
                   <FiEdit2 />
                 </button>
@@ -157,18 +182,29 @@ const Settings = () => {
           </div>
         </section>
 
-        <button
-          type="button"
-          className={`back-menu-button${isNameSaved ? " back-menu-button--saved" : ""}`}
-          onClick={handleMenuNavigate}
-        >
-          메뉴 페이지로 돌아가기
-        </button>
+        <div className="settings-actions">
+          <button
+            type="button"
+            className="settings-action settings-action--primary"
+            disabled={isLoading || Boolean(loadError) || isSavingName}
+            onClick={() => navigate("/signup?edit=true")}
+          >
+            회원가입 정보 수정
+          </button>
+          <button
+            type="button"
+            className={`settings-action settings-action--secondary${isNameSaved ? " settings-action--saved" : ""}`}
+            onClick={handleMenuNavigate}
+          >
+            메뉴 페이지로 돌아가기
+          </button>
+        </div>
       </div>
 
       {isNameModalOpen && (
         <NameChange
           currentName={userName}
+          isSaving={isSavingName}
           onClose={() => setIsNameModalOpen(false)}
           onChangeName={handleNameChange}
         />

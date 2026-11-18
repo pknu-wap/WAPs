@@ -30,15 +30,27 @@ public interface UserRepository extends JpaRepository<User, Long> {
     )
     int updateRoleByIds(@Param("role") Role role, @Param("ids") List<Long> ids);
 
-    @Query(
-        """
-        SELECT u
-        FROM User u
+    @Query("""
+        SELECT u FROM User u
         WHERE (:role IS NULL OR u.role = :role)
-        ORDER BY u.name
+          AND (u.memberType = :memberType OR
+               (u.memberType IS NULL AND :memberType = wap.web2.server.member.entity.MemberType.UNDECIDED))
+        ORDER BY u.name, u.id
         LIMIT :limit OFFSET :offset
-        """
-    )
+        """)
+    List<User> findUserByOffsetAndMemberType(
+        @Param("limit") Integer limit,
+        @Param("offset") Integer offset,
+        @Param("role") Role role,
+        @Param("memberType") wap.web2.server.member.entity.MemberType memberType
+    );
+
+    @Query("""
+        SELECT u FROM User u
+        WHERE (:role IS NULL OR u.role = :role)
+        ORDER BY u.name, u.id
+        LIMIT :limit OFFSET :offset
+        """)
     List<User> findUserByOffset(
         @Param("limit") Integer limit,
         @Param("offset") Integer offset,

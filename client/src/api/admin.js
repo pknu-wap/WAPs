@@ -1,5 +1,10 @@
 import apiClient from "./client";
 
+const normalizeUserLevel = (user) => {
+  const level = user.memberType ?? user.membershipLevel ?? "UNDECIDED";
+  return { ...user, memberType: level === "NONE" ? "UNDECIDED" : level };
+};
+
 // 투표 관리 API
 export const adminVoteApi = {
   // 투표 상태 조회
@@ -32,6 +37,11 @@ export const adminVoteApi = {
 
 // 권한 관리 API
 export const adminPermissonApi = {
+  deleteUsers: (userIds) => apiClient.delete("/admin/role/users", { data: { userIds } }),
+  updateUserAttributes: (changes) =>
+    apiClient.patch("/admin/role/attributes", changes),
+  updateMemberType: (memberType, userIds) =>
+    apiClient.patch("/admin/role/member-type", { memberType, userIds }),
   // 사용자 권한 변경
   updateUserRole: (newRole, selectedUserMap) =>
     apiClient.patch("/admin/role/user", {
@@ -40,10 +50,26 @@ export const adminPermissonApi = {
     }),
 
   // 사용자 권한 목록 가져오기
-  getUserRoleList: (page, size, role) =>
-    apiClient.get("/admin/role", {
-      params: { page: page, size: size, ...(role ? { role: role } : {}) },
-    }),
+  getUserRoleList: (page, size, role, memberType) =>
+    apiClient
+      .get("/admin/role", {
+        params: {
+          page,
+          size,
+          ...(role ? { role } : {}),
+          // 기존 서버와 memberType 서버 모두 페이지를 나누기 전에 필터링한다.
+          ...(memberType
+            ? {
+                memberType,
+                membershipLevel: memberType === "UNDECIDED" ? "NONE" : memberType,
+              }
+            : {}),
+        },
+      })
+      .then((data) => ({
+        ...data,
+        content: (data.content || []).map(normalizeUserLevel),
+      })),
 };
 
 // 일정 관리 API
@@ -82,5 +108,6 @@ export const adminTeamBuildApi = {
   // 현재 학기 배정 결과와 진행 단계 초기화
   resetTeamBuild: () => apiClient.post("/admin/team/building/reset/current"),
   // 현재 학기의 모든 차수 지원·모집을 포함한 완전 초기화
-  resetTeamBuildCompletely: () => apiClient.post("/admin/team/building/reset/current/complete"),
+  resetTeamBuildCompletely: () =>
+    apiClient.post("/admin/team/building/reset/current/complete"),
 };

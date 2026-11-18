@@ -8,6 +8,7 @@ import {
 import ProjectPage from "./pages/ProjectPage";
 import Login from "./pages/Login";
 import LoginDev from "./pages/LoginDev";
+import RegistrationPage from "./pages/RegistrationPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import SplashPage from "./pages/SplashPage";
 import Callback from "./components/Login/Callback";
@@ -16,7 +17,6 @@ import VotePage from "./pages/VotePage";
 import ProjectCreatePage from "./pages/ProjectCreatePage";
 import ScrollToTop from "./components/ScrollToTop";
 import VoteResultPage from "./pages/VoteResultPage";
-import RoleSelectPage from "./pages/RoleSelectPage";
 import TeamBuildPage from "./pages/TeamBuildPage";
 import TeamBuildApplyPage from "./pages/TeamBuildApplyPage";
 import TeamBuildEntryPage from "./pages/TeamBuildEntryPage";
@@ -54,12 +54,14 @@ function App() {
     <Router>
       <ScrollToTop /> {/* 페이지 전환 시 스크롤 위치 초기화 */}
       <Routes>
+        <Route
+          path="/select/role"
+          element={<Navigate to="/signup" replace />}
+        />
         {/* 400px 폭 레이아웃 */}
         <Route element={<MainLayout />}>
           {/* 기본 홈 화면 */}
           <Route path="/" element={<SplashPage />} />
-          {/* 로그인 화면 */}
-          <Route path="/login" element={<Login />} />
           <Route path="/login-dev" element={<LoginDev />} />
           {/* 카카오 인증 Callback */}
           <Route path="/oauth/callback" element={<Callback />} />
@@ -77,7 +79,6 @@ function App() {
             path="/project/edit/:projectId"
             element={<ProjectCreatePage />}
           />
-          <Route path="/select/role" element={<RoleSelectPage />} />
           <Route path="/team-build" element={<TeamBuildEntryPage />} />
           <Route
             path="/team-build/projects"
@@ -104,6 +105,8 @@ function App() {
 
         {/* 전체화면 레이아웃 */}
         <Route element={<FullScreenLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<RegistrationPage />} />
           {/* 관리자 페이지 */}
           <Route
             path="admin/*"

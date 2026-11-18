@@ -1,15 +1,19 @@
 package wap.web2.server.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wap.web2.server.global.security.CurrentUser;
 import wap.web2.server.global.security.UserPrincipal;
+import wap.web2.server.member.dto.UserRegistrationRequest;
 import wap.web2.server.member.dto.UserResponse;
 import wap.web2.server.member.dto.UserRoleResponse;
 import wap.web2.server.member.dto.UserVoteResponse;
@@ -27,6 +31,22 @@ public class UserController {
     public ResponseEntity<UserResponse> findUserDetail(@CurrentUser UserPrincipal userPrincipal) {
         UserResponse response = userService.getUserDetail(userPrincipal);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/registration")
+    public ResponseEntity<UserResponse> register(
+        @CurrentUser UserPrincipal userPrincipal,
+        @Valid @RequestBody UserRegistrationRequest request
+    ) {
+        return ResponseEntity.ok(userService.completeRegistration(userPrincipal, request));
+    }
+
+    @PatchMapping("/registration")
+    public ResponseEntity<UserResponse> updateRegistration(
+        @CurrentUser UserPrincipal principal,
+        @Valid @RequestBody UserRegistrationRequest request
+    ) {
+        return ResponseEntity.ok(userService.updateRegistration(principal, request));
     }
 
     @GetMapping("/vote/{semester}")
