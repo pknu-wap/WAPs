@@ -689,3 +689,153 @@
     padding-right: 18px;
   }
 }
+
+/* ===Responsive=== */
+
+@media (min-width: 600px) {
+
+  .settingsContainer {
+    left: 0;
+    transform: none;
+
+    width: 100vw;
+    max-width: none;
+
+    min-height: 100vh;
+    height: 100dvh;
+  }
+
+  .settings-content {
+    width: clamp(430px, 42vw, 600px);
+    max-width: calc(100vw - 48px);
+
+    min-height: 100%;
+
+    margin: 0 auto;
+
+    padding: 0 0 70px;
+  }
+
+  .settings-close {
+    position: fixed;
+
+    top: 28px;
+    right: 32px;
+  }
+
+  .settings-header {
+    padding-top: clamp(90px, 11vh, 115px);
+
+    margin-bottom: 48px;
+  }
+
+  .settings-header p {
+    font-size: 13px;
+  }
+
+  .settings-header h1 {
+    font-size: clamp(30px, 2.5vw, 38px);
+  }
+
+  .settings-section h3 {
+    font-size: 13px;
+  }
+
+  .information-section {
+    margin-bottom: 30px;
+  }
+
+  .member-info-card {
+    height: 78px;
+
+    padding: 0 22px;
+
+    border-radius: 13px;
+  }
+
+  .member-name strong {
+    font-size: 14px;
+  }
+
+  .member-name span {
+    font-size: 10px;
+  }
+
+  .setting-section {
+    margin-bottom: 20px;
+  }
+
+  .member-settings-card {
+    padding: 22px 22px 25px;
+
+    border-radius: 13px;
+  }
+
+  .setting-item label {
+    font-size: 13px;
+  }
+
+  .setting-value {
+    font-size: 14px;
+  }
+
+  .member-type-value {
+    font-size: 14px;
+  }
+
+  .name-description {
+    font-size: 10px;
+  }
+
+  .back-menu-button {
+    height: 46px;
+
+    font-size: 13px;
+
+    border-radius: 12px;
+  }
+
+  .name-modal-overlay {
+    left: 0;
+    transform: none;
+
+    width: 100vw;
+    max-width: none;
+
+    height: 100dvh;
+
+    padding: 0 24px;
+  }
+
+  .name-modal {
+    width: clamp(380px, 36vw, 500px);
+
+    padding: 28px 24px 22px;
+
+    border-radius: 17px;
+  }
+
+  .name-modal-title {
+    font-size: 15px;
+  }
+
+  .name-modal-description {
+    font-size: 10px;
+  }
+
+  .name-modal-label {
+    font-size: 13px;
+  }
+
+  .name-modal-input {
+    height: 50px;
+
+    font-size: 14px;
+  }
+
+  .name-modal-button {
+    height: 48px;
+
+    font-size: 14px;
+  }
+}
