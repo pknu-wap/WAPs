@@ -173,3 +173,57 @@
   font-size: 11px !important;
   font-weight: 400 !important;
 }
+
+/* ===Desktop Responsive=== */
+
+@media (min-width: 768px) {
+  .qr-scan-page {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    max-width: none;
+
+    height: 100vh;
+
+    margin: 0;
+
+    z-index: 1000;
+  }
+
+  #qr-reader {
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+
+  #qr-reader video {
+    width: 100vw !important;
+    height: 100vh !important;
+
+    object-fit: cover !important;
+  }
+
+  #qr-reader__scan_region {
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+
+  .qr-scan-close {
+    top: 42px;
+    right: 42px;
+  }
+
+  .qr-scan-guide {
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+  }
+
+  .qr-frame {
+    width: 220px;
+    height: 220px;
+  }
+}
