@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import "@testing-library/jest-dom";
 import AttendanceMemberPreviewPage from "./AttendanceMemberPreviewPage";
 
@@ -9,19 +9,21 @@ afterEach(() => { process.env.NODE_ENV = originalEnv; jest.restoreAllMocks(); })
 
 const renderMember = (search = "?preview=1&sequence=1") => render(
   <MemoryRouter initialEntries={[`/preview/attendance/check-in${search}`]}>
-    <AttendanceMemberPreviewPage />
+    <Routes>
+      <Route path="/preview/attendance/check-in" element={<AttendanceMemberPreviewPage />} />
+      <Route path="/ProjectPage" element={<h1>왑스 메인</h1>} />
+    </Routes>
   </MemoryRouter>,
 );
 
-test("QR 링크로 회원용 예시 화면을 열고 저장 없이 버튼 동작을 확인한다", () => {
+test("QR 링크로 회원용 예시 화면을 열고 저장 없이 왑스 메인으로 이동한다", () => {
   const request = jest.spyOn(XMLHttpRequest.prototype, "open");
   const storage = jest.spyOn(Storage.prototype, "setItem");
   renderMember();
   expect(screen.getByRole("heading", { name: "회원 출석체크" })).toBeInTheDocument();
   expect(screen.getByText("예시 회원 A 님의 화면입니다.")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "출석 버튼 테스트 (저장 안 됨)" }));
-  expect(screen.getByRole("status")).toHaveTextContent("실제 출석은 기록되지 않았습니다");
-  expect(screen.getByRole("button", { name: "화면 테스트 완료" })).toBeDisabled();
+  expect(screen.getByRole("heading", { name: "왑스 메인" })).toBeInTheDocument();
   expect(request).not.toHaveBeenCalled();
   expect(storage).not.toHaveBeenCalled();
 });

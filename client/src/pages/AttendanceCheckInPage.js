@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import apiClient from "../api/client";
 import authStorage from "../utils/authStorage";
 
@@ -24,12 +24,11 @@ function AttendanceCheckIn({ attendanceId, qrToken }) {
     let active = true;
     request.current.then(
       () => {
-        if (active) setResult({ message: "출석이 완료되었습니다." });
+        if (active) setResult({ succeeded: true });
       },
       (error) => {
         if (active) {
           setResult({
-            failed: true,
             message:
               errorMessages[error.response?.status] ??
               "출석 결과를 확인하지 못했습니다. 현재 QR을 다시 스캔해 주세요.",
@@ -42,11 +41,9 @@ function AttendanceCheckIn({ attendanceId, qrToken }) {
     };
   }, [attendanceId, qrToken]);
 
-  return (
-    <p role={result?.failed ? "alert" : "status"}>
-      {result?.message ?? "출석을 확인하고 있습니다."}
-    </p>
-  );
+  if (result?.succeeded) return <Navigate to="/ProjectPage" replace />;
+  if (result) return <p role="alert">{result.message}</p>;
+  return <p role="status">출석을 확인하고 있습니다.</p>;
 }
 
 export default function AttendanceCheckInPage() {

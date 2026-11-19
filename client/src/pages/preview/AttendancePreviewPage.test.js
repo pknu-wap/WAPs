@@ -73,14 +73,14 @@ test("QR에는 테스트 표식만 넣고 60초마다 자동 갱신하며 수동
   const qrUrl = new URL(
     screen.getByTestId("preview-qr").getAttribute("data-value"),
   );
-  expect(qrUrl.origin).toBe("https://waps.im");
-  expect(qrUrl.pathname).toBe("/attendance");
+  expect(qrUrl.origin).toBe(window.location.origin);
+  expect(qrUrl.pathname).toBe("/preview/attendance/check-in");
   expect([...qrUrl.searchParams]).toEqual([
     ["preview", "1"],
     ["sequence", "1"],
   ]);
   expect(
-    screen.getByRole("link", { name: "waps.im 출석 페이지 열기" }),
+    screen.getByRole("link", { name: "회원 출석 미리보기 열기" }),
   ).toHaveAttribute("href", qrUrl.href);
   expect(
     screen.getByText(/실제 출석 토큰과 개인정보는 전송하지 않습니다/),

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import styles from "./AttendanceMemberPreviewPage.module.css";
 
 export default function AttendanceMemberPreviewPage() {
@@ -7,6 +7,7 @@ export default function AttendanceMemberPreviewPage() {
   const [tested, setTested] = useState(false);
   if (process.env.NODE_ENV !== "development") return null;
   const validExample = params.get("preview") === "1" && /^[1-9]\d*$/.test(params.get("sequence") || "");
+  if (validExample && tested) return <Navigate to="/ProjectPage" replace />;
 
   return <main className={styles.page}>
     <section className={styles.card} aria-labelledby="member-preview-title">
@@ -21,10 +22,9 @@ export default function AttendanceMemberPreviewPage() {
           <div><dt>회원 구분</dt><dd>신입 (예시)</dd></div>
           <div><dt>출석 상태</dt><dd>저장하지 않음</dd></div>
         </dl>
-        <button className={styles.button} disabled={tested} onClick={() => setTested(true)}>
-          {tested ? "화면 테스트 완료" : "출석 버튼 테스트 (저장 안 됨)"}
+        <button className={styles.button} onClick={() => setTested(true)}>
+          출석 버튼 테스트 (저장 안 됨)
         </button>
-        {tested && <p role="status" className={styles.notice}>버튼 동작을 확인했습니다. 실제 출석은 기록되지 않았습니다.</p>}
       </> : <p role="alert">관리자 미리보기에서 테스트 QR을 생성한 뒤 스캔해 주세요.</p>}
       <p className={styles.footer}>이 화면은 waps.im 서비스가 아닌 로컬 미리보기입니다.</p>
     </section>

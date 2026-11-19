@@ -106,7 +106,10 @@ function PreviewQr({ ongoing }) {
   };
   const remaining =
     expiresAt === null ? 0 : Math.max(0, Math.ceil((expiresAt - now) / 1000));
-  const memberUrl = new URL("https://waps.im/attendance");
+  const memberUrl = new URL(
+    "/preview/attendance/check-in",
+    window.location.origin,
+  );
   memberUrl.search = new URLSearchParams({
     preview: "1",
     sequence: String(sequence),
@@ -152,8 +155,7 @@ function PreviewQr({ ongoing }) {
             </button>
             <h2 id="preview-qr-title">테스트용 출석 QR</h2>
             <p id="preview-qr-description">
-              waps.im 출석 페이지로 연결합니다. 실제 출석 토큰이 없는 테스트
-              링크입니다.
+              같은 네트워크에 연결된 휴대폰 카메라로 QR을 스캔해 주세요.
             </p>
             <div className={previewStyles.qrFrame}>
               <QRCodeSVG
@@ -166,7 +168,7 @@ function PreviewQr({ ongoing }) {
             </div>
             <p className={previewStyles.pageLink}>
               <a href={memberUrl.href} target="_blank" rel="noreferrer">
-                waps.im 출석 페이지 열기
+                회원 출석 미리보기 열기
               </a>
             </p>
             <div className={previewStyles.timerRow}>
