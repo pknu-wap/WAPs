@@ -178,166 +178,115 @@ ul {
   /* 카드 영역은 별도 폭 사용 시 유지 */
 }
 
-.desktop-nav {
-  display: none;
-}
-
-/* ===== 주의 =====
-   - 중복 .App-header(position: sticky) 정의는 삭제한다.
-   - 아이콘 위치는 컨테이너 폭 안에서 .header-inner의 flex로 결정된다.
-*/
-
-/* === ProjectPage Responsive === */
-
-/* 기본 상태: 데스크톱 메뉴 숨김 */
-.desktop-nav {
-  display: none;
-}
+/*===Responsive===*/
 
 .desktop-nav {
   display: none;
 }
-
-
-/* ========================================
-   ProjectPage Responsive
-======================================== */
 
 @media (min-width: 600px) {
-
-  .container:has(.project-page) {
-    width: 100%;
+  .container:has(.project-page),
+  .container.vote-page {
+    width: 100vw;
     max-width: none;
     margin: 0;
+    margin-left: calc(50% - 50vw);
     box-shadow: none;
   }
 
-  .project-page {
+  .project-page,
+  .container.vote-page {
     width: 100vw;
     max-width: none;
     min-height: 100vh;
-
-    margin-left: calc(50% - 50vw);
-
     background: #000;
-
     overflow-x: hidden;
   }
 
-  .project-page main {
+  .project-page main,
+  .container.vote-page main {
     width: 100%;
     max-width: none;
-
     margin: 0;
     padding: 0;
   }
 
-  .project-page .App-header {
+  .project-page .App-header,
+  .container.vote-page .App-header {
     top: 0;
     left: 0;
-
-    width: 100%;
+    width: 100vw;
     max-width: none;
-
     height: 80px;
   }
 
-  .project-page .header-inner {
+  .project-page .header-inner,
+  .container.vote-page .header-inner {
     width: calc(100% - 48px);
     max-width: 1200px;
-
     margin: 0 auto;
     padding: 16px 0 0;
-
     box-sizing: border-box;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
 
-  .project-page .waplogo img {
+  .project-page .waplogo img,
+  .container.vote-page .waplogo img {
     height: 18px !important;
   }
 
-  .project-page .menu-icon {
+  .project-page .menu-icon,
+  .container.vote-page .menu-icon {
     flex-shrink: 0;
   }
 }
 
-
-/* ========================================
-   900px 이상
-   PC 상단 메뉴
-======================================== */
-
-@media (min-width: 900px) {
-
-  .project-page .desktop-nav {
-    display: flex;
-
-    align-items: center;
-
-    margin-left: auto;
-    margin-right: 24px;
-
-    gap: clamp(18px, 2.2vw, 34px);
+@media (min-width: 1200px) {
+  .project-page .App-header,
+  .container.vote-page .App-header {
+    height: 90px;
   }
 
-  .project-page .desktop-nav button {
-    padding: 0;
+  .project-page .header-inner,
+  .container.vote-page .header-inner {
+    width: calc(100% - 80px);
+    padding-top: 20px;
+  }
 
+  .project-page .desktop-nav,
+  .container.vote-page .desktop-nav {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 24px;
+    gap: 34px;
+  }
+
+  .project-page .desktop-nav button,
+  .container.vote-page .desktop-nav button {
+    padding: 0;
     border: none;
     background: transparent;
-
     color: rgba(255, 255, 255, 0.55);
-
     font-family: "Pretendard-Regular";
-
-    font-size: clamp(11px, 1vw, 13px);
+    font-size: 13px;
     font-weight: 700;
-
     cursor: pointer;
     white-space: nowrap;
   }
 
-  .project-page .desktop-nav button:hover {
+  .project-page .desktop-nav button:hover,
+  .container.vote-page .desktop-nav button:hover {
     color: #ffffff;
   }
 
-  .project-page .desktop-nav .desktop-login {
+  .project-page .desktop-nav .desktop-login,
+  .container.vote-page .desktop-nav .desktop-login {
     padding: 7px 13px;
-
     border-radius: 10px;
-
     background: rgba(255, 255, 255, 0.28);
-
     color: rgba(255, 255, 255, 0.55);
-  }
-}
-
-
-/* ========================================
-   1200px 이상
-======================================== */
-
-@media (min-width: 1200px) {
-
-  .project-page .App-header {
-    height: 90px;
-  }
-
-  .project-page .header-inner {
-    width: calc(100% - 80px);
-
-    padding-top: 20px;
-  }
-
-  .project-page .desktop-nav {
-    gap: 34px;
-  }
-
-  .project-page .desktop-nav button {
-    font-size: 13px;
   }
 }
