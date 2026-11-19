@@ -2,13 +2,16 @@ package wap.web2.server.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springdoc.webmvc.api.OpenApiWebMvcResource;
 import org.springdoc.webmvc.ui.SwaggerWelcomeWebMvc;
@@ -19,8 +22,15 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import java.time.LocalDate;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import wap.web2.server.admin.controller.AdminAttendanceController;
+import wap.web2.server.attendance.dto.AttendanceRequests;
+import wap.web2.server.attendance.dto.AttendanceResponses.Summary;
+import wap.web2.server.attendance.entity.AttendanceStatus;
+import wap.web2.server.attendance.service.AttendanceService;
 import wap.web2.server.global.security.CustomUserDetailsService;
 import wap.web2.server.global.security.config.SecurityConfig;
 import wap.web2.server.global.security.handler.OAuth2AuthenticationFailureHandler;
@@ -50,6 +60,7 @@ class SwaggerAccessTest {
             "KAKAO_CLIENT_SECRET=test"
         )
         .withUserConfiguration(TestApplication.class)
+        .withBean(AttendanceService.class, () -> mock(AttendanceService.class))
         .withBean(CustomUserDetailsService.class, () -> mock(CustomUserDetailsService.class))
         .withBean(CustomOAuth2UserService.class, () -> mock(CustomOAuth2UserService.class))
         .withBean(OAuth2AuthenticationSuccessHandler.class, () -> mock(OAuth2AuthenticationSuccessHandler.class))
@@ -64,10 +75,51 @@ class SwaggerAccessTest {
         FlywayAutoConfiguration.class
     })
     @Import({
-        SecurityConfig.class, SwaggerConfig.class, RestAuthenticationEntryPoint.class,
+        SecurityConfig.class, SwaggerConfig.class, WebMvcConfig.class, AdminAttendanceController.class, RestAuthenticationEntryPoint.class,
         RestAccessDeniedHandler.class, SecurityErrorResponseWriter.class
     })
     static class TestApplication {}
+
+    @Test
+    void swaggerRequestsBehindHttpsProxyReachAuthenticationAndValidation() {
+        context.withPropertyValues("SPRING_PROFILES_ACTIVE=main").run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx)
+                .addFilters(ctx.getBean("forwardedHeaderFilter", FilterRegistrationBean.class).getFilter())
+                .apply(springSecurity()).build();
+            var request = post("http://dev-api.waps.im/admin/attendances")
+                .header("X-Forwarded-Proto", "https")
+                .header("X-Forwarded-Host", "dev-api.waps.im")
+                .header("Origin", "https://dev-api.waps.im")
+                .contentType("application/json").content("{}");
+            mvc.perform(request).andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("AUTH_UNAUTHORIZED"));
+            mvc.perform(request.with(user("member").roles("MEMBER")))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value("AUTH_FORBIDDEN"));
+            mvc.perform(request.with(user("admin").roles("ADMIN")))
+                .andExpect(status().isBadRequest());
+            var date = LocalDate.of(2099, 1, 1);
+            when(ctx.getBean(AttendanceService.class).create(new AttendanceRequests.Create("test", date)))
+                .thenReturn(new Summary(1L, "test", date, AttendanceStatus.SCHEDULED, 0, 0, 0));
+            mvc.perform(request.with(user("admin").roles("ADMIN"))
+                    .content("{\"title\":\"test\",\"date\":\"2099-01-01\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.attendanceId").value(1));
+            mvc.perform(post("http://dev-api.waps.im/admin/attendances")
+                    .header("X-Forwarded-Proto", "https")
+                    .header("X-Forwarded-Host", "dev-api.waps.im")
+                    .header("Origin", "https://evil.example")
+                    .with(user("admin").roles("ADMIN"))
+                    .contentType("application/json").content("{}"))
+                .andExpect(status().isForbidden());
+            mvc.perform(get("http://dev-api.waps.im/v3/api-docs/swagger-config")
+                    .header("X-Forwarded-Proto", "https")
+                    .header("X-Forwarded-Host", "dev-api.waps.im"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.oauth2RedirectUrl")
+                    .value("https://dev-api.waps.im/swagger-ui/oauth2-redirect.html"));
+        });
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"main", "oracle,develop,main"})

@@ -47,7 +47,7 @@ public class AttendanceService {
         var targets = users.findAll();
         var attendance = attendances.save(new Attendance(request.title(), request.date()));
         participants.saveAll(targets.stream()
-            .map(user -> new AttendanceParticipant(attendance, user.getId(), user.getName())).toList());
+            .map(user -> new AttendanceParticipant(attendance, user.getId(), user.getName(), user.getMembershipLevel())).toList());
         return summary(attendance, targets.size(), 0);
     }
 
