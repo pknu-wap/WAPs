@@ -808,6 +808,8 @@ button {
     max-width: none;
 
     margin: 55px 0 0;
+
+    transform: translateY(18px);
   }
 
   .project-page .hero__search .search-bar {
