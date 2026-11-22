@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { projectApi } from "../api/project";
 import "../App.css";
@@ -73,41 +73,41 @@ const ContentBox = () => {
   const [semesterFilter, setSemesterFilter] = useState(initialSemester);
 
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
+    let active = true;
     const fetchData = async () => {
       try {
         const response = await projectApi.getProjectList(semesterFilter);
+        if (!active) return;
 
         if (Array.isArray(response.projectsResponse)) {
           setData(response.projectsResponse);
-          setFilteredData(response.projectsResponse);
         } else {
           console.error(
             "API 응답의 projectsResponse가 배열이 아닙니다:",
             response,
           );
           setData([]);
-          setFilteredData([]);
         }
         setIsLoading(false);
       } catch (error) {
+        if (!active) return;
         console.error("Failed to fetch project data:", error);
         setData([]);
-        setFilteredData([]);
         setIsLoading(false);
       }
     };
 
     fetchData();
+    return () => { active = false; };
   }, [semesterFilter]);
 
   // 유형+검색어 필터
-  useEffect(() => {
+  const filteredData = useMemo(() => {
     let next = data;
 
     if (filter !== "All") {
@@ -117,11 +117,11 @@ const ContentBox = () => {
     }
 
     if (searchTerm.trim() !== "") {
-      const q = searchTerm.toLowerCase();
+      const q = searchTerm.trim().toLowerCase();
       next = next.filter((item) => item.title?.toLowerCase().includes(q));
     }
 
-    setFilteredData(next);
+    return next;
   }, [filter, data, searchTerm]);
 
   const toggleYearAccordion = () => setYearAccordionOpen(!yearAccordionOpen);
@@ -146,12 +146,16 @@ const ContentBox = () => {
       <div className="hero">
         <div className="hero__inner">
           <h1 className="hero__title">
-            WAP의
+            WAP의{" "}
             <br />
             다양한 활동들을 만나보세요
           </h1>
           <p className="hero__subtitle">Discover WAP's diverse activities</p>
-
+          
+          <div className="hero__badge">
+            PROJECTS
+          </div>
+          
           {/* 검색창 */}
           <div className="hero__search">
             <div className="search-bar">

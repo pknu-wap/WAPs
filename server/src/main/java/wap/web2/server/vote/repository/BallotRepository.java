@@ -25,7 +25,7 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
         JOIN Project p ON p.projectId = participantId
         LEFT JOIN Ballot b ON b.projectId = p.projectId AND b.semester = vm.semester
         WHERE vm.semester = :semester
-        GROUP BY p.projectId
+        GROUP BY p.projectId, p.title, p.summary, p.thumbnail
         """
     )
     List<ProjectVoteCount> countVotesByProject(@Param("semester") String semester);
@@ -55,20 +55,4 @@ public interface BallotRepository extends JpaRepository<Ballot, Long> {
         @Param("ended") VoteStatus ended
     );
 
-    @Query(
-        """
-        SELECT p.projectId as projectId,
-               COUNT(b) as voteCount,
-               p.title as projectName,
-               p.summary as projectSummary,
-               p.thumbnail as thumbnail
-        FROM VoteMeta vm
-        JOIN vm.participants participantId
-        JOIN Project p ON p.projectId = participantId
-        LEFT JOIN Ballot b ON b.projectId = p.projectId AND b.semester = vm.semester
-        WHERE vm.semester = :latestSemester
-        GROUP BY p.projectId, p.title, p.summary, p.thumbnail
-        """
-    )
-    List<ProjectVoteCount> findPublicLatestBallots(@Param("latestSemester") String latestSemester);
 }

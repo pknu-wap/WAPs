@@ -60,18 +60,25 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
+    @org.springframework.transaction.annotation.Transactional
     public ResponseEntity<ApiResponse> registerUser(
         @Valid @RequestBody SignUpRequest signUpRequest
     ) {
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            throw new BadRequestException("이미 사용 중인 이메일입니다.");
+        User user = userRepository.findByEmail(signUpRequest.getEmail()).orElse(null);
+        if (user != null) {
+            user = userRepository.findByIdForUpdate(user.getId()).orElseThrow();
+            if (!user.isDeleted()) throw new BadRequestException("이미 사용 중인 이메일입니다.");
+            user.reactivate();
+            user.setSignupCompleted(true);
+        } else {
+            user = new User();
         }
-
-        User user = new User();
         user.setName(signUpRequest.getName());
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(signUpRequest.getPassword());
         user.setProvider(AuthProvider.local);
+        user.setProviderId(null);
+        user.setEmailVerified(false);
         user.setRole(Role.ROLE_GUEST);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

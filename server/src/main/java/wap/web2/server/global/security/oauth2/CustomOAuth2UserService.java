@@ -27,6 +27,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     // 백엔드 리다이렉션 페이지에서 토큰을 받은 후 리소스에 다시 요청해서 유저 정보를 받아옴
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest)
         throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
@@ -59,6 +60,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user;
         if (userOptional.isPresent()) {
             user = userOptional.get();
+            if (user.isDeleted()) {
+                if (!Boolean.TRUE.equals(oAuth2UserInfo.getAttributes().get("email_verified"))) {
+                    throw new OAuth2AuthenticationProcessingException("재가입하려면 인증된 이메일이 필요합니다.");
+                }
+                user = userRepository.findByIdForUpdate(user.getId()).orElseThrow();
+                if (user.isDeleted()) {
+                    user.reactivate();
+                    user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
+                    user.setProviderId(oAuth2UserInfo.getId());
+                    user.setEmailVerified(true);
+                    user.setPassword(null);
+                    user.setSignupCompleted(false);
+                    userRepository.save(user);
+                }
+            }
             if (
                 !user
                     .getProvider()

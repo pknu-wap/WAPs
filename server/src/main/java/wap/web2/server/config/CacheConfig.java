@@ -27,14 +27,6 @@ public class CacheConfig {
                         .initialCapacity(4)
                         .maximumSize(20)
                         .build()
-                ),
-                new CaffeineCache(
-                    "voteResults",
-                    Caffeine.newBuilder()
-                        .expireAfterWrite(60, TimeUnit.MINUTES)
-                        .initialCapacity(4)
-                        .maximumSize(20)
-                        .build()
                 )
             )
         );

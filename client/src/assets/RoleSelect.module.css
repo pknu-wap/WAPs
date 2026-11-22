@@ -9,13 +9,15 @@
   position: relative;
   width: 100%;
   max-width: 400px;
-  height: 100vh;
+  min-height: 100dvh;
+  padding: 32px 0;
+  box-sizing: border-box;
   margin: 0 auto;
   background: linear-gradient(180deg, #a0afff 0%, #b4edfe 100%);
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow: auto;
   isolation: isolate;
 }
 
@@ -72,6 +74,8 @@
 }
 
 .btnGroup {
+  border: 0;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -111,3 +115,9 @@
 .alreadySelected:hover {
   text-decoration: underline;
 }
+
+.btnGroup label { width: 80%; display: grid; gap: 8px; }
+.btnGroup input:not([type="radio"]), .btnGroup select {
+  min-width: 0; width: 100%; box-sizing: border-box; padding: 10px; font: inherit;
+}
+.btnGroup input[type="radio"] { width: auto; }

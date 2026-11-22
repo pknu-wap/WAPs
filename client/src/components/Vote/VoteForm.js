@@ -1,45 +1,59 @@
 import { REQUIRED_VOTE_COUNT } from "../../constants/vote";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../assets/ProjectVote.module.css";
 import sub_styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import VoteProjectList from "./VoteProjectList";
-import { getCurrentSemester } from "../../utils/dateUtils";
-import apiClient from "../../api/client";
+import { projectApi } from "../../api/project";
+import { voteApi } from "../../api/vote";
 
 const VoteForm = ({ isVotedUser }) => {
   const navigate = useNavigate();
   const [selectedProjects, setSelectedProjects] = useState([]);
-  const currentSemester = getCurrentSemester(); // yyyy-ss 형식, ex: "2025-02"
+  const [currentSemester, setCurrentSemester] = useState("");
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [revision, setRevision] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const pending = useRef(false);
 
   // 투표한 프로젝트 불러오기
   useEffect(() => {
-    if (!isVotedUser) return;
+    let active = true;
+    setLoading(true);
+    setError("");
+    setSelectedProjects([]);
 
     const fetchVotedProjects = async () => {
       try {
-        const response = await apiClient.get(`/user/vote/${currentSemester}`);
-        // response.data = { projectIds: [1,2,3] }
-        setSelectedProjects(response.data.projectIds || []);
+        const { semester } = await projectApi.getCurrentSemester();
+        const [participants, ballot] = await Promise.all([
+          voteApi.getParticipants(semester),
+          isVotedUser ? voteApi.getMyVote(semester) : Promise.resolve(null),
+        ]);
+        if (!active) return;
+        setCurrentSemester(semester);
+        setProjects(participants);
+        setSelectedProjects(ballot?.projectIds || []);
       } catch (error) {
-        console.error("Failed to fetch voted projects:", error);
-
-        // 404일 때만 "투표한 프로젝트가 없음" 경고
-        if (error.response?.status === 404) {
-          alert(
-            "투표한 프로젝트 정보를 가져오지 못했습니다. 서버 상태를 확인해주세요.",
-          );
-        } else {
-          alert("투표한 프로젝트 정보를 가져오는데 실패했습니다.");
-        }
+        if (active)
+          setError("투표 정보를 불러오지 못했습니다. 다시 시도해주세요.");
+      } finally {
+        if (active) setLoading(false);
       }
     };
 
     fetchVotedProjects();
-  }, [isVotedUser, currentSemester]);
+    return () => {
+      active = false;
+    };
+  }, [isVotedUser, revision]);
 
   const handleVoteSubmit = async (e) => {
     e.preventDefault();
+    if (pending.current || loading || error || !currentSemester || isVotedUser)
+      return;
 
     if (selectedProjects.length !== REQUIRED_VOTE_COUNT) {
       alert(`프로젝트를 ${REQUIRED_VOTE_COUNT}개 선택해야 합니다.`);
@@ -51,29 +65,32 @@ const VoteForm = ({ isVotedUser }) => {
       semester: currentSemester,
     };
 
+    pending.current = true;
+    setSubmitting(true);
     try {
-      await apiClient.post("/vote", voteData);
+      await voteApi.submitVote(voteData);
 
       alert("투표가 완료되었습니다.");
-      setSelectedProjects([]);
-      window.location.reload();
       navigate("/ProjectPage");
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       alert(errorMessage);
 
-      if (error.response?.status === 401) {
-        navigate("/ProjectPage");
-      }
+      pending.current = false;
+      setSubmitting(false);
     }
   };
 
   const getErrorMessage = (error) => {
+    if (error.response?.data?.message) return error.response.data.message;
     if (error.response?.status === 401) {
       return "인증에 실패했습니다.";
     }
     if (error.response?.status === 404) {
       return "프로젝트가 존재하지 않습니다.";
+    }
+    if (error.response) {
+      return "투표 요청이 거절되었습니다. 투표 상태를 확인하고 다시 시도해주세요.";
     }
     if (error.request) {
       return "서버 응답이 없습니다. 나중에 다시 시도해주세요.";
@@ -98,30 +115,49 @@ const VoteForm = ({ isVotedUser }) => {
               <div className={styles.vote_title}>
                 마음에 드는 프로젝트 {REQUIRED_VOTE_COUNT}개를 선택해 주세요
               </div>
-              <p className={styles.title_eng}>Choose {REQUIRED_VOTE_COUNT} projects you like</p>
+              <p className={styles.title_eng}>
+                Choose {REQUIRED_VOTE_COUNT} projects you like
+              </p>
             </>
           )}
         </div>
       </div>
 
-      <VoteProjectList
-        selectedProjects={selectedProjects}
-        setSelectedProjects={setSelectedProjects}
-        isVotedUser={isVotedUser}
-      />
+      {loading ? (
+        <p role="status">투표 정보를 불러오는 중입니다...</p>
+      ) : error ? (
+        <div>
+          <p role="alert">{error}</p>
+          <button onClick={() => setRevision((value) => value + 1)}>
+            다시 시도
+          </button>
+        </div>
+      ) : (
+        <VoteProjectList
+          projects={projects}
+          selectedProjects={selectedProjects}
+          setSelectedProjects={setSelectedProjects}
+          isVotedUser={isVotedUser}
+          disabled={submitting}
+        />
+      )}
 
       {!isVotedUser && (
         <button
           type="submit"
+          disabled={loading || !!error || submitting || projects.length === 0}
           className={sub_styles.submit_button}
           onClick={handleVoteSubmit}
           style={{
             marginTop: "20px",
             marginBottom: "100px",
-            cursor: "pointer",
+            cursor:
+              loading || error || submitting || projects.length === 0
+                ? "not-allowed"
+                : "pointer",
           }}
         >
-          투표 완료
+          {submitting ? "투표 중..." : "투표 완료"}
         </button>
       )}
     </div>

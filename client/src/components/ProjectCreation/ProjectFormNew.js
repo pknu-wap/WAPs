@@ -58,6 +58,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const [uploadProgress, setUploadProgress] = useState(null);
   const [isSemesterLoading, setIsSemesterLoading] = useState(!isEdit);
   const [semesterError, setSemesterError] = useState("");
+  const [semesterRetry, setSemesterRetry] = useState(0);
   const [memberOptions, setMemberOptions] = useState([]);
   const [membersLoading, setMembersLoading] = useState(true);
   const [membersError, setMembersError] = useState("");
@@ -161,7 +162,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     return () => {
       ignore = true;
     };
-  }, [isEdit, setSemester]);
+  }, [isEdit, setSemester, semesterRetry]);
 
   useEffect(() => {
     let ignore = false;
@@ -368,7 +369,19 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           </span>
         </div>
         {semesterError && (
-          <p className={styles.semester_error}>{semesterError}</p>
+          <div className={styles.semester_error}>
+            <p role="alert">{semesterError}</p>
+            <button
+              type="button"
+              disabled={isSemesterLoading}
+              onClick={() => {
+                setIsSemesterLoading(true);
+                setSemesterRetry((retry) => retry + 1);
+              }}
+            >
+              학기 다시 불러오기
+            </button>
+          </div>
         )}
         <RadioButton
           labelname={"프로젝트 타입"}

@@ -2,6 +2,10 @@ import apiClient from "./client";
 
 // 투표 API
 export const voteApi = {
+  getParticipants: (semester) => apiClient.get(`/vote/${semester}/projects`),
+  getMyVote: (semester) => apiClient.get(`/user/vote/${semester}`),
+  submitVote: (vote) => apiClient.post("/vote", vote),
+
   // 투표 상태 확인
   getVoteNow: () => apiClient.get("/vote/now"),
 

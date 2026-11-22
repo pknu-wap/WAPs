@@ -1,8 +1,9 @@
 export function registrationRequired(profile) {
-  if (typeof profile.registrationRequired === "boolean")
-    return profile.registrationRequired;
+  if (!profile) return undefined;
   if (typeof profile.signupCompleted === "boolean")
     return !profile.signupCompleted;
+  if (typeof profile.registrationRequired === "boolean")
+    return profile.registrationRequired;
   return undefined;
 }
 

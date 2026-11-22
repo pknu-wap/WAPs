@@ -5,9 +5,7 @@ import Menu from "./Menu";
 import wapsLogo from "../assets/img/waps_logo.png";
 
 const Header = () => {
-  const [userName, setUserName] = useState(
-    Cookies.get("userName") || null
-  );
+  const [userName, setUserName] = useState(Cookies.get("userName") || null);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -25,8 +23,7 @@ const Header = () => {
       setUserName(savedUserName);
     }
 
-    const shouldOpenMenu =
-      sessionStorage.getItem("openMenuAfterBack");
+    const shouldOpenMenu = sessionStorage.getItem("openMenuAfterBack");
 
     if (shouldOpenMenu === "true") {
       setMenuOpen(true);
@@ -55,8 +52,10 @@ const Header = () => {
       <header className="App-header">
         <div className="header-inner">
           <div>
-            <p
-              className="waplogo"
+            <button
+              type="button"
+              aria-label="WAPs 프로젝트 페이지"
+              className="waplogo brand-button"
               onClick={() => navigate("/ProjectPage")}
               style={{ cursor: "pointer" }}
             >
@@ -69,19 +68,43 @@ const Header = () => {
                   height: "15px",
                 }}
               />
-            </p>
+            </button>
           </div>
 
-          <div
+          {!menuOpen && (
+            <nav className="desktop-nav">
+              <button onClick={() => navigate("/ProjectPage")}>PROJECT</button>
+
+              <button onClick={() => navigate("/team-build")}>
+                TEAMBUILDING
+              </button>
+
+              <button onClick={() => navigate("/vote")}>VOTE</button>
+
+              <button
+                className="desktop-login"
+                onClick={Cookies.get("authToken") ? handleLogout : handleLogin}
+              >
+                {Cookies.get("authToken") ? "LOGOUT" : "LOGIN"}
+              </button>
+            </nav>
+          )}
+
+          <button
+            type="button"
+            aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={menuOpen}
             className="menu-icon"
             onClick={toggleMenu}
           >
             {menuOpen ? (
-              <p>✕</p>
+              <span aria-hidden="true">✕</span>
             ) : (
-              <p className="menu-bar">☰</p>
+              <span className="menu-bar" aria-hidden="true">
+                ☰
+              </span>
             )}
-          </div>
+          </button>
         </div>
       </header>
 

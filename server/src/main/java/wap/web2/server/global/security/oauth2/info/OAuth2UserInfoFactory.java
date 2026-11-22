@@ -38,6 +38,8 @@ public class OAuth2UserInfoFactory {
             Object
         >) attributes.get("kakao_account");
         kakaoUserInfo.put("email", temporaryProperties2.get("email"));
+        kakaoUserInfo.put("email_verified", Boolean.TRUE.equals(temporaryProperties2.get("is_email_verified"))
+            && Boolean.TRUE.equals(temporaryProperties2.get("is_email_valid")));
 
         return new KakaoOAuth2UserInfo(kakaoUserInfo);
     }

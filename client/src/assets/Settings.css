@@ -10,8 +10,9 @@
   position: fixed;
 
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin-inline: auto;
 
   width: 100%;
   max-width: var(--container-max, 400px);
@@ -19,16 +20,8 @@
   height: calc(var(--vh, 1vh) * 100);
 
   background:
-    linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 10%,
-      #000 42%
-    ),
-    linear-gradient(
-      135deg,
-      #a0aeff 0%,
-      #b4edfe 40%
-    );
+    linear-gradient(to bottom, rgba(0, 0, 0, 0) 10%, #000 42%),
+    linear-gradient(135deg, #a0aeff 0%, #b4edfe 40%);
 
   background-color: #000;
 
@@ -139,7 +132,6 @@
   letter-spacing: 0.5px;
 }
 
-
 .settings-section {
   width: 100%;
 }
@@ -162,7 +154,6 @@
 .settings-section h3 span {
   font-weight: 700;
 }
-
 
 .information-section {
   margin-bottom: 38px;
@@ -258,7 +249,6 @@
   border-radius: 12px;
 }
 
-
 .setting-item {
   margin: 0;
 }
@@ -352,7 +342,7 @@
 
   line-height: 1.4;
 
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .member-type {
@@ -444,6 +434,8 @@
 
   padding: 0 21px;
 
+  overflow-y: auto;
+
   box-sizing: border-box;
 
   background: rgba(0, 0, 0, 0.38);
@@ -456,6 +448,9 @@
 
 .name-modal {
   position: relative;
+
+  max-height: 100%;
+  overflow-y: auto;
 
   width: 100%;
 
@@ -577,7 +572,7 @@
 
   font-family: "Pretendard-Regular";
 
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 500;
 }
 
@@ -687,5 +682,195 @@
   .name-modal {
     padding-left: 18px;
     padding-right: 18px;
+  }
+}
+
+/* ===Responsive=== */
+
+@media (min-width: 600px) {
+  .settingsContainer {
+    left: 0;
+    transform: none;
+
+    width: 100vw;
+    max-width: none;
+
+    min-height: 100vh;
+    height: 100dvh;
+  }
+
+  .settings-content {
+    width: clamp(430px, 42vw, 600px);
+    max-width: calc(100vw - 48px);
+
+    min-height: 100%;
+
+    margin: 0 auto;
+
+    padding: 0 0 70px;
+  }
+
+  .settings-close {
+    position: fixed;
+
+    top: 28px;
+    right: 32px;
+  }
+
+  .settings-header {
+    padding-top: clamp(90px, 11vh, 115px);
+
+    margin-bottom: 48px;
+  }
+
+  .settings-header p {
+    font-size: 13px;
+  }
+
+  .settings-header h1 {
+    font-size: clamp(30px, 2.5vw, 38px);
+  }
+
+  .settings-section h3 {
+    font-size: 13px;
+  }
+
+  .information-section {
+    margin-bottom: 30px;
+  }
+
+  .member-info-card {
+    height: 78px;
+
+    padding: 0 22px;
+
+    border-radius: 13px;
+  }
+
+  .member-name strong {
+    font-size: 14px;
+  }
+
+  .member-name span {
+    font-size: 10px;
+  }
+
+  .setting-section {
+    margin-bottom: 20px;
+  }
+
+  .member-settings-card {
+    padding: 22px 22px 25px;
+
+    border-radius: 13px;
+  }
+
+  .setting-item label {
+    font-size: 13px;
+  }
+
+  .setting-value {
+    font-size: 14px;
+  }
+
+  .member-type-value {
+    font-size: 14px;
+  }
+
+  .name-description {
+    font-size: 10px;
+  }
+
+  .back-menu-button {
+    height: 46px;
+
+    font-size: 13px;
+
+    border-radius: 12px;
+  }
+
+  .name-modal-overlay {
+    left: 0;
+    transform: none;
+
+    width: 100vw;
+    max-width: none;
+
+    height: 100dvh;
+
+    padding: 0 24px;
+  }
+
+  .name-modal {
+    width: clamp(380px, 36vw, 500px);
+
+    padding: 28px 24px 22px;
+
+    border-radius: 17px;
+  }
+
+  .name-modal-title {
+    font-size: 15px;
+  }
+
+  .name-modal-description {
+    font-size: 10px;
+  }
+
+  .name-modal-label {
+    font-size: 13px;
+  }
+
+  .name-modal-input {
+    height: 50px;
+
+    font-size: 14px;
+  }
+
+  .name-modal-button {
+    height: 48px;
+
+    font-size: 14px;
+  }
+}
+
+/* Preserve keyboard access and short-screen usability alongside the #731 design. */
+.settingsContainer button:focus-visible {
+  outline: 2px solid #b5d2ff;
+  outline-offset: 3px;
+}
+
+.settingsContainer button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.settings-close,
+.name-modal-close {
+  width: 44px;
+  height: 44px;
+}
+
+.settings-close span,
+.name-modal-close span {
+  top: 21px;
+  left: 11px;
+}
+
+.name-modal-title {
+  padding-right: 44px;
+}
+
+@supports (height: 100dvh) {
+  .settingsContainer,
+  .name-modal-overlay {
+    height: 100dvh;
+  }
+}
+
+@media (max-height: 500px) {
+  .settings-header {
+    padding-top: 64px;
+    margin-bottom: 28px;
   }
 }

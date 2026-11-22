@@ -74,7 +74,11 @@ public class DevLoginService {
     }
 
     private User getOrCreateUser(DevLoginSlot slot) {
-        if (slot.getUserId() != null) return users.findById(slot.getUserId()).orElseThrow();
+        if (slot.getUserId() != null) {
+            var user = users.findById(slot.getUserId()).orElseThrow();
+            if (user.isDeleted()) throw new ConflictException("삭제된 테스트 계정입니다. 다른 계정을 선택해 주세요.");
+            return user;
+        }
         String email = "dev-login-" + slot.getSlotNumber() + "@waps.invalid";
         if (users.existsByEmail(email)) {
             throw new ConflictException("테스트 계정 이메일이 이미 사용 중입니다. 관리자에게 문의해주세요.");
