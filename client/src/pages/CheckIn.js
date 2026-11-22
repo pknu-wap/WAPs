@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { attendanceApi } from "../api/attendance";
 import "../assets/CheckIn.css";
@@ -10,48 +10,41 @@ const CheckIn = () => {
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const hasValidated = useRef(false);
+  const [error, setError] = useState("");
+  const [revision, setRevision] = useState(0);
 
   useEffect(() => {
-    if (hasValidated.current) return;
-
-    hasValidated.current = true;
+    let active = true;
 
     const fetchAttendances = async () => {
       try {
         setIsLoading(true);
+        setError("");
 
         const [ongoingData, endedData] = await Promise.all([
           attendanceApi.getAttendances("ONGOING"),
           attendanceApi.getAttendances("ENDED"),
         ]);
 
-        if (
-          !Array.isArray(ongoingData) ||
-          ongoingData.length === 0
-        ) {
-          alert("출석이 존재하지 않습니다.");
-          navigate("/ProjectPage");
-          return;
-        }
-
-        setOngoingAttendance(ongoingData[0]);
+        if (!active) return;
+        setOngoingAttendance(ongoingData[0] || null);
 
         setAttendanceHistory(
           Array.isArray(endedData) ? endedData : []
         );
       } catch (error) {
+        if (!active) return;
         console.error("출석 정보 조회 실패:", error);
 
-        alert("출석 정보를 불러오지 못했습니다.");
-        navigate("/ProjectPage");
+        setError("출석 정보를 불러오지 못했습니다. 다시 시도해주세요.");
       } finally {
-        setIsLoading(false);
+        if (active) setIsLoading(false);
       }
     };
 
     fetchAttendances();
-  }, [navigate]);
+    return () => { active = false; };
+  }, [revision]);
 
   const getStatusText = (status) => {
     if (status === "PRESENT") return "출석";
@@ -76,6 +69,8 @@ const CheckIn = () => {
       </button>
 
       <div className="checkin-content">
+        <button disabled={isLoading} onClick={() => setRevision((value) => value + 1)}>새로고침</button>
+        {error && <p role="alert">{error}</p>}
         <div className="checkin-title-area">
           <h1>
             ATTENDANCE
@@ -95,7 +90,7 @@ const CheckIn = () => {
             <div className="ongoing-card">
               출석 정보를 불러오는 중입니다.
             </div>
-          ) : ongoingAttendance ? (
+          ) : error ? null : ongoingAttendance ? (
             <div className="ongoing-card">
               <div className="attendance-top">
                 <div className="attendance-left">
@@ -134,7 +129,7 @@ const CheckIn = () => {
                 </button>
               )}
             </div>
-          ) : null}
+          ) : <p>진행 중인 출석이 없습니다.</p>}
         </section>
 
         <div className="checkin-divider" />
@@ -145,7 +140,8 @@ const CheckIn = () => {
           </h2>
 
           <div className="history-list">
-            {attendanceHistory.map((item) => (
+            {!isLoading && !error && attendanceHistory.length === 0 && <p>출석 기록이 없습니다.</p>}
+            {!isLoading && !error && attendanceHistory.map((item) => (
               <div
                 className="history-card"
                 key={item.attendanceId}

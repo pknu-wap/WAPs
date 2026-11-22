@@ -38,7 +38,7 @@ const CheckInScan = () => {
           url.searchParams.get("attendanceId");
 
         const qrToken =
-          url.searchParams.get("qrToken");
+          url.searchParams.get("token") || url.searchParams.get("qrToken");
 
         if (qrToken) {
           return {
@@ -80,14 +80,12 @@ const CheckInScan = () => {
           );
         }
 
-        if (scanner.isScanning) {
-          await scanner.stop();
-        }
-
         await attendanceApi.checkIn(
           qrData.attendanceId,
           qrData.qrToken
         );
+
+        if (scanner.isScanning) await scanner.stop();
 
         navigate("/CheckIn", {
           replace: true,

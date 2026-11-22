@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "../utils/authStorage";
 import { FaChevronRight } from "react-icons/fa";
 import "../assets/Menu.css";
-import { attendanceApi } from "../api/attendance";
 
 const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const navigate = useNavigate();
@@ -83,43 +82,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     navigate("/");
   };
 
-  const handleCheckInNavigate = async () => {
-    const token = Cookies.get("authToken");
-
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-      return;
-    }
-
-    try {
-      const ongoingData =
-        await attendanceApi.getAttendances("ONGOING");
-
-      if (
-        !Array.isArray(ongoingData) ||
-        ongoingData.length === 0
-      ) {
-        alert("출석이 존재하지 않습니다.");
-        return;
-      }
-
-      navigate("/CheckIn");
-      toggleMenu();
-    } catch (error) {
-      console.error("출석 정보 조회 실패:", error);
-
-      if (error?.response?.status === 401) {
-        alert(
-          "로그인 유효기간이 만료되었습니다. 재로그인 해주세요."
-        );
-        navigate("/login");
-        return;
-      }
-
-      alert("출석 정보를 불러오지 못했습니다.");
-    }
-  };
+  const handleCheckInNavigate = () => handleNavigationWithAuth("/CheckIn");
 
   return (
     <div className="menuContainer">
