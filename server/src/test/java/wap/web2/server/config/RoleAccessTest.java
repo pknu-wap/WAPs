@@ -11,6 +11,8 @@ import wap.web2.server.admin.controller.AdminUserController;
 import wap.web2.server.admin.service.UserRoleService;
 import wap.web2.server.admin.controller.AdminVoteController;
 import wap.web2.server.admin.service.AdminVoteService;
+import wap.web2.server.vote.controller.VoteController;
+import wap.web2.server.vote.service.VoteService;
 import wap.web2.server.exception.GlobalExceptionHandler;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -45,6 +47,7 @@ class RoleAccessTest {
         .withUserConfiguration(TestApplication.class)
         .withBean(UserRoleService.class, () -> mock(UserRoleService.class))
         .withBean(AdminVoteService.class, () -> mock(AdminVoteService.class))
+        .withBean(VoteService.class, () -> mock(VoteService.class))
         .withBean(CustomUserDetailsService.class, () -> mock(CustomUserDetailsService.class))
         .withBean(CustomOAuth2UserService.class, () -> mock(CustomOAuth2UserService.class))
         .withBean(OAuth2AuthenticationSuccessHandler.class, () -> mock(OAuth2AuthenticationSuccessHandler.class))
@@ -59,10 +62,27 @@ class RoleAccessTest {
         FlywayAutoConfiguration.class
     })
     @Import({
-        SecurityConfig.class, Endpoints.class, AdminUserController.class, AdminVoteController.class, GlobalExceptionHandler.class, RestAuthenticationEntryPoint.class,
+        SecurityConfig.class, Endpoints.class, AdminUserController.class, AdminVoteController.class, VoteController.class, GlobalExceptionHandler.class, RestAuthenticationEntryPoint.class,
         RestAccessDeniedHandler.class, SecurityErrorResponseWriter.class
     })
     static class TestApplication {}
+
+    @Test
+    void voteInputValidationRejectsInvalidSemestersAndParticipantLists() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            for (String path : new String[]{"/vote/result/invalid", "/vote/invalid/projects"}) {
+                mvc.perform(get(path).with(user("member").roles("MEMBER"))).andExpect(status().isBadRequest());
+            }
+            for (String body : new String[]{"{}", "{\"projectIds\":[]}", "{\"projectIds\":[1,2]}",
+                "{\"projectIds\":[1,2,null]}", "{\"projectIds\":[1,2,-3]}"}) {
+                mvc.perform(post("/admin/vote/open").param("semester", "2026-02")
+                    .with(user("admin").roles("ADMIN")).contentType("application/json").content(body))
+                    .andExpect(status().isBadRequest());
+            }
+            org.mockito.Mockito.verifyNoInteractions(ctx.getBean(VoteService.class), ctx.getBean(AdminVoteService.class));
+        });
+    }
 
     @Test
     void reopeningVotesRequiresAdminAndValidSemester() {
@@ -89,7 +109,7 @@ class RoleAccessTest {
     @RestController
     static class Endpoints {
         @RequestMapping({"/project", "/project/1", "/team-build/apply/submit",
-            "/team-build/recruit/submit", "/vote", "/comment/1", "/user/role/ROLE_ADMIN", "/user/role"})
+            "/team-build/recruit/submit", "/comment/1", "/user/role/ROLE_ADMIN", "/user/role"})
         String endpoint() { return "ok"; }
     }
 
@@ -99,10 +119,14 @@ class RoleAccessTest {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
             var identity = user("user").roles(role);
+            // 실제 투표 컨트롤러: 인증된 역할은 접근 가능하며 잘못된 본문은 검증에서 거절한다.
+            mvc.perform(post("/vote").with(identity).contentType("application/json").content("{}"))
+                .andExpect(status().isBadRequest());
+            mvc.perform(post("/vote")).andExpect(status().isUnauthorized());
             for (String path : new String[]{"/project/1", "/user/role"}) {
                 mvc.perform(get(path).with(identity)).andExpect(status().isOk());
             }
-            for (String path : new String[]{"/vote", "/comment/1"}) {
+            for (String path : new String[]{"/comment/1"}) {
                 mvc.perform(post(path).with(identity)).andExpect(status().isOk());
                 mvc.perform(post(path)).andExpect(status().isUnauthorized());
             }

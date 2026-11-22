@@ -77,15 +77,21 @@ public class VoteMeta {
         this.participants = participants;
     }
 
-    public void reopenTo(Set<Long> projectIds) {
-        this.participants = new ArrayList<>(projectIds);
-        this.status = VoteStatus.VOTING;
-    }
-
     public void close(Long userId) {
+        if (this.status != VoteStatus.VOTING) {
+            throw new ConflictException("진행 중인 투표만 종료할 수 있습니다.");
+        }
         this.status = VoteStatus.ENDED;
         this.closedAt = LocalDateTime.now();
         this.closedBy = userId;
+        this.isResultPublic = false;
+    }
+
+    public void changeResultVisibility(boolean isPublic) {
+        if (isPublic && this.status != VoteStatus.ENDED) {
+            throw new ConflictException("종료된 투표만 결과를 공개할 수 있습니다.");
+        }
+        this.isResultPublic = isPublic;
     }
 
     public void reopen() {

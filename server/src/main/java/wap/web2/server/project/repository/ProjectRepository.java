@@ -14,6 +14,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     List<Project> findProjectsBySemesterOrderByProjectIdDesc(String semester);
 
-    @Query("SELECT p.projectId FROM Project p WHERE p.projectId IN :projectIds")
-    List<Long> findExistingProjectIds(@Param("projectIds") Set<Long> projectIds);
+    @Query("SELECT p.projectId FROM Project p WHERE p.projectId IN :projectIds AND p.semester = :semester")
+    List<Long> findExistingProjectIds(@Param("projectIds") Set<Long> projectIds, @Param("semester") String semester);
 }

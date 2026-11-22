@@ -1,6 +1,7 @@
 package wap.web2.server.admin.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -44,11 +45,11 @@ public class AdminVoteController {
     @PostMapping("/open")
     @Operation(
         summary = "투표 열기",
-        description = "희망하는 학기의 투표를 생성하거나 개시합니다. 이제 투표를 진행할 수 있습니다."
+        description = "해당 학기의 프로젝트를 최소 3개 선택하여 새 투표를 생성합니다. 기존 투표는 다시 열기 API를 사용합니다."
     )
     public ResponseEntity<Void> openVoteMeta(
         @CurrentUser UserPrincipal currentUser,
-        @RequestBody VoteParticipants voteParticipants,
+        @RequestBody @Valid VoteParticipants voteParticipants,
         @RequestParam("semester") @Semester String semester
     ) {
         adminVoteService.openVote(semester, currentUser.getId(), voteParticipants);
