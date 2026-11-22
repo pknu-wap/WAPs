@@ -204,7 +204,6 @@ ul {
 }
 
 @media (min-width: 600px) {
-
   html:has(.project-page),
   body:has(.project-page),
   html:has(.splash-page),
@@ -274,7 +273,6 @@ ul {
 }
 
 @media (min-width: 1200px) {
-
   .project-page .App-header,
   .container.vote-page .App-header {
     height: 90px;
