@@ -50,6 +50,40 @@ const readProject = (data) =>
     reader.readAsText(data.get("project"));
   });
 
+test("학기 조회 실패 후 작성 내용을 유지하며 재시도한다", async () => {
+  projectApi.getCurrentSemester.mockRejectedValueOnce(new Error("offline"));
+  render(
+    <MemoryRouter>
+      <ProjectFormNew />
+    </MemoryRouter>,
+  );
+  await screen.findByText("현재 학기 정보를 불러오지 못했습니다.");
+  const title = screen.getByPlaceholderText("프로젝트 명");
+  fireEvent.change(title, { target: { value: "작성 중인 프로젝트" } });
+  const submit = screen.getByRole("button", { name: "프로젝트 생성" });
+  expect(submit.disabled).toBe(true);
+  let complete;
+  projectApi.getCurrentSemester.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        complete = resolve;
+      }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "학기 다시 불러오기" }));
+  expect(submit.disabled).toBe(true);
+  await act(async () => {
+    complete({ semester: "2030-01" });
+  });
+  await screen.findByText("2030년 1학기");
+  expect(title.value).toBe("작성 중인 프로젝트");
+  expect(submit.disabled).toBe(false);
+  expect(
+    screen.queryByText("현재 학기 정보를 불러오지 못했습니다."),
+  ).toBeNull();
+  expect(projectApi.getCurrentSemester).toHaveBeenCalledTimes(2);
+  expect(projectApi.createProject).not.toHaveBeenCalled();
+});
+
 test("모집 직무를 추가하고 인원을 숫자로 저장한다", async () => {
   render(
     <MemoryRouter>
