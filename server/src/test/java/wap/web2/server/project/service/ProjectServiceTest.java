@@ -205,6 +205,7 @@ class ProjectServiceTest {
             TeamMemberDto.builder().userId(userId).memberRole("PM").build())).build(), principal);
         assertThat(project.getTitle()).isEqualTo("updated title");
         assertThat(project.getUser()).isSameAs(owner);
+        when(projectRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(project));
         projectService.delete(10L, principal);
         verify(projectRepository).delete(project);
     }
@@ -227,6 +228,7 @@ class ProjectServiceTest {
             .isInstanceOf(ForbiddenException.class);
         assertThatThrownBy(() -> projectService.update(10L, baseRequestBuilder().build(), principal))
             .isInstanceOf(ForbiddenException.class);
+        when(projectRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(project));
         assertThatThrownBy(() -> projectService.delete(10L, principal))
             .isInstanceOf(ForbiddenException.class);
         assertThat(project.getTitle()).isEqualTo("old title");
@@ -466,12 +468,24 @@ class ProjectServiceTest {
         project.updateThumbnail("https://cloud/thumbnail");
         project.addAllImage(Image.listOf(List.of("https://cloud/image")));
         when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
-        when(projectRepository.findById(10L)).thenReturn(Optional.of(project));
+        when(projectRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(project));
 
         projectService.delete(10L, principal(1L));
 
         verify(projectRepository).delete(project);
         verifyNoInteractions(objectStorageService);
+    }
+
+    @Test
+    void votingProjectsCannotBeDeletedEvenByOwner() {
+        User owner = owner();
+        Project project = project(owner);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
+        when(projectRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(project));
+        when(projectRepository.participatesInVote(10L)).thenReturn(true);
+        assertThatThrownBy(() -> projectService.delete(10L, principal(1L)))
+            .isInstanceOf(wap.web2.server.exception.ConflictException.class);
+        verify(projectRepository, never()).delete(project);
     }
 
     private ProjectRequest.ProjectRequestBuilder baseRequestBuilder() {

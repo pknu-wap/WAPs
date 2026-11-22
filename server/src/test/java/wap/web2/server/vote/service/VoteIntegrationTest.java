@@ -33,6 +33,7 @@ class VoteIntegrationTest {
     private TransactionTemplate transaction;
     private VoteMetaRepository metas;
     private BallotRepository ballots;
+    private ProjectRepository projects;
     private VoteService voting;
     private AdminVoteService admin;
     private List<Long> projectIds;
@@ -55,7 +56,7 @@ class VoteIntegrationTest {
         var repositories = new JpaRepositoryFactory(em);
         metas = repositories.getRepository(VoteMetaRepository.class);
         ballots = repositories.getRepository(BallotRepository.class);
-        var projects = repositories.getRepository(ProjectRepository.class);
+        projects = repositories.getRepository(ProjectRepository.class);
         var manager = new JpaTransactionManager(factory.getObject());
         transaction = new TransactionTemplate(manager);
         voting = transactional(new VoteService(mock(UserRepository.class), ballots, metas), manager);
@@ -149,5 +150,32 @@ class VoteIntegrationTest {
             .allSatisfy(result -> assertThat(result.getVoteCount()).isZero());
         assertThatThrownBy(() -> voting.getVoteResults("2025-01")).isInstanceOf(ResourceNotFoundException.class);
         assertThatThrownBy(() -> admin.getVoteResult("2025-01")).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test void openingLocksProjectsUntilVoteParticipantsAreCommitted() throws Exception {
+        String nextTerm = "2027-01";
+        List<Long> ids = transaction.execute(ignored -> {
+            var created = new ArrayList<Long>();
+            for (int i = 0; i < 3; i++) {
+                created.add(projects.save(Project.builder().semester(nextTerm).title("Next " + i).build()).getProjectId());
+            }
+            return created;
+        });
+        var opened = new CountDownLatch(1);
+        var opening = executor.submit(() -> transaction.executeWithoutResult(ignored -> {
+            admin.openVote(nextTerm, 2L, new wap.web2.server.admin.dto.request.VoteParticipants(new HashSet<>(ids)));
+            opened.countDown(); await(release);
+        }));
+        await(opened);
+        var deleting = new CountDownLatch(1);
+        var deletionCheck = executor.submit(() -> transaction.execute(ignored -> {
+            deleting.countDown();
+            projects.findByIdForUpdate(ids.get(0)).orElseThrow();
+            return projects.participatesInVote(ids.get(0));
+        }));
+        await(deleting);
+        assertThatThrownBy(() -> deletionCheck.get(200, TimeUnit.MILLISECONDS)).isInstanceOf(TimeoutException.class);
+        release.countDown(); opening.get(10, TimeUnit.SECONDS);
+        assertThat(deletionCheck.get(10, TimeUnit.SECONDS)).isTrue();
     }
 }
