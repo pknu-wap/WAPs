@@ -204,18 +204,24 @@ ul {
 }
 
 @media (min-width: 600px) {
+  html:has(.project-page),
+  body:has(.project-page),
+  html:has(.container.vote-page),
+  body:has(.container.vote-page) {
+    width: 100%;
+  }
+
   .container:has(.project-page),
   .container.vote-page {
-    width: 100vw;
+    width: 100%;
     max-width: none;
     margin: 0;
-    margin-left: calc(50% - 50vw);
     box-shadow: none;
   }
 
   .project-page,
   .container.vote-page {
-    width: 100vw;
+    width: 100%;
     max-width: none;
     min-height: 100vh;
     background: #000;
@@ -234,7 +240,7 @@ ul {
   .container.vote-page .App-header {
     top: 0;
     left: 0;
-    width: 100vw;
+    width: 100%;
     max-width: none;
     height: 80px;
   }
