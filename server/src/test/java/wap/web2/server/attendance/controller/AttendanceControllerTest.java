@@ -215,11 +215,11 @@ class AttendanceControllerTest {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
             var instant = Instant.parse("2026-10-10T10:00:00Z");
-            when(service.issueQr(1)).thenReturn(new Qr(1L, "token", instant.plusSeconds(60)));
+            when(service.issueQr(1)).thenReturn(new Qr(1L, "token", instant.plusSeconds(120)));
             mvc.perform(post("/admin/attendances/1/qr").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk()).andExpect(header().string("Cache-Control", "no-store"))
                 .andExpect(jsonPath("$.qrToken").value("token"))
-                .andExpect(jsonPath("$.expiresAt").value("2026-10-10T10:01:00Z"));
+                .andExpect(jsonPath("$.expiresAt").value("2026-10-10T10:02:00Z"));
             mvc.perform(get("/attendances")).andExpect(status().isUnauthorized());
             mvc.perform(post("/attendances/1/check-in").contentType("application/json").content("{\"qrToken\":\"token\"}"))
                 .andExpect(status().isUnauthorized());
@@ -382,8 +382,8 @@ class AttendanceControllerTest {
             assertThat(schemas.at("/MyAttendance/properties/checkedInAt/nullable").asBoolean()).isTrue();
 
             var qr = paths.path("/admin/attendances/{attendanceId}/qr").path("post");
-            assertThat(qr.path("description").asText()).contains("60초", "재발급", "직전 토큰", "원래 만료 시각", "두 번 이전 토큰", "로그인 JWT");
-            assertThat(schemas.at("/AttendanceQrResponse/properties/expiresAt/description").asText()).contains("60초", "연장되지");
+            assertThat(qr.path("description").asText()).contains("120초", "재발급", "직전 토큰", "원래 만료 시각", "두 번 이전 토큰", "로그인 JWT");
+            assertThat(schemas.at("/AttendanceQrResponse/properties/expiresAt/description").asText()).contains("120초", "연장되지");
             assertThat(qr.at("/responses/200/headers/Cache-Control/schema/enum")).containsExactly(text("no-store"));
             var checkIn = paths.path("/attendances/{attendanceId}/check-in").path("post");
             assertThat(checkIn.path("parameters")).hasSize(1);
