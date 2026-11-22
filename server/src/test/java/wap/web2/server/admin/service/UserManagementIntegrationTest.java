@@ -83,6 +83,49 @@ class UserManagementIntegrationTest {
     }
 
     @Test
+    void filteredPagesContainEveryMatchingUserExactlyOnceIncludingDuplicateNames() {
+        var expectedAll = new java.util.ArrayList<Long>();
+        var expectedAdmins = new java.util.ArrayList<Long>();
+        var expectedRegularAdmins = new java.util.ArrayList<Long>();
+        // All names tie, and role/level matches are interleaved across page boundaries.
+        for (int i = 0; i < 29; i++) {
+            long id = member("account" + i);
+            boolean admin = i % 2 == 0;
+            boolean regular = i % 3 == 0;
+            transaction.executeWithoutResult(status -> {
+                var user = users.findById(id).orElseThrow();
+                user.setName("동명이인");
+                user.setRole(admin ? Role.ROLE_ADMIN : Role.ROLE_MEMBER);
+                user.setMembershipLevel(regular ? MembershipLevel.REGULAR : MembershipLevel.NEW);
+            });
+            expectedAll.add(id);
+            if (admin) expectedAdmins.add(id);
+            if (admin && regular) expectedRegularAdmins.add(id);
+        }
+        assertPages(null, null, expectedAll);
+        assertPages(Role.ROLE_ADMIN, null, expectedAdmins);
+        assertPages(Role.ROLE_ADMIN, MembershipLevel.REGULAR, expectedRegularAdmins);
+        assertPages(Role.ROLE_GUEST, null, List.of());
+    }
+
+    private void assertPages(Role role, MembershipLevel level, List<Long> expected) {
+        var service = new UserRoleService(users);
+        for (int size : List.of(1, 5, 12)) {
+            var actual = new java.util.ArrayList<Long>();
+            int pageCount = Math.max(1, (expected.size() + size - 1) / size);
+            for (int page = 0; page < pageCount; page++) {
+                var result = service.getUsersForAdmin(size, page, role, level);
+                assertThat(result.hasNext()).isEqualTo((page + 1) * size < expected.size());
+                actual.addAll(result.content().stream().map(user -> user.id()).toList());
+            }
+            assertThat(actual).containsExactlyElementsOf(expected).doesNotHaveDuplicates();
+            var beyondLastPage = service.getUsersForAdmin(size, pageCount, role, level);
+            assertThat(beyondLastPage.content()).isEmpty();
+            assertThat(beyondLastPage.hasNext()).isFalse();
+        }
+    }
+
+    @Test
     void missingOrDuplicateTargetsDoNotPartiallyUpdateOrDelete() {
         long id = member("first");
         assertThatThrownBy(() -> service.update(new UserAttributesRequest(List.of(id, Long.MAX_VALUE), Role.ROLE_ADMIN, "REGULAR")))
