@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Cookies from "../utils/authStorage";
+import useCurrentUserName from "../hooks/useCurrentUserName";
 import { useNavigate } from "react-router-dom";
 import { teamBuildApi } from "../api/team-build";
 import { POSITIONS } from "../constants/positions";
@@ -78,7 +79,7 @@ function TeamBuildPage({ round = 1 }) {
     position: null,
   });
 
-  const userName = Cookies.get("userName") || "";
+  const userName = useCurrentUserName();
 
   useEffect(() => {
     const token =

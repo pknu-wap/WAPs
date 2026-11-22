@@ -107,7 +107,7 @@ class VoteIntegrationTest {
         assertThat(ballots.countBallotsBySemesterAndUserId(TERM, 5L)).isEqualTo(3);
     }
 
-    @Test void closingWaitsForVoteCommitAndReopeningPreservesVotes() throws Exception {
+    @Test void closingWaitsForVoteCommitAndDeletionRemovesVotes() throws Exception {
         var submitted = new CountDownLatch(1);
         var submission = executor.submit(() -> transaction.executeWithoutResult(ignored -> {
             submit(); submitted.countDown(); await(release);
@@ -121,10 +121,48 @@ class VoteIntegrationTest {
         submission.get(10, TimeUnit.SECONDS); close.get(10, TimeUnit.SECONDS);
         admin.changeResultStatus(TERM, true);
         assertThat(voting.getVoteResults(TERM).results()).hasSize(3);
-        admin.reopenVote(TERM);
-        assertThatThrownBy(this::submit).isInstanceOf(ConflictException.class);
+        String otherTerm = "2026-01";
+        transaction.executeWithoutResult(ignored -> {
+            metas.save(VoteMeta.of(otherTerm, 2L, new HashSet<>(projectIds)));
+            ballots.save(wap.web2.server.vote.entity.Ballot.of(otherTerm, 5L,
+                wap.web2.server.member.entity.Role.ROLE_MEMBER, projectIds.get(0)));
+        });
+        Long oldId = metas.findBySemester(TERM).orElseThrow().getId();
+        admin.deleteVote(TERM);
+        assertThatThrownBy(this::submit).isInstanceOf(ResourceNotFoundException.class);
+        assertThat(ballots.countBallotsBySemesterAndUserId(TERM, 5L)).isZero();
+        assertThat(metas.findBySemester(TERM)).isEmpty();
+        assertThat(admin.getStatus(TERM).status()).isEqualTo(VoteStatus.NOT_CREATED);
+        assertThatThrownBy(() -> voting.getVoteResults(TERM)).isInstanceOf(ResourceNotFoundException.class);
+        transaction.executeWithoutResult(ignored -> {
+            var em = SharedEntityManagerCreator.createSharedEntityManager(factory.getObject());
+            Number remaining = (Number) em.createNativeQuery(
+                "SELECT COUNT(*) FROM vote_meta_participants WHERE vote_meta_id = :id")
+                .setParameter("id", oldId).getSingleResult();
+            assertThat(remaining.longValue()).isZero();
+        });
+        assertThat(metas.findBySemester(otherTerm)).isPresent();
+        assertThat(ballots.countBallotsBySemesterAndUserId(otherTerm, 5L)).isEqualTo(1);
+        assertThat(projects.findAllById(projectIds)).hasSize(3);
+        admin.openVote(TERM, 2L, new wap.web2.server.admin.dto.request.VoteParticipants(new HashSet<>(projectIds)));
+        submit();
         assertThat(ballots.countBallotsBySemesterAndUserId(TERM, 5L)).isEqualTo(3);
-        assertThatThrownBy(() -> voting.getVoteResults(TERM)).isInstanceOf(ForbiddenException.class);
+    }
+
+    @Test void failedDeletionTransactionRestoresMetadataParticipantsAndBallots() {
+        submit();
+        admin.closeVote(TERM, 2L);
+        assertThatThrownBy(() -> transaction.executeWithoutResult(ignored -> {
+            admin.deleteVote(TERM);
+            metas.flush();
+            throw new IllegalStateException("rollback");
+        })).isInstanceOf(IllegalStateException.class);
+        assertThat(ballots.countBallotsBySemesterAndUserId(TERM, 5L)).isEqualTo(3);
+        transaction.executeWithoutResult(ignored -> {
+            var meta = metas.findBySemester(TERM).orElseThrow();
+            assertThat(meta.getStatus()).isEqualTo(VoteStatus.ENDED);
+            assertThat(meta.getParticipants()).containsExactlyInAnyOrderElementsOf(projectIds);
+        });
     }
 
     @Test void submissionWaitsForCloseAndThenRejects() throws Exception {

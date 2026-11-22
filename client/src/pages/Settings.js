@@ -21,14 +21,19 @@ const Settings = () => {
   useEffect(() => {
     let active = true;
     const fetchUserInfo = async () => {
+      const token = authStorage.get("authToken");
       try {
         setIsLoading(true);
         setLoadError("");
 
         const data = await userApi.getMe();
-        if (!active) return;
+        if (!active || token !== authStorage.get("authToken")) return;
 
         setUserName(data?.name ?? data?.userName ?? "");
+        const currentName = data?.name ?? data?.userName;
+        if (typeof currentName === "string" && currentName.trim()) {
+          authStorage.set("userName", currentName, { expires: 7 });
+        }
         setUserType(memberTypeLabel(data));
       } catch (error) {
         if (active) setLoadError("회원 정보를 불러오지 못했습니다.");

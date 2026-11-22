@@ -16,7 +16,7 @@ jest.mock("../api/user", () => ({
 }));
 jest.mock("../utils/authStorage", () => ({
   __esModule: true,
-  default: { set: jest.fn() },
+  default: { get: jest.fn(), set: jest.fn() },
 }));
 
 beforeEach(() => {
@@ -118,7 +118,8 @@ test("a failed name save keeps the old profile and allows retry", async () => {
     expect(window.alert).toHaveBeenCalledWith("이름 변경에 실패했습니다."),
   );
   expect(screen.getAllByText("기존이름")).toHaveLength(2);
-  expect(authStorage.set).not.toHaveBeenCalled();
+  expect(authStorage.set).toHaveBeenCalledTimes(1);
+  expect(authStorage.set).toHaveBeenCalledWith("userName", "기존이름", { expires: 7 });
   expect(screen.getByRole("button", { name: "이름 변경하기" })).toBeEnabled();
 });
 

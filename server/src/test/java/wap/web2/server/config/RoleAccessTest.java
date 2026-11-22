@@ -128,22 +128,22 @@ class RoleAccessTest {
     }
 
     @Test
-    void reopeningVotesRequiresAdminAndValidSemester() {
+    void deletingVotesRequiresAdminAndValidSemester() {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
-            String path = "/admin/vote/reopen";
-            mvc.perform(post(path).param("semester", "2026-02")).andExpect(status().isUnauthorized());
+            String path = "/admin/vote";
+            mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(path).param("semester", "2026-02")).andExpect(status().isUnauthorized());
             for (String role : new String[]{"GUEST", "MEMBER"}) {
-                mvc.perform(post(path).param("semester", "2026-02").with(user("user").roles(role)))
+                mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(path).param("semester", "2026-02").with(user("user").roles(role)))
                     .andExpect(status().isForbidden());
             }
-            mvc.perform(post(path).param("semester", "2026-02").with(user("admin").roles("ADMIN")))
+            mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(path).param("semester", "2026-02").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
-            mvc.perform(post(path).param("semester", "invalid").with(user("admin").roles("ADMIN")))
+            mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(path).param("semester", "invalid").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isBadRequest());
-            mvc.perform(post(path).with(user("admin").roles("ADMIN")))
+            mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete(path).with(user("admin").roles("ADMIN")))
                 .andExpect(status().isBadRequest());
-            org.mockito.Mockito.verify(ctx.getBean(AdminVoteService.class)).reopenVote("2026-02");
+            org.mockito.Mockito.verify(ctx.getBean(AdminVoteService.class)).deleteVote("2026-02");
             org.mockito.Mockito.verifyNoMoreInteractions(ctx.getBean(AdminVoteService.class));
         });
     }

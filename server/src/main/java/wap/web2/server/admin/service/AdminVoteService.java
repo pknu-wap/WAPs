@@ -47,7 +47,7 @@ public class AdminVoteService {
         VoteMeta voteMeta = voteMetaRepository.findBySemester(semester).orElse(null);
 
         if (voteMeta != null) {
-            throw new ConflictException("이미 생성된 투표입니다. 종료된 투표는 다시 열기를 사용해 주세요.");
+            throw new ConflictException("이미 생성된 투표입니다. 종료된 투표를 삭제한 후 새로 생성해 주세요.");
         }
 
         VoteMeta newMeta = VoteMeta.of(semester, userId, newProjectIds);
@@ -59,10 +59,14 @@ public class AdminVoteService {
     }
 
     @Transactional
-    public void reopenVote(String semester) {
+    public void deleteVote(String semester) {
         VoteMeta voteMeta = voteMetaRepository.findBySemesterForUpdate(semester)
             .orElseThrow(() -> new ResourceNotFoundException("해당 학기의 투표를 찾을 수 없습니다."));
-        voteMeta.reopen();
+        if (voteMeta.getStatus() != VoteStatus.ENDED) {
+            throw new ConflictException("종료된 투표만 삭제할 수 있습니다.");
+        }
+        ballotRepository.deleteBySemester(semester);
+        voteMetaRepository.delete(voteMeta);
     }
 
     @Transactional

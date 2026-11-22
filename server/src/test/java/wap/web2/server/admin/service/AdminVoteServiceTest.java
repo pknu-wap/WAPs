@@ -3,7 +3,6 @@ package wap.web2.server.admin.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -93,27 +92,18 @@ class AdminVoteServiceTest {
         meta.close(2L);
         service.changeResultStatus(SEMESTER, true);
         assertThat(meta.isResultPublic()).isTrue();
-        meta.reopen();
-        assertThatThrownBy(() -> service.changeResultStatus(SEMESTER, true)).isInstanceOf(ConflictException.class);
     }
 
-    @Test void reopenPreservesParticipantsAndBallotsAndHidesResults() {
-        LocalDateTime createdAt = LocalDateTime.of(2026, 9, 1, 12, 0);
-        var participants = new ArrayList<>(List.of(10L, 20L));
-        var meta = new VoteMeta(1L, SEMESTER, VoteStatus.ENDED, 2L, createdAt,
-            3L, createdAt.plusDays(1), true, participants);
+    @Test void deleteRemovesBallotsBeforeMetadataAndLeavesProjectsAlone() {
+        var meta = VoteMeta.of(SEMESTER, 2L, Set.of(10L, 20L, 30L));
+        meta.close(2L);
         when(metas.findBySemesterForUpdate(SEMESTER)).thenReturn(Optional.of(meta));
-        service.reopenVote(SEMESTER);
-
-        assertThat(meta.getStatus()).isEqualTo(VoteStatus.VOTING);
-        assertThat(meta.getParticipants()).isSameAs(participants).containsExactly(10L, 20L);
-        assertThat(meta.getCreatedAt()).isEqualTo(createdAt);
-        assertThat(meta.getCreatedBy()).isEqualTo(2L);
-        assertThat(meta.getClosedAt()).isNull();
-        assertThat(meta.getClosedBy()).isNull();
-        assertThat(meta.isResultPublic()).isFalse();
-        verifyNoInteractions(ballots, projects);
-        verify(metas, never()).save(any());
+        service.deleteVote(SEMESTER);
+        var order = inOrder(metas, ballots);
+        order.verify(metas).findBySemesterForUpdate(SEMESTER);
+        order.verify(ballots).deleteBySemester(SEMESTER);
+        order.verify(metas).delete(meta);
+        verifyNoInteractions(projects);
     }
 
     @ParameterizedTest
@@ -121,14 +111,14 @@ class AdminVoteServiceTest {
     void rejectsVotesThatHaveNotEnded(VoteStatus status) {
         var meta = new VoteMeta(1L, SEMESTER, status, 2L, null, null, null, false, new ArrayList<>());
         when(metas.findBySemesterForUpdate(SEMESTER)).thenReturn(Optional.of(meta));
-        assertThatThrownBy(() -> service.reopenVote(SEMESTER)).isInstanceOf(ConflictException.class);
+        assertThatThrownBy(() -> service.deleteVote(SEMESTER)).isInstanceOf(ConflictException.class);
         assertThat(meta.getStatus()).isEqualTo(status);
         verifyNoInteractions(ballots, projects);
     }
 
     @Test void rejectsMissingVote() {
         when(metas.findBySemesterForUpdate(SEMESTER)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> service.reopenVote(SEMESTER)).isInstanceOf(ResourceNotFoundException.class);
+        assertThatThrownBy(() -> service.deleteVote(SEMESTER)).isInstanceOf(ResourceNotFoundException.class);
         verifyNoInteractions(ballots, projects);
     }
 }

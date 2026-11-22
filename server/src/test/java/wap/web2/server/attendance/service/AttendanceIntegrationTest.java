@@ -459,9 +459,9 @@ class AttendanceIntegrationTest {
         var checkedIn = checkIn.get(10, TimeUnit.SECONDS);
         assertThat(checkedIn.status()).isEqualTo(PresenceStatus.PRESENT);
         assertThat(latest.qrToken()).isNotEqualTo(old).hasSize(43);
-        assertThat(latest.expiresAt()).isEqualTo(now.plusSeconds(90));
+        assertThat(latest.expiresAt()).isEqualTo(now.plusSeconds(150));
         assertThat(service.checkIn(event, userId, latest.qrToken()).checkedInAt()).isEqualTo(checkedIn.checkedInAt());
-        when(clock.instant()).thenReturn(now.plusSeconds(60));
+        when(clock.instant()).thenReturn(now.plusSeconds(120));
         assertThatThrownBy(() -> service.checkIn(event, userId, old)).isInstanceOf(BadRequestException.class);
         assertThat(service.checkIn(event, userId, latest.qrToken()).checkedInAt()).isEqualTo(checkedIn.checkedInAt());
     }
@@ -509,7 +509,7 @@ class AttendanceIntegrationTest {
         var checkIn = executor.submit(() -> { started.countDown(); return service.checkIn(event, userId, token); });
         await(started);
         assertThatThrownBy(() -> checkIn.get(200, TimeUnit.MILLISECONDS)).isInstanceOf(TimeoutException.class);
-        when(clock.instant()).thenReturn(now.plusSeconds(60));
+        when(clock.instant()).thenReturn(now.plusSeconds(120));
         release.countDown();
         holder.get(10, TimeUnit.SECONDS);
         assertThatThrownBy(() -> checkIn.get(10, TimeUnit.SECONDS))

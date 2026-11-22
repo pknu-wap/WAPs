@@ -52,12 +52,23 @@ const authStorage = {
     return Cookies.get(key);
   },
   set(key, value, options) {
+    const changed = authStorage.get(key) !== value;
     const session = readSession();
     if (session && authKeys.has(key)) {
       sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ...session, [key]: value }));
-      return;
+    } else {
+      Cookies.set(key, value, options);
     }
-    return Cookies.set(key, value, options);
+    if (changed && authKeys.has(key)) {
+      window.dispatchEvent(new Event("waps:authChanged"));
+      if (key === "userName" && !session) {
+        try {
+          localStorage.setItem("waps.profileChanged", String(Date.now()));
+        } catch {
+          // 저장소 사용이 제한된 브라우저에서도 이름 저장은 성공한다.
+        }
+      }
+    }
   },
   remove(key, options) {
     const session = readSession();
@@ -70,9 +81,11 @@ const authStorage = {
         delete session[key];
         sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
       }
+      window.dispatchEvent(new Event("waps:authChanged"));
       return;
     }
-    return Cookies.remove(key, options);
+    Cookies.remove(key, options);
+    if (authKeys.has(key)) window.dispatchEvent(new Event("waps:authChanged"));
   },
 };
 
