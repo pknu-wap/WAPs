@@ -1,15 +1,26 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { authApi } from "../api/auth";
 import styles from "../assets/Account.module.css";
 import wapsLogo from "../assets/img/waps_logo.png";
 import kakaoLogo from "../assets/img/pngwing.com.png";
 import authStorage from "../utils/authStorage";
+import { clearPendingAttendance, savePendingAttendance } from "../utils/pendingAttendance";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const isLoggedIn = Boolean(authStorage.get("authToken"));
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (state?.attendanceSearch) savePendingAttendance(state.attendanceSearch);
+  }, [state]);
+
+  const leaveLogin = (destination) => {
+    clearPendingAttendance();
+    navigate(destination);
+  };
 
   const handleKakaoLogin = (event) => {
     event.preventDefault();
@@ -24,6 +35,7 @@ export default function Login() {
   };
 
   const handleLogout = () => {
+    clearPendingAttendance();
     authStorage.remove("authToken");
     authStorage.remove("userName");
     authStorage.remove("userRole");
@@ -37,7 +49,7 @@ export default function Login() {
         type="button"
         className={styles.closeButton}
         aria-label="로그인 닫기"
-        onClick={() => navigate("/ProjectPage")}
+        onClick={() => leaveLogin("/ProjectPage")}
       >
         ×
       </button>
@@ -71,7 +83,7 @@ export default function Login() {
             <button
               type="button"
               className={styles.guestLink}
-              onClick={() => navigate("/")}
+              onClick={() => leaveLogin("/")}
             >
               로그인 없이 계속하기
             </button>

@@ -4,6 +4,7 @@ import authStorage, { clearDevSession } from "../../utils/authStorage";
 import { userApi } from "../../api/user";
 import LoadingPage from "../LoadingPage";
 import { registrationRequired } from "../../utils/accountProfile";
+import { consumePendingAttendance } from "../../utils/pendingAttendance";
 
 export default function Callback() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function Callback() {
       if (role?.role) authStorage.set("userRole", role.role, { expires: 7 });
       else authStorage.remove("userRole");
       authStorage.set("lastPage", "/", { expires: 7 });
-      navigate(registrationRequired(profile) === false ? "/ProjectPage" : "/signup", { replace: true });
+      navigate(registrationRequired(profile) === false ? consumePendingAttendance() : "/signup", { replace: true });
     }).catch(() => {
       if (active) {
         authStorage.remove("authToken");

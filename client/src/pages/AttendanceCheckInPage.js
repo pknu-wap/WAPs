@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import apiClient from "../api/client";
 import authStorage from "../utils/authStorage";
 
@@ -59,10 +59,7 @@ export default function AttendanceCheckInPage() {
       {!validLink ? (
         <p role="alert">출석 링크가 올바르지 않습니다. QR을 다시 스캔해 주세요.</p>
       ) : !authStorage.get("authToken") ? (
-        <>
-          <p>로그인한 뒤 현재 QR을 다시 스캔해 주세요.</p>
-          <Link to="/login">로그인</Link>
-        </>
+        <Navigate to="/login" replace state={{ attendanceSearch: search }} />
       ) : (
         <AttendanceCheckIn
           key={search}

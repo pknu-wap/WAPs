@@ -5,6 +5,7 @@ import styles from "../assets/Account.module.css";
 import wapsLogo from "../assets/img/waps_logo.png";
 import authStorage from "../utils/authStorage";
 import { registrationRequired } from "../utils/accountProfile";
+import { clearPendingAttendance, consumePendingAttendance } from "../utils/pendingAttendance";
 
 function normalizeStudentYear(value) {
   const digits = String(value ?? "").replace(/[^0-9]/g, "");
@@ -36,7 +37,7 @@ export default function RegistrationPage() {
       (user) => {
         if (!active) return;
         if (registrationRequired(user) === false) {
-          navigate(editing ? "/settings" : "/ProjectPage", { replace: true });
+          navigate(editing ? "/settings" : consumePendingAttendance(), { replace: true });
         } else if (registrationRequired(user) === true) {
           setRegistrationStatus("pending");
         } else {
@@ -63,6 +64,7 @@ export default function RegistrationPage() {
   }
 
   function closeRegistration() {
+    clearPendingAttendance();
     for (const key of ["authToken", "userName", "userRole", "lastPage"]) {
       authStorage.remove(key);
     }
@@ -111,7 +113,7 @@ export default function RegistrationPage() {
       const role = await userApi.getRole().catch(() => null);
       if (role?.role) authStorage.set("userRole", role.role, { expires: 7 });
       else authStorage.remove("userRole");
-      navigate("/ProjectPage", { replace: true });
+      navigate(consumePendingAttendance(), { replace: true });
     } catch (error) {
       if (error.response?.status === 401) {
         authStorage.remove("authToken");
