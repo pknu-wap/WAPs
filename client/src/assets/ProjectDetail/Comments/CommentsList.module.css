@@ -56,6 +56,9 @@
 }
 
 .close {
+  background: transparent;
+  border: 0;
+  padding: 0;
   width: 20px;
   height: 20px;
   color: #fff;
@@ -64,8 +67,18 @@
   cursor: pointer;
 }
 
+.close:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
 .close:after {
   content: "×";
+}
+
+.close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 .close:hover {
