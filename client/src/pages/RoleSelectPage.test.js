@@ -29,11 +29,11 @@ async function choose(label) {
 test("member signup sends required fields and preserves leading zeros in student number", async () => {
   mount();
   await choose("예");
-  fireEvent.change(screen.getByLabelText("학번"), { target: { value: "001234" } });
+  fireEvent.change(screen.getByLabelText("학번"), { target: { value: "02" } });
   fireEvent.change(screen.getByLabelText("회원 구분"), { target: { value: "ASSOCIATE" } });
   fireEvent.click(screen.getByRole("button", { name: "가입 완료" }));
   expect(await screen.findByText("Projects")).toBeInTheDocument();
-  expect(userApi.signup).toHaveBeenCalledWith({ member: true, name: "홍길동", studentNumber: "001234", memberType: "ASSOCIATE" });
+  expect(userApi.signup).toHaveBeenCalledWith({ member: true, name: "홍길동", studentNumber: "02", memberType: "ASSOCIATE" });
   expect(authStorage.set).toHaveBeenCalledWith("userRole", "ROLE_MEMBER", { expires: 7 });
 });
 test("guest signup omits member-only fields and can retry a failed save", async () => {
