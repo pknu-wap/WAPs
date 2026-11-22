@@ -94,16 +94,6 @@ public class VoteMeta {
         this.isResultPublic = isPublic;
     }
 
-    public void reopen() {
-        if (this.status != VoteStatus.ENDED) {
-            throw new ConflictException("종료된 투표만 다시 열 수 있습니다.");
-        }
-        this.status = VoteStatus.VOTING;
-        this.closedAt = null;
-        this.closedBy = null;
-        this.isResultPublic = false;
-    }
-
     public static VoteMeta of(String semester, Long createdBy, Set<Long> projectIds) {
         return new VoteMeta(semester, createdBy, new ArrayList<>(projectIds));
     }
