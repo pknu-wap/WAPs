@@ -1,6 +1,13 @@
 package wap.web2.server.admin.controller;
 
 import jakarta.validation.Valid;
+import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import wap.web2.server.admin.dto.request.UserAttributesRequest;
+import wap.web2.server.admin.dto.request.UserDeleteRequest;
+import wap.web2.server.admin.dto.response.UserRoleResponse;
+import wap.web2.server.admin.service.UserManagementService;
+import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.admin.dto.request.MembershipLevelChangeRequest;
 import wap.web2.server.admin.dto.response.MembershipLevelChangeResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +31,18 @@ import wap.web2.server.member.entity.MembershipLevel;
 public class AdminUserController {
 
     private final UserRoleService userRoleService;
+    private final UserManagementService userManagementService;
+
+    @PatchMapping("/attributes")
+    public List<UserRoleResponse> changeAttributes(@Valid @RequestBody UserAttributesRequest request) {
+        return userManagementService.update(request);
+    }
+
+    @DeleteMapping("/users")
+    public ResponseEntity<Void> deleteUsers(@Valid @RequestBody UserDeleteRequest request) {
+        userManagementService.delete(request.userIds());
+        return ResponseEntity.noContent().build();
+    }
 
     @PatchMapping("/user")
     public ResponseEntity<RoleChangeResponse> changeUserRole(
@@ -45,8 +64,15 @@ public class AdminUserController {
         @RequestParam("size") Integer size,
         @RequestParam("page") Integer page,
         @RequestParam(value = "role", required = false) Role role,
-        @RequestParam(value = "membershipLevel", required = false) MembershipLevel membershipLevel
+        @RequestParam(value = "membershipLevel", required = false) MembershipLevel membershipLevel,
+        @RequestParam(value = "memberType", required = false) String memberType
     ) {
+        MembershipLevel mapped = UserManagementService.level(memberType);
+        if (mapped != null && membershipLevel != null && mapped != membershipLevel)
+            throw new BadRequestException("LEVEL 필터가 서로 일치하지 않습니다.");
+        if (mapped != null) membershipLevel = mapped;
+        if (size < 1 || size > 500 || page < 0 || (long) page * size > Integer.MAX_VALUE)
+            throw new BadRequestException("유효하지 않은 페이지 범위입니다.");
         UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page, role, membershipLevel);
         return ResponseEntity.ok(response);
     }
