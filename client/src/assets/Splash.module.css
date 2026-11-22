@@ -140,16 +140,6 @@
   transform: translateY(-2px);
 }
 
-@media (max-height: 500px) {
-  .titleBox {
-    padding-top: 40px;
-    padding-bottom: 40px;
-  }
-
-  .line {
-    height: 64px;
-  }
-}
 /* ===Responsive=== */
 
 @media (min-width: 600px) {
@@ -157,13 +147,8 @@
     width: 100vw;
     max-width: none;
 
-    min-height: 100vh;
-    height: 100vh;
-
     margin-left: calc(50% - 50vw);
     margin-right: 0;
-
-    overflow: hidden;
   }
 
   .titleBox {
@@ -232,3 +217,13 @@
   }
 }
 
+@media (max-height: 500px) {
+  .titleBox {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .line {
+    height: 64px;
+  }
+}
