@@ -60,14 +60,24 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
+    @org.springframework.transaction.annotation.Transactional
     public ResponseEntity<ApiResponse> registerUser(
         @Valid @RequestBody SignUpRequest signUpRequest
     ) {
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            throw new BadRequestException("이미 사용 중인 이메일입니다.");
+        User user = userRepository.findByEmail(signUpRequest.getEmail()).orElse(null);
+        if (user != null) {
+            user = userRepository.findByIdForUpdate(user.getId()).orElseThrow();
+            if (!user.isDeleted()) throw new BadRequestException("이미 사용 중인 이메일입니다.");
+            // Local signup has no email verification: possession of the old password is required.
+            if (user.getProvider() != AuthProvider.local || user.getPassword() == null
+                || !passwordEncoder.matches(signUpRequest.getPassword(), user.getPassword())) {
+                throw new BadRequestException("기존 계정의 로그인 방식으로 본인 확인 후 재가입해 주세요.");
+            }
+            user.reactivate();
+            user.setSignupCompleted(true);
+        } else {
+            user = new User();
         }
-
-        User user = new User();
         user.setName(signUpRequest.getName());
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(signUpRequest.getPassword());

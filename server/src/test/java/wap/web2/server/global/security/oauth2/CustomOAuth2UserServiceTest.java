@@ -54,14 +54,52 @@ class CustomOAuth2UserServiceTest {
         verify(repository, never()).save(any());
     }
 
-    private void login() {
+    @Test
+    void verifiedEmailRestoresIdentityWithoutRestoringPrivileges() {
+        var account = deletedAccount();
+        login(true);
+        assertThat(account.isDeleted()).isFalse();
+        assertThat(account.getId()).isEqualTo(42L);
+        assertThat(account.getTokenVersion()).isEqualTo(2);
+        assertThat(account.getRole()).isEqualTo(Role.ROLE_GUEST);
+        assertThat(account.getMembershipLevel()).isEqualTo(MembershipLevel.NONE);
+        assertThat(account.isSignupCompleted()).isFalse();
+        assertThat(account.getPassword()).isNull();
+    }
+
+    @Test
+    void unverifiedEmailCannotRestoreDeletedAccount() {
+        var account = deletedAccount();
+        assertThatThrownBy(() -> login(false)).isInstanceOf(
+            org.springframework.security.core.AuthenticationException.class);
+        assertThat(account.isDeleted()).isTrue();
+        verify(repository, never()).save(any());
+    }
+
+    private User deletedAccount() {
+        var account = new User();
+        account.setId(42L);
+        account.setProvider(AuthProvider.local);
+        account.setRole(Role.ROLE_ADMIN);
+        account.setMembershipLevel(MembershipLevel.REGULAR);
+        account.setPassword("old-password-hash");
+        account.deactivate();
+        when(repository.findByEmail("test@example.com")).thenReturn(Optional.of(account));
+        when(repository.findByIdForUpdate(42L)).thenReturn(Optional.of(account));
+        when(repository.save(account)).thenReturn(account);
+        return account;
+    }
+
+    private void login() { login(false); }
+
+    private void login(boolean verified) {
         var rest = new RestTemplate();
         var server = MockRestServiceServer.bindTo(rest).build();
         service.setRestOperations(rest);
         server.expect(requestTo("https://kakao.example/userinfo")).andRespond(withSuccess("""
             {"id":1234,"properties":{"nickname":"카카오 이름","profile_image":"image"},
-             "kakao_account":{"email":"test@example.com"}}
-            """, MediaType.APPLICATION_JSON));
+             "kakao_account":{"email":"test@example.com","is_email_verified":%s,"is_email_valid":%s}}
+            """.formatted(verified, verified), MediaType.APPLICATION_JSON));
         var registration = ClientRegistration.withRegistrationId("kakao")
             .clientId("test").authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .redirectUri("https://example.com/callback").authorizationUri("https://kakao.example/auth")

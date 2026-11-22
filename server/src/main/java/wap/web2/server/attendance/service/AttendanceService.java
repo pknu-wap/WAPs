@@ -44,7 +44,7 @@ public class AttendanceService {
         if (request.date().isBefore(today)) {
             throw new BadRequestException("출석 날짜는 한국 시간 기준 오늘 또는 미래 날짜여야 합니다.");
         }
-        var targets = users.findAll();
+        var targets = users.findAll().stream().filter(user -> !user.isDeleted()).toList();
         var attendance = attendances.save(new Attendance(request.title(), request.date()));
         participants.saveAll(targets.stream()
             .map(user -> new AttendanceParticipant(attendance, user.getId(), user.getName(), user.getMembershipLevel())).toList());

@@ -2,14 +2,12 @@ package wap.web2.server.admin.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.dto.request.UserAttributesRequest;
 import wap.web2.server.admin.dto.response.UserRoleResponse;
 import wap.web2.server.exception.BadRequestException;
-import wap.web2.server.exception.ConflictException;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.member.entity.MembershipLevel;
 import wap.web2.server.member.entity.User;
@@ -35,6 +33,7 @@ public class UserManagementService {
             throw new BadRequestException("사용자 ID가 중복되었습니다.");
         // Lock in a stable order and resolve every target before changing anything.
         return ids.stream().sorted().map(id -> users.findByIdForUpdate(id)
+            .filter(user -> !user.isDeleted())
             .orElseThrow(() -> new ResourceNotFoundException("User", "id", id))).toList();
     }
 
@@ -53,15 +52,10 @@ public class UserManagementService {
     @Transactional
     public void delete(List<Long> ids) {
         var targets = lockUsers(ids);
-        try {
-            for (var user : targets) {
-                jdbc.update("DELETE FROM refresh_token WHERE user_id = ?", user.getId());
-                // Bulk SQL deliberately bypasses User's cascading project/comment removal.
-                // Remaining foreign keys reject deletion of accounts with shared content.
-                jdbc.update("DELETE FROM `user` WHERE user_id = ?", user.getId());
-            }
-        } catch (DataIntegrityViolationException exception) {
-            throw new ConflictException("연결된 프로젝트·댓글·지원 내역 또는 개발 로그인 계정이 있어 삭제할 수 없습니다. 연결 정보를 먼저 정리해 주세요.");
+        for (var user : targets) {
+            jdbc.update("DELETE FROM refresh_token WHERE user_id = ?", user.getId());
+            user.deactivate();
         }
+        users.flush();
     }
 }

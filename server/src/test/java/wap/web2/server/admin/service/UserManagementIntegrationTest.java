@@ -137,23 +137,34 @@ class UserManagementIntegrationTest {
     }
 
     @Test
-    void deletionRemovesAccountsAndRefreshTokens() {
+    void deletionDeactivatesAccountsAndRemovesRefreshTokens() {
         long id = member("first");
         jdbc.update("INSERT INTO refresh_token (user_id, token, expiry_date) VALUES (?, 'token', CURRENT_TIMESTAMP)", id);
         service.delete(List.of(id));
-        assertThat(users.findById(id)).isEmpty();
+        var deleted = users.findById(id).orElseThrow();
+        assertThat(deleted.isDeleted()).isTrue();
+        assertThat(deleted.getTokenVersion()).isEqualTo(1);
+        assertThat(deleted.getRole()).isEqualTo(Role.ROLE_GUEST);
+        assertThat(users.findUserByOffset(12, 0, null, null)).isEmpty();
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM refresh_token", Long.class)).isZero();
     }
 
     @Test
-    void linkedContentRejectsWholeDeletionAndRestoresTokens() {
+    void linkedContentSurvivesDeletionAndRestorationWithSameIdentity() {
         long first = member("first"), second = member("second");
         jdbc.update("INSERT INTO refresh_token (user_id, token, expiry_date) VALUES (?, 'token', CURRENT_TIMESTAMP)", first);
         jdbc.update("INSERT INTO project (title, user_id) VALUES ('shared work', ?)", second);
-        assertThatThrownBy(() -> service.delete(List.of(first, second))).isInstanceOf(ConflictException.class);
-        assertThat(users.findAllById(List.of(first, second))).hasSize(2);
-        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM refresh_token", Long.class)).isEqualTo(1);
+        service.delete(List.of(first, second));
+        assertThat(users.findAllById(List.of(first, second))).allMatch(User::isDeleted);
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM refresh_token", Long.class)).isZero();
         assertThat(jdbc.queryForObject("SELECT title FROM project", String.class)).isEqualTo("shared work");
+        transaction.executeWithoutResult(status -> users.findByIdForUpdate(second).orElseThrow().reactivate());
+        var restored = users.findByEmail("second@example.invalid").orElseThrow();
+        assertThat(restored.isDeleted()).isFalse();
+        assertThat(restored.getId()).isEqualTo(second);
+        assertThat(restored.getTokenVersion()).isEqualTo(2);
+        assertThat(restored.getMembershipLevel()).isEqualTo(MembershipLevel.NONE);
+        assertThat(jdbc.queryForObject("SELECT user_id FROM project", Long.class)).isEqualTo(restored.getId());
     }
 
     @Test

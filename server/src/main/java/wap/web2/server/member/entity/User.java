@@ -72,6 +72,27 @@ public class User {
     @Column(nullable = false)
     private boolean signupCompleted = true;
 
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    @Column(nullable = false)
+    private long tokenVersion = 0;
+
+    public void deactivate() {
+        deleted = true;
+        tokenVersion++;
+        role = Role.ROLE_GUEST;
+        membershipLevel = MembershipLevel.NONE;
+        signupCompleted = false;
+    }
+
+    public void reactivate() {
+        deleted = false;
+        tokenVersion++;
+        role = Role.ROLE_GUEST;
+        membershipLevel = MembershipLevel.NONE;
+    }
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Project> projects = new ArrayList<>();
 
