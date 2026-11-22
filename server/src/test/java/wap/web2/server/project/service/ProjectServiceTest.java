@@ -59,6 +59,32 @@ class ProjectServiceTest {
     }
 
     @Test
+    void detailsAndEditUseCurrentNamesButPreserveDeletedMissingAndLegacyMembers() {
+        var owner = owner();
+        var project = project(owner);
+        var current = new User(); current.setId(20L); current.setName("현재 이름");
+        var deleted = new User(); deleted.setId(30L); deleted.setName("삭제 후 이름"); deleted.deactivate();
+        project.getTeamMembers().addAll(List.of(
+            wap.web2.server.project.entity.TeamMember.builder().userId(20L).memberName("이전 이름").memberRole("PM").build(),
+            wap.web2.server.project.entity.TeamMember.builder().userId(30L).memberName("삭제 회원").build(),
+            wap.web2.server.project.entity.TeamMember.builder().userId(40L).memberName("없는 회원").build(),
+            wap.web2.server.project.entity.TeamMember.builder().memberName("과거 회원").build()));
+        when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
+        when(userRepository.findAllById(List.of(20L, 30L, 40L))).thenReturn(List.of(current, deleted));
+        when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
+
+        var details = projectService.getProjectDetails(project.getProjectId(), null);
+        var edit = projectService.getProjectDetailsForUpdate(project.getProjectId(), principal(owner.getId()));
+        for (var response : List.of(details, edit)) {
+            assertThat(response.getTeamMember()).extracting(TeamMemberDto::getMemberName)
+                .containsExactly("현재 이름", "삭제 회원", "없는 회원", "과거 회원");
+            assertThat(response.getTeamMember().get(0).getMemberRole()).isEqualTo("PM");
+        }
+        assertThat(project.getTeamMembers().get(0).getMemberName()).isEqualTo("이전 이름");
+        verify(userRepository, org.mockito.Mockito.times(2)).findAllById(List.of(20L, 30L, 40L));
+    }
+
+    @Test
     void recruitProjectsUsesCurrentSemesterAndAuthenticatedOwner() {
         String semester = wap.web2.server.util.SemesterGenerator.generateSemester();
         when(projectRepository.findAllByUser_IdAndSemesterOrderByProjectIdDesc(7L, semester))

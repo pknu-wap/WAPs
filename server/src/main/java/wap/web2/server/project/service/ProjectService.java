@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -135,7 +137,7 @@ public class ProjectService {
     public ProjectDetailsResponse getProjectDetails(Long projectId, UserPrincipal userPrincipal) {
         Project project = findProject(projectId);
 
-        ProjectDetailsResponse projectDetailsResponse = ProjectDetailsResponse.from(project);
+        ProjectDetailsResponse projectDetailsResponse = detailsWithCurrentNames(project);
 
         if (userPrincipal != null) {
             User user = findUser(userPrincipal.getId());
@@ -169,7 +171,7 @@ public class ProjectService {
             throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
         }
 
-        return ProjectDetailsResponse.from(project)
+        return detailsWithCurrentNames(project)
             .changeIsOwner(project.isOwner(user))
             .changeCanManage(true);
     }
@@ -295,6 +297,19 @@ public class ProjectService {
             }
             member.resolveName(user.getName());
         }
+    }
+
+    private ProjectDetailsResponse detailsWithCurrentNames(Project project) {
+        var response = ProjectDetailsResponse.from(project);
+        var ids = response.getTeamMember().stream().map(TeamMemberDto::getUserId)
+            .filter(Objects::nonNull).distinct().toList();
+        if (ids.isEmpty()) return response;
+        var names = userRepository.findAllById(ids).stream().filter(user -> !user.isDeleted())
+            .collect(Collectors.toMap(User::getId, User::getName));
+        response.getTeamMember().forEach(member -> {
+            if (names.containsKey(member.getUserId())) member.resolveName(names.get(member.getUserId()));
+        });
+        return response;
     }
 
     private boolean canManage(Project project, User user) {

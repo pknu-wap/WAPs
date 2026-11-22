@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "../utils/authStorage";
 import Menu from "./Menu";
+import useCurrentUserName from "../hooks/useCurrentUserName";
 import wapsLogo from "../assets/img/waps_logo.png";
 
 const Header = () => {
-  const [userName, setUserName] = useState(Cookies.get("userName") || null);
+  const userName = useCurrentUserName();
 
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -16,13 +17,6 @@ const Header = () => {
   };
 
   useEffect(() => {
-    const token = Cookies.get("authToken");
-    const savedUserName = Cookies.get("userName");
-
-    if (token && savedUserName) {
-      setUserName(savedUserName);
-    }
-
     const shouldOpenMenu = sessionStorage.getItem("openMenuAfterBack");
 
     if (shouldOpenMenu === "true") {
@@ -35,7 +29,6 @@ const Header = () => {
     Cookies.remove("authToken");
     Cookies.remove("userName");
 
-    setUserName(null);
     navigate("/login");
   };
 

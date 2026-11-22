@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import AdminPageLayout from "./AdminPageLayout";
+jest.mock("../../api/user", () => ({ userApi: { getMe: jest.fn() } }));
 
 const CurrentPath = () => <output>{useLocation().pathname}</output>;
 

@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import TeamBuildPage from "./TeamBuildPage";
+jest.mock("../api/user", () => ({ userApi: { getMe: jest.fn() } }));
 import { teamBuildApi } from "../api/team-build";
 
 jest.mock("../api/team-build", () => ({ teamBuildApi: {
