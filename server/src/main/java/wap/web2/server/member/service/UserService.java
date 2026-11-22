@@ -59,6 +59,9 @@ public class UserService {
                 || request.studentNumber() == null || request.memberType() == null) {
                 throw new BadRequestException("회원은 이름, 학번, 회원 구분을 모두 입력해야 합니다.");
             }
+            if (!request.studentNumber().matches("[0-9]{2}")) {
+                throw new BadRequestException("학번은 입학 연도 뒤 두 자리 숫자여야 합니다.");
+            }
             user.setName(request.name().strip());
             user.setStudentNumber(request.studentNumber());
             user.setMembershipLevel(MembershipLevel.valueOf(request.memberType().name()));

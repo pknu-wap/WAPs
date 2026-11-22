@@ -16,7 +16,8 @@
 
 - GET /user/me: userName, signupCompleted, studentNumber, memberType, membershipLevel 등.
 - POST /user/signup: 회원은 { member:true, name, studentNumber, memberType }, 비회원은 { member:false }.
-- 응답의 signupCompleted=true를 확인한 후 프로젝트 목록으로 이동한다. 서버 DTO는 studentNumber에 1~20자리 숫자 문자열을 허용한다. 화면은 이 브랜치의 두 자리 입력 정책을 유지하며 서버 문서에 남아 있던 9자리 제한과 구분한다.
+- 응답의 signupCompleted=true를 확인한 후 프로젝트 목록으로 이동한다. studentNumber는 입학 연도 뒤 두 자리 숫자 문자열만 허용한다(2026년 → "26", 2002년 → "02"). 서버도 두 자리 외의 값은 400으로 거부하며 선행 0을 보존한다.
+- 가입 시 두 자리로 저장하고 조회 시 저장된 값을 그대로 반환한다. 기존 학번 데이터가 없으므로 별도 변환이나 마이그레이션은 하지 않는다.
 - GET /user/role: 현재 role. 회원 구분은 서버가 지정한 NEW, ASSOCIATE, REGULAR 중 선택한다.
 - 존재하지 않는 POST/PATCH /user/registration은 호출하지 않는다.
 

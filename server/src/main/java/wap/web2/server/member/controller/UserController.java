@@ -61,7 +61,7 @@ public class UserController {
                GET /user/me에서도 가입 상태를 확인할 수 있습니다. 기존 계정은 true로 유지합니다.
             3. 로그인으로 발급받은 JWT를 Authorization: Bearer <token>으로 전달하여 이 API를 호출합니다.
             - 비회원: {"member":false}만 전송합니다. 추가 정보 없이 ROLE_GUEST로 가입합니다.
-            - 회원: member=true와 이름(name), 학번(studentNumber), 회원 구분(memberType)을 모두 전송합니다.
+            - 회원: member=true와 이름(name), 입학 연도 뒤 두 자리 학번(studentNumber, 예: 26), 회원 구분(memberType)을 모두 전송합니다.
               memberType은 NEW(신입회원), ASSOCIATE(준회원), REGULAR(정회원) 중 하나이며 ROLE_MEMBER로 가입합니다.
               선택한 구분은 membershipLevel에 저장되어 관리자 및 출석 API에서도 동일하게 사용합니다.
             성공하면 signupCompleted=true를 반환합니다. 다음 로그인부터 회원가입 창을 표시하지 않습니다.
@@ -76,9 +76,9 @@ public class UserController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MemberSignupRequest.class),
                 examples = {
                     @ExampleObject(name = "비회원", value = "{\"member\":false}"),
-                    @ExampleObject(name = "신입회원", value = "{\"member\":true,\"name\":\"홍길동\",\"studentNumber\":\"202600001\",\"memberType\":\"NEW\"}"),
-                    @ExampleObject(name = "준회원", value = "{\"member\":true,\"name\":\"홍길동\",\"studentNumber\":\"202500001\",\"memberType\":\"ASSOCIATE\"}"),
-                    @ExampleObject(name = "정회원", value = "{\"member\":true,\"name\":\"홍길동\",\"studentNumber\":\"202400001\",\"memberType\":\"REGULAR\"}")
+                    @ExampleObject(name = "신입회원", value = "{\"member\":true,\"name\":\"홍길동\",\"studentNumber\":\"26\",\"memberType\":\"NEW\"}"),
+                    @ExampleObject(name = "준회원", value = "{\"member\":true,\"name\":\"홍길동\",\"studentNumber\":\"25\",\"memberType\":\"ASSOCIATE\"}"),
+                    @ExampleObject(name = "정회원", value = "{\"member\":true,\"name\":\"홍길동\",\"studentNumber\":\"24\",\"memberType\":\"REGULAR\"}")
                 })
         )
     )

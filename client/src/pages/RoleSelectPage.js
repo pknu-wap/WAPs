@@ -43,8 +43,8 @@ export default function RoleSelectPage() {
   const submit = async (event) => {
     event.preventDefault();
     if (pending.current || member === null || loading || !ready) return;
-    if (member && (!name.trim() || !/^[0-9]{1,20}$/.test(studentNumber))) {
-      setError("이름과 숫자 1~20자리 학번을 입력해주세요.");
+    if (member && (!name.trim() || !/^[0-9]{2}$/.test(studentNumber))) {
+      setError("이름과 숫자 두 자리 학번을 입력해주세요.");
       return;
     }
     pending.current = true;
@@ -82,7 +82,7 @@ export default function RoleSelectPage() {
         <label><input type="radio" name="member" checked={member === false} onChange={() => setMember(false)} /> 아니오</label>
         {member && <>
           <label>이름<input required maxLength={255} value={name} onChange={(event) => setName(event.target.value)} /></label>
-          <label>학번<input required inputMode="numeric" pattern="[0-9]{1,20}" maxLength={20} value={studentNumber} onChange={(event) => setStudentNumber(event.target.value)} /></label>
+          <label>학번<input required inputMode="numeric" pattern="[0-9]{2}" maxLength={2} value={studentNumber} onChange={(event) => setStudentNumber(event.target.value)} /></label>
           <label>회원 구분<select value={memberType} onChange={(event) => setMemberType(event.target.value)}>
             <option value="NEW">신입회원</option><option value="ASSOCIATE">준회원</option><option value="REGULAR">정회원</option>
           </select></label>
