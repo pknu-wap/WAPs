@@ -18,6 +18,9 @@
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
+  padding: 16px;
+  box-sizing: border-box;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
@@ -26,7 +29,12 @@
 }
 
 .modalBox {
-  width: 500px;
+  width: 100%;
+  max-width: 550px;
+  max-height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
   background: #1e1e1e;
   padding: 35px 25px;
   border-radius: 20px;
@@ -44,6 +52,8 @@
   display: flex;
   font-size: 25px;
   justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 /* 선택한 프로젝트  */
@@ -58,7 +68,7 @@
   font-weight: 700;
 }
 .selectedNumber {
-  color: red;
+  color: var(--primary);
 }
 /* 헤더 */
 
@@ -101,4 +111,45 @@
 .submitBtn:active {
   background: #606060;
   color: white;
+}
+
+.closeButton {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.modalBox button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .modalBox {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .header {
+    line-height: 1.5;
+    font-size: 14px;
+  }
+
+  .headerTop {
+    font-size: 20px;
+  }
+
+  .selectedProjects {
+    flex-wrap: wrap;
+  }
+
+  .modalActions {
+    gap: 12px;
+    margin-top: 20px;
+  }
 }

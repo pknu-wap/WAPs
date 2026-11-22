@@ -150,3 +150,85 @@
     height: 64px;
   }
 }
+/* ===Responsive=== */
+
+@media (min-width: 600px) {
+  .mainContainer {
+    width: 100vw;
+    max-width: none;
+
+    min-height: 100vh;
+    height: 100vh;
+
+    margin-left: calc(50% - 50vw);
+    margin-right: 0;
+
+    overflow: hidden;
+  }
+
+  .titleBox {
+    width: 100%;
+    height: auto;
+
+    margin: 0;
+
+    padding-top: clamp(120px, 18vh, 160px);
+
+    box-sizing: border-box;
+
+    font-size: clamp(30px, 3vw, 40px);
+
+    text-align: center;
+  }
+
+  .title {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    flex-wrap: nowrap;
+  }
+
+  .title p {
+    margin: 0;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+  }
+
+  .caption1 {
+    margin-top: 20px;
+
+    font-size: clamp(14px, 1.2vw, 16px);
+
+    text-align: center;
+  }
+
+  .line {
+    height: 55px;
+
+    margin: 35px auto;
+  }
+
+  .caption2 {
+    font-size: clamp(14px, 1.2vw, 16px);
+
+    line-height: 1.8;
+
+    text-align: center;
+  }
+
+  .submit_button {
+    width: 150px;
+    height: 48px;
+
+    margin: 38px auto 0;
+
+    font-size: 15px;
+  }
+}
+

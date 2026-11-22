@@ -129,7 +129,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void 삭제_요청된_이미지는_프로젝트_컬렉션에서_제거하고_스토리지에서도_삭제한다()
+    void 삭제_요청된_이미지는_프로젝트_컬렉션에서_제거하고_스토리지에는_보존한다()
         throws Exception {
         // given
         User owner = owner();
@@ -141,7 +141,6 @@ class ProjectServiceTest {
 
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
-        when(objectStorageService.supports("https://cdn.example.com/a.png")).thenReturn(true);
 
         ProjectRequest request = baseRequestBuilder()
             .removal(
@@ -156,8 +155,7 @@ class ProjectServiceTest {
         assertThat(project.getImages())
             .extracting(Image::getImageFile)
             .containsExactly("https://cdn.example.com/b.png");
-        verify(objectStorageService).deleteImage("https://cdn.example.com/a.png");
-        verify(objectStorageService, never()).deleteImage("https://cdn.example.com/missing.png");
+        verifyNoInteractions(objectStorageService);
     }
 
     @Test
@@ -173,7 +171,6 @@ class ProjectServiceTest {
 
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
         when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
-        when(objectStorageService.supports(legacyS3Url)).thenReturn(false);
 
         ProjectRequest request = baseRequestBuilder().removal(List.of(legacyS3Url)).build();
 
@@ -182,7 +179,7 @@ class ProjectServiceTest {
 
         // then
         assertThat(project.getImages()).isEmpty();
-        verify(objectStorageService, never()).deleteImage(legacyS3Url);
+        verifyNoInteractions(objectStorageService);
     }
 
     @ParameterizedTest
@@ -204,7 +201,8 @@ class ProjectServiceTest {
         assertThat(updateDetails.getProjectId()).isEqualTo(10L);
         assertThat(updateDetails.getCanManage()).isTrue();
         assertThat(updateDetails.getIsOwner()).isEqualTo(userId.equals(owner.getId()));
-        projectService.update(10L, baseRequestBuilder().build(), principal);
+        projectService.update(10L, baseRequestBuilder().teamMember(List.of(
+            TeamMemberDto.builder().userId(userId).memberRole("PM").build())).build(), principal);
         assertThat(project.getTitle()).isEqualTo("updated title");
         assertThat(project.getUser()).isSameAs(owner);
         projectService.delete(10L, principal);
@@ -212,7 +210,7 @@ class ProjectServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "ROLE_MEMBER", "ROLE_USER", "ROLE_GUEST" })
+    @CsvSource({ "ROLE_MEMBER", "ROLE_GUEST" })
     void 작성자가_아닌_일반_사용자는_수정_조회와_수정_삭제가_금지된다(Role role) {
         User user = new User();
         user.setId(2L);
@@ -380,6 +378,102 @@ class ProjectServiceTest {
         assertThat(project.getRecruitmentPositions()).isEmpty();
     }
 
+    @Test
+    void selectedMemberUsesStoredNameAndReturnsAccountId() throws Exception {
+        User owner = owner();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
+        ProjectRequest request = baseRequestBuilder()
+            .recruitmentPositions(List.of(new RecruitmentPositionDto("백엔드", 1))).build();
+        projectService.save(request, principal(1L));
+        var saved = org.mockito.ArgumentCaptor.forClass(Project.class);
+        verify(projectRepository).save(saved.capture());
+        var member = TeamMemberDto.from(saved.getValue().getTeamMembers().get(0));
+        assertThat(member.getUserId()).isEqualTo(1L);
+        assertThat(member.getMemberName()).isEqualTo("owner");
+    }
+
+    @Test
+    void rejectsUnknownGuestPendingAndDuplicateMembersBeforeStorage() {
+        User owner = owner();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
+        User guest = new User();
+        guest.setId(2L);
+        when(userRepository.findById(2L)).thenReturn(Optional.of(guest));
+        User pending = owner();
+        pending.setId(3L);
+        pending.setSignupCompleted(false);
+        when(userRepository.findById(3L)).thenReturn(Optional.of(pending));
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+        for (Long id : java.util.Arrays.asList(null, 99L, 2L, 3L)) {
+            var request = baseRequestBuilder()
+                .recruitmentPositions(List.of(new RecruitmentPositionDto("백엔드", 1)))
+                .teamMember(List.of(TeamMemberDto.builder().userId(id).memberName("fake").memberRole("PM").build()))
+                .build();
+            assertThatThrownBy(() -> projectService.save(request, principal(1L)))
+                .isInstanceOf(BadRequestException.class);
+        }
+        var duplicate = TeamMemberDto.builder().userId(1L).memberRole("PM").build();
+        var request = baseRequestBuilder().recruitmentPositions(List.of(new RecruitmentPositionDto("백엔드", 1)))
+            .teamMember(List.of(duplicate, duplicate)).build();
+        assertThatThrownBy(() -> projectService.save(request, principal(1L)))
+            .isInstanceOf(BadRequestException.class).hasMessageContaining("중복");
+        verifyNoInteractions(objectStorageService, projectRepository);
+    }
+
+    @Test
+    void updateAlsoRejectsNameOnlyMembersBeforeStorage() {
+        User owner = owner();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
+        when(projectRepository.findById(10L)).thenReturn(Optional.of(project(owner)));
+        var request = baseRequestBuilder().teamMember(List.of(
+            TeamMemberDto.builder().memberName("fake").memberRole("PM").build())).build();
+        assertThatThrownBy(() -> projectService.update(10L, request, principal(1L)))
+            .isInstanceOf(BadRequestException.class);
+        verifyNoInteractions(objectStorageService);
+    }
+
+    @Test
+    void memberOptionsOnlyQueryCompletedMembersAndAdmins() {
+        when(userRepository.findBySignupCompletedTrueAndRoleInOrderByNameAscIdAsc(
+            List.of(Role.ROLE_MEMBER, Role.ROLE_ADMIN))).thenReturn(List.of(owner()));
+        assertThat(projectService.getMemberOptions()).singleElement().satisfies(option -> {
+            assertThat(option.userId()).isEqualTo(1L);
+            assertThat(option.memberName()).isEqualTo("owner");
+        });
+    }
+
+    @Test
+    void thumbnailReplacementPreservesPreviousImageInStorage() throws Exception {
+        User owner = owner();
+        Project project = project(owner);
+        project.updateThumbnail("https://cloud/old");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
+        when(projectRepository.findById(10L)).thenReturn(Optional.of(project));
+        var file = new MockMultipartFile("thumbnail", "new.png", "image/png", new byte[] {1});
+        when(objectStorageService.uploadImage("projects", "2026-01", "updated title", "thumbnail", file))
+            .thenReturn("https://cloud/new");
+
+        projectService.update(10L, baseRequestBuilder().thumbnailFiles(file).build(), principal(1L));
+
+        assertThat(project.getThumbnail()).isEqualTo("https://cloud/new");
+        verify(objectStorageService, never()).deleteImage(org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    void projectDeletionPreservesImagesAndThumbnailInStorage() {
+        User owner = owner();
+        Project project = project(owner);
+        project.updateThumbnail("https://cloud/thumbnail");
+        project.addAllImage(Image.listOf(List.of("https://cloud/image")));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
+        when(projectRepository.findById(10L)).thenReturn(Optional.of(project));
+
+        projectService.delete(10L, principal(1L));
+
+        verify(projectRepository).delete(project);
+        verifyNoInteractions(objectStorageService);
+    }
+
     private ProjectRequest.ProjectRequestBuilder baseRequestBuilder() {
         return ProjectRequest.builder()
             .title("updated title")
@@ -388,7 +482,7 @@ class ProjectServiceTest {
             .summary("updated summary")
             .password("pw")
             .teamMember(
-                List.of(TeamMemberDto.builder().memberName("member").memberRole("backend").build())
+                List.of(TeamMemberDto.builder().userId(1L).memberName("member").memberRole("backend").build())
             )
             .techStack(
                 List.of(
@@ -401,6 +495,7 @@ class ProjectServiceTest {
         User user = new User();
         user.setId(1L);
         user.setName("owner");
+        user.setRole(Role.ROLE_MEMBER);
         return user;
     }
 

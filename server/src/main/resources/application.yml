@@ -1,9 +1,13 @@
+server:
+  # Restore the external HTTPS scheme/host supplied by the Caddy reverse proxy.
+  forward-headers-strategy: framework
+
 spring:
   application:
     name: server
 
   config:
-    import: optional:file:.env[.yml]
+    import: optional:file:.env[.properties]
 
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?createDatabaseIfNotExist=true
@@ -60,7 +64,7 @@ app:
     authorizedRedirectUris:
       - https://waps.im/oauth2/redirect
       - https://dev.waps.im/oauth2/redirect
-      - https://*.dev.waps.im/oauth2/redirect
+      - https://*.waps.im/oauth2/redirect
       - https://wapst.netlify.app/oauth2/redirect
       - https://waps-deploy.netlify.app/oauth2/redirect
       - https://waps-web.netlify.app/oauth2/redirect

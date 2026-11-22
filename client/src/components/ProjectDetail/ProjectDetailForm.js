@@ -7,6 +7,7 @@ import dogImage from "../../assets/img/dog.png";
 import EditButton from "./EditButton";
 import Comments from "./Comments/Comments";
 import CommentsList from "./Comments/CommentsList";
+import MarkdownContent from "../Markdown/MarkdownContent";
 import LoadingPage from "../../components/LoadingPage";
 
 const formatSemester = (semester) => {
@@ -113,7 +114,7 @@ const ProjectDetailForm = () => {
             {formatText(projectData.summary) || "요약 정보 없음"}
           </div>
           <div className={styles.content}>
-            {formatText(projectData.content) || "내용이 없습니다."}
+            <MarkdownContent value={projectData.content} />
           </div>
         </div>
       </div>

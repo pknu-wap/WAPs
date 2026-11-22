@@ -13,13 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import wap.web2.server.storage.ObjectStorageService;
+import wap.web2.server.storage.CloudObjectStorageService;
 import wap.web2.server.storage.StoragePathUtils;
 
 @Service
 @Profile("azure")
 @RequiredArgsConstructor
-public class AzureStorageService implements ObjectStorageService {
+public class AzureStorageService implements CloudObjectStorageService {
 
     private static final String AZURE_BLOB_HOST_SUFFIX = ".blob.core.windows.net";
     private static final long MAX_FILE_SIZE = 100L * 1024 * 1024;
@@ -60,7 +60,7 @@ public class AzureStorageService implements ObjectStorageService {
         validateImage(imageFile);
 
         String originalFileName = getOriginalFileName(imageFile);
-        String blobName = StoragePathUtils.createTimestampFileName(
+        String blobName = StoragePathUtils.createUniqueFileName(
             dirName,
             semester,
             projectName,
@@ -78,6 +78,11 @@ public class AzureStorageService implements ObjectStorageService {
         );
 
         return blobClient.getBlobUrl();
+    }
+
+    @Override
+    public boolean exists(String imageUrl) {
+        return blobContainerClient.getBlobClient(extractBlobNameFromUrl(imageUrl)).exists();
     }
 
     @Override

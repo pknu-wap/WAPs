@@ -5,17 +5,30 @@ import Menu from "./Menu";
 import wapsLogo from "../assets/img/waps_logo.png";
 
 const Header = () => {
-  const [userName, setUserName] = useState(Cookies.get("userName") || null);
+  const [userName, setUserName] = useState(
+    Cookies.get("userName") || null
+  );
+
   const [menuOpen, setMenuOpen] = useState(false);
+
   const navigate = useNavigate();
 
-  const toggleMenu = () => setMenuOpen((p) => !p);
+  const toggleMenu = () => {
+    setMenuOpen((prev) => !prev);
+  };
 
   useEffect(() => {
     const token = Cookies.get("authToken");
     const savedUserName = Cookies.get("userName");
-    if (token && savedUserName) setUserName(savedUserName);
-    if (sessionStorage.getItem("openMenuAfterBack") === "true") {
+
+    if (token && savedUserName) {
+      setUserName(savedUserName);
+    }
+
+    const shouldOpenMenu =
+      sessionStorage.getItem("openMenuAfterBack");
+
+    if (shouldOpenMenu === "true") {
       setMenuOpen(true);
       sessionStorage.removeItem("openMenuAfterBack");
     }
@@ -24,12 +37,17 @@ const Header = () => {
   const handleLogout = () => {
     Cookies.remove("authToken");
     Cookies.remove("userName");
+
     setUserName(null);
     navigate("/login");
   };
 
   const handleLogin = () => {
-    navigate("/login", { state: { from: window.location.pathname } });
+    navigate("/login", {
+      state: {
+        from: window.location.pathname,
+      },
+    });
   };
 
   return (
@@ -39,7 +57,6 @@ const Header = () => {
           <div>
             <p
               className="waplogo"
-              alt="wap"
               onClick={() => navigate("/ProjectPage")}
               style={{ cursor: "pointer" }}
             >
@@ -47,15 +64,46 @@ const Header = () => {
                 src={wapsLogo}
                 alt="WAPs"
                 className="waplogo"
-                onClick={() => navigate("/ProjectPage")}
-                style={{ cursor: "pointer", height: "15px" }} // 크기 조절
+                style={{
+                  cursor: "pointer",
+                  height: "15px",
+                }}
               />
             </p>
           </div>
 
-          {/* 아이콘은 CSS에서 absolute로 오른쪽 고정 */}
-          <div className="menu-icon" onClick={toggleMenu}>
-            {menuOpen ? <p>✕</p> : <p className="menu-bar">☰</p>}
+          {!menuOpen && (
+            <nav className="desktop-nav">
+              <button onClick={() => navigate("/ProjectPage")}>
+                PROJECT
+              </button>
+
+              <button onClick={() => navigate("/team-build")}>
+                TEAMBUILDING
+              </button>
+
+              <button onClick={() => navigate("/vote")}>
+                VOTE
+              </button>
+
+              <button
+                className="desktop-login"
+                onClick={handleLogin}
+              >
+                LOGIN
+              </button>
+            </nav>
+          )}
+
+          <div
+            className="menu-icon"
+            onClick={toggleMenu}
+          >
+            {menuOpen ? (
+              <p>✕</p>
+            ) : (
+              <p className="menu-bar">☰</p>
+            )}
           </div>
         </div>
       </header>

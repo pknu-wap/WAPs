@@ -2,6 +2,7 @@ package wap.web2.server.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import wap.web2.server.member.entity.MembershipLevel;
 import wap.web2.server.member.entity.Role;
 
 @Getter
@@ -9,5 +10,6 @@ import wap.web2.server.member.entity.Role;
 public class UserRoleResponse {
 
     private Role role;
+    private MembershipLevel membershipLevel;
     private boolean isRoleAssigned;
 }
