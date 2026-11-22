@@ -212,6 +212,7 @@ ul {
   }
 
   .container:has(.project-page),
+  .container:has(.vote-page),
   .container.vote-page {
     width: 100%;
     max-width: none;
