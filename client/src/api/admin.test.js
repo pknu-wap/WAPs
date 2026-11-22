@@ -1,4 +1,4 @@
-import { adminPermissonApi } from "./admin";
+import { adminPermissonApi, adminVoteApi } from "./admin";
 import apiClient from "./client";
 
 jest.mock("./client", () => ({ get: jest.fn(), patch: jest.fn(), delete: jest.fn() }));
@@ -12,6 +12,13 @@ const legacyUsers = [
 
 beforeEach(() => {
   jest.resetAllMocks();
+});
+
+test("투표 삭제는 해당 학기를 DELETE 요청으로 전달한다", async () => {
+  await adminVoteApi.delete("2026-02");
+  expect(apiClient.delete).toHaveBeenCalledWith("/admin/vote", {
+    params: { semester: "2026-02" },
+  });
 });
 
 test("통합 저장 응답의 기존 LEVEL 필드를 화면 계약으로 변환한다", async () => {

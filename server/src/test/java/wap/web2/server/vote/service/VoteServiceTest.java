@@ -91,15 +91,15 @@ class VoteServiceTest {
         assertThatThrownBy(() -> service.getVoteResults(TERM)).isInstanceOf(ResourceNotFoundException.class);
     }
 
-    @Test void publicResultsAreRecheckedAfterHidingAndReopening() {
+    @Test void publicResultsAreRecheckedAfterHidingAndDeletion() {
         var meta = VoteMeta.of(TERM, 2L, Set.of(10L, 20L, 30L));
         meta.close(2L); meta.changeResultVisibility(true);
         when(metas.findBySemester(TERM)).thenReturn(Optional.of(meta));
         assertThat(service.getVoteResults(TERM)).isNotNull();
         meta.changeResultVisibility(false);
         assertThatThrownBy(() -> service.getVoteResults(TERM)).isInstanceOf(ForbiddenException.class);
-        meta.changeResultVisibility(true); meta.reopen();
-        assertThatThrownBy(() -> service.getVoteResults(TERM)).isInstanceOf(ForbiddenException.class);
+        when(metas.findBySemester(TERM)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> service.getVoteResults(TERM)).isInstanceOf(ResourceNotFoundException.class);
         verify(ballots, times(1)).countVotesByProject(TERM);
     }
 

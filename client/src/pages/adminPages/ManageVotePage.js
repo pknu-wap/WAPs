@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import styles from "../../assets/Admin/ManageVote.module.css";
 import { adminVoteApi } from "../../api/admin";
 import { projectApi } from "../../api/project";
@@ -7,7 +7,7 @@ import SubmitModal from "./SubmitModal";
 const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
   const isOpenButton = voteStatus === "NOT_CREATED";
   const isCloseButton = voteStatus === "VOTING";
-  const isReopenButton = voteStatus === "ENDED";
+  const isDeleteButton = voteStatus === "ENDED";
 
   return (
     <div>
@@ -23,17 +23,17 @@ const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
         </div>
         <button
           disabled={
-            isProcessing || (!isOpenButton && !isCloseButton && !isReopenButton)
+            isProcessing || (!isOpenButton && !isCloseButton && !isDeleteButton)
           }
           onClick={onClick}
           className={
-            isOpenButton || isReopenButton ? styles.openBtn : styles.closeBtn
+            isOpenButton ? styles.openBtn : styles.closeBtn
           }
         >
-          {isReopenButton
+          {isDeleteButton
             ? isProcessing
-              ? "다시 여는 중..."
-              : "투표 다시 열기"
+              ? "삭제 중..."
+              : "투표 삭제"
             : isProcessing
               ? isOpenButton
                 ? "시작 중..."
@@ -309,23 +309,26 @@ const ManageVotePage = () => {
     }
   };
 
-  // 투표 다시 열기 핸들러
-  const handleReopenVote = async () => {
+  // 투표 삭제 핸들러
+  const handleDeleteVote = async () => {
     if (voteStatus !== "ENDED" || isProcessing) return;
     if (
       !window.confirm(
-        "기존 투표 기록과 참여 프로젝트를 유지하고 투표를 다시 엽니다. 결과는 비공개로 전환됩니다. 계속하시겠습니까?",
+        "해당 학기의 투표 정보와 모든 투표 기록 및 결과를 완전히 삭제합니다. 복구할 수 없습니다. 프로젝트 원본은 유지됩니다. 삭제하시겠습니까?",
       )
     )
       return;
 
     try {
       setIsProcessing(true);
-      await adminVoteApi.reopen(semester);
-      setVoteStatus("VOTING");
+      await adminVoteApi.delete(semester);
+      setVoteStatus("NOT_CREATED");
+      setProjects([]);
+      setSelectedProjects([]);
+      setIsModalOpen(false);
       setIsResultPublic(false);
     } catch (e) {
-      alert("투표 다시 열기에 실패했습니다. 다시 시도해주세요.");
+      alert("투표 삭제에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setIsProcessing(false);
     }
@@ -370,23 +373,19 @@ const ManageVotePage = () => {
     setIsModalOpen(true);
   };
 
-  // 투표 결과 공개 여부 조회 함수
-  const fetchResultVisibility = useCallback(async () => {
-    if (!semester) return;
-    try {
-      const data = await adminVoteApi.getIsVoteOpen(semester);
-      setIsResultPublic(data.isPublic || false);
-    } catch (e) {
-      setError("투표 공개 상태 조회 실패");
-    }
-  }, [semester]);
-
-  // 종료된 투표의 공개 여부는 집계 결과와 별도로 조회한다.
+  // 삭제 이후 늦게 도착한 공개 여부 응답은 폐기한다.
   useEffect(() => {
     if (voteStatus !== "ENDED" || !semester) return;
-
-    fetchResultVisibility();
-  }, [voteStatus, semester, fetchResultVisibility]);
+    let active = true;
+    adminVoteApi.getIsVoteOpen(semester)
+      .then((data) => {
+        if (active) setIsResultPublic(data.isPublic || false);
+      })
+      .catch(() => {
+        if (active) setError("투표 공개 상태 조회 실패");
+      });
+    return () => { active = false; };
+  }, [voteStatus, semester]);
 
   // 투표 결과 공개 여부 핸들러
   const handleSetPublicStatus = async (isPublic) => {
@@ -427,7 +426,7 @@ const ManageVotePage = () => {
           voteStatus === "NOT_CREATED"
             ? handleSummitProjects // OPEN 누르면 모달
             : voteStatus === "ENDED"
-              ? handleReopenVote
+              ? handleDeleteVote
               : handleCloseVote // CLOSE
         }
       />
