@@ -144,10 +144,10 @@
 
 @media (min-width: 600px) {
   .mainContainer {
-    width: 100vw;
+    width: 100%;
     max-width: none;
 
-    margin-left: calc(50% - 50vw);
+    margin-left: 0;
     margin-right: 0;
   }
 
