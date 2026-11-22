@@ -327,6 +327,7 @@
 }
 
 .hero__badge {
+  display: none;
   font-weight: 800;
   letter-spacing: 0.5px;
   opacity: 0.95;
