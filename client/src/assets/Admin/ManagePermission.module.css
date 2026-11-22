@@ -14,13 +14,13 @@
 .container {
   width: 100%;
   height: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) minmax(260px, 1fr);
   gap: 29px;
 }
 
 .Box {
   min-width: 0;
-  flex: 1 1 0;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -36,6 +36,10 @@
   justify-content: space-between;
   font-size: 20px;
   font-weight: 700;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0;
 }
 
 /* 테이블 관련 */
@@ -117,6 +121,8 @@
 
 .filterSelect {
   width: 140px;
+  max-width: 100%;
+  min-width: 0;
   height: 32px;
   border: 1px solid #626262;
   border-radius: 68px;
@@ -215,20 +221,22 @@
   flex-wrap: wrap;
   display: flex;
   gap: 12px;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   flex-shrink: 0;
 }
 
 .roleDropdown {
-  min-width: 200px;
+  min-width: 0;
+  width: 100%;
   height: 45px;
   font-size: 18px;
   border-radius: 26px;
   cursor: pointer;
   background-color: #bcbcbc;
   color: black;
-  flex: 1;
-  max-width: 200px;
+  flex: none;
+  max-width: none;
   text-align: center;
   font-weight: 700;
   outline: none;
@@ -280,7 +288,7 @@
 
 @media (max-width: 760px) {
   .container {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
     height: auto;
   }
 
@@ -328,20 +336,10 @@
   cursor: pointer;
 }
 
-.container {
-  display: grid;
-  grid-template-columns: minmax(0, 2.1fr) minmax(260px, 1fr);
-}
-
-.header {
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin: 0;
-}
-
 .filters,
 .filters label {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -356,34 +354,19 @@
   font-size: 14px;
 }
 
-.container td {
-  overflow-wrap: anywhere;
-}
-
 .container tbody tr {
   cursor: pointer;
 }
 
-.container tbody tr:focus-visible {
+.container tbody tr:focus-visible,
+.container select:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: -2px;
-}
-
-.controler {
-  flex-direction: column;
-  align-items: flex-start;
 }
 
 .controler label {
   font-size: 18px;
   font-weight: 700;
-}
-
-.roleDropdown {
-  min-width: 0;
-  width: 100%;
-  flex: none;
-  max-width: none;
 }
 
 .emptySelection {
@@ -400,11 +383,6 @@
   margin-inline: 15px;
 }
 
-@media (max-width: 760px) {
-  .container {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
 .deleteButton {
   box-sizing: border-box;
   display: inline-flex;
