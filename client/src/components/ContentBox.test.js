@@ -16,6 +16,26 @@ beforeEach(() => {
 });
 const open = () => render(<MemoryRouter><ContentBox /></MemoryRouter>);
 
+test("응답을 기다리는 동안 제목과 검색창을 유지하고 목록에만 로딩을 표시한다", async () => {
+  let finishLoading;
+  projectApi.getProjectList.mockReturnValue(new Promise((resolve) => {
+    finishLoading = resolve;
+  }));
+  open();
+  const heading = screen.getByRole("heading", { name: /다양한 활동들을 만나보세요/ });
+  const search = screen.getByLabelText("project title search");
+  expect(screen.getByRole("status")).toHaveTextContent("프로젝트를 불러오는 중입니다.");
+  expect(screen.queryByText("아직 이번 학기 프로젝트가 등록되지 않았어요")).not.toBeInTheDocument();
+  expect(screen.queryByText("조건에 맞는 프로젝트가 없어요")).not.toBeInTheDocument();
+  fireEvent.change(search, { target: { value: "Web" } });
+  await act(async () => finishLoading({ projectsResponse: projects }));
+  expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: /다양한 활동들을 만나보세요/ })).toBe(heading);
+  expect(screen.getByLabelText("project title search")).toBe(search);
+  expect(screen.getByRole("heading", { name: "WAP Web" })).toBeInTheDocument();
+  expect(screen.queryByRole("heading", { name: "WAP App" })).not.toBeInTheDocument();
+});
+
 test("검색어의 앞뒤 공백과 대소문자를 무시하고 유형 필터를 함께 적용한다", async () => {
   open();
   await screen.findByRole("heading", { name: "WAP Web" });

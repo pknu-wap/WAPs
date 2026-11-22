@@ -47,19 +47,6 @@
   z-index: -1; /* 배경 뒤로 보냄 */
 }
 
-.mount1 {
-  animation: 0.7s ease-in-out loadEffect1;
-}
-
-@keyframes loadEffect1 {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 .titleBox {
   padding: 100px clamp(24px, 10vw, 40px) 64px;
   box-sizing: border-box;

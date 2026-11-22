@@ -32,21 +32,24 @@
     <title>Waps</title>
 
     <style>
-      /* html과 body 태그의 높이를 100%로 설정 */
+      /* Keep the document canvas stable before the React bundle loads. */
       html,
       body {
-        width: min(100%, 400px);
+        width: 100%;
         height: 100%;
         margin: 0;
         padding: 0;
-        background-color: rgba(243, 243, 243, 0.599);
+        background-color: #0b0b0f;
         color: #ffffff;
+      }
+      #root {
+        min-height: 100%;
       }
     </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root" style="background-color: black; height: 100%"></div>
+    <div id="root"></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
