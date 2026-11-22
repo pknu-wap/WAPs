@@ -56,12 +56,20 @@
 }
 
 .close {
+  background: transparent;
+  border: 0;
+  padding: 0;
   width: 20px;
   height: 20px;
   color: #fff;
   text-align: center;
   font-size: 15px;
   cursor: pointer;
+}
+
+.close:disabled {
+  cursor: wait;
+  opacity: 0.5;
 }
 
 .close:after {
