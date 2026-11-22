@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.exception.ConflictException;
 import wap.web2.server.exception.ForbiddenException;
 import wap.web2.server.exception.ProjectPasswordInvalidException;
 import wap.web2.server.exception.ResourceNotFoundException;
@@ -232,11 +233,16 @@ public class ProjectService {
     @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public void delete(Long projectId, UserPrincipal userPrincipal) {
+        // 투표 개설의 프로젝트 잠금과 동기화한 뒤 참조 여부를 확인한다.
+        Project project = projectRepository.findByIdForUpdate(projectId)
+            .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
         User user = findUser(userPrincipal.getId());
-        Project project = findProject(projectId);
 
         if (!canManage(project, user)) {
             throw new ForbiddenException("프로젝트 삭제 권한이 없습니다.");
+        }
+        if (projectRepository.participatesInVote(projectId)) {
+            throw new ConflictException("투표에 포함된 프로젝트는 투표 기록 보존을 위해 삭제할 수 없습니다.");
         }
         // 다른 환경의 DB에서도 같은 이미지 URL을 사용할 수 있으므로 버킷 객체는 보존합니다.
         projectRepository.delete(project);

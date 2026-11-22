@@ -7,6 +7,7 @@ import SubmitModal from "./SubmitModal";
 const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
   const isOpenButton = voteStatus === "NOT_CREATED";
   const isCloseButton = voteStatus === "VOTING";
+  const isReopenButton = voteStatus === "ENDED";
 
   return (
     <div>
@@ -21,19 +22,27 @@ const HeaderSection = ({ semester, isProcessing, voteStatus, onClick }) => {
           </div>
         </div>
         <button
-          disabled={isProcessing || (!isOpenButton && !isCloseButton)}
+          disabled={
+            isProcessing || (!isOpenButton && !isCloseButton && !isReopenButton)
+          }
           onClick={onClick}
-          className={isOpenButton ? styles.openBtn : styles.closeBtn}
+          className={
+            isOpenButton || isReopenButton ? styles.openBtn : styles.closeBtn
+          }
         >
-          {isProcessing
-            ? isOpenButton
-              ? "시작 중..."
-              : "종료 중..."
-            : isOpenButton
-              ? "투표 시작"
-              : isCloseButton
-                ? "투표 종료"
-                : "투표 종료됨"}
+          {isReopenButton
+            ? isProcessing
+              ? "다시 여는 중..."
+              : "투표 다시 열기"
+            : isProcessing
+              ? isOpenButton
+                ? "시작 중..."
+                : "종료 중..."
+              : isOpenButton
+                ? "투표 시작"
+                : isCloseButton
+                  ? "투표 종료"
+                  : "투표 종료됨"}
         </button>
       </div>
     </div>
@@ -96,7 +105,12 @@ const VotingView = () => {
   );
 };
 
-const EndedView = ({ voteResult, isResultPublic, handleSetPublicStatus }) => {
+const EndedView = ({
+  voteResult,
+  isResultPublic,
+  isProcessing,
+  handleSetPublicStatus,
+}) => {
   const publicBtnClass = isResultPublic
     ? styles.publicBtnActive
     : styles.publicBtn;
@@ -152,7 +166,7 @@ const EndedView = ({ voteResult, isResultPublic, handleSetPublicStatus }) => {
             className={publicBtnClass}
             onClick={() => handleSetPublicStatus(true)}
             aria-pressed={isResultPublic}
-            disabled={isResultPublic}
+            disabled={isProcessing || isResultPublic}
           >
             공개
           </button>
@@ -160,7 +174,7 @@ const EndedView = ({ voteResult, isResultPublic, handleSetPublicStatus }) => {
             className={privateBtnClass}
             onClick={() => handleSetPublicStatus(false)}
             aria-pressed={!isResultPublic}
-            disabled={!isResultPublic}
+            disabled={isProcessing || !isResultPublic}
           >
             비공개
           </button>
@@ -243,6 +257,28 @@ const ManageVotePage = () => {
     }
   };
 
+  // 투표 다시 열기 핸들러
+  const handleReopenVote = async () => {
+    if (voteStatus !== "ENDED" || isProcessing) return;
+    if (
+      !window.confirm(
+        "기존 투표 기록과 참여 프로젝트를 유지하고 투표를 다시 엽니다. 결과는 비공개로 전환됩니다. 계속하시겠습니까?",
+      )
+    )
+      return;
+
+    try {
+      setIsProcessing(true);
+      await adminVoteApi.reopen(semester);
+      setVoteStatus("VOTING");
+      setIsResultPublic(false);
+    } catch (e) {
+      alert("투표 다시 열기에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   // 투표 닫기 핸들러
   const handleCloseVote = async () => {
     if (voteStatus !== "VOTING") return;
@@ -311,14 +347,17 @@ const ManageVotePage = () => {
 
   // 투표 결과 공개 여부 핸들러
   const handleSetPublicStatus = async (isPublic) => {
-    if (voteStatus !== "ENDED") return;
+    if (voteStatus !== "ENDED" || isProcessing) return;
     try {
+      setIsProcessing(true);
       await adminVoteApi.setPublicStatus(semester, isPublic);
 
       // 서버 요청 성공 후 로컬 상태 업데이
       setIsResultPublic(isPublic);
     } catch {
       setError("투표 공개 상태 변경 실패");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -344,7 +383,9 @@ const ManageVotePage = () => {
         onClick={
           voteStatus === "NOT_CREATED"
             ? handleSummitProjects // OPEN 누르면 모달
-            : handleCloseVote // CLOSE
+            : voteStatus === "ENDED"
+              ? handleReopenVote
+              : handleCloseVote // CLOSE
         }
       />
 
@@ -364,6 +405,7 @@ const ManageVotePage = () => {
         <EndedView
           voteResult={voteResult}
           isResultPublic={isResultPublic}
+          isProcessing={isProcessing}
           handleSetPublicStatus={handleSetPublicStatus}
         />
       )}

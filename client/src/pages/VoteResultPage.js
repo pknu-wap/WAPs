@@ -103,7 +103,7 @@ const VoteResultPage = () => {
         if (!isMounted) return;
 
         const status = e?.response?.status;
-        if (status === 400 || status === 404 || status === 500) {
+        if (status === 403 || status === 404) {
           setProjects([]);
           setEmptyMessage("해당 학기 투표 결과는 아직 공개되지 않았습니다.");
         } else {
