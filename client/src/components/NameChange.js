@@ -1,8 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-const NameChange = ({ currentName, onClose, onChangeName, isSaving = false }) => {
+const NameChange = ({
+  currentName,
+  onClose,
+  onChangeName,
+  isSaving = false,
+}) => {
   const [step, setStep] = useState(1);
   const [newName, setNewName] = useState("");
+  const dialogRef = useRef(null);
+  const returnFocus = useRef(document.activeElement);
+
+  useEffect(() => {
+    const trigger = returnFocus.current;
+    return () => trigger?.focus();
+  }, []);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    const target = dialog.querySelector(
+      "input, .confirm-name-button:not(:disabled)",
+    );
+    (target || dialog).focus();
+  }, [step, isSaving]);
+
+  const handleDialogKeyDown = (event) => {
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!isSaving) onClose();
+    }
+    if (event.key === "Tab") {
+      const controls = [
+        ...dialogRef.current.querySelectorAll(
+          "button:not(:disabled), input:not(:disabled)",
+        ),
+      ];
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (!first) {
+        event.preventDefault();
+        dialogRef.current.focus();
+      } else if (
+        event.shiftKey &&
+        (document.activeElement === first ||
+          document.activeElement === dialogRef.current)
+      ) {
+        event.preventDefault();
+        last.focus();
+      } else if (
+        !event.shiftKey &&
+        (document.activeElement === last ||
+          document.activeElement === dialogRef.current)
+      ) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  };
   const handleNext = () => {
     const trimmedName = newName.trim();
 
@@ -29,9 +85,17 @@ const NameChange = ({ currentName, onClose, onChangeName, isSaving = false }) =>
   };
 
   return (
-    <div className="name-modal-overlay" onClick={() => { if (!isSaving) onClose(); }}>
+    <div
+      className="name-modal-overlay"
+      onClick={() => {
+        if (!isSaving) onClose();
+      }}
+    >
       <div
         className="name-modal"
+        ref={dialogRef}
+        tabIndex={-1}
+        onKeyDown={handleDialogKeyDown}
         role="dialog"
         aria-modal="true"
         aria-label="이름 변경"
@@ -74,7 +138,6 @@ const NameChange = ({ currentName, onClose, onChangeName, isSaving = false }) =>
                   handleNext();
                 }
               }}
-              autoFocus
             />
 
             <button

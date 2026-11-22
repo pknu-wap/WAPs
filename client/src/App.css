@@ -7,14 +7,15 @@
 
 /* 본문과 헤더 폭을 맞추는 공통 값 */
 :root {
-  --container-max: 400px;
+  --container-max: min(100vw, 400px);
   /* 필요 시 한 곳만 수정 */
 }
 
 /* ===== 헤더: 전폭 fixed + 내부 래퍼로 실제 표시 폭 제한 ===== */
 .App-header {
   position: absolute;
-  width: var(--container-max);
+  width: 100%;
+  max-width: var(--container-max);
   z-index: 101;
   /* 메뉴(100)보다 위 */
   background: transparent;
@@ -25,6 +26,7 @@
 
 /* 컨테이너 폭 안에서 로고–아이콘 양끝 배치 */
 .header-inner {
+  box-sizing: border-box;
   max-width: var(--container-max);
   margin: 0 auto;
   height: 100%;
@@ -44,10 +46,27 @@
 
 /* 아이콘 */
 .menu-icon {
+  background: none;
+  border: 0;
+  color: inherit;
+  min-width: 44px;
+  min-height: 44px;
   font-size: 23px;
   cursor: pointer;
   z-index: 102;
   user-select: none;
+}
+
+.App-header button:focus-visible {
+  outline: 2px solid #abd4fd;
+  outline-offset: 3px;
+}
+
+.App-header .brand-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
 }
 
 .menu-bar {
@@ -185,18 +204,24 @@ ul {
 }
 
 @media (min-width: 600px) {
+  html:has(.project-page),
+  body:has(.project-page),
+  html:has(.container.vote-page),
+  body:has(.container.vote-page) {
+    width: 100%;
+  }
+
   .container:has(.project-page),
   .container.vote-page {
-    width: 100vw;
+    width: 100%;
     max-width: none;
     margin: 0;
-    margin-left: calc(50% - 50vw);
     box-shadow: none;
   }
 
   .project-page,
   .container.vote-page {
-    width: 100vw;
+    width: 100%;
     max-width: none;
     min-height: 100vh;
     background: #000;
@@ -215,7 +240,7 @@ ul {
   .container.vote-page .App-header {
     top: 0;
     left: 0;
-    width: 100vw;
+    width: 100%;
     max-width: none;
     height: 80px;
   }

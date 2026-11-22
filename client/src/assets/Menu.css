@@ -115,6 +115,7 @@ body:has(nav.menu) .App-header {
 }
 
 .menu-item {
+  box-sizing: border-box;
   width: 100%;
   display: flex;
   justify-content: space-between;

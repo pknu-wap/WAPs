@@ -46,6 +46,32 @@ const results = [
   },
 ];
 
+test("동률은 공동 순위이며 다음 순위는 건너뛴다", async () => {
+  adminVoteApi.getStatus.mockResolvedValue({ status: "VOTING" });
+  adminVoteApi.getResults.mockResolvedValue([
+    { projectId: 3, projectName: "C", voteCount: 1, voteRate: 20 },
+    { projectId: 2, projectName: "B", voteCount: 2, voteRate: 40 },
+    { projectId: 1, projectName: "A", voteCount: 2, voteRate: 40 },
+  ]);
+  render(<ManageVotePage />);
+  await screen.findByText("총 5표 · 참여 프로젝트 3개");
+  expect(
+    screen
+      .getAllByRole("row")
+      .slice(1)
+      .map((row) =>
+        within(row)
+          .getAllByRole("cell")
+          .slice(0, 2)
+          .map((cell) => cell.textContent),
+      ),
+  ).toEqual([
+    ["1", "A"],
+    ["1", "B"],
+    ["3", "C"],
+  ]);
+});
+
 test("진행 중 득표 현황과 0표 프로젝트를 표시하고 수동 갱신한다", async () => {
   adminVoteApi.getStatus.mockResolvedValue({ status: "VOTING" });
   adminVoteApi.getResults.mockResolvedValue(results);
