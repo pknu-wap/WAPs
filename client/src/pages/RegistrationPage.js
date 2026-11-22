@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { userApi } from "../api/user";
 import styles from "../assets/Account.module.css";
@@ -10,7 +10,7 @@ function normalizeStudentYear(value) {
   const digits = String(value ?? "").replace(/[^0-9]/g, "");
   return digits.length === 4 || digits.length === 9
     ? digits.slice(2, 4)
-    : digits.slice(0, 2);
+    : digits;
 }
 
 export default function RegistrationPage() {
@@ -23,7 +23,9 @@ export default function RegistrationPage() {
   const [membership, setMembership] = useState("");
   const [name, setName] = useState("");
   const [studentId, setStudentId] = useState("");
+  const [memberType, setMemberType] = useState("NEW");
   const [submitting, setSubmitting] = useState(false);
+  const pending = useRef(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -33,21 +35,20 @@ export default function RegistrationPage() {
     userApi.getMe().then(
       (user) => {
         if (!active) return;
-        if (editing) {
-          setMembership(user.wapMember === true ? "yes" : user.wapMember === false ? "no" : "");
-          setName(user.userName ?? user.name ?? "");
-          setStudentId(normalizeStudentYear(user.studentId ?? user.studentNumber));
-          setRegistrationStatus("pending");
-        } else if (registrationRequired(user) === false) {
-          navigate("/ProjectPage", { replace: true });
+        if (registrationRequired(user) === false) {
+          navigate(editing ? "/settings" : "/ProjectPage", { replace: true });
         } else if (registrationRequired(user) === true) {
           setRegistrationStatus("pending");
         } else {
           setRegistrationStatus("failed");
         }
       },
-      () => {
-        if (active) setRegistrationStatus("failed");
+      (error) => {
+        if (!active) return;
+        if (error.response?.status === 401) {
+          authStorage.remove("authToken");
+          navigate("/login", { replace: true });
+        } else setRegistrationStatus("failed");
       },
     );
 
@@ -62,7 +63,6 @@ export default function RegistrationPage() {
   }
 
   function closeRegistration() {
-    if (editing) { navigate("/settings"); return; }
     for (const key of ["authToken", "userName", "userRole", "lastPage"]) {
       authStorage.remove(key);
     }
@@ -71,7 +71,7 @@ export default function RegistrationPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    if (submitting) return;
+    if (pending.current || registrationStatus !== "pending") return;
 
     const wapMember = membership === "yes";
     const trimmedName = name.trim();
@@ -89,11 +89,18 @@ export default function RegistrationPage() {
     }
 
     setErrorMessage("");
+    pending.current = true;
     setSubmitting(true);
     try {
-      const user = await (editing ? userApi.updateRegistration : userApi.completeRegistration)(
-        wapMember ? { wapMember, name: trimmedName, studentId } : { wapMember },
-      );
+      let user;
+      try {
+        user = await userApi.signup(wapMember
+          ? { member: true, name: trimmedName, studentNumber: studentId, memberType }
+          : { member: false });
+      } catch (error) {
+        if (error.response?.status !== 409) throw error;
+        user = await userApi.getMe();
+      }
       if (registrationRequired(user) !== false) {
         setErrorMessage("가입이 완료되지 않았습니다. 다시 시도해주세요.");
         return;
@@ -101,10 +108,19 @@ export default function RegistrationPage() {
       if (user.userName) {
         authStorage.set("userName", user.userName, { expires: 7 });
       }
-      navigate(editing ? "/settings" : "/ProjectPage", { replace: true });
-    } catch {
+      const role = await userApi.getRole().catch(() => null);
+      if (role?.role) authStorage.set("userRole", role.role, { expires: 7 });
+      else authStorage.remove("userRole");
+      navigate("/ProjectPage", { replace: true });
+    } catch (error) {
+      if (error.response?.status === 401) {
+        authStorage.remove("authToken");
+        navigate("/login", { replace: true });
+        return;
+      }
       setErrorMessage("가입 정보를 저장하지 못했습니다. 다시 시도해주세요.");
     } finally {
+      pending.current = false;
       setSubmitting(false);
     }
   }
@@ -113,7 +129,7 @@ export default function RegistrationPage() {
 
   return (
     <main className={styles.page}>
-      {registrationStatus === "pending" && (
+      {registrationStatus !== "loading" && (
         <button
           className={styles.closeButton}
           type="button"
@@ -213,13 +229,25 @@ export default function RegistrationPage() {
                     onChange={(event) => setStudentId(event.target.value.replace(/[^0-9]/g, "").slice(0, 2))}
                     onPaste={(event) => {
                       event.preventDefault();
-                      setStudentId(normalizeStudentYear(event.clipboardData.getData("text")));
+                      const year = normalizeStudentYear(event.clipboardData.getData("text"));
+                      if (/^[0-9]{2}$/.test(year)) {
+                        setStudentId(year);
+                        setErrorMessage("");
+                      } else setErrorMessage("두 자리 학번, 네 자리 입학 연도 또는 아홉 자리 학번을 붙여 넣어주세요.");
                     }}
                   />
                 </label>
                 <p id="student-id-help" className={styles.fieldHint}>
                   입학 연도 뒤 두 자리를 입력해주세요. 예: 2026 → 26
                 </p>
+                <label className={styles.fieldLabel}>
+                  회원 구분
+                  <select value={memberType} disabled={submitting} onChange={(event) => setMemberType(event.target.value)}>
+                    <option value="NEW">신입회원</option>
+                    <option value="ASSOCIATE">준회원</option>
+                    <option value="REGULAR">정회원</option>
+                  </select>
+                </label>
               </div>
             )}
             {errorMessage && (
@@ -232,7 +260,7 @@ export default function RegistrationPage() {
               type="submit"
               disabled={submitting}
             >
-              {submitting ? "저장 중…" : editing ? "가입 정보 저장" : "회원가입하기"}
+              {submitting ? "저장 중…" : "회원가입하기"}
             </button>
           </form>
         )}

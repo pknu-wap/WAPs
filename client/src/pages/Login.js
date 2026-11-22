@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { authApi } from "../api/auth";
 import styles from "../assets/Account.module.css";
 import wapsLogo from "../assets/img/waps_logo.png";
@@ -8,13 +9,18 @@ import authStorage from "../utils/authStorage";
 export default function Login() {
   const navigate = useNavigate();
   const isLoggedIn = Boolean(authStorage.get("authToken"));
+  const [error, setError] = useState("");
 
   const handleKakaoLogin = (event) => {
     event.preventDefault();
     const redirectUri = encodeURIComponent(
       `${window.location.origin}/oauth/callback`,
     );
-    window.location.href = authApi.getKakaoLoginUrl(redirectUri);
+    try {
+      window.location.href = authApi.getKakaoLoginUrl(redirectUri);
+    } catch (failure) {
+      setError(failure.message || "로그인을 시작하지 못했습니다. 다시 시도해주세요.");
+    }
   };
 
   const handleLogout = () => {
@@ -50,6 +56,7 @@ export default function Login() {
           </button>
         ) : (
           <form className={styles.loginForm} onSubmit={handleKakaoLogin}>
+            {error && <p className={styles.error} role="alert">{error}</p>}
             <p className={styles.loginPrompt}>
               카카오로 간편하게 로그인을 진행하세요
               <span>Sign in with KAKAO</span>

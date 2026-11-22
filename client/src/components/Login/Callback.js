@@ -16,13 +16,16 @@ export default function Callback() {
       navigate("/login", { replace: true });
       return undefined;
     }
-    if (!request.current) {
+    if (request.current?.token !== token) {
       clearDevSession();
       authStorage.set("authToken", token, { expires: 7 });
-      request.current = Promise.all([userApi.getMe(), userApi.getRole().catch(() => null)]);
+      request.current = {
+        token,
+        promise: Promise.all([userApi.getMe(), userApi.getRole().catch(() => null)]),
+      };
     }
     let active = true;
-    request.current.then(([profile, role]) => {
+    request.current.promise.then(([profile, role]) => {
       if (!active) return;
       authStorage.set("userName", profile.userName, { expires: 7 });
       if (role?.role) authStorage.set("userRole", role.role, { expires: 7 });

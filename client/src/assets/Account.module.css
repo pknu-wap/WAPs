@@ -110,6 +110,7 @@
 
 .membershipOptions,
 .fieldLabel input,
+.fieldLabel select,
 .providerOption {
   box-sizing: border-box;
   width: 100%;
@@ -141,7 +142,8 @@
   accent-color: #fff;
 }
 
-.fieldLabel input {
+.fieldLabel input,
+.fieldLabel select {
   display: block;
   min-width: 0;
   min-height: 45px;
@@ -192,7 +194,12 @@
   opacity: 0.68;
 }
 
-.page :is(button, input):focus-visible {
+.fieldLabel select option {
+  color: #101820;
+  background: #fff;
+}
+
+.page :is(button, input, select):focus-visible {
   outline: 2px solid #fff;
   outline-offset: 3px;
 }
@@ -318,6 +325,7 @@
 
   .membershipOptions,
   .fieldLabel input,
+  .fieldLabel select,
   .providerOption,
   .primaryButton {
     border-radius: 14px;
@@ -332,12 +340,14 @@
   }
 
   .fieldLabel input,
+  .fieldLabel select,
   .providerOption,
   .primaryButton {
     min-height: 64px;
   }
 
-  .fieldLabel input {
+  .fieldLabel input,
+  .fieldLabel select {
     padding: 14px 20px;
   }
 
