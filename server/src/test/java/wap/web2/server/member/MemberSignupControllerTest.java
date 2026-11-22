@@ -73,6 +73,9 @@ class MemberSignupControllerTest {
             for (String body : List.of("{}", "null", "{\"member\":null}",
                 "{\"member\":true,\"memberType\":\"ADMIN\"}",
                 "{\"member\":true,\"studentNumber\":\"abc\"}",
+                "{\"member\":true,\"studentNumber\":\"2\"}",
+                "{\"member\":true,\"studentNumber\":\"2026\"}",
+                "{\"member\":true,\"studentNumber\":\"202600001\"}",
                 "{\"member\":true,\"studentNumber\":\"123456789012345678901\"}",
                 "{\"member\":true,\"name\":\"" + "가".repeat(256) + "\"}")) {
                 mvc.perform(post("/user/signup").with(user(principal()))
@@ -95,9 +98,9 @@ class MemberSignupControllerTest {
             when(repository.findByIdForUpdate(1L)).thenReturn(Optional.of(account));
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
             mvc.perform(post("/user/signup").with(user(principal())).contentType("application/json")
-                .content("{\"member\":true,\"name\":\"홍길동\",\"studentNumber\":\"20260001\",\"memberType\":\"NEW\"}"))
+                .content("{\"member\":true,\"name\":\"홍길동\",\"studentNumber\":\"26\",\"memberType\":\"NEW\"}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.signupCompleted").value(true))
-                .andExpect(jsonPath("$.studentNumber").value("20260001"))
+                .andExpect(jsonPath("$.studentNumber").value("26"))
                 .andExpect(jsonPath("$.membershipLevel").value("NEW"))
                 .andExpect(jsonPath("$.memberType").value("NEW"));
             mvc.perform(post("/user/signup").with(user(principal())).contentType("application/json")
@@ -133,7 +136,7 @@ class MemberSignupControllerTest {
             }
             var schema = document.at("/components/schemas/MemberSignupRequest");
             assertThat(schema.path("required")).containsExactly(com.fasterxml.jackson.databind.node.TextNode.valueOf("member"));
-            assertThat(schema.at("/properties/studentNumber/pattern").asText()).isEqualTo("[0-9]{1,20}");
+            assertThat(schema.at("/properties/studentNumber/pattern").asText()).isEqualTo("[0-9]{2}");
             assertThat(schema.at("/properties/memberType/enum")).containsExactly(
                 com.fasterxml.jackson.databind.node.TextNode.valueOf("NEW"),
                 com.fasterxml.jackson.databind.node.TextNode.valueOf("ASSOCIATE"),

@@ -13,8 +13,8 @@ public record MemberSignupRequest(
     @NotNull(message = "회원 여부를 선택해 주세요.") Boolean member,
     @Schema(description = "회원 실명. 회원 선택 시 필수이며 공백만 입력할 수 없습니다. 앞뒤 공백은 제거됩니다.", example = "홍길동", maxLength = 255)
     @Size(max = 255, message = "이름은 255자 이하여야 합니다.") String name,
-    @Schema(description = "회원 학번. 회원 선택 시 필수. 선행 0을 보존하는 숫자 문자열이며 중복을 제한하지 않습니다.", example = "202600001", pattern = "[0-9]{1,20}", minLength = 1, maxLength = 20)
-    @Pattern(regexp = "[0-9]{1,20}", message = "학번은 1~20자리 숫자여야 합니다.") String studentNumber,
+    @Schema(description = "입학 연도 뒤 두 자리. 예: 2026년은 26. 선행 0을 보존합니다.", example = "26", pattern = "[0-9]{2}", minLength = 2, maxLength = 2)
+    @Pattern(regexp = "[0-9]{2}", message = "학번은 입학 연도 뒤 두 자리 숫자여야 합니다.") String studentNumber,
     @Schema(description = "회원 구분. 회원 선택 시 필수. NEW: 신입회원, ASSOCIATE: 준회원, REGULAR: 정회원", example = "NEW")
     MemberType memberType
 ) {}
