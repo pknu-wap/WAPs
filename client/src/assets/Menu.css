@@ -14,7 +14,6 @@ body:has(nav.menu) .App-header {
   left: 50%;
   transform: translateX(-50%);
   width: var(--container-max);
-  height: 60px;
   z-index: 105;
   background: transparent;
 }
@@ -263,47 +262,16 @@ body:has(nav.menu) .App-header {
     top: 0;
     left: 0;
 
-    width: 100vw;
+    width: 100%;
     max-width: none;
-
-    height: 70px;
 
     transform: none;
 
     z-index: 105;
   }
 
-  body:has(nav.menu) .header-inner {
-    width: calc(100% - 64px);
-    max-width: 1200px;
-
-    height: 100%;
-
-    margin: 0 auto;
-
-    padding: 10px 0 0;
-
-    box-sizing: border-box;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
   body:has(nav.menu) .waplogo img {
     height: clamp(15px, 1.1vw, 19px) !important;
-  }
-
-  body:has(nav.menu) .menu-icon {
-    margin: 0;
-
-    font-size: clamp(20px, 1.5vw, 25px);
-
-    flex-shrink: 0;
-  }
-
-  body:has(nav.menu) .menu-icon p {
-    margin: 0;
   }
 
   .menu-content {

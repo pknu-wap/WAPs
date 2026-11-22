@@ -90,13 +90,9 @@ const Header = () => {
             className="menu-icon"
             onClick={toggleMenu}
           >
-            {menuOpen ? (
-              <span aria-hidden="true">✕</span>
-            ) : (
-              <span className="menu-bar" aria-hidden="true">
-                ☰
-              </span>
-            )}
+            <span className="menu-icon-symbol" aria-hidden="true">
+              {menuOpen ? "✕" : <span className="menu-bar">☰</span>}
+            </span>
           </button>
         </div>
       </header>

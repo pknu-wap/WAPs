@@ -8,6 +8,8 @@
 /* 본문과 헤더 폭을 맞추는 공통 값 */
 :root {
   --container-max: min(100vw, 400px);
+  --project-content-gutter: 20px;
+  --project-content-max: 1040px;
   /* 필요 시 한 곳만 수정 */
 }
 
@@ -46,12 +48,16 @@
 
 /* 아이콘 */
 .menu-icon {
+  position: absolute;
+  inset-inline-end: max(var(--project-content-gutter), calc((100% - var(--project-content-max)) / 2));
   background: none;
   border: 0;
   color: inherit;
   min-width: 44px;
   min-height: 44px;
   font-size: 23px;
+  padding-inline: 6px;
+  text-align: end;
   cursor: pointer;
   z-index: 102;
   user-select: none;
@@ -69,8 +75,20 @@
   cursor: pointer;
 }
 
+.menu-icon-symbol {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.menu-icon[aria-expanded="true"] .menu-icon-symbol {
+  font-size: 27px;
+}
+
 .menu-bar {
-  display: inline-block;
   transform: scale(1.3, 0.95);
   font-weight: 600;
   opacity: 70%;
@@ -204,6 +222,16 @@ ul {
 }
 
 @media (min-width: 600px) {
+  :root {
+    --project-content-gutter: 28px;
+    --project-content-max: 850px;
+  }
+
+  .App-header {
+    left: 0;
+    max-width: none;
+  }
+
   html:has(.project-page),
   body:has(.project-page),
   html:has(.splash-page),
@@ -272,6 +300,13 @@ ul {
   }
 }
 
+@media (min-width: 1024px) {
+  :root {
+    --project-content-gutter: 40px;
+    --project-content-max: 1200px;
+  }
+}
+
 @media (min-width: 1200px) {
   .project-page .App-header,
   .container.vote-page .App-header {
@@ -291,6 +326,11 @@ ul {
     margin-left: auto;
     margin-right: 24px;
     gap: 34px;
+  }
+
+  .project-page .desktop-nav + .menu-icon,
+  .container.vote-page .desktop-nav + .menu-icon {
+    position: static;
   }
 
   .project-page .desktop-nav button,

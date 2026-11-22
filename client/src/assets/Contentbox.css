@@ -155,6 +155,7 @@
 
 /* 프로젝트 박스 디자인 */
 .content-box {
+  --project-row-gap: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -195,7 +196,7 @@
   width: 100%;
   max-width: 700px;
   height: auto;
-  margin: 7px 0;
+  margin: calc(var(--project-row-gap) / 2) 0;
   background-color: transparent;
   border-radius: 12px;
   padding: 0;
@@ -203,7 +204,7 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  gap: 20px;
+  gap: var(--project-row-gap);
   position: relative;
 }
 
@@ -239,8 +240,8 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 10px;
-  padding: 1px;
+  gap: var(--project-row-gap);
+  padding: 0;
   background: transparent;
   color: #ffffff;
   position: relative;
@@ -253,7 +254,7 @@
   gap: 6px;
   margin: 0;
   padding: 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   width: 100%;
   justify-content: flex-start;
   text-align: left;
@@ -262,14 +263,13 @@
 /* 제목 */
 .content-box .box .titlebox h2 {
   margin: 0;
-  margin-top: 5px;
   padding: 0;
   font-family: "Pretendard Bold", "Pretendard-Regular", sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: #ffffff;
   line-height: 1.1;
-  flex-basis: 100%;
+  min-width: 0;
   text-align: left !important;
   max-width: 100%;
   white-space: nowrap;
@@ -279,7 +279,7 @@
 
 /* 본문: 제목/태그 아래 줄 */
 .content-box .box .titlebox p {
-  margin: 2px 0 0 0;
+  margin: 0;
   font-size: 11px;
   color: #b0b0b0;
   line-height: 1.5;
@@ -295,9 +295,11 @@
 .content-box .box .project-type-tag {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
   padding: 3px 5px;
   border-radius: 20px;
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 600;
   color: #ffffff;
   line-height: 1;
@@ -311,7 +313,7 @@
   display: flex;
   align-items: flex-end;
   /* The absolute mobile header occupies the first 60px. Keep wrapped titles below it. */
-  padding: 80px 20px 8px;
+  padding: 80px var(--project-content-gutter) 8px;
   box-sizing: border-box;
   isolation: isolate;
   background: linear-gradient(90deg, #a0aeffe8 0%, #b4edfed2 100%);
@@ -333,7 +335,7 @@
 
 .hero__inner {
   width: 100%;
-  max-width: 1040px;
+  max-width: var(--project-content-max);
   margin-left: 3px;
   margin: 0 auto;
   color: #fff;
@@ -400,6 +402,10 @@
   margin-left: auto !important;
   position: relative !important;
   flex: 0 0 auto;
+}
+
+.hero .filter-container .dropdown-button {
+  padding-inline-end: 6px;
 }
 
 /* Hero 내부 드롭다운 메뉴 */
@@ -567,7 +573,7 @@ button {
   .project-page .hero {
     width: 100%;
     min-height: auto;
-    padding: 145px 28px 10px;
+    padding: 145px var(--project-content-gutter) 10px;
     box-sizing: border-box;
     align-items: stretch;
     overflow: hidden;
@@ -575,7 +581,6 @@ button {
 
   .project-page .hero__inner {
     width: 100%;
-    max-width: 850px;
     margin: 0 auto;
     box-sizing: border-box;
   }
@@ -665,6 +670,7 @@ button {
   }
 
   .project-page .content-box {
+    --project-row-gap: 36px;
     width: calc(100% - 56px);
     max-width: 850px;
 
@@ -676,7 +682,7 @@ button {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
     column-gap: 18px;
-    row-gap: 36px;
+    row-gap: var(--project-row-gap);
 
     box-sizing: border-box;
   }
@@ -690,8 +696,6 @@ button {
 
     display: flex;
     flex-direction: column;
-
-    gap: 12px;
   }
 
   .project-page .content-box .box .image {
@@ -722,7 +726,7 @@ button {
     width: 100%;
     min-height: auto;
 
-    padding: 0 40px 10px;
+    padding: 0 var(--project-content-gutter) 10px;
 
     box-sizing: border-box;
 
@@ -733,13 +737,12 @@ button {
 
   .project-page .hero__inner {
     width: 100%;
-    max-width: 1200px;
 
     margin: 0 auto;
 
     display: grid;
 
-    grid-template-columns: 110px minmax(300px, 1fr) auto;
+    grid-template-columns: max-content minmax(300px, 1fr) auto;
     grid-template-rows: auto auto auto;
 
     grid-template-areas:
@@ -763,7 +766,7 @@ button {
 
     margin: 150px 0 0;
 
-    font-size: 30px;
+    font-size: 24px;
     font-weight: 700;
     line-height: 1.2;
 
@@ -785,7 +788,7 @@ button {
 
     margin: 8px 0 0;
 
-    font-size: 16px;
+    font-size: 19px;
     font-weight: 600;
 
     text-align: center;
@@ -827,6 +830,7 @@ button {
   .project-page .hero__search .search-bar {
     width: 100%;
     height: 38px;
+    background-color: rgba(255, 255, 255, 0.443);
   }
 
   .project-page .hero .filter-container {
@@ -879,6 +883,7 @@ button {
   }
 
   .project-page .content-box {
+    --project-row-gap: 48px;
     position: relative;
 
     z-index: 5;
@@ -896,7 +901,7 @@ button {
     align-items: start;
 
     column-gap: 18px;
-    row-gap: 48px;
+    row-gap: var(--project-row-gap);
 
     box-sizing: border-box;
   }
@@ -913,7 +918,6 @@ button {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-
     gap: 14px;
 
     background: transparent;
@@ -952,45 +956,17 @@ button {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-
     gap: 7px;
 
     background: transparent;
   }
 
   .project-page .content-box .box .titlebox .title-row {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-
     gap: 5px;
-
-    flex-wrap: nowrap;
   }
 
   .project-page .content-box .box .titlebox h2 {
-    margin: 0;
-    padding: 0;
-
-    min-width: 0;
-
-    flex-basis: auto;
-    flex-shrink: 1;
-
     font-size: 21px;
     line-height: 1.15;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .project-page .content-box .box .project-type-tag {
-    flex-shrink: 0;
-  }
-
-  .project-page .content-box .box .titlebox p {
-    margin: 0;
   }
 }
