@@ -272,21 +272,13 @@
   left: 2px;
   font-size: 15px;
   font-weight: 800;
-  color: var(--primary);
+  color: #aaa;
   z-index: 2;
   pointer-events: none;
 }
 
-.project_list_form .project_list_box .rank_badge_out {
-  color: #0b0b0b !important;
-}
-
-.project_list_form .project_list_box.selected .rank_badge_out {
-  color: #0b0b0b !important;
-}
-
-.project_list_form .project_list_box:nth-child(-n + 3) .rank_badge_out {
-  color: #0b0b0b !important;
+.selected_result .rank_badge_out {
+  color: #b3ecfd;
 }
 
 /* 실제 이미지를 담는 클립 박스 (대각선 컷) */
@@ -842,7 +834,7 @@
     object-fit: cover;
   }
 
-  .rank_badge_out {
+  .project_list_box .rank_badge_out {
     top: 8px;
     left: 8px;
 
@@ -859,7 +851,7 @@
 
     font-size: 11px;
 
-    color: #333 !important;
+    color: #0b0b0b;
   }
 
   .right_col {
