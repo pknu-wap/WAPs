@@ -278,15 +278,15 @@
 }
 
 .project_list_form .project_list_box .rank_badge_out {
-  color: #808080 !important;
+  color: #0b0b0b !important;
 }
 
 .project_list_form .project_list_box.selected .rank_badge_out {
-  color: #808080 !important;
+  color: #0b0b0b !important;
 }
 
 .project_list_form .project_list_box:nth-child(-n + 3) .rank_badge_out {
-  color: #b3ecfd !important;
+  color: #0b0b0b !important;
 }
 
 /* 실제 이미지를 담는 클립 박스 (대각선 컷) */
