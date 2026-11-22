@@ -27,6 +27,15 @@ beforeEach(() => {
 });
 afterEach(() => jest.restoreAllMocks());
 
+test("키보드로 투표 카드를 선택하고 해제한다", async () => {
+  render(<VoteForm isVotedUser={false} />);
+  const card = await screen.findByRole("button", { name: "프로젝트 1" });
+  fireEvent.keyDown(card, { key: "Enter" });
+  expect(card).toHaveAttribute("aria-pressed", "true");
+  fireEvent.keyDown(card, { key: " " });
+  expect(card).toHaveAttribute("aria-pressed", "false");
+});
+
 async function selectProjects() {
   await screen.findByText("프로젝트 1");
   [1, 2, 3].forEach((id) =>

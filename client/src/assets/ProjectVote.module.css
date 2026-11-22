@@ -1,6 +1,7 @@
 @font-face {
   font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
   font-weight: 400;
   font-style: normal;
 }
@@ -28,12 +29,14 @@
   left: 0;
   width: 100%;
   height: 180px;
-  background: linear-gradient(to bottom,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.1) 20%,
-      rgba(0, 0, 0, 0.3) 40%,
-      rgba(0, 0, 0, 0.6) 70%,
-      rgba(0, 0, 0, 0.95) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.1) 20%,
+    rgba(0, 0, 0, 0.3) 40%,
+    rgba(0, 0, 0, 0.6) 70%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
   z-index: 1;
   pointer-events: none;
 }
@@ -57,12 +60,14 @@
   left: 0;
   width: 100%;
   height: 180px;
-  background: linear-gradient(to bottom,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.1) 20%,
-      rgba(0, 0, 0, 0.3) 40%,
-      rgba(0, 0, 0, 0.6) 70%,
-      rgba(0, 0, 0, 0.95) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.1) 20%,
+    rgba(0, 0, 0, 0.3) 40%,
+    rgba(0, 0, 0, 0.6) 70%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
   z-index: 1;
   pointer-events: none;
 }
@@ -476,7 +481,6 @@
 /* ===Responsive=== */
 
 @media (min-width: 600px) and (max-width: 1023px) {
-
   .project_vote_form {
     width: 100%;
     max-width: none;
@@ -531,7 +535,7 @@
     text-align: center;
   }
 
-  .header_bg_zone .title_form>.title:first-child {
+  .header_bg_zone .title_form > .title:first-child {
     margin-top: 0 !important;
     font-size: 30px !important;
     font-weight: 700;
@@ -541,7 +545,7 @@
     text-align: center;
   }
 
-  .header_bg_zone .title_form>.title:nth-child(2) {
+  .header_bg_zone .title_form > .title:nth-child(2) {
     margin-top: 12px !important;
     font-size: 14px !important;
     font-weight: 500;
@@ -668,7 +672,6 @@
 }
 
 @media (min-width: 1024px) {
-
   .project_vote_form {
     width: 100%;
     max-width: none;
@@ -726,7 +729,7 @@
     text-align: center;
   }
 
-  .header_bg_zone .title_form>.title:first-child {
+  .header_bg_zone .title_form > .title:first-child {
     margin-top: 0 !important;
 
     font-size: 30px !important;
@@ -735,11 +738,11 @@
     text-align: center;
   }
 
-  .header_bg_zone .title_form>.title:first-child br {
+  .header_bg_zone .title_form > .title:first-child br {
     display: none;
   }
 
-  .header_bg_zone .title_form>.title:nth-child(2) {
+  .header_bg_zone .title_form > .title:nth-child(2) {
     margin-top: 10px !important;
 
     font-size: 14px !important;
@@ -952,4 +955,8 @@
     column-gap: 22px;
     row-gap: 68px;
   }
+}
+.project_list_box:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
 }

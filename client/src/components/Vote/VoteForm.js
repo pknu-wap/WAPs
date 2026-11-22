@@ -126,8 +126,8 @@ const VoteForm = ({ isVotedUser }) => {
       {loading ? (
         <p role="status">투표 정보를 불러오는 중입니다...</p>
       ) : error ? (
-        <div role="alert">
-          <p>{error}</p>
+        <div>
+          <p role="alert">{error}</p>
           <button onClick={() => setRevision((value) => value + 1)}>
             다시 시도
           </button>
@@ -151,7 +151,10 @@ const VoteForm = ({ isVotedUser }) => {
           style={{
             marginTop: "20px",
             marginBottom: "100px",
-            cursor: "pointer",
+            cursor:
+              loading || error || submitting || projects.length === 0
+                ? "not-allowed"
+                : "pointer",
           }}
         >
           {submitting ? "투표 중..." : "투표 완료"}

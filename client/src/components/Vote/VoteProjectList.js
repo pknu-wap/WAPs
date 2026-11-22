@@ -38,6 +38,17 @@ const VoteProjectList = ({
           return (
             <div
               key={project.participants}
+              role="button"
+              tabIndex={0}
+              aria-label={project.title}
+              aria-pressed={isSelected}
+              aria-disabled={disabled || isVotedUser}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  handleProjectSelect(project.participants, isVotedUser);
+                }
+              }}
               className={`${styles.project_list_box} ${
                 isSelected ? styles.selected : ""
               }`}
