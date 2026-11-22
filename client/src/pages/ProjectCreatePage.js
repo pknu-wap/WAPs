@@ -24,7 +24,10 @@ const ProjectCreatePage = () => {
       navigate("/login", { replace: true });
       return;
     }
-    if (!projectId) return;
+    if (!projectId) {
+      setResult(null);
+      return;
+    }
 
     let active = true;
     setResult(null);
@@ -54,8 +57,8 @@ const ProjectCreatePage = () => {
       <Header toggleMenu={toggleMenu} />
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
       {isEditMode && result.error ? (
-        <div role="alert">
-          <p>{result.error}</p>
+        <div>
+          <p role="alert">{result.error}</p>
           <button
             type="button"
             onClick={() => setRevision((value) => value + 1)}

@@ -12,10 +12,18 @@ import { userApi } from "../../api/user";
 
 jest.mock("../../api/user", () => ({ userApi: { getMe: jest.fn() } }));
 import ProjectFormNew from "./ProjectFormNew";
+import ProjectCreatePage from "../../pages/ProjectCreatePage";
+import { createMemoryRouter, RouterProvider } from "react-router-dom";
+
+jest.mock("../../utils/authStorage", () => ({ get: () => "token" }));
+jest.mock("../Header", () => () => null);
+jest.mock("../Menu", () => () => null);
+jest.mock("../FloatingButton", () => () => null);
 
 jest.mock("../../api/project", () => ({
   projectApi: {
     getCurrentSemester: jest.fn(),
+    getprojectUpdatePage: jest.fn(),
     getMemberOptions: jest.fn(),
     createProject: jest.fn(),
     updateProject: jest.fn(),
@@ -49,6 +57,22 @@ const readProject = (data) =>
     reader.onload = () => resolve(JSON.parse(reader.result));
     reader.readAsText(data.get("project"));
   });
+
+test("수정 페이지에서 실제 폼으로 저장하면 현재 프로젝트 API를 호출한다", async () => {
+  projectApi.getprojectUpdatePage.mockResolvedValue({ title: "원본 제목", semester: "2026-02" });
+  const router = createMemoryRouter([
+    { path: "/project/edit/:projectId", element: <ProjectCreatePage /> },
+    { path: "/project/:projectId", element: <p>저장 후 상세 화면</p> },
+  ], { initialEntries: ["/project/edit/42"] });
+  render(<RouterProvider router={router} />);
+  await screen.findByDisplayValue("원본 제목");
+  fireEvent.change(screen.getByLabelText("비밀번호"), { target: { value: "pw" } });
+  fireEvent.change(screen.getByPlaceholderText("프로젝트 명"), { target: { value: "수정된 제목" } });
+  fireEvent.submit(screen.getByRole("button", { name: "프로젝트 수정" }).closest("form"));
+  await screen.findByText("저장 후 상세 화면");
+  expect(projectApi.updateProject).toHaveBeenCalledWith("42", expect.any(FormData), expect.any(Function));
+  expect((await readProject(projectApi.updateProject.mock.calls[0][1])).title).toBe("수정된 제목");
+});
 
 test("학기 조회 실패 후 작성 내용을 유지하며 재시도한다", async () => {
   projectApi.getCurrentSemester.mockRejectedValueOnce(new Error("offline"));

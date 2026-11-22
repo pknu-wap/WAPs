@@ -369,12 +369,15 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           </span>
         </div>
         {semesterError && (
-          <div role="alert" className={styles.semester_error}>
-            <p>{semesterError}</p>
+          <div className={styles.semester_error}>
+            <p role="alert">{semesterError}</p>
             <button
               type="button"
               disabled={isSemesterLoading}
-              onClick={() => setSemesterRetry((retry) => retry + 1)}
+              onClick={() => {
+                setIsSemesterLoading(true);
+                setSemesterRetry((retry) => retry + 1);
+              }}
             >
               학기 다시 불러오기
             </button>
