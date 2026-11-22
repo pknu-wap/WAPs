@@ -84,33 +84,47 @@ const NotCreatedView = ({
   );
 };
 
-const VotingView = () => {
-  return (
-    <div>
-      <div className={styles.resultTitle}>투표 결과</div>
-
-      <div className={styles.resultBody}>
-        <div className={styles.loadingBox}>투표를 기다려주세요</div>
-
-        <div className={styles.publicBtns}>
-          <button className={styles.publicBtnDisable} disabled>
-            공개
-          </button>
-          <button className={styles.publicBtnDisable} disabled>
-            비공개
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const EndedView = ({
-  voteResult,
+const ResultsView = ({
+  semester,
+  isVoting,
   isResultPublic,
   isProcessing,
   handleSetPublicStatus,
 }) => {
+  const [voteResult, setVoteResult] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [updatedAt, setUpdatedAt] = useState(null);
+  const [revision, setRevision] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    let timer;
+    const refresh = async () => {
+      setLoading(true);
+      try {
+        const results = await adminVoteApi.getResults(semester);
+        if (!active) return;
+        setVoteResult(results);
+        setUpdatedAt(new Date());
+        setError("");
+      } catch {
+        if (active)
+          setError("투표 현황을 불러오지 못했습니다. 다시 시도해주세요.");
+      } finally {
+        if (active) {
+          setLoading(false);
+          if (isVoting) timer = setTimeout(refresh, 30000);
+        }
+      }
+    };
+    refresh();
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [semester, isVoting, revision]);
+
   const publicBtnClass = isResultPublic
     ? styles.publicBtnActive
     : styles.publicBtn;
@@ -120,53 +134,87 @@ const EndedView = ({
 
   return (
     <div>
-      <div className={styles.resultTitle}>투표 결과</div>
+      <div className={styles.resultTitle}>
+        {isVoting ? "현재 투표 현황" : "투표 결과"}
+      </div>
 
       <div className={styles.resultBody}>
-        <div
-          className={styles.tableWrapper}
-          tabIndex={0}
-          role="region"
-          aria-label="투표 결과 표"
-        >
-          <table>
-            <thead>
-              <tr>
-                <th>등수</th>
-                <th>프로젝트명</th>
-                <th>득표수</th>
-                <th>득표율</th>
-              </tr>
-            </thead>
-            <tbody>
-              {voteResult.length === 0 ? (
-                <tr>
-                  <td colSpan="4" style={{ textAlign: "center" }}>
-                    투표결과가 없습니다
-                  </td>
-                </tr>
-              ) : (
-                [...voteResult]
-                  .sort((a, b) => b.voteCount - a.voteCount)
-                  .map((result, idx) => (
-                    <tr key={result.projectId}>
-                      <td>{idx + 1}</td>
-                      <td>{result.projectName}</td>
-                      <td>{result.voteCount}</td>
-                      <td>{result.voteRate}%</td>
-                    </tr>
-                  ))
-              )}
-            </tbody>
-          </table>
+        <div className={styles.upperLeft}>
+          <div aria-live="polite">
+            {voteResult !== null && (
+              <p>
+                총{" "}
+                {voteResult.reduce((sum, result) => sum + result.voteCount, 0)}
+                표 · 참여 프로젝트 {voteResult.length}개
+              </p>
+            )}
+            {updatedAt && (
+              <p>마지막 갱신: {updatedAt.toLocaleTimeString("ko-KR")}</p>
+            )}
+            {isVoting && (
+              <p>30초마다 자동 갱신됩니다. 득표율은 전체 투표수 기준입니다.</p>
+            )}
+          </div>
+          <button
+            className={styles.publicBtn}
+            disabled={loading}
+            onClick={() => setRevision((value) => value + 1)}
+          >
+            {loading ? "현황 불러오는 중..." : "현황 새로고침"}
+          </button>
         </div>
+        {error && (
+          <p role="alert">
+            {error}
+            {voteResult !== null && " 마지막으로 조회한 현황을 표시합니다."}
+          </p>
+        )}
+        {voteResult !== null && (
+          <div
+            className={styles.tableWrapper}
+            tabIndex={0}
+            role="region"
+            aria-label="투표 결과 표"
+          >
+            <table>
+              <thead>
+                <tr>
+                  <th>등수</th>
+                  <th>프로젝트명</th>
+                  <th>득표수</th>
+                  <th>득표율</th>
+                </tr>
+              </thead>
+              <tbody>
+                {voteResult.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: "center" }}>
+                      투표결과가 없습니다
+                    </td>
+                  </tr>
+                ) : (
+                  [...voteResult]
+                    .sort((a, b) => b.voteCount - a.voteCount)
+                    .map((result, idx) => (
+                      <tr key={result.projectId}>
+                        <td>{idx + 1}</td>
+                        <td>{result.projectName}</td>
+                        <td>{result.voteCount}</td>
+                        <td>{result.voteRate}%</td>
+                      </tr>
+                    ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <div className={styles.publicBtns}>
           <button
             className={publicBtnClass}
             onClick={() => handleSetPublicStatus(true)}
             aria-pressed={isResultPublic}
-            disabled={isProcessing || isResultPublic}
+            disabled={isVoting || isProcessing || isResultPublic}
           >
             공개
           </button>
@@ -174,7 +222,7 @@ const EndedView = ({
             className={privateBtnClass}
             onClick={() => handleSetPublicStatus(false)}
             aria-pressed={!isResultPublic}
-            disabled={isProcessing || !isResultPublic}
+            disabled={isVoting || isProcessing || !isResultPublic}
           >
             비공개
           </button>
@@ -192,7 +240,6 @@ const ManageVotePage = () => {
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(""); // 에러 상태
 
-  const [voteResult, setVoteResult] = useState([]); // 투표 결과
   const [isResultPublic, setIsResultPublic] = useState(false); // 투표 결과 공개 여부
   const [projects, setProjects] = useState([]); // 프로젝트 목록 상태
   const [selectedProjects, setSelectedProjects] = useState([]); // 선택된 프로젝트 ID 목록
@@ -329,20 +376,11 @@ const ManageVotePage = () => {
     }
   }, [semester]);
 
-  // ENDED 상태일 때 투표 결과 요청하기
+  // 종료된 투표의 공개 여부는 집계 결과와 별도로 조회한다.
   useEffect(() => {
     if (voteStatus !== "ENDED" || !semester) return;
 
-    const fetchVoteResult = async () => {
-      try {
-        const data = await adminVoteApi.getResults(semester);
-        setVoteResult(data || []); // 투표 결과 저장
-      } catch (e) {
-        setError("투표 결과 조회 실패");
-      }
-    };
     fetchResultVisibility();
-    fetchVoteResult();
   }, [voteStatus, semester, fetchResultVisibility]);
 
   // 투표 결과 공개 여부 핸들러
@@ -399,11 +437,11 @@ const ManageVotePage = () => {
         />
       )}
 
-      {voteStatus === "VOTING" && <VotingView />}
-
-      {voteStatus === "ENDED" && (
-        <EndedView
-          voteResult={voteResult}
+      {(voteStatus === "VOTING" || voteStatus === "ENDED") && (
+        <ResultsView
+          key={`${semester}-${voteStatus}`}
+          semester={semester}
+          isVoting={voteStatus === "VOTING"}
           isResultPublic={isResultPublic}
           isProcessing={isProcessing}
           handleSetPublicStatus={handleSetPublicStatus}
