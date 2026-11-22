@@ -1,20 +1,16 @@
 import { REQUIRED_VOTE_COUNT } from "../../constants/vote";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styles from "../../assets/ProjectVote.module.css";
-import { getCurrentSemester } from "../../utils/dateUtils";
-import apiClient from "../../api/client";
 
 const VoteProjectList = ({
-  // handleProjectSelect,
+  projects,
   selectedProjects,
   setSelectedProjects,
   isVotedUser,
+  disabled,
 }) => {
-  const [projects, setProjects] = useState([]);
-  const semesterInfo = getCurrentSemester();
-
   const handleProjectSelect = (participants, isVotedUser) => {
-    // console.log("클릭됨", participants);
+    if (disabled) return;
 
     if (isVotedUser) {
       alert("투표는 변경하실 수 없습니다.");
@@ -33,26 +29,6 @@ const VoteProjectList = ({
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await apiClient.get(`/vote/${semesterInfo}/projects`);
-
-        const projectData = Array.isArray(response)
-          ? response
-          : response.data;
-
-        if (Array.isArray(projectData)) {
-          setProjects(projectData);
-        }
-      } catch (error) {
-        console.error("데이터 가져오는 중 오류 발생:", error);
-      }
-    };
-
-    fetchData();
-  }, [semesterInfo]);
-
   return (
     <div className={styles.project_list_form}>
       {Array.isArray(projects) && projects.length > 0 ? (
@@ -62,8 +38,20 @@ const VoteProjectList = ({
           return (
             <div
               key={project.participants}
-              className={`${styles.project_list_box} ${isSelected ? styles.selected : ""
-                }`}
+              role="button"
+              tabIndex={0}
+              aria-label={project.title}
+              aria-pressed={isSelected}
+              aria-disabled={disabled || isVotedUser}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  handleProjectSelect(project.participants, isVotedUser);
+                }
+              }}
+              className={`${styles.project_list_box} ${
+                isSelected ? styles.selected : ""
+              }`}
               onClick={() =>
                 handleProjectSelect(project.participants, isVotedUser)
               }
@@ -84,8 +72,9 @@ const VoteProjectList = ({
 
                 <div className={styles.project_title_form}>
                   <h2
-                    className={`${styles.title} ${isSelected ? styles.selected_title : ""
-                      }`}
+                    className={`${styles.title} ${
+                      isSelected ? styles.selected_title : ""
+                    }`}
                   >
                     {project.title}
                   </h2>
@@ -96,7 +85,7 @@ const VoteProjectList = ({
           );
         })
       ) : (
-        <p>프로젝트 데이터를 불러오는 중입니다...</p>
+        <p>투표에 참여하는 프로젝트가 없습니다.</p>
       )}
     </div>
   );
