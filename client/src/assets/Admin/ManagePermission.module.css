@@ -14,11 +14,13 @@
 .container {
   width: 100%;
   height: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) minmax(260px, 1fr);
   gap: 29px;
 }
 
 .Box {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -32,16 +34,19 @@
 .header {
   display: flex;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
   font-size: 20px;
   font-weight: 700;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0;
 }
 
 /* 테이블 관련 */
 .container table {
-  min-width: 386px;
+  min-width: 0;
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   border-left: none;
   border-right: none;
@@ -55,19 +60,40 @@
   z-index: 10;
 }
 .container th {
+  box-sizing: border-box;
   border: 2px solid var(--tableLine);
   background-color: var(--primary);
   color: black;
   font-size: 15px;
   font-weight: 700;
   text-align: center;
-  padding: 10px 13px;
+  padding: 10px 4px;
 }
 
 .container td {
+  box-sizing: border-box;
   border: 2px solid var(--tableLine);
   font-size: 15px;
   padding: 10px 5px 10px 10px;
+}
+
+.container th:first-child {
+  width: 24%;
+}
+
+.container th:nth-child(2) {
+  width: 40%;
+}
+
+.container th:nth-child(3),
+.container th:nth-child(4) {
+  width: 18%;
+}
+
+.container th,
+.container td {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .container th:first-child,
@@ -95,6 +121,8 @@
 
 .filterSelect {
   width: 140px;
+  max-width: 100%;
+  min-width: 0;
   height: 32px;
   border: 1px solid #626262;
   border-radius: 68px;
@@ -125,7 +153,7 @@
 .userList {
   width: 100%;
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
   margin-top: 13px;
   flex: 1;
   min-height: 0;
@@ -138,7 +166,7 @@
 /* 스크롤바 스타일*/
 .userList::-webkit-scrollbar {
   width: 6px;
-  height: 71px;
+  height: 6px;
 }
 
 .userList::-webkit-scrollbar-thumb {
@@ -151,34 +179,64 @@
 }
 
 /* 권한 변경 박스 */
+.editBox {
+  min-height: 0;
+  padding: clamp(18px, 2vw, 32px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.editHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.editHeader .header {
+  min-width: 0;
+  flex: 1;
+  line-height: 1.35;
+}
+
 .changeContent {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1;
-  min-height: 0;
+  flex: none;
+  padding-top: 24px;
+}
+
+.changeControls {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  width: 100%;
+  margin-top: 56px;
 }
 
 .controler {
-  display: flex;
+  width: 100%;
   flex-wrap: wrap;
+  display: flex;
   gap: 12px;
-  align-items: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-shrink: 0;
 }
 
 .roleDropdown {
-  min-width: 200px;
+  min-width: 0;
+  width: 100%;
   height: 45px;
   font-size: 18px;
   border-radius: 26px;
   cursor: pointer;
   background-color: #bcbcbc;
   color: black;
-  flex: 1;
-  max-width: 200px;
+  flex: none;
+  max-width: none;
   text-align: center;
   font-weight: 700;
   outline: none;
@@ -186,13 +244,26 @@
 
 .changeList {
   width: 100%;
-  flex: 1;
+  flex: none;
+  min-width: 0;
   min-height: 0;
+  max-height: min(30vh, 260px);
   overflow-y: auto;
-  margin-top: 20px;
+  overflow-x: hidden;
+}
+
+.changeList th {
+  padding: 8px 2px;
+  font-size: 11px;
+}
+
+.changeList td {
+  padding: 8px 2px;
+  font-size: 12px;
 }
 
 .adjust {
+  color: white;
   width: 100px;
   height: 45px;
   border-radius: 69px;
@@ -202,10 +273,45 @@
   background-color: transparent;
   font-size: 18px;
   text-align: center;
+  align-self: center;
+  margin-top: 40px;
   transition:
     0.15s ease,
     border-color 0.15s ease,
     color 0.15s ease;
+}
+
+.adjust:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .container {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+
+  .Box {
+    min-height: 360px;
+    height: auto;
+    padding: 24px;
+  }
+
+  .userList {
+    max-height: 480px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .changeControls {
+    gap: 28px;
+    margin-top: 32px;
+  }
+
+  .adjust {
+    margin-top: 32px;
+  }
 }
 
 .adjust:hover,
@@ -230,15 +336,84 @@
   cursor: pointer;
 }
 
-.filters {
+.filters,
+.filters label {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filters {
   gap: 12px;
 }
 
 .filters label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   font-size: 14px;
+}
+
+.container tbody tr {
+  cursor: pointer;
+}
+
+.container tbody tr:focus-visible,
+.container select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.controler label {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.emptySelection {
+  color: #aaa;
+  text-align: center;
+  margin-top: 28px;
+}
+
+.error {
+  color: #ffb4b4;
+}
+
+.pageNation span {
+  margin-inline: 15px;
+}
+
+.deleteButton {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 72px;
+  height: 45px;
+  padding: 0 16px;
+  border: 1px solid #626262;
+  border-radius: 26px;
+  background-color: #bcbcbc;
+  color: #000;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background-color: #d0d0d0;
+}
+
+.deleteButton:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: default;
 }

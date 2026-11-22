@@ -24,6 +24,7 @@ import TeamBuildApplyPage from "./pages/TeamBuildApplyPage";
 import TeamBuildEntryPage from "./pages/TeamBuildEntryPage";
 import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import CalendarPage from "./pages/CalendarPage";
+import AttendanceCheckInPage from "./pages/AttendanceCheckInPage";
 import AdminRoute from "./components/Login/PrivateRoute";
 import CheckIn from "./pages/CheckIn";
 import CheckInScan from "./pages/CheckInScan";
@@ -34,10 +35,12 @@ import ManagePlanPage from "./pages/adminPages/ManagePlanPage";
 import ManageTeamBuildPage from "./pages/adminPages/ManageTeamBuildPage";
 import ManageThirdTeamBuildPage from "./pages/adminPages/ManageThirdTeamBuildPage";
 import ManageVotePage from "./pages/adminPages/ManageVotePage";
+import ManageAttendancePage from "./pages/adminPages/ManageAttendancePage";
 import MainLayout from "./components/MainLayout";
 
 import AdminPageLayout from "./components/Admin/AdminPageLayout";
 import FullScreenLayout from "./components/FullScreenLayout";
+import attendancePreviewRoute from "./routes/attendancePreviewRoute";
 import "./App.css";
 
 function RouteLayout() {
@@ -97,6 +100,8 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<FullScreenLayout />}>
+        <Route path="/attendance" element={<AttendanceCheckInPage />} />
+        {attendancePreviewRoute()}
         <Route path="admin/*" element={<AdminRoute requireRole="ROLE_ADMIN" />}>
           <Route element={<AdminPageLayout />}>
             <Route index element={<Navigate to="vote" replace />}></Route>
@@ -108,6 +113,7 @@ const router = createBrowserRouter(
             />
             <Route path="permission" element={<ManagePermissionPage />} />
             <Route path="plan" element={<ManagePlanPage />} />
+            <Route path="attendance" element={<ManageAttendancePage />} />
           </Route>
         </Route>
       </Route>
