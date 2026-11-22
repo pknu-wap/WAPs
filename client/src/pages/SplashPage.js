@@ -20,7 +20,7 @@ const SplashPage = () => {
       classNames="slide" // 애니메이션 클래스명
       unmountOnExit
     >
-      <div>
+      <div className="splash-page">
         <main>
           <div className={`${styles.mainContainer} ${styles.mount1}`}>
             <div className={styles.titleBox}>

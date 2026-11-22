@@ -204,14 +204,18 @@ ul {
 }
 
 @media (min-width: 600px) {
+
   html:has(.project-page),
   body:has(.project-page),
+  html:has(.splash-page),
+  body:has(.splash-page),
   html:has(.container.vote-page),
   body:has(.container.vote-page) {
     width: 100%;
   }
 
   .container:has(.project-page),
+  .container:has(.splash-page),
   .container:has(.vote-page),
   .container.vote-page {
     width: 100%;
@@ -270,6 +274,7 @@ ul {
 }
 
 @media (min-width: 1200px) {
+
   .project-page .App-header,
   .container.vote-page .App-header {
     height: 90px;
