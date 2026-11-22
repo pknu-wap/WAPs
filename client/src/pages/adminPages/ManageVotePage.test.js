@@ -15,6 +15,7 @@ jest.mock("../../api/admin", () => ({
     getStatus: jest.fn(),
     getResults: jest.fn(),
     getIsVoteOpen: jest.fn(),
+    setPublicStatus: jest.fn(),
     reopen: jest.fn(),
   },
 }));
@@ -48,6 +49,8 @@ test("종료된 투표를 다시 열면 요청 중 중복 실행을 막고 진�
     screen.getByRole("button", { name: "다시 여는 중..." }),
   ).toBeDisabled();
   expect(adminVoteApi.reopen).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole("button", { name: "공개" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "비공개" })).toBeDisabled();
   expect(adminVoteApi.reopen).toHaveBeenCalledWith(
     expect.stringMatching(/^\d{4}-0[12]$/),
   );
@@ -67,6 +70,30 @@ test("다시 열기를 취소하면 요청하지 않는다", async () => {
     await screen.findByRole("button", { name: "투표 다시 열기" }),
   );
   expect(adminVoteApi.reopen).not.toHaveBeenCalled();
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "비공개" })).toBeEnabled(),
+  );
+});
+
+test("결과 공개 변경 중에는 투표를 다시 열 수 없다", async () => {
+  adminVoteApi.getStatus.mockResolvedValue({ status: "ENDED" });
+  let resolveVisibility;
+  adminVoteApi.setPublicStatus.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveVisibility = resolve;
+      }),
+  );
+  render(<ManageVotePage />);
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "비공개" })).toBeEnabled(),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "비공개" }));
+  expect(
+    screen.getByRole("button", { name: "다시 여는 중..." }),
+  ).toBeDisabled();
+  await act(async () => resolveVisibility());
+  expect(screen.getByRole("button", { name: "투표 다시 열기" })).toBeEnabled();
 });
 
 test("다시 열기 실패 후 종료 상태에서 재시도할 수 있다", async () => {

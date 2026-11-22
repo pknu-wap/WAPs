@@ -105,7 +105,12 @@ const VotingView = () => {
   );
 };
 
-const EndedView = ({ voteResult, isResultPublic, handleSetPublicStatus }) => {
+const EndedView = ({
+  voteResult,
+  isResultPublic,
+  isProcessing,
+  handleSetPublicStatus,
+}) => {
   const publicBtnClass = isResultPublic
     ? styles.publicBtnActive
     : styles.publicBtn;
@@ -161,7 +166,7 @@ const EndedView = ({ voteResult, isResultPublic, handleSetPublicStatus }) => {
             className={publicBtnClass}
             onClick={() => handleSetPublicStatus(true)}
             aria-pressed={isResultPublic}
-            disabled={isResultPublic}
+            disabled={isProcessing || isResultPublic}
           >
             공개
           </button>
@@ -169,7 +174,7 @@ const EndedView = ({ voteResult, isResultPublic, handleSetPublicStatus }) => {
             className={privateBtnClass}
             onClick={() => handleSetPublicStatus(false)}
             aria-pressed={!isResultPublic}
-            disabled={!isResultPublic}
+            disabled={isProcessing || !isResultPublic}
           >
             비공개
           </button>
@@ -252,7 +257,7 @@ const ManageVotePage = () => {
     }
   };
 
-  // 투표 닫기 핸들러
+  // 투표 다시 열기 핸들러
   const handleReopenVote = async () => {
     if (voteStatus !== "ENDED" || isProcessing) return;
     if (
@@ -342,14 +347,17 @@ const ManageVotePage = () => {
 
   // 투표 결과 공개 여부 핸들러
   const handleSetPublicStatus = async (isPublic) => {
-    if (voteStatus !== "ENDED") return;
+    if (voteStatus !== "ENDED" || isProcessing) return;
     try {
+      setIsProcessing(true);
       await adminVoteApi.setPublicStatus(semester, isPublic);
 
       // 서버 요청 성공 후 로컬 상태 업데이
       setIsResultPublic(isPublic);
     } catch {
       setError("투표 공개 상태 변경 실패");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -397,6 +405,7 @@ const ManageVotePage = () => {
         <EndedView
           voteResult={voteResult}
           isResultPublic={isResultPublic}
+          isProcessing={isProcessing}
           handleSetPublicStatus={handleSetPublicStatus}
         />
       )}
