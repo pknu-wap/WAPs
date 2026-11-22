@@ -185,14 +185,6 @@ const Settings = () => {
         <div className="settings-actions">
           <button
             type="button"
-            className="settings-action settings-action--primary"
-            disabled={isLoading || Boolean(loadError) || isSavingName}
-            onClick={() => navigate("/signup?edit=true")}
-          >
-            회원가입 정보 수정
-          </button>
-          <button
-            type="button"
             className={`settings-action settings-action--secondary${isNameSaved ? " settings-action--saved" : ""}`}
             onClick={handleMenuNavigate}
           >
