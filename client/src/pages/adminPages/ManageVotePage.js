@@ -131,6 +131,9 @@ const ResultsView = ({
   const privateBtnClass = isResultPublic
     ? styles.publicBtn
     : styles.publicBtnActive;
+  const sortedResults = [...(voteResult || [])].sort(
+    (a, b) => b.voteCount - a.voteCount || a.projectId - b.projectId,
+  );
 
   return (
     <div>
@@ -193,16 +196,18 @@ const ResultsView = ({
                     </td>
                   </tr>
                 ) : (
-                  [...voteResult]
-                    .sort((a, b) => b.voteCount - a.voteCount)
-                    .map((result, idx) => (
-                      <tr key={result.projectId}>
-                        <td>{idx + 1}</td>
-                        <td>{result.projectName}</td>
-                        <td>{result.voteCount}</td>
-                        <td>{result.voteRate}%</td>
-                      </tr>
-                    ))
+                  sortedResults.map((result) => (
+                    <tr key={result.projectId}>
+                      <td>
+                        {sortedResults.findIndex(
+                          (item) => item.voteCount === result.voteCount,
+                        ) + 1}
+                      </td>
+                      <td>{result.projectName}</td>
+                      <td>{result.voteCount}</td>
+                      <td>{result.voteRate}%</td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
