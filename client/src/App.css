@@ -77,15 +77,17 @@
 
 .menu-icon-symbol {
   display: inline-grid;
+  grid-template: 100% / 100%;
   place-items: center;
   width: 24px;
   height: 24px;
+  font-size: 26px;
   line-height: 1;
   vertical-align: middle;
 }
 
 .menu-icon[aria-expanded="true"] .menu-icon-symbol {
-  font-size: 27px;
+  font-size: 30px;
 }
 
 .menu-bar {
@@ -304,6 +306,10 @@ ul {
   :root {
     --project-content-gutter: 40px;
     --project-content-max: 1200px;
+  }
+
+  .menu-bar {
+    translate: 0 -2px;
   }
 }
 

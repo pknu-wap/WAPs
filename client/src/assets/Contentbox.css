@@ -353,9 +353,10 @@
 .hero__title {
   margin: 0;
   margin-left: 5px;
+  font-family: "Pretendard Bold", "Pretendard-Regular", sans-serif;
   font-size: 19px;
   line-height: 1.2;
-  font-weight: 600;
+  font-weight: 700;
   text-align: left;
 }
 
@@ -767,7 +768,6 @@ button {
     margin: 150px 0 0;
 
     font-size: 24px;
-    font-weight: 700;
     line-height: 1.2;
 
     text-align: center;
