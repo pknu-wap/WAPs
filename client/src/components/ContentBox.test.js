@@ -16,6 +16,27 @@ beforeEach(() => {
 });
 const open = () => render(<MemoryRouter><ContentBox /></MemoryRouter>);
 
+test("개발용 예시 목록은 API 없이 표시되고 유형으로 필터링된다", () => {
+  const previousNodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = "development";
+
+  try {
+    render(
+      <MemoryRouter initialEntries={["/ProjectPage?preview=samples"]}>
+        <ContentBox />
+      </MemoryRouter>,
+    );
+
+    expect(projectApi.getProjectList).not.toHaveBeenCalled();
+    expect(screen.getByRole("heading", { name: "캠퍼스 한눈에" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: "게임" }));
+    expect(screen.getByRole("heading", { name: "우주 택배부" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "캠퍼스 한눈에" })).not.toBeInTheDocument();
+  } finally {
+    process.env.NODE_ENV = previousNodeEnv;
+  }
+});
+
 test("응답을 기다리는 동안 제목과 검색창을 유지하고 목록에만 로딩을 표시한다", async () => {
   let finishLoading;
   projectApi.getProjectList.mockReturnValue(new Promise((resolve) => {

@@ -14,6 +14,38 @@ const TYPE_OPTIONS = [
   { label: "기타", value: "기타" },
 ];
 
+const SAMPLE_PROJECTS = [
+  {
+    projectId: "campus-map",
+    title: "캠퍼스 한눈에",
+    projectType: "Web",
+    summary: "강의실과 동아리방을 검색하고 교내 시설을 지도에서 찾는 서비스입니다.",
+    thumbnailBackground: "linear-gradient(135deg, #183e70, #62a3da)",
+  },
+  {
+    projectId: "study-mate",
+    title: "스터디메이트",
+    projectType: "App",
+    summary: "스터디원을 모집하고 함께 세운 목표와 진행 상황을 기록하는 앱입니다.",
+    thumbnailBackground: "linear-gradient(135deg, #234b3f, #82b58e)",
+  },
+  {
+    projectId: "space-delivery",
+    title: "우주 택배부",
+    projectType: "Game",
+    summary: "장애물을 피해 제한 시간 안에 행성마다 소포를 배달하는 아케이드 게임입니다.",
+    thumbnailBackground: "linear-gradient(135deg, #392656, #9578bf)",
+  },
+  {
+    projectId: "club-radio",
+    title: "동아리 라디오",
+    projectType: "기타",
+    summary: "동아리원의 개발 경험과 프로젝트 뒷이야기를 담은 오디오 아카이브입니다.",
+    thumbnailBackground: "linear-gradient(135deg, #733a2b, #d78e61)",
+  },
+];
+const EMPTY_PROJECTS = [];
+
 // 프로젝트 타입을 한글로 변환하는 함수
 const getTypeLabel = (type) => {
   const typeMap = {
@@ -61,6 +93,9 @@ const ContentBox = () => {
 
   // useSemester 훅을 사용하여 초기 학기/년도 상태 설정
   const semesterString = useSemester();
+  const showSamples =
+    process.env.NODE_ENV === "development" &&
+    searchParams.get("preview") === "samples";
 
   // URL에서 값을 읽어와 초기 상태 설정, 없으면 useSemester 값 사용
   const initialSemester = normalizeSemesterParam(
@@ -71,12 +106,19 @@ const ContentBox = () => {
 
   const [semesterFilter, setSemesterFilter] = useState(initialSemester);
 
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [projects, setProjects] = useState(EMPTY_PROJECTS);
+  const [isFetching, setIsFetching] = useState(true);
+  const sampleProjects =
+    semesterFilter === semesterString ? SAMPLE_PROJECTS : EMPTY_PROJECTS;
+  const data = showSamples ? sampleProjects : projects;
+  const isLoading = !showSamples && isFetching;
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (showSamples) return;
+
+    setIsFetching(true);
     let active = true;
     const fetchData = async () => {
       try {
@@ -84,26 +126,26 @@ const ContentBox = () => {
         if (!active) return;
 
         if (Array.isArray(response.projectsResponse)) {
-          setData(response.projectsResponse);
+          setProjects(response.projectsResponse);
         } else {
           console.error(
             "API 응답의 projectsResponse가 배열이 아닙니다:",
             response,
           );
-          setData([]);
+          setProjects([]);
         }
-        setIsLoading(false);
+        setIsFetching(false);
       } catch (error) {
         if (!active) return;
         console.error("Failed to fetch project data:", error);
-        setData([]);
-        setIsLoading(false);
+        setProjects([]);
+        setIsFetching(false);
       }
     };
 
     fetchData();
     return () => { active = false; };
-  }, [semesterFilter]);
+  }, [semesterFilter, showSamples]);
 
   // 유형+검색어 필터
   const filteredData = useMemo(() => {
@@ -128,7 +170,9 @@ const ContentBox = () => {
   const handleSemesterChange = (year, semester) => {
     const nextSemester = toSemester(year, semester);
     setSemesterFilter(nextSemester);
-    setSearchParams({ semester: nextSemester });
+    const params = { semester: nextSemester };
+    if (showSamples) params.preview = "samples";
+    setSearchParams(params);
     setYearAccordionOpen(false);
   };
 
@@ -258,11 +302,19 @@ const ContentBox = () => {
           !isFilteredEmpty &&
           filteredData.map((item, index) => (
             <div
-              key={index}
+              key={item.projectId ?? index}
               className="box"
-              onClick={() => navigate(`/project/${item.projectId}`)}
+              onClick={
+                showSamples ? undefined : () => navigate(`/project/${item.projectId}`)
+              }
+              style={showSamples ? { cursor: "default" } : undefined}
             >
-              <div className="image">
+              <div
+                className="image"
+                style={
+                  showSamples ? { background: item.thumbnailBackground } : undefined
+                }
+              >
                 {item.thumbnail && (
                   <img
                     className="project-image"

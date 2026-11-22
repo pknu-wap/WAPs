@@ -150,7 +150,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 12px;
   font-family: "Pretendard-Regular";
   padding: 0 20px;
 }
@@ -187,7 +187,7 @@
   width: 100%;
   max-width: 700px;
   height: auto;
-  margin: 10px 0;
+  margin: 7px 0;
   background-color: transparent;
   border-radius: 12px;
   padding: 0;
@@ -209,6 +209,10 @@
   position: relative;
   margin-top: 0;
   align-self: flex-start;
+}
+
+.content-box .box:first-child {
+  margin-top: 0;
 }
 
 .content-box .box .project-image {
@@ -298,7 +302,7 @@
   display: flex;
   align-items: flex-end;
   /* The absolute mobile header occupies the first 60px. Keep wrapped titles below it. */
-  padding: 80px 20px 28px;
+  padding: 80px 20px 8px;
   box-sizing: border-box;
   isolation: isolate;
   background: linear-gradient(90deg, #a0aeffe8 0%, #b4edfed2 100%);
@@ -554,7 +558,7 @@ button {
   .project-page .hero {
     width: 100%;
     min-height: auto;
-    padding: 145px 28px 48px;
+    padding: 145px 28px 10px;
     box-sizing: border-box;
     align-items: stretch;
     overflow: hidden;
@@ -655,15 +659,15 @@ button {
     width: calc(100% - 56px);
     max-width: 850px;
 
-    margin: 35px auto 0;
+    margin: 14px auto 0;
     padding: 0 0 80px;
 
     display: grid;
 
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
-    column-gap: 22px;
-    row-gap: 50px;
+    column-gap: 18px;
+    row-gap: 36px;
 
     box-sizing: border-box;
   }
@@ -707,9 +711,9 @@ button {
 
   .project-page .hero {
     width: 100%;
-    min-height: 440px;
+    min-height: auto;
 
-    padding: 0 40px;
+    padding: 0 40px 10px;
 
     box-sizing: border-box;
 
@@ -721,14 +725,13 @@ button {
   .project-page .hero__inner {
     width: 100%;
     max-width: 1200px;
-    min-height: 440px;
 
     margin: 0 auto;
 
     display: grid;
 
     grid-template-columns: 110px minmax(300px, 1fr) auto;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto auto;
 
     grid-template-areas:
       "title title title"
@@ -809,7 +812,7 @@ button {
     width: 100%;
     max-width: none;
 
-    margin: 73px 0 0;
+    margin: 55px 0 0;
   }
 
   .project-page .hero__search .search-bar {
@@ -874,16 +877,17 @@ button {
     width: calc(100% - 80px);
     max-width: 1200px;
 
-    margin: 30px auto 0;
+    margin: 14px auto 0;
 
     padding: 0 0 100px;
 
     display: grid;
 
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
 
-    column-gap: 22px;
-    row-gap: 68px;
+    column-gap: 18px;
+    row-gap: 48px;
 
     box-sizing: border-box;
   }
