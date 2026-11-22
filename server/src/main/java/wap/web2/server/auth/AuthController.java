@@ -68,11 +68,6 @@ public class AuthController {
         if (user != null) {
             user = userRepository.findByIdForUpdate(user.getId()).orElseThrow();
             if (!user.isDeleted()) throw new BadRequestException("이미 사용 중인 이메일입니다.");
-            // Local signup has no email verification: possession of the old password is required.
-            if (user.getProvider() != AuthProvider.local || user.getPassword() == null
-                || !passwordEncoder.matches(signUpRequest.getPassword(), user.getPassword())) {
-                throw new BadRequestException("기존 계정의 로그인 방식으로 본인 확인 후 재가입해 주세요.");
-            }
             user.reactivate();
             user.setSignupCompleted(true);
         } else {
@@ -82,6 +77,8 @@ public class AuthController {
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(signUpRequest.getPassword());
         user.setProvider(AuthProvider.local);
+        user.setProviderId(null);
+        user.setEmailVerified(false);
         user.setRole(Role.ROLE_GUEST);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

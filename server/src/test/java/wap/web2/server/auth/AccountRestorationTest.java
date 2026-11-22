@@ -51,26 +51,26 @@ class AccountRestorationTest {
     }
 
     @Test
-    void localRecoveryRequiresOriginalPasswordAndPreservesId() {
+    void localRecoveryUsesNewPasswordAndPreservesId() {
         account();
         var encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode("original"));
         user.deactivate();
+        assertThat(user.getPassword()).isNull();
         var controller = new AuthController(null, encoder, users, tokens(), properties, null);
         var request = new SignUpRequest();
         request.setName("Restored member");
         request.setEmail(user.getEmail());
         request.setPassword("different");
-        assertThatThrownBy(() -> controller.registerUser(request)).isInstanceOf(BadRequestException.class);
-        assertThat(user.isDeleted()).isTrue();
-        verify(users, never()).save(any());
-        request.setPassword("original");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(new MockHttpServletRequest()));
         assertThat(controller.registerUser(request).getStatusCode().value()).isEqualTo(201);
         assertThat(user.getId()).isEqualTo(42L);
         assertThat(user.isDeleted()).isFalse();
         assertThat(user.getRole()).isEqualTo(Role.ROLE_GUEST);
         assertThat(user.getTokenVersion()).isEqualTo(2);
+        assertThat(encoder.matches("different", user.getPassword())).isTrue();
+        assertThat(encoder.matches("original", user.getPassword())).isFalse();
+        assertThatThrownBy(() -> controller.registerUser(request)).isInstanceOf(BadRequestException.class);
     }
 
     @Test

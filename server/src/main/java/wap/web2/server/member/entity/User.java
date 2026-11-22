@@ -80,6 +80,7 @@ public class User {
 
     public void deactivate() {
         deleted = true;
+        password = null;
         tokenVersion++;
         role = Role.ROLE_GUEST;
         membershipLevel = MembershipLevel.NONE;

@@ -57,6 +57,7 @@ class UserManagementIntegrationTest {
             user.setName(name);
             user.setEmail(name + "@example.invalid");
             user.setProvider(AuthProvider.local);
+            user.setPassword("old-password-hash");
             user.setRole(Role.ROLE_MEMBER);
             user.setMembershipLevel(MembershipLevel.NEW);
             return users.saveAndFlush(user).getId();
@@ -143,6 +144,7 @@ class UserManagementIntegrationTest {
         service.delete(List.of(id));
         var deleted = users.findById(id).orElseThrow();
         assertThat(deleted.isDeleted()).isTrue();
+        assertThat(deleted.getPassword()).isNull();
         assertThat(deleted.getTokenVersion()).isEqualTo(1);
         assertThat(deleted.getRole()).isEqualTo(Role.ROLE_GUEST);
         assertThat(users.findUserByOffset(12, 0, null, null)).isEmpty();
