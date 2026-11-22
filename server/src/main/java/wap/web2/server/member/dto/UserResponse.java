@@ -24,7 +24,7 @@ public class UserResponse {
     @Schema(description = "로그인 계정 이메일", example = "user@example.com")
     private String userEmail;
 
-    @Schema(description = "입학 연도 뒤 두 자리. 미수집 또는 해석할 수 없는 기존 학번은 null", example = "26", nullable = true)
+    @Schema(description = "입학 연도 뒤 두 자리. 미수집 시 null", example = "26", nullable = true)
     private String studentNumber;
     @Schema(description = "현재 회원 구분. membershipLevel과 동일하며 NONE이면 null", nullable = true)
     private MemberType memberType;
@@ -37,18 +37,11 @@ public class UserResponse {
             .userId(user.getId())
             .userName(user.getName())
             .userEmail(user.getEmail())
-            .studentNumber(studentYear(user.getStudentNumber()))
+            .studentNumber(user.getStudentNumber())
             .memberType(user.getMembershipLevel() == MembershipLevel.NONE
                 ? null : MemberType.valueOf(user.getMembershipLevel().name()))
             .signupCompleted(user.isSignupCompleted())
             .build();
     }
 
-    private static String studentYear(String value) {
-        if (value == null) return null;
-        if (value.matches("[0-9]{2}")) return value;
-        // Older records may contain the full admission year or nine-digit student number.
-        if (value.matches("(?:19|20)[0-9]{2}(?:[0-9]{5})?")) return value.substring(2, 4);
-        return null;
-    }
 }

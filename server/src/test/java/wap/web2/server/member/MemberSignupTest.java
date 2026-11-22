@@ -9,9 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import wap.web2.server.member.dto.UserResponse;
 import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.exception.ConflictException;
 import wap.web2.server.exception.ForbiddenException;
@@ -33,22 +30,6 @@ class MemberSignupTest {
             .isInstanceOf(BadRequestException.class);
         assertThat(account.getStudentNumber()).isNull();
         assertThat(account.isSignupCompleted()).isFalse();
-    }
-
-    @ParameterizedTest
-    @CsvSource({"26,26", "02,02", "2026,26", "2002,02", "202600001,26", "200200001,02", "199900001,99"})
-    void returnsOnlyAdmissionYearWithoutChangingLegacyData(String stored, String expected) {
-        account.setStudentNumber(stored);
-        assertThat(UserResponse.of(account).getStudentNumber()).isEqualTo(expected);
-        assertThat(account.getStudentNumber()).isEqualTo(stored);
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {"1", "123456", "unknown", "020260001"})
-    void doesNotExposeUnrecognizedLegacyStudentNumbers(String stored) {
-        account.setStudentNumber(stored);
-        assertThat(UserResponse.of(account).getStudentNumber()).isNull();
     }
 
     @BeforeEach
