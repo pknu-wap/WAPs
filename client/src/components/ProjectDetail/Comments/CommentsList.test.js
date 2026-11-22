@@ -32,9 +32,9 @@ test("키보드로 삭제하고 요청 중 중복 삭제를 막는다", async ()
   );
   render(<CommentsList comments={comments} />);
   const button = screen.getByRole("button", { name: "작성자 댓글 삭제" });
-  userEvent.tab();
+  await userEvent.tab();
   expect(button).toHaveFocus();
-  userEvent.keyboard("{Enter}");
+  await userEvent.keyboard("{Enter}");
   fireEvent.click(button);
   expect(apiClient.delete).toHaveBeenCalledTimes(1);
   expect(apiClient.delete).toHaveBeenCalledWith("/comment/42");

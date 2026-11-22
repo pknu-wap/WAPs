@@ -3,8 +3,6 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Comments from "./Comments";
 import apiClient from "../../../api/client";
 
-const mockNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({ useNavigate: () => mockNavigate }));
 jest.mock("../../../api/client", () => ({ post: jest.fn() }));
 const originalLocation = window.location;
 beforeAll(() => {
@@ -87,7 +85,6 @@ test.each([
     fireEvent.change(input, { target: { value: "댓글 내용" } });
     fireEvent.click(screen.getByRole("button", { name: "댓글 달기" }));
     await waitFor(() => expect(window.alert).toHaveBeenCalledWith(message));
-    expect(mockNavigate).not.toHaveBeenCalled();
     expect(input).toHaveValue("댓글 내용");
     expect(input).toBeEnabled();
     fireEvent.click(screen.getByRole("button", { name: "댓글 달기" }));

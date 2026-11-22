@@ -84,6 +84,7 @@ const Comments = ({ projectId }) => {
               ref={textAreaRef} // ref 추가
             />
             <button
+              type="button"
               className={styles.comments_button}
               onClick={handleSubmit}
               disabled={submitting || !comments.trim()}
