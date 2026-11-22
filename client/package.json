@@ -14,9 +14,11 @@
     "@tiptap/react": "^3.32.2",
     "@tiptap/starter-kit": "^3.32.2",
     "axios": "^1.7.7",
+    "html5-qrcode": "^2.3.8",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "markdown-to-jsx": "^9.10.4",
+    "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
@@ -25,7 +27,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

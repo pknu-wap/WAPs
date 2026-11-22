@@ -202,27 +202,11 @@ public class ProjectService {
                 THUMBNAIL,
                 request.getThumbnailFiles()
             );
-            String previousThumbnail = project.getThumbnail();
             project.updateThumbnail(thumbnailUrl);
-            if (previousThumbnail != null && objectStorageService.supports(previousThumbnail)) {
-                objectStorageService.deleteImage(previousThumbnail);
-            }
         }
 
-        // 기존 프로젝트의 이미지 삭제
-        log.info("[프로젝트 수정] ({})의 삭제 요청된 이미지 삭제", project.getTitle());
-        List<String> removedImageUrls = project.removeImages(getRemovalTargets(request));
-        for (String imageUrl : removedImageUrls) {
-            log.info("[프로젝트 수정] 삭제하려는 image url: {}", imageUrl);
-            if (!objectStorageService.supports(imageUrl)) {
-                log.info(
-                    "[프로젝트 수정] 현재 스토리지에서 관리하지 않는 image url 이므로 물리 삭제를 건너뜁니다: {}",
-                    imageUrl
-                );
-                continue;
-            }
-            objectStorageService.deleteImage(imageUrl);
-        }
+        // 다른 환경에서 사용할 수 있는 버킷 객체는 보존하고 게시물의 이미지 참조만 제거합니다.
+        project.removeImages(getRemovalTargets(request));
 
         // 추가 이미지를 Project에 삽입, 만약 ImageS3가 null이라면 skip
         List<MultipartFile> imageFiles = getNonEmptyImageFiles(request);
@@ -254,15 +238,8 @@ public class ProjectService {
         if (!canManage(project, user)) {
             throw new ForbiddenException("프로젝트 삭제 권한이 없습니다.");
         }
+        // 다른 환경의 DB에서도 같은 이미지 URL을 사용할 수 있으므로 버킷 객체는 보존합니다.
         projectRepository.delete(project);
-        for (Image image : project.getImages()) {
-            if (objectStorageService.supports(image.getImageFile())) {
-                objectStorageService.deleteImage(image.getImageFile());
-            }
-        }
-        if (project.getThumbnail() != null && objectStorageService.supports(project.getThumbnail())) {
-            objectStorageService.deleteImage(project.getThumbnail());
-        }
     }
 
     @Transactional(readOnly = true)
