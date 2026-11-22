@@ -21,7 +21,7 @@ public class AttendanceParticipant {
     @JoinColumn(name = "attendance_id", nullable = false)
     private Attendance attendance;
 
-    // 생성 시점의 명단을 보존하므로 이후 사용자 변경/삭제와 연동하지 않는다.
+    // 생성 시점의 명단을 보존한다. 표시 이름은 현재 사용자 이름을 우선하고 삭제 시 저장된 이름을 사용한다.
     @Column(name = "user_id", nullable = false)
     private Long userId;
 

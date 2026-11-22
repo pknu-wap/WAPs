@@ -11,6 +11,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.exception.ConflictException;
 import wap.web2.server.exception.ForbiddenException;
 import wap.web2.server.exception.ResourceNotFoundException;
+import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 
 @Service
@@ -58,13 +60,17 @@ public class AttendanceService {
     }
 
     public Detail detail(long attendanceId, PresenceStatus status, String sort) {
-        Comparator<AttendanceParticipant> order = participantOrder(sort);
+        Comparator<Participant> order = participantOrder(sort);
         var attendance = attendances.findById(attendanceId).orElseThrow(AttendanceService::notFound);
         var targets = participants.findByAttendanceId(attendanceId);
+        var currentNames = users.findAllById(targets.stream().map(AttendanceParticipant::getUserId).toList())
+            .stream().filter(user -> !user.isDeleted())
+            .collect(Collectors.toMap(User::getId, User::getName));
         long present = targets.stream().filter(p -> p.getStatus() == PresenceStatus.PRESENT).count();
         return new Detail(summary(attendance, targets.size(), present),
             new Content<>(targets.stream().filter(p -> status == null || p.getStatus() == status)
-                .sorted(order).map(Participant::from).toList()));
+                .map(p -> Participant.from(p, currentNames.getOrDefault(p.getUserId(), p.getUserName())))
+                .sorted(order).toList()));
     }
 
     @Transactional
@@ -92,7 +98,9 @@ public class AttendanceService {
         var participant = participants.findByAttendanceIdAndUserId(attendanceId, userId)
             .orElseThrow(AttendanceService::notFound);
         participant.update(request.status(), request.note(), now);
-        return Participant.from(participant);
+        String userName = users.findById(userId).filter(user -> !user.isDeleted())
+            .map(User::getName).orElse(participant.getUserName());
+        return Participant.from(participant, userName);
     }
 
     @Transactional
@@ -137,15 +145,15 @@ public class AttendanceService {
         return attendances.findByIdForUpdate(attendanceId).orElseThrow(AttendanceService::notFound);
     }
 
-    private static Comparator<AttendanceParticipant> participantOrder(String sort) {
-        Comparator<AttendanceParticipant> order = switch (sort) {
-            case "userName,asc" -> Comparator.comparing(AttendanceParticipant::getUserName);
-            case "userName,desc" -> Comparator.comparing(AttendanceParticipant::getUserName).reversed();
-            case "status,asc" -> Comparator.comparing(AttendanceParticipant::getStatus);
-            case "status,desc" -> Comparator.comparing(AttendanceParticipant::getStatus).reversed();
+    private static Comparator<Participant> participantOrder(String sort) {
+        Comparator<Participant> order = switch (sort) {
+            case "userName,asc" -> Comparator.comparing(Participant::userName);
+            case "userName,desc" -> Comparator.comparing(Participant::userName).reversed();
+            case "status,asc" -> Comparator.comparing(Participant::status);
+            case "status,desc" -> Comparator.comparing(Participant::status).reversed();
             default -> throw new BadRequestException("지원하지 않는 출석 명단 정렬 기준입니다.");
         };
-        return order.thenComparing(AttendanceParticipant::getUserId);
+        return order.thenComparing(Participant::userId);
     }
 
     private static Summary summary(Attendance attendance, long total, long present) {
