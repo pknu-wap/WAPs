@@ -14,6 +14,10 @@ export const adminVoteApi = {
       { params: { semester } },
     ),
 
+  // 기존 투표 기록을 유지하고 다시 열기
+  reopen: (semester) =>
+    apiClient.post("/admin/vote/reopen", {}, { params: { semester } }),
+
   // 투표 종료
   close: (semester) =>
     apiClient.post("/admin/vote/closed", {}, { params: { semester } }),
