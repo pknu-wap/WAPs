@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser } from "react-icons/fa";
-import { FiEdit2 } from "react-icons/fi";
+import { FaUser, FaPen } from "react-icons/fa";
 import NameChange from "../components/NameChange";
 import { userApi } from "../api/user";
 import authStorage from "../utils/authStorage";
 import { memberTypeLabel } from "../utils/accountProfile";
-import wapsLogo from "../assets/img/waps_logo.png";
 import "../assets/Settings.css";
 
 const Settings = () => {
@@ -16,7 +14,6 @@ const Settings = () => {
   const [userType, setUserType] = useState("");
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isNameSaved, setIsNameSaved] = useState(false);
   const [isSavingName, setIsSavingName] = useState(false);
   const [loadError, setLoadError] = useState("");
   const [reload, setReload] = useState(0);
@@ -41,7 +38,9 @@ const Settings = () => {
     };
 
     fetchUserInfo();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [reload]);
 
   const handleEditClick = () => {
@@ -66,7 +65,6 @@ const Settings = () => {
 
       setUserName(savedName);
       authStorage.set("userName", savedName, { expires: 7 });
-      setIsNameSaved(true);
       setIsNameModalOpen(false);
     } catch (error) {
       console.error("이름 변경 실패:", error);
@@ -83,25 +81,17 @@ const Settings = () => {
 
   return (
     <div className="settingsContainer">
-      <button
-        type="button"
-        className="settings-brand"
-        onClick={() => navigate("/ProjectPage")}
-        aria-label="WAPs 프로젝트 페이지"
-      >
-        <img src={wapsLogo} alt="WAPs" />
-      </button>
-      <button
-        type="button"
-        className="settings-close"
-        onClick={() => navigate(-1)}
-        aria-label="닫기"
-      >
-        <span />
-        <span />
-      </button>
-
       <div className="settings-content">
+        <button
+          type="button"
+          className="settings-close"
+          onClick={() => navigate(-1)}
+          aria-label="닫기"
+        >
+          <span />
+          <span />
+        </button>
+
         <header className="settings-header">
           <p>설정을 변경해보세요.</p>
           <h1>SETTINGS</h1>
@@ -109,7 +99,10 @@ const Settings = () => {
         {loadError && (
           <p role="alert">
             {loadError}{" "}
-            <button type="button" onClick={() => setReload((value) => value + 1)}>
+            <button
+              type="button"
+              onClick={() => setReload((value) => value + 1)}
+            >
               다시 불러오기
             </button>
           </p>
@@ -161,12 +154,12 @@ const Settings = () => {
                   aria-label="이름 변경"
                   disabled={isLoading || Boolean(loadError) || isSavingName}
                 >
-                  <FiEdit2 />
+                  <FaPen />
                 </button>
               </div>
 
               <p className="name-description">
-                ⓘ WAPs에 쓰이는 이름은 별명이 아닌 본명으로 설정해주세요!
+                ⓘ WAPs에 쓰이는 이름은 반드시 본명으로 설정해주세요!
               </p>
             </div>
 
@@ -182,15 +175,13 @@ const Settings = () => {
           </div>
         </section>
 
-        <div className="settings-actions">
-          <button
-            type="button"
-            className={`settings-action settings-action--secondary${isNameSaved ? " settings-action--saved" : ""}`}
-            onClick={handleMenuNavigate}
-          >
-            메뉴 페이지로 돌아가기
-          </button>
-        </div>
+        <button
+          type="button"
+          className="back-menu-button"
+          onClick={handleMenuNavigate}
+        >
+          메뉴 페이지로 돌아가기
+        </button>
       </div>
 
       {isNameModalOpen && (
