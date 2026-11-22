@@ -3,7 +3,7 @@ import styles from "../../assets/Admin/SideBar.module.css";
 import { IconVote, IconTeamBuild, IconPermission, IconPlan } from "./icons";
 
 // 어드민 페이지 사이드바 컴포넌트
-const SideBar = () => {
+const SideBar = ({ onSelect }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -47,7 +47,10 @@ const SideBar = () => {
             <button
               key={button.text}
               className={isActive ? styles.active : ""}
-              onClick={() => navigate(button.path)}
+              onClick={() => {
+                navigate(button.path);
+                onSelect?.();
+              }}
             >
               {/* 아이콘 컴포넌트를 렌더링하고 color prop과 size 전달 */}
               <IconComponent color={iconColor} size="1" />
