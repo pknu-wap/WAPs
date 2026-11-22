@@ -18,13 +18,14 @@ class AttendanceTest {
     }
 
     @Test
-    void qrExpiresAtExactlySixtySeconds() {
+    void qrExpiresAtExactlyTwoMinutes() {
         var attendance = new Attendance("발표", date);
         assertThat(attendance.acceptsQr("first", now)).isFalse();
         attendance.issueQr("first", now);
-        assertThat(attendance.getQrExpiresAt()).isEqualTo(now.plusSeconds(60));
-        assertThat(attendance.acceptsQr("first", now.plusSeconds(60).minusNanos(1))).isTrue();
-        assertThat(attendance.acceptsQr("first", now.plusSeconds(60))).isFalse();
+        assertThat(attendance.getQrExpiresAt()).isEqualTo(now.plusSeconds(120));
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(60))).isTrue();
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(120).minusNanos(1))).isTrue();
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(120))).isFalse();
         assertThat(attendance.acceptsQr("FIRST", now)).isFalse();
         assertThat(attendance.acceptsQr(null, now)).isFalse();
     }
@@ -34,12 +35,12 @@ class AttendanceTest {
         var attendance = new Attendance("발표", date);
         attendance.issueQr("first", now);
         attendance.issueQr("second", now.plusSeconds(30));
-        assertThat(attendance.acceptsQr("first", now.plusSeconds(60).minusNanos(1))).isTrue();
-        assertThat(attendance.acceptsQr("second", now.plusSeconds(60).minusNanos(1))).isTrue();
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(120).minusNanos(1))).isTrue();
+        assertThat(attendance.acceptsQr("second", now.plusSeconds(120).minusNanos(1))).isTrue();
         assertThat(attendance.acceptsQr("FIRST", now.plusSeconds(30))).isFalse();
-        assertThat(attendance.acceptsQr("first", now.plusSeconds(60))).isFalse();
-        assertThat(attendance.acceptsQr("second", now.plusSeconds(60))).isTrue();
-        assertThat(attendance.acceptsQr("second", now.plusSeconds(90))).isFalse();
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(120))).isFalse();
+        assertThat(attendance.acceptsQr("second", now.plusSeconds(120))).isTrue();
+        assertThat(attendance.acceptsQr("second", now.plusSeconds(150))).isFalse();
     }
 
     @Test
@@ -57,9 +58,9 @@ class AttendanceTest {
     void reissueDoesNotReviveAnExpiredToken() {
         var attendance = new Attendance("발표", date);
         attendance.issueQr("first", now);
-        attendance.issueQr("second", now.plusSeconds(60));
-        assertThat(attendance.acceptsQr("first", now.plusSeconds(60))).isFalse();
-        assertThat(attendance.acceptsQr("second", now.plusSeconds(60))).isTrue();
+        attendance.issueQr("second", now.plusSeconds(120));
+        assertThat(attendance.acceptsQr("first", now.plusSeconds(120))).isFalse();
+        assertThat(attendance.acceptsQr("second", now.plusSeconds(120))).isTrue();
     }
 
     @Test

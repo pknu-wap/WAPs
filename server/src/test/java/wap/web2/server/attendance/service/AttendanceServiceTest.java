@@ -234,10 +234,10 @@ class AttendanceServiceTest {
         assertThatThrownBy(() -> service.checkIn(1, 10, otherToken)).isInstanceOf(BadRequestException.class);
         var result = service.checkIn(1, 10, old);
         assertThat(result.status()).isEqualTo(PresenceStatus.PRESENT);
-        when(clock.instant()).thenReturn(now.plusSeconds(59));
+        when(clock.instant()).thenReturn(now.plusSeconds(119));
         assertThat(service.checkIn(1, 10, old).checkedInAt()).isEqualTo(result.checkedInAt());
         assertThat(service.checkIn(1, 10, current).checkedInAt()).isEqualTo(result.checkedInAt());
-        when(clock.instant()).thenReturn(now.plusSeconds(60));
+        when(clock.instant()).thenReturn(now.plusSeconds(120));
         assertThatThrownBy(() -> service.checkIn(1, 10, old)).isInstanceOf(BadRequestException.class);
         assertThatThrownBy(() -> service.checkIn(1, 10, current)).isInstanceOf(BadRequestException.class);
         assertThat(participant.getCheckedInAt()).isEqualTo(result.checkedInAt());

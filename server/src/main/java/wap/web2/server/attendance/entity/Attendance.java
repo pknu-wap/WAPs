@@ -56,7 +56,7 @@ public class Attendance {
         previousQrToken = qrToken;
         previousQrExpiresAt = qrExpiresAt;
         qrToken = token;
-        qrExpiresAt = now.plusSeconds(60);
+        qrExpiresAt = now.plusSeconds(120);
     }
 
     public boolean acceptsQr(String token, Instant now) {
