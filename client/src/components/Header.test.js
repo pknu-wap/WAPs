@@ -4,6 +4,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import Header from "./Header";
 import authStorage from "../utils/authStorage";
+jest.mock("../api/user", () => ({ userApi: { getMe: jest.fn() } }));
 
 jest.mock("../utils/authStorage", () => ({
   get: jest.fn(),

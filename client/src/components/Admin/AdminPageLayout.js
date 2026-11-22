@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useCurrentUserName from "../../hooks/useCurrentUserName";
 import { useNavigate, Outlet } from "react-router-dom";
 import styles from "../../assets/Admin/AdminPageLayout.module.css";
 import SideBar from "./SideBar";
@@ -7,16 +8,9 @@ import Cookies from "../../utils/authStorage";
 // 어드민 페이지 공용 레이아웃
 const AdminPageLayout = () => {
   // 유저 이름 저장
-  const [userName, setUserName] = useState(Cookies.get("userName") || null);
+  const userName = useCurrentUserName();
   // 모바일 사이드바 열림 상태 관리
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // 유저 이름 가져오기
-  useEffect(() => {
-    const token = Cookies.get("authToken");
-    const savedUserName = Cookies.get("userName");
-    if (token && savedUserName) setUserName(savedUserName);
-  }, []);
 
   const navigate = useNavigate();
 
