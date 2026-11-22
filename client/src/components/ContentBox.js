@@ -3,7 +3,6 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { projectApi } from "../api/project";
 import "../App.css";
 import "../assets/Contentbox.css";
-import LoadingPage from "./LoadingPage";
 import useSemester from "../hooks/useSemester";
 
 /* 알약 버튼 목록 (UI 전용) */
@@ -133,13 +132,9 @@ const ContentBox = () => {
     setYearAccordionOpen(false);
   };
 
-  if (isLoading) {
-    return <LoadingPage />; // 완전 교체
-  }
-
   const isBaseEmpty =
-    data.length === 0 && filter === "All" && searchTerm.trim() === "";
-  const isFilteredEmpty = !isBaseEmpty && filteredData.length === 0;
+    !isLoading && data.length === 0 && filter === "All" && searchTerm.trim() === "";
+  const isFilteredEmpty = !isLoading && !isBaseEmpty && filteredData.length === 0;
 
   return (
     <div>
@@ -231,7 +226,12 @@ const ContentBox = () => {
         </div>
       </div>
 
-      <div className="content-box mount1">
+      <div className="content-box" aria-busy={isLoading}>
+        {isLoading && (
+          <div className="empty-state" role="status">
+            프로젝트를 불러오는 중입니다.
+          </div>
+        )}
         {isBaseEmpty && (
           <div className="empty-state">
             <div className="empty-state__title">
