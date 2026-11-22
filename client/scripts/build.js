@@ -2,6 +2,7 @@
 // in the browser bundle while retaining CRA's static build output and tooling.
 const nodeEnv = process.env.NODE_ENV || "production";
 process.env.NODE_ENV = nodeEnv;
+require("./source-maps");
 const configPath = require.resolve("react-scripts/config/webpack.config");
 const createConfig = require(configPath);
 

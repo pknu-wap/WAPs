@@ -26,6 +26,8 @@ import TeamBuildResultPage from "./pages/TeamBuildResultPage";
 import CalendarPage from "./pages/CalendarPage";
 import AttendanceCheckInPage from "./pages/AttendanceCheckInPage";
 import AdminRoute from "./components/Login/PrivateRoute";
+import CheckIn from "./pages/CheckIn";
+import CheckInScan from "./pages/CheckInScan";
 import Settings from "./pages/Settings";
 
 import ManagePermissionPage from "./pages/adminPages/ManagePermissionPage";
@@ -93,6 +95,8 @@ const router = createBrowserRouter(
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/protected" element={<ProtectedPage />} />
+        <Route path="/CheckIn" element={<CheckIn />} />
+        <Route path="/CheckIn/scan/:attendanceId" element={<CheckInScan />} />
       </Route>
 
       <Route element={<FullScreenLayout />}>
@@ -129,6 +133,7 @@ function App() {
 
     return () => window.removeEventListener("resize", setScreenSize);
   }, []);
+
   return <RouterProvider router={router} />;
 }
 

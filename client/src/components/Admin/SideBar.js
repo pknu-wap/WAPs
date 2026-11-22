@@ -3,7 +3,8 @@ import styles from "../../assets/Admin/SideBar.module.css";
 import { IconVote, IconTeamBuild, IconPermission, IconPlan } from "./icons";
 import { FiUserCheck } from "react-icons/fi";
 
-const SideBar = () => {
+// 어드민 페이지 사이드바 컴포넌트
+const SideBar = ({ onSelect }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -44,7 +45,10 @@ const SideBar = () => {
             <button
               key={button.text}
               className={isActive ? styles.active : ""}
-              onClick={() => navigate(button.path)}
+              onClick={() => {
+                navigate(button.path);
+                onSelect?.();
+              }}
             >
               <IconComponent color={iconColor} size="24px" />
               {button.text}

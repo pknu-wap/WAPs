@@ -1,10 +1,8 @@
 @font-face {
   font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-    format("woff");
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
   font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-    format("woff");
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
 }
@@ -35,10 +33,12 @@ body:has(nav.menu) .App-header {
   position: fixed;
   top: 0;
   left: 50%;
-  transform: translateX(-50%); /* 정확히 중앙 정렬 */
+  transform: translateX(-50%);
+  /* 정확히 중앙 정렬 */
 
   width: 100%;
-  max-width: var(--container-max, 400px); /* App.css 변수 사용, 없으면 400px */
+  max-width: var(--container-max, 400px);
+  /* App.css 변수 사용, 없으면 400px */
   height: calc(var(--vh, 1vh) * 100);
 
   /* 배경 투명도 제거 및 기본 검정 배경 추가 */
@@ -219,6 +219,245 @@ body:has(nav.menu) .App-header {
   opacity: 0.8;
 }
 
-.settings-button + .logout-button {
+.settings-button+.logout-button {
   margin-top: 4px;
+}
+
+/* === Desktop Responsive=== */
+
+@media (min-width: 600px) {
+
+  .menuContainer {
+    width: 100vw;
+    max-width: none;
+  }
+
+  .menu {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    max-width: none;
+
+    height: 100dvh;
+    min-height: 100vh;
+
+    margin: 0;
+
+    transform: none;
+
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  body:has(nav.menu) .App-header {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    max-width: none;
+
+    height: 70px;
+
+    transform: none;
+
+    z-index: 105;
+  }
+
+  body:has(nav.menu) .header-inner {
+    width: calc(100% - 64px);
+    max-width: 1200px;
+
+    height: 100%;
+
+    margin: 0 auto;
+
+    padding: 10px 0 0;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  body:has(nav.menu) .waplogo img {
+    height: clamp(15px, 1.1vw, 19px) !important;
+  }
+
+  body:has(nav.menu) .menu-icon {
+    margin: 0;
+
+    font-size: clamp(20px, 1.5vw, 25px);
+
+    flex-shrink: 0;
+  }
+
+  body:has(nav.menu) .menu-icon p {
+    margin: 0;
+  }
+
+  .menu-content {
+    width: calc(100% - 48px);
+    max-width: 620px;
+
+    margin: 0 auto;
+
+    padding:
+      clamp(85px, 10vh, 105px) 0 60px;
+
+    box-sizing: border-box;
+  }
+
+  .welcome-message {
+    margin: 0 0 4px;
+
+    font-size: clamp(11px, 0.85vw, 13px);
+
+    font-weight: 500;
+
+    line-height: 1.3;
+
+    text-align: center;
+
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .menu-title {
+    margin: 0 0 clamp(26px, 3vh, 34px);
+
+    font-size: clamp(30px, 2.5vw, 38px);
+
+    line-height: 1.1;
+
+    font-weight: 700;
+
+    letter-spacing: 0.3px;
+
+    text-align: center;
+
+    color: #fff;
+  }
+
+  .menu-section {
+    width: 100%;
+
+    margin-bottom: clamp(20px, 2.5vh, 27px);
+  }
+
+  .section-title {
+    margin: 0 0 8px;
+
+    font-size: clamp(12px, 0.95vw, 14px);
+
+    line-height: 1.2;
+
+    font-weight: 700;
+
+    letter-spacing: 0.3px;
+
+    color: #fff;
+  }
+
+  .menu-items {
+    width: 100%;
+
+    margin: 0;
+
+    border-radius: clamp(12px, 1vw, 15px);
+
+    overflow: hidden;
+
+    background: rgba(255, 255, 255, 0.15);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    box-sizing: border-box;
+  }
+
+  .menu-item {
+    width: 100%;
+
+    min-height: clamp(50px, 5.5vh, 60px);
+
+    margin: 0;
+
+    padding: 0 clamp(18px, 1.8vw, 24px);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    box-sizing: border-box;
+
+    border: none;
+
+    border-bottom:
+      1px solid rgba(255, 255, 255, 0.1);
+
+    background: transparent;
+
+    color: #fff;
+
+    font-family: "Pretendard-Regular";
+
+    font-size: clamp(13px, 1vw, 15px);
+
+    font-weight: 500;
+
+    line-height: 1.3;
+
+    text-align: left;
+
+    cursor: pointer;
+  }
+
+  .menu-item:last-child {
+    border-bottom: none;
+  }
+
+  .menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .menu-item .arrow {
+    width: auto;
+    height: auto;
+
+    margin-left: 15px;
+    margin-right: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+  }
+
+  .menu-item .arrow svg {
+    transform: scale(0.45);
+  }
+
+  .settings-button,
+  .logout-button {
+    font-size: clamp(12px, 0.95vw, 14px);
+  }
+
+  .settings-button {
+    padding: 7px 2px;
+  }
+
+  .logout-button {
+    padding: 7px 2px;
+    margin-top: 3px;
+  }
 }
