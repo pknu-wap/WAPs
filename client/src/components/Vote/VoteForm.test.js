@@ -27,6 +27,76 @@ beforeEach(() => {
 });
 afterEach(() => jest.restoreAllMocks());
 
+async function selectProjects() {
+  await screen.findByText("프로젝트 1");
+  [1, 2, 3].forEach((id) =>
+    fireEvent.click(screen.getByText(`프로젝트 ${id}`)),
+  );
+}
+
+test("제출 중 중복 요청과 선택 변경을 막고 서버 학기로 한 번 제출한다", async () => {
+  let complete;
+  apiClient.post.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        complete = resolve;
+      }),
+  );
+  render(<VoteForm isVotedUser={false} />);
+  await selectProjects();
+  const submit = screen.getByRole("button", { name: "투표 완료" });
+  fireEvent.click(submit);
+  fireEvent.click(submit);
+  fireEvent.click(screen.getByText("프로젝트 1"));
+  expect(submit).toBeDisabled();
+  expect(
+    screen.getByText("프로젝트 1").closest(".project_list_box"),
+  ).toHaveClass("selected");
+  expect(apiClient.post).toHaveBeenCalledTimes(1);
+  expect(apiClient.post).toHaveBeenCalledWith("/vote", {
+    projectIds: [1, 2, 3],
+    semester: "2030-01",
+  });
+  complete();
+  await waitFor(() =>
+    expect(mockNavigate).toHaveBeenCalledWith("/ProjectPage"),
+  );
+  expect(mockNavigate).toHaveBeenCalledTimes(1);
+});
+
+test.each([
+  [
+    {
+      response: { status: 409, data: { message: "이미 투표한 사용자입니다." } },
+      request: {},
+    },
+    "이미 투표한 사용자입니다.",
+  ],
+  [
+    { response: { status: 403 }, request: {} },
+    "투표 요청이 거절되었습니다. 투표 상태를 확인하고 다시 시도해주세요.",
+  ],
+  [{ request: {} }, "서버 응답이 없습니다. 나중에 다시 시도해주세요."],
+])(
+  "제출 실패 시 오류를 구분하고 선택을 보존해 재시도한다 (%j)",
+  async (failure, message) => {
+    apiClient.post
+      .mockRejectedValueOnce(failure)
+      .mockResolvedValueOnce(undefined);
+    render(<VoteForm isVotedUser={false} />);
+    await selectProjects();
+    fireEvent.click(screen.getByRole("button", { name: "투표 완료" }));
+    await waitFor(() => expect(window.alert).toHaveBeenCalledWith(message));
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(
+      screen.getByText("프로젝트 1").closest(".project_list_box"),
+    ).toHaveClass("selected");
+    fireEvent.click(screen.getByRole("button", { name: "투표 완료" }));
+    await waitFor(() => expect(apiClient.post).toHaveBeenCalledTimes(2));
+    expect(apiClient.post.mock.calls[1]).toEqual(apiClient.post.mock.calls[0]);
+  },
+);
+
 test("서버 학기로 목록과 내 투표를 조회하고 응답 본문의 선택을 복원한다", async () => {
   render(<VoteForm isVotedUser />);
   const card = await screen.findByText("프로젝트 1");

@@ -7,9 +7,10 @@ const VoteProjectList = ({
   selectedProjects,
   setSelectedProjects,
   isVotedUser,
+  disabled,
 }) => {
   const handleProjectSelect = (participants, isVotedUser) => {
-    // console.log("클릭됨", participants);
+    if (disabled) return;
 
     if (isVotedUser) {
       alert("투표는 변경하실 수 없습니다.");

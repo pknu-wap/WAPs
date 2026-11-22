@@ -1,5 +1,5 @@
 import { REQUIRED_VOTE_COUNT } from "../../constants/vote";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../assets/ProjectVote.module.css";
 import sub_styles from "../../assets/ProjectCreation/ProjectForm.module.css";
@@ -15,6 +15,8 @@ const VoteForm = ({ isVotedUser }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const pending = useRef(false);
 
   // 투표한 프로젝트 불러오기
   useEffect(() => {
@@ -50,7 +52,8 @@ const VoteForm = ({ isVotedUser }) => {
 
   const handleVoteSubmit = async (e) => {
     e.preventDefault();
-    if (loading || error || !currentSemester || isVotedUser) return;
+    if (pending.current || loading || error || !currentSemester || isVotedUser)
+      return;
 
     if (selectedProjects.length !== REQUIRED_VOTE_COUNT) {
       alert(`프로젝트를 ${REQUIRED_VOTE_COUNT}개 선택해야 합니다.`);
@@ -62,29 +65,32 @@ const VoteForm = ({ isVotedUser }) => {
       semester: currentSemester,
     };
 
+    pending.current = true;
+    setSubmitting(true);
     try {
       await voteApi.submitVote(voteData);
 
       alert("투표가 완료되었습니다.");
-      setSelectedProjects([]);
-      window.location.reload();
       navigate("/ProjectPage");
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       alert(errorMessage);
 
-      if (error.response?.status === 401) {
-        navigate("/ProjectPage");
-      }
+      pending.current = false;
+      setSubmitting(false);
     }
   };
 
   const getErrorMessage = (error) => {
+    if (error.response?.data?.message) return error.response.data.message;
     if (error.response?.status === 401) {
       return "인증에 실패했습니다.";
     }
     if (error.response?.status === 404) {
       return "프로젝트가 존재하지 않습니다.";
+    }
+    if (error.response) {
+      return "투표 요청이 거절되었습니다. 투표 상태를 확인하고 다시 시도해주세요.";
     }
     if (error.request) {
       return "서버 응답이 없습니다. 나중에 다시 시도해주세요.";
@@ -132,13 +138,14 @@ const VoteForm = ({ isVotedUser }) => {
           selectedProjects={selectedProjects}
           setSelectedProjects={setSelectedProjects}
           isVotedUser={isVotedUser}
+          disabled={submitting}
         />
       )}
 
       {!isVotedUser && (
         <button
           type="submit"
-          disabled={loading || !!error || projects.length === 0}
+          disabled={loading || !!error || submitting || projects.length === 0}
           className={sub_styles.submit_button}
           onClick={handleVoteSubmit}
           style={{
@@ -147,7 +154,7 @@ const VoteForm = ({ isVotedUser }) => {
             cursor: "pointer",
           }}
         >
-          투표 완료
+          {submitting ? "투표 중..." : "투표 완료"}
         </button>
       )}
     </div>
