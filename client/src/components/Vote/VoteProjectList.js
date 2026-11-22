@@ -38,10 +38,12 @@ const VoteProjectList = ({
       try {
         const response = await apiClient.get(`/vote/${semesterInfo}/projects`);
 
-        // console.log("API 응답 데이터:", response.data);
+        const projectData = Array.isArray(response)
+          ? response
+          : response.data;
 
-        if (Array.isArray(response.data)) {
-          setProjects(response.data);
+        if (Array.isArray(projectData)) {
+          setProjects(projectData);
         }
       } catch (error) {
         console.error("데이터 가져오는 중 오류 발생:", error);
@@ -60,9 +62,8 @@ const VoteProjectList = ({
           return (
             <div
               key={project.participants}
-              className={`${styles.project_list_box} ${
-                isSelected ? styles.selected : ""
-              }`}
+              className={`${styles.project_list_box} ${isSelected ? styles.selected : ""
+                }`}
               onClick={() =>
                 handleProjectSelect(project.participants, isVotedUser)
               }
@@ -83,9 +84,8 @@ const VoteProjectList = ({
 
                 <div className={styles.project_title_form}>
                   <h2
-                    className={`${styles.title} ${
-                      isSelected ? styles.selected_title : ""
-                    }`}
+                    className={`${styles.title} ${isSelected ? styles.selected_title : ""
+                      }`}
                   >
                     {project.title}
                   </h2>

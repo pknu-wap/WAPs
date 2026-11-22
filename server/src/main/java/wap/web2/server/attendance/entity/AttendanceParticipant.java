@@ -1,6 +1,7 @@
 package wap.web2.server.attendance.entity;
 
 import jakarta.persistence.*;
+import wap.web2.server.member.entity.MembershipLevel;
 import java.time.Instant;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,6 +29,10 @@ public class AttendanceParticipant {
     private String userName;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MembershipLevel membershipLevel = MembershipLevel.NONE;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private PresenceStatus status = PresenceStatus.ABSENT;
 
@@ -37,6 +42,11 @@ public class AttendanceParticipant {
     private String note = "";
 
     public AttendanceParticipant(Attendance attendance, Long userId, String userName) {
+        this(attendance, userId, userName, MembershipLevel.NONE);
+    }
+
+    public AttendanceParticipant(Attendance attendance, Long userId, String userName, MembershipLevel membershipLevel) {
+        this.membershipLevel = membershipLevel;
         this.attendance = attendance;
         this.userId = userId;
         this.userName = userName;

@@ -67,7 +67,7 @@ const VotePage = () => {
   }, [navigate, token]);
 
   return (
-    <div className="container">
+    <div className="container vote-page">
       <Header toggleMenu={toggleMenu} />
 
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />

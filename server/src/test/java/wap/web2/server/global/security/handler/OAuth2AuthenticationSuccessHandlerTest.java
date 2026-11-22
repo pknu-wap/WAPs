@@ -3,6 +3,7 @@ package wap.web2.server.global.security.handler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,28 @@ class OAuth2AuthenticationSuccessHandlerTest {
         userRepository, refreshTokenRepository, new SecurityErrorResponseWriter(objectMapper)
     );
 
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void redirectIncludesPersistedSignupState(boolean completed) {
+        var account = new wap.web2.server.member.entity.User();
+        account.setId(1L);
+        account.setRole(wap.web2.server.member.entity.Role.ROLE_GUEST);
+        account.setSignupCompleted(completed);
+        var principal = wap.web2.server.global.security.UserPrincipal.create(account);
+        var authentication = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+            principal, null, principal.getAuthorities());
+        when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(account));
+        when(tokenProvider.createToken(authentication)).thenReturn("access-token");
+        when(tokenProvider.createRefreshToken(authentication)).thenReturn("refresh-token");
+
+        String redirect = handler.addTokenCookiesTo(
+            "https://waps.im/oauth/callback?signupCompleted=untrusted",
+            new MockHttpServletResponse(), authentication);
+
+        assertThat(redirect).contains("token=access-token", "signupCompleted=" + completed)
+            .doesNotContain("untrusted");
+    }
+
     @BeforeEach
     void loadConfiguredRedirectUris() {
         var yaml = new YamlPropertiesFactoryBean();
@@ -52,23 +75,28 @@ class OAuth2AuthenticationSuccessHandlerTest {
         "https://feat-698-allow-preview-domains.dev.waps.im/oauth/callback",
         "https://a1b2c3.dev.waps.im/oauth/callback",
         "https://FEAT-698.DEV.WAPS.IM/oauth/callback",
+        "https://feat-698-dev.waps.im/oauth/callback",
+        "https://feat-698.waps.im/oauth/callback",
+        "https://FEAT-698.WAPS.IM/oauth/callback",
         "https://waps.im/oauth/callback", "https://dev.waps.im/oauth/callback",
         "https://wapst.netlify.app/oauth/callback", "https://waps-deploy.netlify.app/oauth/callback",
         "https://waps-web.netlify.app/oauth/callback", "https://waps-develop.netlify.app/oauth/callback",
         "http://localhost:3000/oauth/callback",
         "myandroidapp://oauth2/redirect", "myiosapp://oauth2/redirect"
     })
-    void acceptsPreviewAndExistingRedirects(String uri) {
+    void acceptsWapsSubdomainsAndExistingRedirects(String uri) {
         assertThat(determineTargetUrl(uri)).isEqualTo(uri);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
         "http://feat-698.dev.waps.im/oauth/callback",
+        "http://feat-698.waps.im/oauth/callback",
+        "https://feat-698.waps.im:8443/oauth/callback",
+        "https://waps.im.evil.example/oauth/callback",
+        "https://evilwaps.im/oauth/callback",
         "https://feat-698.dev.waps.im:8443/oauth/callback",
         "https://feat-698.dev.waps.im.evil.example/oauth/callback",
-        "https://feat-698-dev.waps.im/oauth/callback",
-        "https://feat-698.waps.im/oauth/callback",
         "https://feat-698.dev.waps.im@evil.example/oauth/callback",
         "https://evil.example/oauth/callback",
         "//feat-698.dev.waps.im/oauth/callback",

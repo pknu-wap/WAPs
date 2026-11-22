@@ -138,7 +138,7 @@ const VoteResultPage = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container vote-page">
       <Header toggleMenu={toggleMenu} />
       <Menu menuOpen={menuOpen} toggleMenu={toggleMenu} />
 
@@ -146,18 +146,8 @@ const VoteResultPage = () => {
         <div className={`${styles.project_vote_form} ${styles.mount1}`}>
           <div className={styles.header_bg_zone}>
             <div className={styles.title_form}>
-              <div
-                className={styles.title}
-                style={{
-                  fontSize: "30px",
-                  WebkitTextStrokeWidth: "1.3px",
-                  WebkitTextStrokeColor: "white",
-                  marginTop: "40px",
-                }}
-              >
-                VOTING
-                <br />
-                RESULTS
+              <div className={styles.title}>
+                VOTING RESULTS
               </div>
               <div
                 className={styles.title}
@@ -186,9 +176,8 @@ const VoteResultPage = () => {
                   >
                     {semesterFilter.open
                       ? "년도/학기 ▲"
-                      : `${("0" + (semesterFilter.year - 2000)).slice(-2)}년 ${
-                          semesterFilter.semester
-                        }학기 ▼`}
+                      : `${("0" + (semesterFilter.year - 2000)).slice(-2)}년 ${semesterFilter.semester
+                      }학기 ▼`}
                   </button>
 
                   {semesterFilter.open && (
@@ -234,9 +223,8 @@ const VoteResultPage = () => {
 
                 return (
                   <div
-                    className={`${styles.project_list_box} ${
-                      isTop3 ? styles.selected_result : ""
-                    }`}
+                    className={`${styles.project_list_box} ${isTop3 ? styles.selected_result : ""
+                      }`}
                     key={`${project.projectId}-${index}`}
                   >
                     <div className={styles.inform_box}>

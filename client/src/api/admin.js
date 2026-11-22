@@ -40,9 +40,19 @@ export const adminPermissonApi = {
     }),
 
   // 사용자 권한 목록 가져오기
-  getUserRoleList: (page, size, role) =>
+  getUserRoleList: (page, size, role, membershipLevel) =>
     apiClient.get("/admin/role", {
-      params: { page: page, size: size, ...(role ? { role: role } : {}) },
+      params: {
+        page,
+        size,
+        ...(role ? { role } : {}),
+        ...(membershipLevel ? { membershipLevel } : {}),
+      },
+    }),
+  updateMembershipLevel: (newMembershipLevel, selectedUserMap) =>
+    apiClient.patch("/admin/role/user/membership-level", {
+      newMembershipLevel,
+      userIds: Array.from(selectedUserMap.keys()),
     }),
 };
 
@@ -53,9 +63,17 @@ export const adminPlanApi = {
     apiClient.post("/admin/calendar/event", eventBody),
 };
 
-// 관리자가 행사 목록을 불러와 출석 체크 대상을 선택할 때 사용합니다.
+// 출석 관리 API
 export const adminAttendanceApi = {
   getEvents: () => apiClient.get("/calendar/events"),
+  create: ({ title, date }) => apiClient.post("/admin/attendances", { title, date }),
+  getList: () => apiClient.get("/admin/attendances"),
+  getDetail: (attendanceId) => apiClient.get(`/admin/attendances/${attendanceId}`),
+  changeStatus: (attendanceId, status) => apiClient.patch(`/admin/attendances/${attendanceId}`, { status }),
+  updateParticipant: (attendanceId, userId, patch) =>
+    apiClient.patch(`/admin/attendances/${attendanceId}/users/${userId}`, patch),
+  remove: (attendanceId) => apiClient.delete(`/admin/attendances/${attendanceId}`),
+  issueQr: (attendanceId) => apiClient.post(`/admin/attendances/${attendanceId}/qr`),
 };
 
 // 팀빌딩 관리 API
@@ -87,5 +105,6 @@ export const adminTeamBuildApi = {
   // 현재 학기 배정 결과와 진행 단계 초기화
   resetTeamBuild: () => apiClient.post("/admin/team/building/reset/current"),
   // 현재 학기의 모든 차수 지원·모집을 포함한 완전 초기화
-  resetTeamBuildCompletely: () => apiClient.post("/admin/team/building/reset/current/complete"),
+  resetTeamBuildCompletely: () =>
+    apiClient.post("/admin/team/building/reset/current/complete"),
 };
