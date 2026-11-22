@@ -93,6 +93,36 @@ const renderReady = async () => {
   await screen.findByRole("button", { name: "출석 체크 시작" });
 };
 
+test("비고를 원래 값으로 되돌리면 저장 요청 없이 새로고침할 수 있다", async () => {
+  summary.status = "ONGOING";
+  render(<ManageAttendancePage />);
+  const note = await screen.findByLabelText("회원 비고");
+  fireEvent.change(note, { target: { value: "임시 메모" } });
+  expect(screen.getByRole("button", { name: "새로고침" })).toBeDisabled();
+  fireEvent.change(note, { target: { value: "" } });
+  fireEvent.blur(note);
+  expect(screen.getByRole("button", { name: "새로고침" })).toBeEnabled();
+  expect(adminAttendanceApi.updateParticipant).not.toHaveBeenCalled();
+});
+
+test("행사 선택을 비워도 직접 입력한 제목과 날짜를 덮어쓰지 않는다", async () => {
+  adminAttendanceApi.getList.mockResolvedValue({ content: [] });
+  adminAttendanceApi.getEvents.mockResolvedValue([
+    { title: "첫 행사", date: "2099-12-01" },
+    { title: "둘째 행사", date: "2099-12-02" },
+  ]);
+  render(<ManageAttendancePage />);
+  const select = await screen.findByLabelText("행사 일정");
+  fireEvent.change(select, { target: { value: "1" } });
+  expect(screen.getByLabelText("출석체크 명")).toHaveValue("둘째 행사");
+  fireEvent.change(screen.getByLabelText("출석체크 명"), {
+    target: { value: "직접 입력한 행사" },
+  });
+  fireEvent.change(select, { target: { value: "" } });
+  expect(screen.getByLabelText("출석체크 명")).toHaveValue("직접 입력한 행사");
+  expect(screen.getByLabelText("출석체크 기간")).toHaveValue("2099-12-02");
+});
+
 test("서버 명단을 표시하고 기존 로컬 출석은 읽거나 변환하지 않는다", async () => {
   window.localStorage.setItem(
     "waps-admin-attendance-sessions",

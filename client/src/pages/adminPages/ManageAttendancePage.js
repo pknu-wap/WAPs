@@ -847,10 +847,13 @@ const ManageAttendancePage = () => {
                               ? updateRecord(record, {
                                   note: event.target.value,
                                 })
-                              : setNoteDrafts((current) => ({
-                                  ...current,
-                                  [record.userId]: event.target.value,
-                                }))
+                              : setNoteDrafts((current) => {
+                                  const next = { ...current };
+                                  if (event.target.value === (record.note || ""))
+                                    delete next[record.userId];
+                                  else next[record.userId] = event.target.value;
+                                  return next;
+                                })
                           }
                           onBlur={(event) => {
                             if (
@@ -908,6 +911,7 @@ const ManageAttendancePage = () => {
                     disabled={saving}
                     defaultValue=""
                     onChange={(event) => {
+                      if (event.target.value === "") return;
                       const selected = events[Number(event.target.value)];
                       if (selected) selectEvent(selected);
                     }}
