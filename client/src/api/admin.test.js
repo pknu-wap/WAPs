@@ -1,7 +1,7 @@
 import { adminPermissonApi } from "./admin";
 import apiClient from "./client";
 
-jest.mock("./client", () => ({ get: jest.fn() }));
+jest.mock("./client", () => ({ get: jest.fn(), patch: jest.fn(), delete: jest.fn() }));
 
 const legacyUsers = [
   { id: 1, name: "신입 회원", role: "ROLE_MEMBER", membershipLevel: "NEW" },
@@ -12,6 +12,22 @@ const legacyUsers = [
 
 beforeEach(() => {
   jest.resetAllMocks();
+});
+
+test("통합 저장 응답의 기존 LEVEL 필드를 화면 계약으로 변환한다", async () => {
+  apiClient.patch.mockResolvedValue([legacyUsers[3]]);
+  const changes = { userIds: [4], memberType: "UNDECIDED" };
+  const result = await adminPermissonApi.updateUserAttributes(changes);
+  expect(apiClient.patch).toHaveBeenCalledWith("/admin/role/attributes", changes);
+  expect(result[0].memberType).toBe("UNDECIDED");
+});
+
+test("계정 삭제는 선택한 ID만 요청 본문에 전달한다", async () => {
+  apiClient.delete.mockResolvedValue(undefined);
+  await adminPermissonApi.deleteUsers([1, 4]);
+  expect(apiClient.delete).toHaveBeenCalledWith("/admin/role/users", {
+    data: { userIds: [1, 4] },
+  });
 });
 
 test.each(["NEW", "ASSOCIATE", "REGULAR"])(

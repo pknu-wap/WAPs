@@ -44,7 +44,9 @@ export const adminPermissonApi = {
     }),
   deleteUsers: (userIds) => apiClient.delete("/admin/role/users", { data: { userIds } }),
   updateUserAttributes: (changes) =>
-    apiClient.patch("/admin/role/attributes", changes),
+    apiClient.patch("/admin/role/attributes", changes).then((data) =>
+      Array.isArray(data) ? data.map(normalizeUserLevel) : data,
+    ),
   updateMemberType: (memberType, userIds) =>
     apiClient.patch("/admin/role/member-type", { memberType, userIds }),
   // 사용자 권한 변경

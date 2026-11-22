@@ -31,6 +31,7 @@ export default function ManagePermissionPage() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
   const [message, setMessage] = useState("");
   const [revision, setRevision] = useState(0);
   const requestId = useRef(0);
@@ -39,19 +40,26 @@ export default function ManagePermissionPage() {
     const id = ++requestId.current;
     let active = true;
     setLoading(true);
-    setError("");
+    setLoadError("");
     adminPermissonApi
       .getUserRoleList(page, 12, roleFilter, levelFilter)
       .then((data) => {
         if (!active || id !== requestId.current) return;
         setUsers(data.content || []);
+        setSelected((previous) => {
+          const next = new Map(previous);
+          (data.content || []).forEach((user) => {
+            if (next.has(user.id)) next.set(user.id, user);
+          });
+          return next;
+        });
         setHasNext(Boolean(data.hasNext));
       })
       .catch(() => {
         if (!active || id !== requestId.current) return;
         setUsers([]);
         setHasNext(false);
-        setError("사용자 목록을 불러오지 못했습니다.");
+        setLoadError("사용자 목록을 불러오지 못했습니다.");
       })
       .finally(() => {
         if (active && id === requestId.current) setLoading(false);
@@ -109,7 +117,6 @@ export default function ManagePermissionPage() {
     setUpdating(true);
     setError("");
     setMessage("");
-    ++requestId.current;
     try {
       const response = await adminPermissonApi.updateUserAttributes({
         userIds: Array.from(snapshot.keys()),
@@ -126,8 +133,15 @@ export default function ManagePermissionPage() {
             (newRole && user.role !== newRole) ||
             (newLevel && user.memberType !== newLevel),
         )
-      )
-        throw new Error("Invalid response");
+      ) {
+        setMessage("변경 요청은 처리되었지만 결과를 확인할 수 없어 목록을 다시 조회합니다. 최신 정보를 확인한 뒤 사용자를 다시 선택해주세요.");
+        setSelected(new Map());
+        setNewRole("");
+        setNewLevel("");
+        setPage(0);
+        setRevision((previous) => previous + 1);
+        return;
+      }
       const changed = new Map(response.map((user) => [user.id, user]));
       setUsers((previous) =>
         previous.map((user) => changed.get(user.id) || user),
@@ -158,7 +172,6 @@ export default function ManagePermissionPage() {
       );
     } finally {
       setUpdating(false);
-      setLoading(false);
     }
   };
 
@@ -234,6 +247,13 @@ export default function ManagePermissionPage() {
           <div className={styles.userList}>
             {loading ? (
               <p role="status">목록을 불러오는 중...</p>
+            ) : loadError ? (
+              <div role="alert">
+                <p>{loadError}</p>
+                <button type="button" onClick={() => setRevision((value) => value + 1)} disabled={updating}>
+                  목록 다시 불러오기
+                </button>
+              </div>
             ) : (
               <table aria-label="사용자 목록">
                 <thead>{headings}</thead>
@@ -311,7 +331,13 @@ export default function ManagePermissionPage() {
                 <thead>{headings}</thead>
                 <tbody>
                   {Array.from(selected.values()).map((user) => (
-                    <tr key={user.id} onClick={() => toggle(user)}>
+                    <tr key={user.id} tabIndex={0} onClick={() => toggle(user)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          toggle(user);
+                        }
+                      }}>
                       {cells(user)}
                     </tr>
                   ))}

@@ -43,6 +43,51 @@ beforeEach(() => {
   });
 });
 
+test("목록 조회 실패 후 같은 필터로 다시 불러올 수 있다", async () => {
+  adminPermissonApi.getUserRoleList.mockRejectedValueOnce(new Error("offline"));
+  render(<ManagePermissionPage />);
+  expect(await screen.findByRole("alert")).toHaveTextContent("사용자 목록을 불러오지 못했습니다.");
+  expect(screen.queryByText("해당하는 사용자가 없습니다.")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "목록 다시 불러오기" }));
+  await screen.findByText(user.name);
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+});
+
+test.each([undefined, [], [{ ...user, role: "ROLE_GUEST" }]])(
+  "저장 성공 응답을 확인할 수 없으면 실패로 오인하지 않고 재조회한다: %j",
+  async (response) => {
+    adminPermissonApi.updateUserAttributes.mockResolvedValue(response);
+    render(<ManagePermissionPage />);
+    await selectUser();
+    chooseRole("ROLE_ADMIN");
+    adminPermissonApi.getUserRoleList.mockResolvedValue({
+      content: [{ ...user, role: "ROLE_ADMIN" }], hasNext: false,
+    });
+    fireEvent.click(applyButton());
+    await screen.findByText(/변경 요청은 처리되었지만/);
+    expect(await screen.findByText("임원", { selector: "td" })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.queryByRole("table", { name: "선택한 사용자" })).not.toBeInTheDocument();
+    expect(applyButton()).toBeDisabled();
+    expect(adminPermissonApi.updateUserAttributes).toHaveBeenCalledTimes(1);
+  },
+);
+
+test("선택한 사용자는 페이지가 바뀌어도 유지되고 키보드로 해제할 수 있다", async () => {
+  adminPermissonApi.getUserRoleList.mockResolvedValueOnce({ content: [user], hasNext: true });
+  render(<ManagePermissionPage />);
+  await selectUser();
+  adminPermissonApi.getUserRoleList.mockResolvedValue({
+    content: [{ ...user, id: 2, name: "다른회원" }], hasNext: false,
+  });
+  fireEvent.click(screen.getByRole("button", { name: "다음 페이지" }));
+  await screen.findByText("다른회원");
+  const row = within(screen.getByRole("table", { name: "선택한 사용자" })).getByText(user.name).closest("tr");
+  expect(row).toHaveAttribute("tabindex", "0");
+  fireEvent.keyDown(row, { key: " " });
+  expect(screen.queryByRole("table", { name: "선택한 사용자" })).not.toBeInTheDocument();
+});
+
 test.each([
   ["UNDECIDED", "미정"],
   ["NEW", "신입"],
