@@ -14,9 +14,9 @@ beforeEach(() => {
 });
 test.each([[false, "Signup"], [true, "Projects"]])("routes using signupCompleted=%s even when role is assigned", async (signupCompleted, destination) => {
   userApi.getMe.mockResolvedValue({ signupCompleted, userName: "guest" });
-  render(<StrictMode><MemoryRouter initialEntries={["/callback"]}><Routes>
+  render(<StrictMode><MemoryRouter initialEntries={["/callback?token=test-token"]}><Routes>
     <Route path="/callback" element={<Callback />} />
-    <Route path="/select/role" element={<div>Signup</div>} />
+    <Route path="/signup" element={<div>Signup</div>} />
     <Route path="/ProjectPage" element={<div>Projects</div>} />
   </Routes></MemoryRouter></StrictMode>);
   expect(await screen.findByText(destination)).toBeInTheDocument();

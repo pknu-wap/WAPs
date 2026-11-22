@@ -1,3 +1,12 @@
+export function registrationRequired(profile) {
+  if (!profile) return undefined;
+  if (typeof profile.signupCompleted === "boolean")
+    return !profile.signupCompleted;
+  if (typeof profile.registrationRequired === "boolean")
+    return profile.registrationRequired;
+  return undefined;
+}
+
 export function memberTypeLabel(profile) {
   const value = profile.memberType ?? profile.membershipLevel;
   return (

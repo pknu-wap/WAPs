@@ -16,7 +16,11 @@ export const authApi = {
 
   // 카카오 로그인 URL 생성
   getKakaoLoginUrl: (redirectUri) => {
-    const baseUrl = process.env.REACT_APP_API_BASE_URL;
+    if (process.env.NODE_ENV === "production" && !process.env.REACT_APP_API_BASE_URL) {
+      throw new Error("로그인 서버 설정을 확인할 수 없습니다. 관리자에게 문의해주세요.");
+    }
+    const baseUrl =
+      process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
     return `${baseUrl}/oauth2/authorization/kakao?redirect_uri=${redirectUri}`;
   },
 };
