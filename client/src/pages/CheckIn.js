@@ -11,7 +11,6 @@ const CheckIn = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const [error, setError] = useState("");
-  const [revision, setRevision] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -44,7 +43,7 @@ const CheckIn = () => {
 
     fetchAttendances();
     return () => { active = false; };
-  }, [revision]);
+  }, []);
 
   const getStatusText = (status) => {
     if (status === "PRESENT") return "출석";
@@ -69,7 +68,6 @@ const CheckIn = () => {
       </button>
 
       <div className="checkin-content">
-        <button disabled={isLoading} onClick={() => setRevision((value) => value + 1)}>새로고침</button>
         {error && <p role="alert">{error}</p>}
         <div className="checkin-title-area">
           <h1>
