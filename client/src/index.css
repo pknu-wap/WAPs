@@ -1,3 +1,9 @@
+:root {
+  /* WAPs already supplies a dark palette; avoid a second automatic recoloring. */
+  color-scheme: dark;
+  color-scheme: only dark;
+}
+
 body {
   margin: 0;
   font-family:
