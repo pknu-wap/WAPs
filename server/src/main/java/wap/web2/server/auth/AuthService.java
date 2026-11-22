@@ -40,6 +40,10 @@ public class AuthService {
         }
 
         validateToken(refreshToken);
+        if (refreshToken.getUser().isDeleted()
+            || refreshToken.getUser().getTokenVersion() != tokenProvider.getTokenVersion(token)) {
+            throw new BadRequestException("삭제되었거나 재가입한 계정의 토큰입니다.");
+        }
         Authentication authentication = createAuthentication(refreshToken);
 
         String newAccessToken = tokenProvider.createToken(authentication);

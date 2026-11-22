@@ -93,7 +93,7 @@ export default function ManagePermissionPage() {
 
   const deleteSelected = async () => {
     if (loading || updating || !selected.size) return;
-    if (!window.confirm(`선택한 ${selected.size}명의 계정을 영구 삭제합니다. 되돌릴 수 없습니다. 삭제할까요?`)) return;
+    if (!window.confirm(`선택한 ${selected.size}명의 계정을 삭제 처리합니다. 비밀번호는 삭제되고 로그인은 차단되며 연결된 정보는 보존됩니다. 같은 이메일로 재가입하면 연결 정보가 자동 복구됩니다. 관리자 권한은 자동 복원되지 않습니다. 삭제할까요?`)) return;
     setUpdating(true);
     setError("");
     setMessage("");

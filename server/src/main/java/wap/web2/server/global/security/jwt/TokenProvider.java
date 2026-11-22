@@ -46,6 +46,7 @@ public class TokenProvider {
 
         return Jwts.builder()
             .setSubject(Long.toString(userPrincipal.getId()))
+            .claim("version", userPrincipal.getTokenVersion())
             .setIssuedAt(now)
             .setExpiration(expiryDate)
             .signWith(key, SignatureAlgorithm.HS512)
@@ -56,6 +57,7 @@ public class TokenProvider {
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
         return Jwts.builder()
             .setSubject(Long.toString(principal.getId()))
+            .claim("version", principal.getTokenVersion())
             .setId(tokenId)
             .claim("devLogin", true)
             .setIssuedAt(new Date())
@@ -74,6 +76,7 @@ public class TokenProvider {
 
         return Jwts.builder()
             .setSubject(Long.toString(userPrincipal.getId()))
+            .claim("version", userPrincipal.getTokenVersion())
             .setIssuedAt(now)
             .setExpiration(expiryDate)
             .signWith(key, SignatureAlgorithm.HS512)
@@ -88,6 +91,12 @@ public class TokenProvider {
 
     public boolean validateToken(String authToken) {
         return getAccessTokenErrorCode(authToken) == null;
+    }
+
+    public long getTokenVersion(String token) {
+        Number version = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token)
+            .getBody().get("version", Number.class);
+        return version == null ? 0 : version.longValue();
     }
 
     public ErrorCode getAccessTokenErrorCode(String authToken) {

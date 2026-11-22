@@ -19,7 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.id = :id")
     Optional<User> findByIdForUpdate(@Param("id") Long id);
 
-    List<User> findBySignupCompletedTrueAndRoleInOrderByNameAscIdAsc(List<Role> roles);
+    @Query("SELECT u FROM User u WHERE u.deleted = false AND u.signupCompleted = true AND u.role IN :roles ORDER BY u.name, u.id")
+    List<User> findBySignupCompletedTrueAndRoleInOrderByNameAscIdAsc(@Param("roles") List<Role> roles);
 
     Optional<User> findByEmail(String email);
 
@@ -28,20 +29,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
         """
-        UPDATE User u SET u.role = :role WHERE u.id in :ids
+        UPDATE User u SET u.role = :role WHERE u.id in :ids AND u.deleted = false
         """
     )
     int updateRoleByIds(@Param("role") Role role, @Param("ids") List<Long> ids);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE User u SET u.membershipLevel = :level WHERE u.id in :ids")
+    @Query("UPDATE User u SET u.membershipLevel = :level WHERE u.id in :ids AND u.deleted = false")
     int updateMembershipLevelByIds(@Param("level") MembershipLevel level, @Param("ids") List<Long> ids);
 
     @Query(
         """
         SELECT u
         FROM User u
-        WHERE (:role IS NULL OR u.role = :role)
+        WHERE u.deleted = false AND (:role IS NULL OR u.role = :role)
         AND (:membershipLevel IS NULL OR u.membershipLevel = :membershipLevel)
         ORDER BY u.name, u.id
         LIMIT :limit OFFSET :offset

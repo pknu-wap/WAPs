@@ -53,6 +53,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 try {
                     Long userId = tokenProvider.getUserIdFromToken(jwt);
                     UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+                    if (userDetails instanceof wap.web2.server.global.security.UserPrincipal principal
+                        && principal.getTokenVersion() != tokenProvider.getTokenVersion(jwt)) {
+                        throw new org.springframework.security.authentication.BadCredentialsException("Revoked token");
+                    }
                     UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                             userDetails,
