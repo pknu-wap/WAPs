@@ -105,6 +105,53 @@ class AttendanceServiceTest {
     }
 
     @Test
+    void detailUsesCurrentNamesForDisplayAndSortingWithoutChangingSnapshots() {
+        var first = new AttendanceParticipant(attendance, 1L, "가", MembershipLevel.NEW);
+        var second = new AttendanceParticipant(attendance, 2L, "나");
+        var deleted = new AttendanceParticipant(attendance, 3L, "다");
+        var missing = new AttendanceParticipant(attendance, 4L, "라");
+        first.update(PresenceStatus.PRESENT, "확인", now);
+        var current = new User(); current.setId(1L); current.setName("하");
+        current.setMembershipLevel(MembershipLevel.REGULAR);
+        var other = new User(); other.setId(2L); other.setName("가");
+        var removed = new User(); removed.setId(3L); removed.setName("삭제 후 이름"); removed.deactivate();
+        when(participants.findByAttendanceId(1L)).thenReturn(List.of(first, second, deleted, missing));
+        when(users.findAllById(List.of(1L, 2L, 3L, 4L))).thenReturn(List.of(current, other, removed));
+
+        var detail = service.detail(1, null, "userName,asc");
+        assertThat(detail.participants().content()).extracting(p -> p.userName())
+            .containsExactly("가", "다", "라", "하");
+        verify(users).findAllById(List.of(1L, 2L, 3L, 4L));
+        verify(users, never()).findById(anyLong());
+        assertThat(service.detail(1, null, "userName,desc").participants().content())
+            .extracting(p -> p.userId()).containsExactly(1L, 4L, 3L, 2L);
+        var filtered = service.detail(1, PresenceStatus.PRESENT, "userName,asc");
+        assertThat(filtered.summary().totalCount()).isEqualTo(4);
+        assertThat(filtered.summary().presentCount()).isEqualTo(1);
+        var displayed = filtered.participants().content().get(0);
+        assertThat(displayed.userName()).isEqualTo("하");
+        assertThat(displayed.membershipLevel()).isEqualTo(MembershipLevel.NEW);
+        assertThat(displayed.note()).isEqualTo("확인");
+        assertThat(displayed.checkedInAt()).isEqualTo(now);
+        assertThat(first.getUserName()).isEqualTo("가");
+    }
+
+    @Test
+    void updateReturnsCurrentNameAndFallsBackForDeletedOrMissingUsers() {
+        var participant = new AttendanceParticipant(attendance, 10L, "이전 이름");
+        var user = new User(); user.setId(10L); user.setName("현재 이름");
+        when(participants.findByAttendanceIdAndUserId(1, 10)).thenReturn(Optional.of(participant));
+        when(users.findById(10L)).thenReturn(Optional.of(user));
+        var request = new AttendanceRequests.Update(PresenceStatus.PRESENT, "확인");
+        assertThat(service.update(1, 10, request).userName()).isEqualTo("현재 이름");
+        assertThat(participant.getUserName()).isEqualTo("이전 이름");
+        user.deactivate();
+        assertThat(service.update(1, 10, request).userName()).isEqualTo("이전 이름");
+        when(users.findById(10L)).thenReturn(Optional.empty());
+        assertThat(service.update(1, 10, request).userName()).isEqualTo("이전 이름");
+    }
+
+    @Test
     void statusChangesReturnAggregatedCountsAndInvalidateQr() {
         var counts = mock(AttendanceParticipantRepository.Counts.class);
         when(counts.getTotalCount()).thenReturn(2L);
