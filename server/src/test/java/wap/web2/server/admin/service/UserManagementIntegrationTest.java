@@ -1,6 +1,8 @@
 package wap.web2.server.admin.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.*;
@@ -109,5 +111,39 @@ class UserManagementIntegrationTest {
         assertThat(users.findAllById(List.of(first, second))).hasSize(2);
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM refresh_token", Long.class)).isEqualTo(1);
         assertThat(jdbc.queryForObject("SELECT title FROM project", String.class)).isEqualTo("shared work");
+    }
+
+    @Test
+    void databaseFailureRollsBackAllAttributeUpdates() {
+        long first = member("first"), second = member("second");
+        jdbc.execute("ALTER TABLE `user` ADD CONSTRAINT reject_second_admin CHECK (name <> 'second' OR role <> 'ROLE_ADMIN')");
+        assertThatThrownBy(() -> service.update(new UserAttributesRequest(List.of(first, second), Role.ROLE_ADMIN, "REGULAR")))
+            .isInstanceOf(RuntimeException.class);
+        assertThat(users.findAllById(List.of(first, second))).allSatisfy(user -> {
+            assertThat(user.getRole()).isEqualTo(Role.ROLE_MEMBER);
+            assertThat(user.getMembershipLevel()).isEqualTo(MembershipLevel.NEW);
+        });
+    }
+
+    @Test
+    void httpContractSavesReloadsAndDeletesUsingFrontendPayloads() throws Exception {
+        long id = member("first");
+        var mvc = org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup(
+            new wap.web2.server.admin.controller.AdminUserController(new UserRoleService(users), service))
+            .setControllerAdvice(new GlobalExceptionHandler()).build();
+        mvc.perform(patch("/admin/role/attributes").contentType("application/json")
+            .content("{\"userIds\":[" + id + "],\"role\":\"ROLE_ADMIN\",\"memberType\":\"UNDECIDED\"}"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$[0].role").value("ROLE_ADMIN"))
+            .andExpect(jsonPath("$[0].memberType").value("UNDECIDED"))
+            .andExpect(jsonPath("$[0].membershipLevel").value("NONE"));
+        mvc.perform(get("/admin/role").param("page", "0").param("size", "12")
+            .param("role", "ROLE_ADMIN").param("memberType", "UNDECIDED").param("membershipLevel", "NONE"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.content[0].id").value(id))
+            .andExpect(jsonPath("$.content[0].memberType").value("UNDECIDED"));
+        mvc.perform(delete("/admin/role/users").contentType("application/json")
+            .content("{\"userIds\":[" + id + "]}"))
+            .andExpect(status().isNoContent());
+        mvc.perform(get("/admin/role").param("page", "0").param("size", "12"))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.content").isEmpty());
     }
 }
