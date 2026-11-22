@@ -4,42 +4,53 @@ import { useNavigate } from "react-router-dom";
 import styles from "../../assets/ProjectVote.module.css";
 import sub_styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import VoteProjectList from "./VoteProjectList";
-import { getCurrentSemester } from "../../utils/dateUtils";
-import apiClient from "../../api/client";
+import { projectApi } from "../../api/project";
+import { voteApi } from "../../api/vote";
 
 const VoteForm = ({ isVotedUser }) => {
   const navigate = useNavigate();
   const [selectedProjects, setSelectedProjects] = useState([]);
-  const currentSemester = getCurrentSemester(); // yyyy-ss 형식, ex: "2025-02"
+  const [currentSemester, setCurrentSemester] = useState("");
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [revision, setRevision] = useState(0);
 
   // 투표한 프로젝트 불러오기
   useEffect(() => {
-    if (!isVotedUser) return;
+    let active = true;
+    setLoading(true);
+    setError("");
+    setSelectedProjects([]);
 
     const fetchVotedProjects = async () => {
       try {
-        const response = await apiClient.get(`/user/vote/${currentSemester}`);
-        // response.data = { projectIds: [1,2,3] }
-        setSelectedProjects(response.data.projectIds || []);
+        const { semester } = await projectApi.getCurrentSemester();
+        const [participants, ballot] = await Promise.all([
+          voteApi.getParticipants(semester),
+          isVotedUser ? voteApi.getMyVote(semester) : Promise.resolve(null),
+        ]);
+        if (!active) return;
+        setCurrentSemester(semester);
+        setProjects(participants);
+        setSelectedProjects(ballot?.projectIds || []);
       } catch (error) {
-        console.error("Failed to fetch voted projects:", error);
-
-        // 404일 때만 "투표한 프로젝트가 없음" 경고
-        if (error.response?.status === 404) {
-          alert(
-            "투표한 프로젝트 정보를 가져오지 못했습니다. 서버 상태를 확인해주세요.",
-          );
-        } else {
-          alert("투표한 프로젝트 정보를 가져오는데 실패했습니다.");
-        }
+        if (active)
+          setError("투표 정보를 불러오지 못했습니다. 다시 시도해주세요.");
+      } finally {
+        if (active) setLoading(false);
       }
     };
 
     fetchVotedProjects();
-  }, [isVotedUser, currentSemester]);
+    return () => {
+      active = false;
+    };
+  }, [isVotedUser, revision]);
 
   const handleVoteSubmit = async (e) => {
     e.preventDefault();
+    if (loading || error || !currentSemester || isVotedUser) return;
 
     if (selectedProjects.length !== REQUIRED_VOTE_COUNT) {
       alert(`프로젝트를 ${REQUIRED_VOTE_COUNT}개 선택해야 합니다.`);
@@ -52,7 +63,7 @@ const VoteForm = ({ isVotedUser }) => {
     };
 
     try {
-      await apiClient.post("/vote", voteData);
+      await voteApi.submitVote(voteData);
 
       alert("투표가 완료되었습니다.");
       setSelectedProjects([]);
@@ -98,21 +109,36 @@ const VoteForm = ({ isVotedUser }) => {
               <div className={styles.vote_title}>
                 마음에 드는 프로젝트 {REQUIRED_VOTE_COUNT}개를 선택해 주세요
               </div>
-              <p className={styles.title_eng}>Choose {REQUIRED_VOTE_COUNT} projects you like</p>
+              <p className={styles.title_eng}>
+                Choose {REQUIRED_VOTE_COUNT} projects you like
+              </p>
             </>
           )}
         </div>
       </div>
 
-      <VoteProjectList
-        selectedProjects={selectedProjects}
-        setSelectedProjects={setSelectedProjects}
-        isVotedUser={isVotedUser}
-      />
+      {loading ? (
+        <p role="status">투표 정보를 불러오는 중입니다...</p>
+      ) : error ? (
+        <div role="alert">
+          <p>{error}</p>
+          <button onClick={() => setRevision((value) => value + 1)}>
+            다시 시도
+          </button>
+        </div>
+      ) : (
+        <VoteProjectList
+          projects={projects}
+          selectedProjects={selectedProjects}
+          setSelectedProjects={setSelectedProjects}
+          isVotedUser={isVotedUser}
+        />
+      )}
 
       {!isVotedUser && (
         <button
           type="submit"
+          disabled={loading || !!error || projects.length === 0}
           className={sub_styles.submit_button}
           onClick={handleVoteSubmit}
           style={{
