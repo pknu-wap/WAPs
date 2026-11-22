@@ -54,6 +54,14 @@ public class AdminVoteService {
 
     @CacheEvict(value = "voteResults", allEntries = true)
     @Transactional
+    public void reopenVote(String semester) {
+        VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
+            .orElseThrow(() -> new ResourceNotFoundException("해당 학기의 투표를 찾을 수 없습니다."));
+        voteMeta.reopen();
+    }
+
+    @CacheEvict(value = "voteResults", allEntries = true)
+    @Transactional
     public void closeVote(String semester, Long userId) {
         VoteMeta voteMeta = voteMetaRepository
             .findBySemester(semester)

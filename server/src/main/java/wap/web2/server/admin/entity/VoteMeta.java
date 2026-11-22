@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import wap.web2.server.exception.ConflictException;
 
 @Entity
 @Getter
@@ -85,6 +86,16 @@ public class VoteMeta {
         this.status = VoteStatus.ENDED;
         this.closedAt = LocalDateTime.now();
         this.closedBy = userId;
+    }
+
+    public void reopen() {
+        if (this.status != VoteStatus.ENDED) {
+            throw new ConflictException("종료된 투표만 다시 열 수 있습니다.");
+        }
+        this.status = VoteStatus.VOTING;
+        this.closedAt = null;
+        this.closedBy = null;
+        this.isResultPublic = false;
     }
 
     public static VoteMeta of(String semester, Long createdBy, Set<Long> projectIds) {

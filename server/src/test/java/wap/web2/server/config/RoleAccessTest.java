@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.Test;
 import wap.web2.server.admin.controller.AdminUserController;
 import wap.web2.server.admin.service.UserRoleService;
+import wap.web2.server.admin.controller.AdminVoteController;
+import wap.web2.server.admin.service.AdminVoteService;
 import wap.web2.server.exception.GlobalExceptionHandler;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -42,6 +44,7 @@ class RoleAccessTest {
             "spring.security.oauth2.client.provider.test.user-name-attribute=id")
         .withUserConfiguration(TestApplication.class)
         .withBean(UserRoleService.class, () -> mock(UserRoleService.class))
+        .withBean(AdminVoteService.class, () -> mock(AdminVoteService.class))
         .withBean(CustomUserDetailsService.class, () -> mock(CustomUserDetailsService.class))
         .withBean(CustomOAuth2UserService.class, () -> mock(CustomOAuth2UserService.class))
         .withBean(OAuth2AuthenticationSuccessHandler.class, () -> mock(OAuth2AuthenticationSuccessHandler.class))
@@ -56,10 +59,31 @@ class RoleAccessTest {
         FlywayAutoConfiguration.class
     })
     @Import({
-        SecurityConfig.class, Endpoints.class, AdminUserController.class, GlobalExceptionHandler.class, RestAuthenticationEntryPoint.class,
+        SecurityConfig.class, Endpoints.class, AdminUserController.class, AdminVoteController.class, GlobalExceptionHandler.class, RestAuthenticationEntryPoint.class,
         RestAccessDeniedHandler.class, SecurityErrorResponseWriter.class
     })
     static class TestApplication {}
+
+    @Test
+    void reopeningVotesRequiresAdminAndValidSemester() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            String path = "/admin/vote/reopen";
+            mvc.perform(post(path).param("semester", "2026-02")).andExpect(status().isUnauthorized());
+            for (String role : new String[]{"GUEST", "MEMBER"}) {
+                mvc.perform(post(path).param("semester", "2026-02").with(user("user").roles(role)))
+                    .andExpect(status().isForbidden());
+            }
+            mvc.perform(post(path).param("semester", "2026-02").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk());
+            mvc.perform(post(path).param("semester", "invalid").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isBadRequest());
+            mvc.perform(post(path).with(user("admin").roles("ADMIN")))
+                .andExpect(status().isBadRequest());
+            org.mockito.Mockito.verify(ctx.getBean(AdminVoteService.class)).reopenVote("2026-02");
+            org.mockito.Mockito.verifyNoMoreInteractions(ctx.getBean(AdminVoteService.class));
+        });
+    }
 
 
     @RestController

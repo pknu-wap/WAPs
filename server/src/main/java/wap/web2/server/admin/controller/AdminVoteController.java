@@ -53,6 +53,18 @@ public class AdminVoteController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/reopen")
+    @Operation(
+        summary = "투표 다시 열기",
+        description = "종료된 투표를 기존 참여 프로젝트와 투표 기록을 유지한 채 다시 엽니다. 결과는 비공개로 전환됩니다."
+    )
+    public ResponseEntity<Void> reopenVoteMeta(
+        @RequestParam("semester") @Semester String semester
+    ) {
+        adminVoteService.reopenVote(semester);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/closed")
     @Operation(
         summary = "투표 닫기",
