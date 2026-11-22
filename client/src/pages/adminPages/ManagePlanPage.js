@@ -92,9 +92,11 @@ const ManagePlanPage = () => {
       setTarget("");
       setLocation("");
     } catch (error) {
+      const message = error.response?.data?.message;
       alert(
-        error.response?.data?.message ||
-          "일정 등록 중 오류가 발생했습니다. 다시 시도해주세요.",
+        typeof message === "string" && message.trim()
+          ? message
+          : "일정 등록 중 오류가 발생했습니다. 다시 시도해주세요.",
       );
     } finally {
       pending.current = false;

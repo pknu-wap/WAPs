@@ -89,6 +89,15 @@ const fillEvent = () => {
   }
 };
 
+test("잘못된 서버 오류 메시지 형식은 기본 안내로 대체한다", async () => {
+  adminPlanApi.createEvent.mockRejectedValueOnce({ response: { data: { message: { code: "ERROR" } } } });
+  render(<ManagePlanPage />);
+  fillEvent();
+  fireEvent.click(screen.getByRole("button", { name: "일정 발행" }));
+  await waitFor(() => expect(window.alert).toHaveBeenCalledWith("일정 등록 중 오류가 발생했습니다. 다시 시도해주세요."));
+  expect(screen.getByLabelText("제목")).toHaveValue(" 정기 모임 ");
+});
+
 test("발행 중 중복 요청과 입력 변경을 막고 정리한 값을 전송한다", async () => {
   let complete;
   adminPlanApi.createEvent.mockImplementation(

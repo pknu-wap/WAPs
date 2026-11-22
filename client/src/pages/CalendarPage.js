@@ -45,8 +45,8 @@ const CalendarPage = () => {
         {loading ? (
           <p role="status">일정을 불러오는 중입니다...</p>
         ) : error ? (
-          <div role="alert">
-            <p>{error}</p>
+          <div>
+            <p role="alert">{error}</p>
             <button onClick={() => setRevision((value) => value + 1)}>
               다시 시도
             </button>
