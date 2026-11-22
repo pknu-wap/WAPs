@@ -63,6 +63,19 @@ export const adminPlanApi = {
     apiClient.post("/admin/calendar/event", eventBody),
 };
 
+// 출석 관리 API
+export const adminAttendanceApi = {
+  getEvents: () => apiClient.get("/calendar/events"),
+  create: ({ title, date }) => apiClient.post("/admin/attendances", { title, date }),
+  getList: () => apiClient.get("/admin/attendances"),
+  getDetail: (attendanceId) => apiClient.get(`/admin/attendances/${attendanceId}`),
+  changeStatus: (attendanceId, status) => apiClient.patch(`/admin/attendances/${attendanceId}`, { status }),
+  updateParticipant: (attendanceId, userId, patch) =>
+    apiClient.patch(`/admin/attendances/${attendanceId}/users/${userId}`, patch),
+  remove: (attendanceId) => apiClient.delete(`/admin/attendances/${attendanceId}`),
+  issueQr: (attendanceId) => apiClient.post(`/admin/attendances/${attendanceId}/qr`),
+};
+
 // 팀빌딩 관리 API
 export const adminTeamBuildApi = {
   // 지원 현황 반환
