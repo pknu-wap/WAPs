@@ -297,7 +297,8 @@
   min-height: 300px;
   display: flex;
   align-items: flex-end;
-  padding: 32px 20px 28px;
+  /* The absolute mobile header occupies the first 60px. Keep wrapped titles below it. */
+  padding: 80px 20px 28px;
   box-sizing: border-box;
   isolation: isolate;
   background: linear-gradient(90deg, #a0aeffe8 0%, #b4edfed2 100%);
