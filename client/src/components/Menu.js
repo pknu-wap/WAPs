@@ -13,6 +13,9 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const [userRole, setUserRole] = useState(Cookies.get("userRole") || null);
 
   useEffect(() => {
+    const token = Cookies.get("authToken");
+    setIsLoggedIn(!!token);
+    setUserRole(token ? Cookies.get("userRole") : null);
     if (!menuOpen) return;
 
     document.documentElement.style.overflow = "hidden";
@@ -53,11 +56,6 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   };
 
   useEffect(() => {
-    const token = Cookies.get("authToken");
-    const role = Cookies.get("userRole");
-    setIsLoggedIn(!!token);
-    setUserRole(role);
-
     const allowedDate = new Date("2024-11-29T18:00:00");
     const now = new Date();
 
@@ -262,25 +260,12 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
               </div>
             </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
             {isLoggedIn && (
-              <button className="menu-item" onClick={() => {
-                navigate("/settings");
-                toggleMenu();
-              }}>
-                설정 Settings
+              <button
+                className="settings-button"
+                onClick={() => handleNavigationWithAuth("/settings")}
+              >
+                <span>설정 Settings</span>
               </button>
             )}
 

@@ -213,6 +213,8 @@ body:has(nav.menu) .App-header {
   text-underline-offset: 2px;
 
   transition: opacity 0.2s;
+
+  margin-top: 6px;
 }
 
 .settings-button:hover {
