@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -41,6 +42,34 @@ beforeEach(() => {
     content: [user],
     hasNext: false,
   });
+});
+
+test.each(["success", "failure"])("이전 ALL 요청의 늦은 %s가 ADMIN 목록을 덮어쓰지 않는다", async (outcome) => {
+  let resolveOld;
+  let rejectOld;
+  const admin = { ...user, id: 20, name: "필터대상", role: "ROLE_ADMIN" };
+  adminPermissonApi.getUserRoleList.mockImplementation((page, size, role) =>
+    role === "ROLE_ADMIN"
+      ? Promise.resolve({ content: [admin], hasNext: false })
+      : new Promise((resolve, reject) => {
+          resolveOld = resolve;
+          rejectOld = reject;
+        }),
+  );
+  render(<ManagePermissionPage />);
+  fireEvent.change(screen.getByLabelText("ROLE 필터"), {
+    target: { value: "ROLE_ADMIN" },
+  });
+  await screen.findByText(admin.name);
+  await act(async () => {
+    if (outcome === "success") resolveOld({ content: [user], hasNext: true });
+    else rejectOld(new Error("late failure"));
+  });
+  expect(screen.getByText(admin.name)).toBeInTheDocument();
+  expect(screen.queryByText(user.name)).not.toBeInTheDocument();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "다음 페이지" })).toBeDisabled();
+  expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "ROLE_ADMIN", "");
 });
 
 test("목록 조회 실패 후 같은 필터로 다시 불러올 수 있다", async () => {
