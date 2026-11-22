@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "../../assets/Admin/ManagePlan.module.css";
 import { adminPlanApi } from "../../api/admin";
 
@@ -17,6 +17,8 @@ const ManagePlanPage = () => {
   const [content, setContent] = useState("");
   const [target, setTarget] = useState("");
   const [location, setLocation] = useState("");
+  const [publishing, setPublishing] = useState(false);
+  const pending = useRef(false);
 
   const generatePreview = () => {
     return {
@@ -37,8 +39,26 @@ const ManagePlanPage = () => {
     preview.target;
 
   const handlePublish = async () => {
-    if (!title || !date || !time || !content || !target || !location) {
+    if (pending.current) return;
+    if (
+      !preview.title ||
+      !date ||
+      !time ||
+      !preview.content ||
+      !preview.target ||
+      !preview.location
+    ) {
       alert("항목을 모두 입력해 주세요.");
+      return;
+    }
+
+    if (
+      preview.title.length > 30 ||
+      preview.target.length > 30 ||
+      preview.location.length > 30 ||
+      preview.content.length > 2000
+    ) {
+      alert("제목, 참여인원, 위치는 30자, 내용은 2000자 이내로 입력해 주세요.");
       return;
     }
 
@@ -52,13 +72,15 @@ const ManagePlanPage = () => {
     }
 
     const requestBody = {
-      title,
+      title: preview.title,
       dateTime: isoString, // 서버가 인식하는 ISO 포맷
-      content,
-      target,
-      location,
+      content: preview.content,
+      target: preview.target,
+      location: preview.location,
     };
 
+    pending.current = true;
+    setPublishing(true);
     try {
       await adminPlanApi.createEvent(requestBody);
       alert("일정이 성공적으로 발행되었습니다!");
@@ -70,9 +92,15 @@ const ManagePlanPage = () => {
       setTarget("");
       setLocation("");
     } catch (error) {
-      console.error("일정 등록 실패:", error);
-      console.log("서버 응답 데이터:", error.response?.data);
-      alert("일정 등록 중 오류가 발생했습니다.");
+      const message = error.response?.data?.message;
+      alert(
+        typeof message === "string" && message.trim()
+          ? message
+          : "일정 등록 중 오류가 발생했습니다. 다시 시도해주세요.",
+      );
+    } finally {
+      pending.current = false;
+      setPublishing(false);
     }
   };
 
@@ -97,12 +125,14 @@ const ManagePlanPage = () => {
               type="text"
               placeholder="제목을 입력하세요"
               id="event-title"
+              disabled={publishing}
+              maxLength={30}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
-          <fieldset className={styles.scheduleFields}>
+          <fieldset className={styles.scheduleFields} disabled={publishing}>
             <legend className={styles.label}>일정</legend>
             <div className={styles.scheduleInputs}>
               <div className={styles.inputRow}>
@@ -171,6 +201,8 @@ const ManagePlanPage = () => {
               className={styles.contentInput}
               placeholder="내용을 입력해주세요"
               id="event-content"
+              disabled={publishing}
+              maxLength={2000}
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
@@ -184,6 +216,8 @@ const ManagePlanPage = () => {
               className={styles.targetInput}
               type="text"
               id="event-target"
+              disabled={publishing}
+              maxLength={30}
               value={target}
               onChange={(e) => setTarget(e.target.value)}
               placeholder="신입은 필수!"
@@ -198,6 +232,8 @@ const ManagePlanPage = () => {
               className={styles.targetInput}
               type="text"
               id="event-location"
+              disabled={publishing}
+              maxLength={30}
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="장소를 입력해주세요"
@@ -231,8 +267,12 @@ const ManagePlanPage = () => {
             )}
           </div>
 
-          <button className={styles.publishButton} onClick={handlePublish}>
-            일정 발행
+          <button
+            className={styles.publishButton}
+            onClick={handlePublish}
+            disabled={publishing}
+          >
+            {publishing ? "발행 중..." : "일정 발행"}
           </button>
         </div>
       </div>
