@@ -32,6 +32,47 @@ import wap.web2.server.global.security.jwt.TokenProvider;
 import wap.web2.server.global.security.oauth2.*;
 
 class RoleAccessTest {
+    @Test
+    void bulkManagementRequiresAdminAndValidInput() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            for (var request : java.util.List.of(
+                patch("/admin/role/attributes").content("{\"userIds\":[1],\"role\":\"ROLE_ADMIN\"}"),
+                delete("/admin/role/users").content("{\"userIds\":[1]}"))) {
+                request.contentType("application/json");
+                mvc.perform(request).andExpect(status().isUnauthorized());
+                mvc.perform(request.with(user("member").roles("MEMBER"))).andExpect(status().isForbidden());
+                mvc.perform(request.with(user("guest").roles("GUEST"))).andExpect(status().isForbidden());
+                mvc.perform(request.with(user("admin").roles("ADMIN"))).andExpect(status().is2xxSuccessful());
+            }
+            for (String body : new String[]{"{}", "{\"userIds\":[1]}",
+                "{\"userIds\":[],\"role\":\"ROLE_ADMIN\"}",
+                "{\"userIds\":[null],\"memberType\":\"NEW\"}",
+                "{\"userIds\":[-1],\"memberType\":\"NEW\"}",
+                "{\"userIds\":[1],\"memberType\":\"UNKNOWN\"}"}) {
+                mvc.perform(patch("/admin/role/attributes").with(user("admin").roles("ADMIN"))
+                    .contentType("application/json").content(body)).andExpect(status().isBadRequest());
+            }
+            mvc.perform(delete("/admin/role/users").with(user("admin").roles("ADMIN"))
+                .contentType("application/json").content("{\"userIds\":[]}"))
+                .andExpect(status().isBadRequest());
+        });
+    }
+
+    @Test
+    void acceptsMemberTypeAliasAndRejectsConflictingFilters() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            mvc.perform(get("/admin/role").with(user("admin").roles("ADMIN"))
+                .param("size", "12").param("page", "0").param("memberType", "UNDECIDED"))
+                .andExpect(status().isOk());
+            org.mockito.Mockito.verify(ctx.getBean(UserRoleService.class)).getUsersForAdmin(
+                12, 0, null, wap.web2.server.member.entity.MembershipLevel.NONE);
+            mvc.perform(get("/admin/role").with(user("admin").roles("ADMIN"))
+                .param("size", "12").param("page", "0").param("memberType", "NEW")
+                .param("membershipLevel", "REGULAR")).andExpect(status().isBadRequest());
+        });
+    }
     private final WebApplicationContextRunner context = new WebApplicationContextRunner()
         .withPropertyValues(
             "swagger.server-url=http://localhost",
@@ -48,6 +89,8 @@ class RoleAccessTest {
         .withBean(UserRoleService.class, () -> mock(UserRoleService.class))
         .withBean(AdminVoteService.class, () -> mock(AdminVoteService.class))
         .withBean(VoteService.class, () -> mock(VoteService.class))
+        .withBean(wap.web2.server.admin.service.UserManagementService.class,
+            () -> mock(wap.web2.server.admin.service.UserManagementService.class))
         .withBean(CustomUserDetailsService.class, () -> mock(CustomUserDetailsService.class))
         .withBean(CustomOAuth2UserService.class, () -> mock(CustomOAuth2UserService.class))
         .withBean(OAuth2AuthenticationSuccessHandler.class, () -> mock(OAuth2AuthenticationSuccessHandler.class))
