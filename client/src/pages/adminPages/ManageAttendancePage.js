@@ -574,7 +574,7 @@ const ManageAttendancePage = () => {
             <h2>예정·진행중인 출석체크</h2>
             <button
               type="button"
-              className={styles.closeButton}
+              className={`${styles.closeButton} ${styles.refreshButton}`}
               onClick={refresh}
               disabled={
                 saving ||

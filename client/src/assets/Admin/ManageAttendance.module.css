@@ -123,6 +123,9 @@
 }
 .addButton {
   width: 100%;
+  box-sizing: border-box;
+  padding: 12px 18px;
+  text-align: left;
   min-height: 59px;
   border: 2px solid #5d5d5d;
   border-radius: 18px;
@@ -226,6 +229,10 @@
 }
 .closeButton:hover {
   background: #777;
+}
+.refreshButton {
+  display: block;
+  margin-bottom: 14px;
 }
 .summary {
   height: 66px;
@@ -443,7 +450,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: -7px 0 12px;
+  margin: 12px 0;
   color: #bbb;
   font-size: 13px;
 }
