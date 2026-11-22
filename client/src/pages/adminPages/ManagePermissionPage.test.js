@@ -53,7 +53,7 @@ test("목록 조회 실패 후 같은 필터로 다시 불러올 수 있다", as
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 });
 
-test.each([undefined, [], [{ ...user, role: "ROLE_GUEST" }]])(
+test.each([undefined, [], [null], [{ ...user, role: "ROLE_GUEST" }]])(
   "저장 성공 응답을 확인할 수 없으면 실패로 오인하지 않고 재조회한다: %j",
   async (response) => {
     adminPermissonApi.updateUserAttributes.mockResolvedValue(response);

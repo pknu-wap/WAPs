@@ -1,6 +1,7 @@
 import apiClient from "./client";
 
 const normalizeUserLevel = (user) => {
+  if (!user || typeof user !== "object") return user;
   const level = user.memberType ?? user.membershipLevel ?? "UNDECIDED";
   return { ...user, memberType: level === "NONE" ? "UNDECIDED" : level };
 };

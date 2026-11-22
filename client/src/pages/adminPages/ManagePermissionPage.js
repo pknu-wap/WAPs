@@ -126,10 +126,10 @@ export default function ManagePermissionPage() {
       if (
         !Array.isArray(response) ||
         response.length !== snapshot.size ||
-        new Set(response.map((user) => user.id)).size !== snapshot.size ||
+        new Set(response.map((user) => user?.id)).size !== snapshot.size ||
         response.some(
           (user) =>
-            !snapshot.has(user.id) ||
+            !user || !snapshot.has(user.id) ||
             (newRole && user.role !== newRole) ||
             (newLevel && user.memberType !== newLevel),
         )

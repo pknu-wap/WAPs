@@ -30,6 +30,12 @@ test("계정 삭제는 선택한 ID만 요청 본문에 전달한다", async () 
   });
 });
 
+test("저장 성공의 불완전한 항목은 조회 복구를 위해 그대로 반환한다", async () => {
+  apiClient.patch.mockResolvedValue([null]);
+  await expect(adminPermissonApi.updateUserAttributes({ userIds: [1], role: "ROLE_ADMIN" }))
+    .resolves.toEqual([null]);
+});
+
 test.each(["NEW", "ASSOCIATE", "REGULAR"])(
   "LEVEL %s filters a server using membershipLevel and displays its saved value",
   async (level) => {
