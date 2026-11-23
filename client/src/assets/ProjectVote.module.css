@@ -1055,7 +1055,7 @@
   }
 
   .project_list_form.vote_project_list {
-    gap: 44px 25px;
+    gap: 20px 12px;
     margin-block-start: 64px;
   }
 
@@ -1070,13 +1070,13 @@
 
   .vote_project_list .project_list_box {
     background-color: transparent;
-    padding-block: 9px;
+    padding: 9px 12px;
   }
 }
 
 @media (min-width: 1024px) {
   .project_list_form.vote_project_list {
-    row-gap: 49px;
+    row-gap: 25px;
   }
 
   .vote_title.vote_prompt {
@@ -1094,7 +1094,7 @@
 
 @media (min-width: 1200px) {
   .project_list_form.vote_project_list {
-    row-gap: 62px;
+    row-gap: 38px;
   }
 }
 
