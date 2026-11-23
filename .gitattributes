@@ -1,3 +1,9 @@
-# Keep Unix entry points executable after Windows checkouts.
+# Normalize text files and use LF in working trees.
+* text=auto eol=lf
+
+# Unix scripts
 server/gradlew text eol=lf
 *.sh text eol=lf
+
+# Windows scripts
+*.bat text eol=crlf
