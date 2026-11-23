@@ -18,10 +18,6 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
@@ -33,11 +29,7 @@ out/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
-
 ### 설정 파일 ###
 src/main/resources/application-db.yml
 src/main/resources/application-oauth.yml
 src/main/resources/application-s3.yml
-.env
