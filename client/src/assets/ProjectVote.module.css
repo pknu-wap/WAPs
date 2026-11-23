@@ -15,7 +15,7 @@
   width: 100%;
   margin-top: -50px;
   padding-top: 30px;
-  padding-bottom: 100px;
+  padding-bottom: 30px;
   position: relative;
   z-index: 0;
   height: 150px;
@@ -53,6 +53,7 @@
 }
 
 .project_vote_form {
+  --vote-prompt-inset: 30px;
   max-width: 400px;
   height: 100%;
   padding-top: 50px;
@@ -106,7 +107,7 @@
 .vote_title {
   color: #ffffff;
   margin-top: 50px;
-  margin-left: 30px;
+  margin-left: var(--vote-prompt-inset);
   font-weight: bold;
   text-align: left;
   font-size: 20px;
@@ -118,11 +119,32 @@
   letter-spacing: 0px;
 }
 
+.project_vote_form .vote_submit_button {
+  position: fixed;
+  inset-inline: 0;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 10;
+  margin-inline: auto;
+  padding-block: 14px;
+  font-family: "Pretendard Bold", "Pretendard-Regular", sans-serif;
+  font-weight: 700;
+}
+
+.vote_submit_button:disabled {
+  cursor: not-allowed;
+}
+
 .title_eng.vote_prompt_translation {
   font-family: "Pretendard Bold", "Pretendard-Regular", sans-serif;
   font-weight: 700;
   margin-top: 4px;
   opacity: 0.5;
+}
+
+.vote_title.vote_prompt,
+.title_eng.vote_prompt_translation {
+  margin-inline-start: var(--header-inline-inset);
+  text-align: left;
 }
 
 .vote_title p {
@@ -132,7 +154,7 @@
 
 .title_eng {
   margin-top: 10px;
-  margin-left: 30px;
+  margin-left: var(--vote-prompt-inset);
   color: #ffffff;
   font-size: 20px;
   font-weight: bold;
@@ -208,9 +230,33 @@
   cursor: default;
 }
 
-.selected {
-  border: 2px solid var(--primary);
-  color: var(--primary);
+.project_list_box.selected {
+  color: var(--vote-selection-color);
+}
+
+.vote_project_list .project_list_box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 1.5px solid var(--vote-selection-color);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.vote_project_list .project_list_box.selected::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .vote_project_list .project_list_box::after {
+    transition: opacity 180ms ease-out;
+  }
+
+  .vote_project_list .project_title_form .title {
+    transition: color 180ms ease-out;
+  }
 }
 
 .selected_result {
@@ -385,8 +431,13 @@
   /* 라인 박스 안정화 */
 }
 
+.project_title_form .title {
+  font-family: "Pretendard Bold", "Pretendard-Regular", sans-serif;
+  font-size: 18px;
+}
+
 .selected_title {
-  color: var(--primary);
+  color: var(--vote-selection-color);
 }
 
 .summary {
@@ -487,6 +538,10 @@
     padding: 0;
 
     box-sizing: border-box;
+  }
+
+  .bg_zone {
+    height: 290px;
   }
 
   .title_form {
@@ -679,6 +734,10 @@
     padding: 0;
 
     box-sizing: border-box;
+  }
+
+  .bg_zone {
+    height: 370px;
   }
 
   .title_form {
@@ -940,6 +999,69 @@
     row-gap: 68px;
   }
 }
+.project_list_form.vote_project_list {
+  --vote-selection-color: #abd4fd;
+  width: calc(100% - 2 * var(--header-inline-inset));
+  max-width: var(--wide-header-max);
+  margin-inline: auto;
+}
+
+.vote_project_list .project_list_box {
+  position: relative;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding-block: 14px;
+}
+
+.vote_project_list .project_thumbnail {
+  clip-path: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.vote_project_list .project_thumbnail::before {
+  display: none;
+}
+
+@media (width < 600px) {
+  .project_list_form.vote_project_list {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .vote_project_list .project_list_box {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .vote_project_list .project_list_box:not(:last-child) {
+    margin-bottom: 15px;
+  }
+}
+
+@media (min-width: 600px) {
+  .bg_zone .title_form {
+    width: calc(100% - 2 * var(--header-inline-inset));
+    max-width: var(--wide-header-max);
+  }
+
+  .vote_title.vote_prompt,
+  .title_eng.vote_prompt_translation {
+    margin-inline-start: 0;
+  }
+
+  .project_list_form.vote_project_list {
+    column-gap: 31px;
+  }
+
+  .project_title_form .title {
+    font-size: 17px;
+  }
+
+  .vote_project_list .project_list_box {
+    padding-block: 9px;
+  }
+}
+
 .project_list_box:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 3px;

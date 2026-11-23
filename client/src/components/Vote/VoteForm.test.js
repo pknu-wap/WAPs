@@ -32,8 +32,13 @@ test("키보드로 투표 카드를 선택하고 해제한다", async () => {
   const card = await screen.findByRole("button", { name: "프로젝트 1" });
   fireEvent.keyDown(card, { key: "Enter" });
   expect(card).toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(screen.getByRole("button", { name: "프로젝트 2" }));
+  expect(screen.queryByRole("button", { name: "투표 완료" })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "프로젝트 3" }));
+  expect(screen.getByRole("button", { name: "투표 완료" })).toBeEnabled();
   fireEvent.keyDown(card, { key: " " });
   expect(card).toHaveAttribute("aria-pressed", "false");
+  expect(screen.queryByRole("button", { name: "투표 완료" })).not.toBeInTheDocument();
 });
 
 async function selectProjects() {
@@ -126,7 +131,7 @@ test("조회 실패 시 제출을 막고 재시도 후 목록을 표시한다", 
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "투표 정보를 불러오지 못했습니다",
   );
-  expect(screen.getByRole("button", { name: "투표 완료" })).toBeDisabled();
+  expect(screen.queryByRole("button", { name: "투표 완료" })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
   expect(await screen.findByText("프로젝트 1")).toBeInTheDocument();
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -140,5 +145,5 @@ test("빈 참여 목록을 로딩과 구분하고 제출을 막는다", async ()
   expect(
     await screen.findByText("투표에 참여하는 프로젝트가 없습니다."),
   ).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "투표 완료" })).toBeDisabled();
+  expect(screen.queryByRole("button", { name: "투표 완료" })).not.toBeInTheDocument();
 });

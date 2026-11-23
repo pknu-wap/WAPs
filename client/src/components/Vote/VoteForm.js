@@ -25,6 +25,11 @@ const VoteForm = ({ isVotedUser, preview = false }) => {
   const [revision, setRevision] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const pending = useRef(false);
+  const showSubmit =
+    !isVotedUser &&
+    !loading &&
+    !error &&
+    selectedProjects.length === REQUIRED_VOTE_COUNT;
 
   // 투표한 프로젝트 불러오기
   useEffect(() => {
@@ -157,20 +162,12 @@ const VoteForm = ({ isVotedUser, preview = false }) => {
         />
       )}
 
-      {!isVotedUser && (
+      {showSubmit && (
         <button
           type="submit"
-          disabled={loading || !!error || submitting || projects.length === 0}
-          className={sub_styles.submit_button}
+          disabled={submitting}
+          className={`${sub_styles.submit_button} ${styles.vote_submit_button}`}
           onClick={handleVoteSubmit}
-          style={{
-            marginTop: "20px",
-            marginBottom: "100px",
-            cursor:
-              loading || error || submitting || projects.length === 0
-                ? "not-allowed"
-                : "pointer",
-          }}
         >
           {submitting ? "투표 중..." : "투표 완료"}
         </button>

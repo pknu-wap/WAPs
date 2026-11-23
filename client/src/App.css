@@ -16,6 +16,8 @@
 /* 본문과 헤더 폭을 맞추는 공통 값 */
 :root {
   --container-max: min(100vw, 400px);
+  --header-inline-inset: 20px;
+  --wide-header-max: 1200px;
   --project-content-gutter: 20px;
   --project-content-max: 1040px;
   --project-header-colors: linear-gradient(90deg, #a0aeffe8 0%, #b4edfed2 100%);
@@ -72,7 +74,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 20px 0;
+  padding: 8px var(--header-inline-inset) 0;
   color: white;
 }
 
@@ -261,6 +263,10 @@ ul {
 }
 
 @media (min-width: 600px) {
+  .project-page,
+  .container.vote-page {
+    --header-inline-inset: 24px;
+  }
   :root {
     --project-content-gutter: 28px;
     --project-content-max: 850px;
@@ -318,8 +324,8 @@ ul {
 
   .project-page .header-inner,
   .container.vote-page .header-inner {
-    width: calc(100% - 48px);
-    max-width: 1200px;
+    width: calc(100% - 2 * var(--header-inline-inset));
+    max-width: var(--wide-header-max);
     margin: 0 auto;
     padding: 16px 0 0;
     box-sizing: border-box;
@@ -352,6 +358,11 @@ ul {
 }
 
 @media (min-width: 1200px) {
+  .project-page,
+  .container.vote-page {
+    --header-inline-inset: 40px;
+  }
+
   .project-page .App-header,
   .container.vote-page .App-header {
     height: 90px;
@@ -359,7 +370,6 @@ ul {
 
   .project-page .header-inner,
   .container.vote-page .header-inner {
-    width: calc(100% - 80px);
     padding-top: 20px;
   }
 

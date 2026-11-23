@@ -30,9 +30,9 @@ const VoteProjectList = ({
   };
 
   return (
-    <div className={styles.project_list_form}>
+    <div className={`${styles.project_list_form} ${styles.vote_project_list}`}>
       {Array.isArray(projects) && projects.length > 0 ? (
-        projects.map((project, index) => {
+        projects.map((project) => {
           const isSelected = selectedProjects.includes(project.participants);
 
           return (
@@ -57,9 +57,6 @@ const VoteProjectList = ({
               }
             >
               <div className={styles.inform_box}>
-                <div style={{ fontSize: 15, position: "absolute", zIndex: 2 }}>
-                  {index + 1}
-                </div>
                 {project.thumbnail && (
                   <div className={styles.project_thumbnail}>
                     <img
