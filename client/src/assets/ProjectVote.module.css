@@ -540,10 +540,6 @@
     box-sizing: border-box;
   }
 
-  .bg_zone {
-    height: 290px;
-  }
-
   .title_form {
     width: calc(100% - 56px);
     max-width: 850px;
@@ -734,10 +730,6 @@
     padding: 0;
 
     box-sizing: border-box;
-  }
-
-  .bg_zone {
-    height: 370px;
   }
 
   .title_form {
@@ -1039,6 +1031,10 @@
 }
 
 @media (min-width: 600px) {
+  .bg_zone {
+    height: auto;
+  }
+
   .bg_zone .title_form {
     width: calc(100% - 2 * var(--header-inline-inset));
     max-width: var(--wide-header-max);
@@ -1047,18 +1043,58 @@
   .vote_title.vote_prompt,
   .title_eng.vote_prompt_translation {
     margin-inline-start: 0;
+    text-align: center;
+  }
+
+  .vote_title.vote_prompt {
+    font-size: 21px;
+  }
+
+  .title_eng.vote_prompt_translation {
+    font-size: 20px;
   }
 
   .project_list_form.vote_project_list {
-    column-gap: 31px;
+    gap: 44px 25px;
+    margin-block-start: 64px;
   }
 
-  .project_title_form .title {
-    font-size: 17px;
+  .vote_project_list .inform_box {
+    gap: 12px;
+  }
+
+  .vote_project_list .project_title_form .summary {
+    font-family: "Pretendard Bold", "Pretendard-Regular", sans-serif;
+    font-weight: 700;
   }
 
   .vote_project_list .project_list_box {
+    background-color: transparent;
     padding-block: 9px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .project_list_form.vote_project_list {
+    row-gap: 49px;
+  }
+
+  .vote_title.vote_prompt {
+    font-size: 27px;
+  }
+
+  .vote_project_list .project_title_form .title {
+    font-size: 21px;
+  }
+
+  .vote_project_list .project_title_form .summary {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .project_list_form.vote_project_list {
+    row-gap: 62px;
   }
 }
 
