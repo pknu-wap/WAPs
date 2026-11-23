@@ -3,16 +3,24 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../assets/ProjectVote.module.css";
 import sub_styles from "../../assets/ProjectCreation/ProjectForm.module.css";
+import previewThumbnail from "../../assets/img/dog.png";
 import VoteProjectList from "./VoteProjectList";
 import { projectApi } from "../../api/project";
 import { voteApi } from "../../api/vote";
 
-const VoteForm = ({ isVotedUser }) => {
+const previewProjects = Array.from({ length: REQUIRED_VOTE_COUNT + 1 }, (_, index) => ({
+  participants: `preview-${index + 1}`,
+  title: `예시 프로젝트 ${index + 1}`,
+  summary: "로컬 투표 화면 테스트용 프로젝트입니다.",
+  thumbnail: previewThumbnail,
+}));
+
+const VoteForm = ({ isVotedUser, preview = false }) => {
   const navigate = useNavigate();
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [currentSemester, setCurrentSemester] = useState("");
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState(preview ? previewProjects : []);
+  const [loading, setLoading] = useState(!preview);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -20,6 +28,7 @@ const VoteForm = ({ isVotedUser }) => {
 
   // 투표한 프로젝트 불러오기
   useEffect(() => {
+    if (preview) return;
     let active = true;
     setLoading(true);
     setError("");
@@ -48,15 +57,21 @@ const VoteForm = ({ isVotedUser }) => {
     return () => {
       active = false;
     };
-  }, [isVotedUser, revision]);
+  }, [isVotedUser, preview, revision]);
 
   const handleVoteSubmit = async (e) => {
     e.preventDefault();
-    if (pending.current || loading || error || !currentSemester || isVotedUser)
+    if (pending.current || loading || error || (!preview && !currentSemester) || isVotedUser)
       return;
 
     if (selectedProjects.length !== REQUIRED_VOTE_COUNT) {
       alert(`프로젝트를 ${REQUIRED_VOTE_COUNT}개 선택해야 합니다.`);
+      return;
+    }
+
+    if (preview) {
+      alert("테스트 투표가 완료되었습니다.");
+      setSelectedProjects([]);
       return;
     }
 
@@ -99,7 +114,7 @@ const VoteForm = ({ isVotedUser }) => {
   };
 
   return (
-    <div className={`${styles.project_vote_form} ${styles.mount1}`}>
+    <div className={`${styles.project_vote_form} ${styles.mount1} page-header-gradient`}>
       <div className={styles.bg_zone}>
         <div className={styles.title_form}>
           {isVotedUser ? (
@@ -112,10 +127,10 @@ const VoteForm = ({ isVotedUser }) => {
             </>
           ) : (
             <>
-              <div className={styles.vote_title}>
+              <div className={`${styles.vote_title} ${styles.vote_prompt}`}>
                 마음에 드는 프로젝트 {REQUIRED_VOTE_COUNT}개를 선택해 주세요
               </div>
-              <p className={styles.title_eng}>
+              <p className={`${styles.title_eng} ${styles.vote_prompt_translation}`}>
                 Choose {REQUIRED_VOTE_COUNT} projects you like
               </p>
             </>

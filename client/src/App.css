@@ -19,17 +19,35 @@
   --project-content-gutter: 20px;
   --project-content-max: 1040px;
   --project-header-colors: linear-gradient(90deg, #a0aeffe8 0%, #b4edfed2 100%);
+  --page-header-fade-height: 300px;
   /* 필요 시 한 곳만 수정 */
 }
 
 .hero::after,
-.menu {
+.page-header-gradient {
   --project-header-shade: linear-gradient(
     to bottom,
     rgba(102, 102, 102, 0) 0%,
-    rgba(30, 30, 30, 0.6) calc(var(--menu-gradient-height, 100%) * 0.6),
-    #000 var(--menu-gradient-height, 100%)
+    rgba(30, 30, 30, 0.6) calc(var(--header-fade-height, 100%) * 0.6),
+    #000 var(--header-fade-height, 100%)
   );
+}
+
+.page-header-gradient {
+  --header-fade-height: var(--page-header-fade-height);
+  background-image: var(--project-header-shade), var(--project-header-colors);
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  :root {
+    --page-header-fade-height: calc(341px + clamp(27.5px, 3.75vw, 33.75px));
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --page-header-fade-height: 318.3px;
+  }
 }
 
 /* ===== 헤더: 전폭 fixed + 내부 래퍼로 실제 표시 폭 제한 ===== */

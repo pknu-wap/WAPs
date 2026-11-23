@@ -20,7 +20,6 @@ body:has(nav.menu) .App-header {
 
 /* ===== 메뉴 패널 ===== */
 .menu {
-  --menu-gradient-height: 300px;
   position: fixed;
   top: 0;
   left: 50%;
@@ -32,7 +31,6 @@ body:has(nav.menu) .App-header {
   /* App.css 변수 사용, 없으면 400px */
   height: calc(var(--vh, 1vh) * 100);
 
-  background-image: var(--project-header-shade), var(--project-header-colors);
   background-color: #000;
 
   color: #fff;
@@ -231,7 +229,6 @@ body:has(nav.menu) .App-header {
   }
 
   .menu {
-    --menu-gradient-height: calc(341px + clamp(27.5px, 3.75vw, 33.75px));
     position: fixed;
 
     top: 0;
@@ -410,10 +407,6 @@ body:has(nav.menu) .App-header {
 }
 
 @media (min-width: 1024px) {
-  .menu {
-    --menu-gradient-height: 318.3px;
-  }
-
   .menu-item {
     min-height: clamp(64px, 7vh, 76px);
     padding: 14px 28px;

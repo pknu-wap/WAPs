@@ -61,6 +61,9 @@ const router = createBrowserRouter(
         <Route path="/oauth/callback" element={<Callback />} />
         <Route path="/project/create" element={<ProjectCreatePage />} />
         <Route path="/vote" element={<VotePage />} />
+        {process.env.NODE_ENV === "development" && (
+          <Route path="/preview/vote" element={<VotePage preview />} />
+        )}
         <Route path="/vote/result" element={<VoteResultPage />} />
         <Route
           path="/vote/result/:semesterParam"

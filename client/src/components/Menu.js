@@ -87,7 +87,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   return (
     <div className="menuContainer">
       {menuOpen && (
-        <nav className="menu">
+        <nav className="menu page-header-gradient">
           <div className="menu-content">
             {isLoggedIn && userName ? (
               <p className="welcome-message">{userName}님 환영합니다.</p>

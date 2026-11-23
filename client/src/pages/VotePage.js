@@ -10,7 +10,7 @@ import Cookies from "../utils/authStorage";
 
 // 분기를 결정함.
 // 현재 투표 기간인지에 따라 분기 구별함.
-const VotePage = () => {
+const VotePage = ({ preview = false }) => {
   // apiUrl 제거, voteApi 사용
 
   // 토큰 받아오기
@@ -28,7 +28,7 @@ const VotePage = () => {
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
   useEffect(() => {
-    if (hasValidated.current) return;
+    if (preview || hasValidated.current) return;
     hasValidated.current = true;
 
     const validate = async () => {
@@ -64,7 +64,7 @@ const VotePage = () => {
       }
     };
     validate();
-  }, [navigate, token]);
+  }, [navigate, preview, token]);
 
   return (
     <div className="container vote-page">
@@ -74,7 +74,9 @@ const VotePage = () => {
       <main>
         {/* <VoteForm isVotedUser={isVotedUser} /> */}
         {/* 투표 기간일 때만 렌더링 */}
-        {isOpen && <VoteForm isVotedUser={isVotedUser} />}
+        {(preview || isOpen) && (
+          <VoteForm isVotedUser={isVotedUser} preview={preview} />
+        )}
       </main>
       <FloatingButton />
     </div>
