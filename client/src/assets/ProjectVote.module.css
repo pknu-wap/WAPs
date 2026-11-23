@@ -1063,6 +1063,10 @@
     gap: 12px;
   }
 
+  .vote_project_list .project_title_form .title {
+    font-size: 20px;
+  }
+
   .vote_project_list .project_title_form .summary {
     font-family: "Pretendard Bold", "Pretendard-Regular", sans-serif;
     font-weight: 700;
@@ -1071,6 +1075,10 @@
   .vote_project_list .project_list_box {
     background-color: transparent;
     padding: 9px 12px;
+  }
+
+  .vote_project_list .project_list_box::after {
+    inset-block: -3px;
   }
 }
 
