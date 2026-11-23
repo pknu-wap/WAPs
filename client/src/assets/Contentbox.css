@@ -316,7 +316,7 @@
   padding: 80px var(--project-content-gutter) 8px;
   box-sizing: border-box;
   isolation: isolate;
-  background: linear-gradient(90deg, #a0aeffe8 0%, #b4edfed2 100%);
+  background: var(--project-header-colors);
   overflow: visible;
   z-index: 1;
 }
@@ -326,10 +326,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(30, 30, 30, 0.6) 40%,
-      rgba(102, 102, 102, 0) 100%);
+  background: var(--project-header-shade);
   z-index: -1;
 }
 
