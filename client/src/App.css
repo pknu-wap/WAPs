@@ -5,6 +5,14 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Pretendard Bold";
+  src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 본문과 헤더 폭을 맞추는 공통 값 */
 :root {
   --container-max: min(100vw, 400px);
@@ -303,7 +311,8 @@ ul {
   }
 
   .project-page .waplogo img,
-  .container.vote-page .waplogo img {
+  .container.vote-page .waplogo img,
+  body:has(nav.menu) .App-header .waplogo img {
     height: 18px !important;
   }
 

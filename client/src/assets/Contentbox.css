@@ -5,14 +5,6 @@
   font-style: normal;
 }
 
-@font-face {
-  font-family: "Pretendard Bold";
-  src: url("https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2/Pretendard-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* ========== 공통(전역) ========== */
 /* 상단 필터 영역 */
 .filter-container {
@@ -241,7 +233,8 @@
   align-items: flex-start;
   justify-content: flex-start;
   gap: var(--project-row-gap);
-  padding: 0;
+  box-sizing: border-box;
+  padding: 0 0 0 6px;
   background: transparent;
   color: #ffffff;
   position: relative;
@@ -710,8 +703,6 @@ button {
 
     width: 100%;
     height: auto;
-
-    padding: 0;
   }
 }
 
@@ -946,8 +937,6 @@ button {
     width: 100%;
     min-width: 0;
     height: auto;
-
-    padding: 0;
 
     display: flex;
     flex-direction: column;

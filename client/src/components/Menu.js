@@ -92,7 +92,9 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
             {isLoggedIn && userName ? (
               <p className="welcome-message">{userName}님 환영합니다.</p>
             ) : (
-              <p className="welcome-message">로그인을 해주십시오.</p>
+              <p className="welcome-message welcome-message--signed-out">
+                로그인을 해주십시오.
+              </p>
             )}
 
             <h2 className="menu-title">MENU PAGE</h2>
