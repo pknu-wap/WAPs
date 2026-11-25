@@ -119,14 +119,20 @@ const ProjectDetailForm = () => {
         </div>
       </div>
 
-      <section aria-label="모집 인원 (팀장 제외)">
+      <section
+        className={styles.recruitment}
+        aria-label="모집 인원 (팀장 제외)"
+      >
         <h3>모집 인원 (팀장 제외)</h3>
         {projectData.recruitmentPositions?.length > 0 ? (
-          <p>
-            {projectData.recruitmentPositions
-              .map(({ role, count }) => `${role} ${count}명`)
-              .join(", ")}
-          </p>
+          <ul className={styles.recruitmentList}>
+            {projectData.recruitmentPositions.map(({ role, count }, index) => (
+              <li key={role}>
+                {role} {count}명
+                {index < projectData.recruitmentPositions.length - 1 && ","}
+              </li>
+            ))}
+          </ul>
         ) : (
           <p>등록된 모집 인원 정보가 없습니다.</p>
         )}
