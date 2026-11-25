@@ -65,7 +65,8 @@ public class AdminUserController {
         @RequestParam("page") Integer page,
         @RequestParam(value = "role", required = false) Role role,
         @RequestParam(value = "membershipLevel", required = false) MembershipLevel membershipLevel,
-        @RequestParam(value = "memberType", required = false) String memberType
+        @RequestParam(value = "memberType", required = false) String memberType,
+        @RequestParam(value = "name", required = false) String name
     ) {
         MembershipLevel mapped = UserManagementService.level(memberType);
         if (mapped != null && membershipLevel != null && mapped != membershipLevel)
@@ -73,7 +74,7 @@ public class AdminUserController {
         if (mapped != null) membershipLevel = mapped;
         if (size < 1 || size > 500 || page < 0 || (long) page * size > Integer.MAX_VALUE)
             throw new BadRequestException("유효하지 않은 페이지 범위입니다.");
-        UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page, role, membershipLevel);
+        UserRolePageResponse response = userRoleService.getUsersForAdmin(size, page, role, membershipLevel, name);
         return ResponseEntity.ok(response);
     }
 }
