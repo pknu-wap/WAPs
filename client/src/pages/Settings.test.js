@@ -137,13 +137,23 @@ test("name editing rejects five characters even if the input limit is bypassed",
   expect(userApi.updateName).not.toHaveBeenCalled();
 });
 
-test("설정은 구현된 메뉴 경로로 돌아가고 미구현 가입 경로를 노출하지 않는다", async () => {
+test("설정은 메뉴 경로와 가입 정보 수정 경로를 제공한다", async () => {
   openSettings();
   await screen.findAllByText("기존이름");
-  expect(screen.queryByRole("button", { name: "회원가입 정보 수정" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "회원가입 정보 수정" })).toBeEnabled();
   fireEvent.click(screen.getByRole("button", { name: "메뉴 페이지로 돌아가기" }));
   expect(
     await screen.findByRole("heading", { name: "프로젝트" }),
   ).toBeInTheDocument();
   expect(sessionStorage.getItem("openMenuAfterBack")).toBe("true");
+});
+
+test("가입 정보 수정 버튼은 실제 수정 화면으로 이동한다", async () => {
+  render(<MemoryRouter initialEntries={["/settings"]}><Routes>
+    <Route path="/settings" element={<Settings />} />
+    <Route path="/signup" element={<h1>가입 정보 수정 화면</h1>} />
+  </Routes></MemoryRouter>);
+  await screen.findAllByText("기존이름");
+  fireEvent.click(screen.getByRole("button", { name: "회원가입 정보 수정" }));
+  await screen.findByRole("heading", { name: "가입 정보 수정 화면" });
 });

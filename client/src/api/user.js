@@ -4,6 +4,7 @@ import apiClient from "./client";
 export const userApi = {
   // 회원 역할 선택
   signup: (registration) => apiClient.post("/user/signup", registration),
+  updateRegistration: (registration) => apiClient.patch("/user/registration", registration),
   getRole: () => apiClient.get("/user/role"),
   // 내 정보 조회
   getMe: () => apiClient.get("/user/me"),

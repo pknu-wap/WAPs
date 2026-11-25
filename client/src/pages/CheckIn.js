@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { attendanceApi } from "../api/attendance";
+import PageBrand from "../components/PageBrand";
 import "../assets/CheckIn.css";
 
 const CheckIn = () => {
@@ -59,6 +60,7 @@ const CheckIn = () => {
 
   return (
     <div className="checkin-page">
+      <PageBrand />
       <button
         className="checkin-close"
         onClick={() => navigate(-1)}
@@ -111,14 +113,7 @@ const CheckIn = () => {
                 </span>
               </div>
 
-              {ongoingAttendance.myStatus === "PRESENT" ? (
-                <button
-                  className="attendance-complete-button"
-                  disabled
-                >
-                  출석이 완료되었습니다
-                </button>
-              ) : (
+              {!["PRESENT", "LATE"].includes(ongoingAttendance.myStatus) && (
                 <button
                   className="qr-button"
                   onClick={handleQrScan}

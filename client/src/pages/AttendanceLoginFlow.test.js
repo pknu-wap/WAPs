@@ -59,9 +59,17 @@ async function scanAndLeaveForOAuth() {
   view.unmount();
 }
 
+async function confirmAttendance() {
+  expect(await screen.findByRole("alertdialog", { name: "출석 완료" }))
+    .toHaveTextContent("출석체크가 완료되었습니다.");
+  expect(screen.queryByRole("heading", { name: "왑스 메인" })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "확인" }));
+}
+
 test("카메라 QR 진입 후 로그인 왕복을 거쳐 같은 토큰으로 한 번만 출석한다", async () => {
   await scanAndLeaveForOAuth();
   const callback = open("/oauth/callback?token=login-token");
+  await confirmAttendance();
   await screen.findByRole("heading", { name: "왑스 메인" });
   expect(apiClient.post).toHaveBeenCalledTimes(1);
   expect(apiClient.post).toHaveBeenCalledWith("/attendances/4/check-in", { qrToken: "a+b&c" });
@@ -91,6 +99,7 @@ test("로그인 실패 후 다시 로그인하면 보관한 출석을 재개한�
   expect(apiClient.post).not.toHaveBeenCalled();
   failed.unmount();
   open("/oauth/callback?token=login-token");
+  await confirmAttendance();
   await screen.findByRole("heading", { name: "왑스 메인" });
   expect(apiClient.post).toHaveBeenCalledTimes(1);
 });
@@ -119,6 +128,7 @@ test("가입이 필요한 사용자는 가입을 마친 뒤 출석을 재개한�
   fireEvent.click(await screen.findByRole("radio", { name: "아니요" }));
   expect(apiClient.post).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "회원가입하기" }));
+  await confirmAttendance();
   await screen.findByRole("heading", { name: "왑스 메인" });
   expect(apiClient.post).toHaveBeenCalledTimes(1);
 });
