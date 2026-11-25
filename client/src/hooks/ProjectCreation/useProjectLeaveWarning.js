@@ -15,13 +15,8 @@ export function projectDraftSnapshot(draft) {
     thumbnail: draft.thumbnail || null,
     images: (draft.images || []).filter(Boolean),
     teamMembers: (draft.teamMembers || [])
-      .filter(
-        (member) => member.userId || member.memberName || member.memberRole,
-      )
-      .map((member) => [
-        member.userId ?? member.memberName,
-        member.memberRole || "",
-      ]),
+      .filter((member) => member.memberName || member.memberRole)
+      .map((member) => [member.memberName, member.memberRole || ""]),
     techStacks: (draft.techStacks || [])
       .map((stack) => `${stack.techStackType}:${stack.techStackName}`)
       .sort(),
