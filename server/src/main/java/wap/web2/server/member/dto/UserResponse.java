@@ -26,6 +26,8 @@ public class UserResponse {
 
     @Schema(description = "입학 연도 뒤 두 자리. 미수집 시 null", example = "26", nullable = true)
     private String studentNumber;
+    @Schema(description = "본인이 입력한 WAP 회원 여부. 과거 미수집 계정은 null일 수 있습니다.", nullable = true)
+    private Boolean wapMember;
     @Schema(description = "현재 회원 구분. membershipLevel과 동일하며 NONE이면 null", nullable = true)
     private MemberType memberType;
     @Schema(description = "가입 완료 여부. false이면 회원가입 창을 표시합니다. 기존 계정은 true입니다.", example = "true")
@@ -38,6 +40,8 @@ public class UserResponse {
             .userName(user.getName())
             .userEmail(user.getEmail())
             .studentNumber(user.getStudentNumber())
+            .wapMember(user.getWapMember() != null ? user.getWapMember()
+                : user.getStudentNumber() != null || user.getMembershipLevel() != MembershipLevel.NONE ? true : null)
             .memberType(user.getMembershipLevel() == MembershipLevel.NONE
                 ? null : MemberType.valueOf(user.getMembershipLevel().name()))
             .signupCompleted(user.isSignupCompleted())

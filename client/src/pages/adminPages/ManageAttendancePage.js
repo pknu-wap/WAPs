@@ -4,7 +4,7 @@ import AttendanceQr from "../../components/Admin/AttendanceQr";
 import { adminAttendanceApi } from "../../api/admin";
 
 const EMPTY_RECORDS = [];
-const ATTENDANCE_STATUS_ORDER = { PRESENT: 0, ABSENT: 1 };
+const ATTENDANCE_STATUS_ORDER = { PRESENT: 0, LATE: 1, ABSENT: 2 };
 const MEMBERSHIP_ORDER = { NEW: 0, ASSOCIATE: 1, REGULAR: 2, NONE: 3 };
 const attendanceRoleLabel = (level) =>
   ({ NEW: "신입", ASSOCIATE: "준회원", REGULAR: "정회원", NONE: "없음" })[
@@ -33,6 +33,8 @@ const attendanceCounts = (session) =>
         presentCount: session.members.filter(
           (member) => member.status === "PRESENT",
         ).length,
+        lateCount: session.members.filter((member) => member.status === "LATE")
+          .length,
         absentCount: session.members.filter(
           (member) => member.status === "ABSENT",
         ).length,
@@ -250,8 +252,8 @@ const ManageAttendancePage = () => {
             );
           if (sortBy === "status")
             return (
-              ((ATTENDANCE_STATUS_ORDER[a.status] ?? 2) -
-                (ATTENDANCE_STATUS_ORDER[b.status] ?? 2)) *
+              ((ATTENDANCE_STATUS_ORDER[a.status] ?? 3) -
+                (ATTENDANCE_STATUS_ORDER[b.status] ?? 3)) *
                 sortDirection || byName
             );
           return byName * sortDirection;
@@ -540,7 +542,8 @@ const ManageAttendancePage = () => {
           {closed ? "종료" : "시작"} : {UNAVAILABLE_TIME_LABEL}
         </span>
         <span className={styles.sessionCounts}>
-          출석 : {counts.presentCount}명 <span>지각 : 미지원</span>
+          출석 : {counts.presentCount}명{" "}
+          <span>지각 : {counts.lateCount ?? 0}명</span>
           <span>미출석 : {counts.absentCount}명</span>
         </span>
       </button>
@@ -695,7 +698,13 @@ const ManageAttendancePage = () => {
                 </strong>
               </span>
               <span>
-                지각 : <strong>미지원</strong>
+                지각 :{" "}
+                <strong>
+                  {attendanceCounts({ members: visibleSourceMembers })
+                    .lateCount.toString()
+                    .padStart(2, "0")}
+                  명
+                </strong>
               </span>
               <span>
                 미출석 :{" "}
@@ -802,8 +811,17 @@ const ManageAttendancePage = () => {
                             출석
                           </button>
                           <button
-                            disabled
-                            title="서버에서 지각 상태를 지원하지 않습니다."
+                            disabled={
+                              saving ||
+                              (selectedSession.status !== "ONGOING" &&
+                                !editingClosed)
+                            }
+                            className={
+                              record.status === "LATE" ? styles.lateActive : ""
+                            }
+                            onClick={() =>
+                              updateRecord(record, { status: "LATE" })
+                            }
                           >
                             지각
                           </button>
@@ -849,7 +867,9 @@ const ManageAttendancePage = () => {
                                 })
                               : setNoteDrafts((current) => {
                                   const next = { ...current };
-                                  if (event.target.value === (record.note || ""))
+                                  if (
+                                    event.target.value === (record.note || "")
+                                  )
                                     delete next[record.userId];
                                   else next[record.userId] = event.target.value;
                                   return next;
@@ -957,8 +977,8 @@ const ManageAttendancePage = () => {
                 />
               </label>
               <p className={styles.autoDateNote}>
-                서버는 마감시간·지각·생성 및 종료 시각을 제공하지 않습니다. 생성
-                후 출석 체크 시작 버튼을 눌러 주세요.
+                서버는 마감시간·생성 및 종료 시각을 제공하지 않습니다. 생성 후
+                출석 체크 시작 버튼을 눌러 주세요.
               </p>
               <button
                 className={styles.createSubmit}

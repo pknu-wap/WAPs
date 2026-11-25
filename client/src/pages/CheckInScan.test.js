@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import CheckInScan from "./CheckInScan";
@@ -22,6 +22,11 @@ test("관리자 URL QR의 token을 전송하고 실패 후 새 QR로 재시도�
   expect(scanner.stop).not.toHaveBeenCalled();
   await act(async () => scan("https://dev.waps.im/attendance?attendanceId=4&token=current"));
   expect(attendanceApi.checkIn).toHaveBeenLastCalledWith("4", "current");
+  expect(await screen.findByRole("alertdialog", { name: "출석 완료" })).toHaveTextContent("출석체크가 완료되었습니다.");
+  expect(screen.queryByRole("heading", { name: "출석 기록" })).not.toBeInTheDocument();
+  await act(async () => scan("https://dev.waps.im/attendance?attendanceId=4&token=current"));
+  expect(attendanceApi.checkIn).toHaveBeenCalledTimes(2);
+  fireEvent.click(screen.getByRole("button", { name: "확인" }));
   expect(await screen.findByRole("heading", { name: "출석 기록" })).toBeInTheDocument();
   console.error.mockRestore();
 });

@@ -50,13 +50,14 @@ public class AttendanceService {
         var attendance = attendances.save(new Attendance(request.title(), request.date()));
         participants.saveAll(targets.stream()
             .map(user -> new AttendanceParticipant(attendance, user.getId(), user.getName(), user.getMembershipLevel())).toList());
-        return summary(attendance, targets.size(), 0);
+        return summary(attendance, targets.size(), 0, 0);
     }
 
     public Content<Summary> listAdmin(AttendanceStatus status) {
         return new Content<>(attendances.findAllWithCounts(status).stream()
             .map(a -> new Summary(a.getAttendanceId(), a.getTitle(), a.getDate(), a.getStatus(),
-                a.getTotalCount(), a.getPresentCount(), a.getTotalCount() - a.getPresentCount())).toList());
+                a.getTotalCount(), a.getPresentCount(), a.getLateCount(),
+                a.getTotalCount() - a.getPresentCount() - a.getLateCount())).toList());
     }
 
     public Detail detail(long attendanceId, PresenceStatus status, String sort) {
@@ -67,7 +68,8 @@ public class AttendanceService {
             .stream().filter(user -> !user.isDeleted())
             .collect(Collectors.toMap(User::getId, User::getName));
         long present = targets.stream().filter(p -> p.getStatus() == PresenceStatus.PRESENT).count();
-        return new Detail(summary(attendance, targets.size(), present),
+        long late = targets.stream().filter(p -> p.getStatus() == PresenceStatus.LATE).count();
+        return new Detail(summary(attendance, targets.size(), present, late),
             new Content<>(targets.stream().filter(p -> status == null || p.getStatus() == status)
                 .map(p -> Participant.from(p, currentNames.getOrDefault(p.getUserId(), p.getUserName())))
                 .sorted(order).toList()));
@@ -85,7 +87,7 @@ public class AttendanceService {
         var attendance = lockAttendance(attendanceId);
         attendance.changeStatus(request.status());
         var counts = participants.countForAttendance(attendanceId);
-        return summary(attendance, counts.getTotalCount(), counts.getPresentCount());
+        return summary(attendance, counts.getTotalCount(), counts.getPresentCount(), counts.getLateCount());
     }
 
     @Transactional
@@ -130,7 +132,8 @@ public class AttendanceService {
         if (!attendance.acceptsQr(qrToken, now)) {
             throw new BadRequestException("QR이 유효하지 않거나 만료되었습니다. 최신 QR을 다시 스캔해주세요.");
         }
-        participant.update(PresenceStatus.PRESENT, null, now);
+        if (participant.getStatus() == PresenceStatus.ABSENT)
+            participant.update(PresenceStatus.PRESENT, null, now);
         return new CheckIn(attendanceId, userId, participant.getStatus(), participant.getCheckedInAt());
     }
 
@@ -156,9 +159,9 @@ public class AttendanceService {
         return order.thenComparing(Participant::userId);
     }
 
-    private static Summary summary(Attendance attendance, long total, long present) {
+    private static Summary summary(Attendance attendance, long total, long present, long late) {
         return new Summary(attendance.getId(), attendance.getTitle(), attendance.getDate(), attendance.getStatus(),
-            total, present, total - present);
+            total, present, late, total - present - late);
     }
 
     private Instant now() {

@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 import styles from "./AttendanceMemberPreviewPage.module.css";
+import AttendanceCompleteDialog from "../../components/AttendanceCompleteDialog";
 
 export default function AttendanceMemberPreviewPage() {
   const [params] = useSearchParams();
   const [tested, setTested] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
   if (process.env.NODE_ENV !== "development") return null;
   const validExample = params.get("preview") === "1" && /^[1-9]\d*$/.test(params.get("sequence") || "");
-  if (validExample && tested) return <Navigate to="/ProjectPage" replace />;
+  if (validExample && confirmed) return <Navigate to="/ProjectPage" replace />;
 
   return <main className={styles.page}>
+    {validExample && tested && <AttendanceCompleteDialog onConfirm={() => setConfirmed(true)} />}
     <section className={styles.card} aria-labelledby="member-preview-title">
       <p className={styles.brand}>WAPs · LOCAL PREVIEW</p>
       <h1 id="member-preview-title">회원 출석체크</h1>

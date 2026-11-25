@@ -8,6 +8,7 @@ import wap.web2.server.exception.BadRequestException;
 import wap.web2.server.exception.ConflictException;
 import wap.web2.server.exception.ForbiddenException;
 import wap.web2.server.member.dto.MemberSignupRequest;
+import wap.web2.server.member.dto.UserRegistrationRequest;
 import wap.web2.server.member.entity.AuthProvider;
 import wap.web2.server.member.entity.MembershipLevel;
 import wap.web2.server.exception.ResourceNotFoundException;
@@ -55,7 +56,7 @@ public class UserService {
             throw new BadRequestException("회원 여부를 선택해 주세요.");
         }
         if (request.member()) {
-            if (request.name() == null || request.name().isBlank()
+            if (request.name() == null || request.name().isBlank() || request.name().strip().length() > 4
                 || request.studentNumber() == null || request.memberType() == null) {
                 throw new BadRequestException("회원은 이름, 학번, 회원 구분을 모두 입력해야 합니다.");
             }
@@ -69,7 +70,34 @@ public class UserService {
         } else if (request.name() != null || request.studentNumber() != null || request.memberType() != null) {
             throw new BadRequestException("비회원은 회원 여부만 입력해 주세요.");
         }
+        user.setWapMember(request.member());
         user.setSignupCompleted(true);
+        return UserResponse.of(user);
+    }
+
+    @Transactional
+    public UserResponse updateRegistration(Long userId, UserRegistrationRequest request) {
+        User user = userRepository.findByIdForUpdate(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
+        if (user.isDeleted() || !user.isSignupCompleted() || user.getProvider() != AuthProvider.kakao) {
+            throw new ForbiddenException("가입을 완료한 카카오 계정만 가입 정보를 수정할 수 있습니다.");
+        }
+        if (request.member() == null) throw new BadRequestException("회원 여부를 선택해주세요.");
+        if (request.member()) {
+            String name = request.name() == null ? "" : request.name().strip();
+            if (name.isEmpty() || name.length() > 4 || request.studentNumber() == null
+                || !request.studentNumber().matches("[0-9]{2}")) {
+                throw new BadRequestException("이름은 1~4자, 학번은 입학 연도 뒤 두 자리로 입력해주세요.");
+            }
+            user.setName(name);
+            user.setStudentNumber(request.studentNumber());
+        } else {
+            if (request.name() != null || request.studentNumber() != null) {
+                throw new BadRequestException("비회원은 회원 여부만 입력해주세요.");
+            }
+            user.setStudentNumber(null);
+        }
+        user.setWapMember(request.member());
         return UserResponse.of(user);
     }
 

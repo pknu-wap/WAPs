@@ -100,7 +100,7 @@ class SwaggerAccessTest {
                 .andExpect(status().isBadRequest());
             var date = LocalDate.of(2099, 1, 1);
             when(ctx.getBean(AttendanceService.class).create(new AttendanceRequests.Create("test", date)))
-                .thenReturn(new Summary(1L, "test", date, AttendanceStatus.SCHEDULED, 0, 0, 0));
+                .thenReturn(new Summary(1L, "test", date, AttendanceStatus.SCHEDULED, 0, 0, 0, 0));
             mvc.perform(request.with(user("admin").roles("ADMIN"))
                     .content("{\"title\":\"test\",\"date\":\"2099-01-01\"}"))
                 .andExpect(status().isCreated())

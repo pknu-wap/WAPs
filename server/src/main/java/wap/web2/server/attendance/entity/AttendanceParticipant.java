@@ -55,7 +55,8 @@ public class AttendanceParticipant {
     public void update(PresenceStatus status, String note, Instant now) {
         if (status != null && status != this.status) {
             this.status = status;
-            checkedInAt = status == PresenceStatus.PRESENT ? now : null;
+            if (status == PresenceStatus.ABSENT) checkedInAt = null;
+            else if (checkedInAt == null) checkedInAt = now;
         }
         if (note != null) this.note = note;
     }

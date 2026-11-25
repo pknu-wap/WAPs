@@ -23,6 +23,8 @@ test("QR 링크로 회원용 예시 화면을 열고 저장 없이 왑스 메인
   expect(screen.getByRole("heading", { name: "회원 출석체크" })).toBeInTheDocument();
   expect(screen.getByText("예시 회원 A 님의 화면입니다.")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "출석 버튼 테스트 (저장 안 됨)" }));
+  expect(screen.getByRole("alertdialog", { name: "출석 완료" })).toHaveTextContent("출석체크가 완료되었습니다.");
+  fireEvent.click(screen.getByRole("button", { name: "확인" }));
   expect(screen.getByRole("heading", { name: "왑스 메인" })).toBeInTheDocument();
   expect(request).not.toHaveBeenCalled();
   expect(storage).not.toHaveBeenCalled();

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import { attendanceApi } from "../api/attendance";
+import AttendanceCompleteDialog from "../components/AttendanceCompleteDialog";
 import "../assets/CheckInScan.css";
 
 const CheckInScan = () => {
@@ -12,8 +13,10 @@ const CheckInScan = () => {
   const isProcessingRef = useRef(false);
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
+    let active = true;
     const scanner = new Html5Qrcode("qr-reader");
 
     scannerRef.current = scanner;
@@ -56,7 +59,7 @@ const CheckInScan = () => {
     };
 
     const handleScanSuccess = async (decodedText) => {
-      if (isProcessingRef.current) return;
+      if (!active || isProcessingRef.current) return;
 
       isProcessingRef.current = true;
 
@@ -85,12 +88,12 @@ const CheckInScan = () => {
           qrData.qrToken
         );
 
-        if (scanner.isScanning) await scanner.stop();
-
-        navigate("/CheckIn", {
-          replace: true,
-        });
+        if (!active) return;
+        setErrorMessage("");
+        setCompleted(true);
+        if (scanner.isScanning) await scanner.stop().catch(() => {});
       } catch (error) {
+        if (!active) return;
         console.error("출석체크 실패:", error);
 
         const status = error?.response?.status;
@@ -134,6 +137,7 @@ const CheckInScan = () => {
           () => {}
         );
       } catch (error) {
+        if (!active) return;
         console.error("카메라 실행 실패:", error);
 
         setErrorMessage(
@@ -145,6 +149,7 @@ const CheckInScan = () => {
     startScanner();
 
     return () => {
+      active = false;
       if (scanner.isScanning) {
         scanner
           .stop()
@@ -171,6 +176,7 @@ const CheckInScan = () => {
 
   return (
     <div className="qr-scan-page">
+      {completed && <AttendanceCompleteDialog onConfirm={() => navigate("/CheckIn", { replace: true })} />}
       <div id="qr-reader" />
 
       <button
