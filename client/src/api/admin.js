@@ -62,13 +62,14 @@ export const adminPermissonApi = {
     }),
 
   // 사용자 권한 목록 가져오기
-  getUserRoleList: (page, size, role, memberType) =>
+  getUserRoleList: (page, size, role, memberType, name) =>
     apiClient
       .get("/admin/role", {
         params: {
           page,
           size,
           ...(role ? { role } : {}),
+          ...(name ? { name } : {}),
           // 기존 서버와 memberType 서버 모두 페이지를 나누기 전에 필터링한다.
           ...(memberType
             ? {

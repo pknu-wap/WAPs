@@ -57,7 +57,7 @@ test.each(["success", "failure"])("이전 ALL 요청의 늦은 %s가 ADMIN 목�
         }),
   );
   render(<ManagePermissionPage />);
-  fireEvent.change(screen.getByLabelText("ROLE 필터"), {
+  fireEvent.change(screen.getByLabelText("권한 필터"), {
     target: { value: "ROLE_ADMIN" },
   });
   await screen.findByText(admin.name);
@@ -69,7 +69,7 @@ test.each(["success", "failure"])("이전 ALL 요청의 늦은 %s가 ADMIN 목�
   expect(screen.queryByText(user.name)).not.toBeInTheDocument();
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "다음 페이지" })).toBeDisabled();
-  expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "ROLE_ADMIN", "");
+  expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "ROLE_ADMIN", "", "");
 });
 
 test("목록 조회 실패 후 같은 필터로 다시 불러올 수 있다", async () => {
@@ -248,10 +248,10 @@ test("selection and at least one change are required; unassigned LEVEL displays 
 test("combined ROLE and undecided LEVEL filters are requested from the server", async () => {
   render(<ManagePermissionPage />);
   await screen.findByText(user.name);
-  fireEvent.change(screen.getByLabelText("ROLE 필터"), {
+  fireEvent.change(screen.getByLabelText("권한 필터"), {
     target: { value: "ROLE_MEMBER" },
   });
-  fireEvent.change(screen.getByLabelText("LEVEL 필터"), {
+  fireEvent.change(screen.getByLabelText("회원 구분 필터"), {
     target: { value: "UNDECIDED" },
   });
   await waitFor(() =>
@@ -260,6 +260,7 @@ test("combined ROLE and undecided LEVEL filters are requested from the server", 
       12,
       "ROLE_MEMBER",
       "UNDECIDED",
+      "",
     ),
   );
   await screen.findByRole("table", { name: "사용자 목록" });
@@ -308,14 +309,32 @@ test("changing a filtered member returns to the first page before reloading", as
   adminPermissonApi.updateUserAttributes.mockResolvedValue([{ ...user, memberType: "REGULAR" }]);
   render(<ManagePermissionPage />);
   await screen.findByText(user.name);
-  fireEvent.change(screen.getByLabelText("LEVEL 필터"), { target: { value: "NEW" } });
-  await waitFor(() => expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "", "NEW"));
+  fireEvent.change(screen.getByLabelText("회원 구분 필터"), { target: { value: "NEW" } });
+  await waitFor(() => expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "", "NEW", ""));
   await screen.findByRole("table", { name: "사용자 목록" });
   fireEvent.click(screen.getByRole("button", { name: "다음 페이지" }));
-  await waitFor(() => expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(1, 12, "", "NEW"));
+  await waitFor(() => expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(1, 12, "", "NEW", ""));
   await selectUser();
   chooseLevel("REGULAR");
   fireEvent.click(applyButton());
-  await waitFor(() => expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "", "NEW"));
+  await waitFor(() => expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "", "NEW", ""));
   expect(screen.getByRole("table", { name: "선택한 사용자" })).toHaveTextContent("정회원");
+});
+
+test("이름 검색은 첫 페이지에서 필터와 함께 조회하고 선택을 유지한다", async () => {
+  adminPermissonApi.getUserRoleList.mockResolvedValue({ content: [user], hasNext: true });
+  render(<ManagePermissionPage />);
+  await selectUser();
+  fireEvent.change(screen.getByLabelText("권한 필터"), { target: { value: "ROLE_MEMBER" } });
+  await screen.findByRole("table", { name: "사용자 목록" });
+  fireEvent.click(screen.getByRole("button", { name: "다음 페이지" }));
+  await screen.findByRole("table", { name: "사용자 목록" });
+  adminPermissonApi.getUserRoleList.mockResolvedValue({ content: [], hasNext: false });
+  const search = screen.getByRole("searchbox", { name: "이름 검색" });
+  fireEvent.change(search, { target: { value: "  다른이름 " } });
+  await screen.findByText("해당하는 사용자가 없습니다.");
+  expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "ROLE_MEMBER", "", "다른이름");
+  expect(screen.getByRole("table", { name: "선택한 사용자" })).toHaveTextContent(user.name);
+  fireEvent.change(search, { target: { value: "" } });
+  await waitFor(() => expect(adminPermissonApi.getUserRoleList).toHaveBeenLastCalledWith(0, 12, "ROLE_MEMBER", "", ""));
 });

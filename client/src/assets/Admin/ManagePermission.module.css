@@ -1,419 +1,241 @@
-@font-face {
-  font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-    format("woff");
-  font-weight: 400;
-  font-style: normal;
-}
-
-:root {
-  --primary: #abd4fd;
-  --tableLine: rgba(255, 255, 255, 0.5);
-}
-
-.container {
-  width: 100%;
+.workspace {
+  container-type: inline-size;
   height: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 2.1fr) minmax(260px, 1fr);
-  gap: 29px;
+  overflow: auto;
+  color: #f4f6f8;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
-.Box {
-  min-width: 0;
+.panels {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+  gap: 16px;
+}
+
+.listPanel,
+.editPanel {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: 100%;
-  border-radius: 42px;
-  background: #313131;
-  padding: 37px;
-  box-sizing: border-box;
+  gap: 16px;
+  padding: clamp(16px, 2cqi, 24px);
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: #292b2e;
+  border: 1px solid #414449;
+  border-radius: 18px;
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
-  font-size: 20px;
-  font-weight: 700;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin: 0;
-}
-
-/* 테이블 관련 */
-.container table {
-  min-width: 0;
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
-  border-left: none;
-  border-right: none;
-  border-top: 1px solid var(--tableLine);
-  border-bottom: 1px solid var(--tableLine);
-}
-
-.container thead {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-.container th {
-  box-sizing: border-box;
-  border: 2px solid var(--tableLine);
-  background-color: var(--primary);
-  color: black;
-  font-size: 15px;
-  font-weight: 700;
-  text-align: center;
-  padding: 10px 4px;
-}
-
-.container td {
-  box-sizing: border-box;
-  border: 2px solid var(--tableLine);
-  font-size: 15px;
-  padding: 10px 5px 10px 10px;
-}
-
-.container th:first-child {
-  width: 24%;
-}
-
-.container th:nth-child(2) {
-  width: 40%;
-}
-
-.container th:nth-child(3),
-.container th:nth-child(4) {
-  width: 18%;
-}
-
-.container th,
-.container td {
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-.container th:first-child,
-.container td:first-child {
-  border-left: none;
-}
-
-.container th:last-child,
-.container td:last-child {
-  border-right: none;
-}
-
-/* 선택된 행 스타일 */
-.selectedRow {
-  background-color: #505050;
-  color: var(--primary);
-  font-weight: 600;
-}
-
-.selectedRow td {
-  background-color: #505050;
-}
-
-/* 유저 목록 박스 */
-
-.filterSelect {
-  width: 140px;
-  max-width: 100%;
-  min-width: 0;
-  height: 32px;
-  border: 1px solid #626262;
-  border-radius: 68px;
-  background-color: #bcbcbc;
-  color: black;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 0 10px;
-  cursor: pointer;
-  outline: none;
-  text-align: center;
-}
-
-.filterSelect option {
-  background-color: #bcbcbc;
-  border: none;
-}
-
-.userContent {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
-  min-height: 0;
-}
-
-.userList {
-  width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-top: 13px;
-  flex: 1;
-  min-height: 0;
-}
-
-.selectedBox {
-  background-color: var(--primary);
-}
-
-/* 스크롤바 스타일*/
-.userList::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.userList::-webkit-scrollbar-thumb {
-  background: #969696;
-  border-radius: 123px;
-}
-
-.userList::-webkit-scrollbar-thumb:hover {
-  background: #969799;
-}
-
-/* 권한 변경 박스 */
-.editBox {
-  min-height: 0;
-  padding: clamp(18px, 2vw, 32px);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.editHeader {
-  display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-}
-
-.editHeader .header {
-  min-width: 0;
-  flex: 1;
-  line-height: 1.35;
-}
-
-.changeContent {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: none;
-  padding-top: 24px;
-}
-
-.changeControls {
-  display: flex;
-  flex-direction: column;
-  gap: 36px;
-  width: 100%;
-  margin-top: 56px;
-}
-
-.controler {
-  width: 100%;
-  flex-wrap: wrap;
-  display: flex;
-  gap: 12px;
-  flex-direction: column;
-  align-items: flex-start;
-  flex-shrink: 0;
-}
-
-.roleDropdown {
-  min-width: 0;
-  width: 100%;
-  height: 45px;
-  font-size: 18px;
-  border-radius: 26px;
-  cursor: pointer;
-  background-color: #bcbcbc;
-  color: black;
-  flex: none;
-  max-width: none;
-  text-align: center;
-  font-weight: 700;
-  outline: none;
-}
-
-.changeList {
-  width: 100%;
-  flex: none;
-  min-width: 0;
-  min-height: 0;
-  max-height: min(30vh, 260px);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.changeList th {
-  padding: 8px 2px;
-  font-size: 11px;
-}
-
-.changeList td {
-  padding: 8px 2px;
-  font-size: 12px;
-}
-
-.adjust {
-  color: white;
-  width: 100px;
-  height: 45px;
-  border-radius: 69px;
-  cursor: pointer;
-  flex-shrink: 0;
-  border: 1px solid white;
-  background-color: transparent;
-  font-size: 18px;
-  text-align: center;
-  align-self: center;
-  margin-top: 40px;
-  transition:
-    0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.adjust:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-@media (max-width: 760px) {
-  .container {
-    grid-template-columns: minmax(0, 1fr);
-    height: auto;
-  }
-
-  .Box {
-    min-height: 360px;
-    height: auto;
-    padding: 24px;
-  }
-
-  .userList {
-    max-height: 480px;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  .changeControls {
-    gap: 28px;
-    margin-top: 32px;
-  }
-
-  .adjust {
-    margin-top: 32px;
-  }
-}
-
-.adjust:hover,
-.adjust:active {
-  color: white;
-  border: 1px solid var(--primary);
-  background-color: var(--primary);
-}
-
-/* 하단 페이지 네이션 */
-.pageNation {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 20px;
-  flex-shrink: 0;
-  user-select: none;
-}
-
-.prevPage:hover,
-.nextPage:hover {
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.filters,
-.filters label {
-  min-width: 0;
-  max-width: 100%;
-  display: flex;
-  align-items: center;
   flex-wrap: wrap;
   gap: 8px;
 }
-
+.header h1,
+.header h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.3;
+}
+.count {
+  color: var(--primary);
+  font-weight: 600;
+}
+.workspace label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: #c4cad1;
+  font-size: 13px;
+  font-weight: 600;
+}
 .filters {
-  gap: 12px;
+  display: grid;
+  grid-template-columns: minmax(100px, 1.6fr) repeat(2, minmax(78px, 1fr));
+  gap: 10px;
 }
-
-.filters label {
-  font-size: 14px;
+.workspace input,
+.workspace select,
+.workspace button {
+  box-sizing: border-box;
+  font: inherit;
+  color: inherit;
+  border-radius: 8px;
 }
-
-.container tbody tr {
+.workspace input,
+.workspace select {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  padding: 0 10px;
+  color: #f2f4f6;
+  background: #202225;
+  border: 1px solid #53575d;
+}
+.search span {
+  position: relative;
+}
+.search svg {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.search input {
+  padding-left: 32px;
+}
+.workspace button {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid #555b62;
   cursor: pointer;
 }
-
-.container tbody tr:focus-visible,
-.container select:focus-visible {
+.workspace button:enabled:hover {
+  border-color: var(--primary);
+}
+.workspace button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.workspace :focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: -2px;
 }
 
-.controler label {
-  font-size: 18px;
-  font-weight: 700;
+.userList,
+.selection {
+  min-width: 0;
+  overflow: auto;
 }
-
-.emptySelection {
-  color: #aaa;
+.userList {
+  flex: 1 1 auto;
+  min-height: 90px;
+}
+.selection {
+  flex: none;
+  max-height: 35vh;
+  border-block: 1px solid #46494e;
+}
+.workspace table {
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 0;
+}
+.workspace th,
+.workspace td {
+  padding: 9px 6px;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+.workspace th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 19%;
+  background: #33373b;
+  color: #cbd1d7;
+  font-size: 12px;
+}
+.workspace th:first-child {
+  width: 62%;
+}
+.workspace td {
+  border-bottom: 1px solid #404449;
+  font-size: 13px;
+}
+.workspace tbody tr[tabindex] {
+  cursor: pointer;
+}
+.workspace tbody tr[tabindex]:hover {
+  background: #34383d;
+}
+.workspace tbody tr[aria-selected="true"] {
+  background: #293b4a;
+}
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.identity strong,
+.identity small {
+  display: block;
+}
+.identity small {
+  color: #b9c0c6;
+  font-size: 12px;
+}
+.check {
+  display: grid;
+  place-items: center;
+  flex: 0 0 14px;
+  height: 14px;
+  border: 1px solid #8d959d;
+  border-radius: 4px;
+}
+tr[aria-selected="true"] .check {
+  color: #182734;
+  border-color: var(--primary);
+  background: var(--primary);
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+}
+.empty,
+.workspace td.empty {
+  color: #c2c8cf;
+  padding: 22px 8px;
   text-align: center;
-  margin-top: 28px;
 }
-
+.empty svg {
+  font-size: 23px;
+}
+.empty p {
+  margin: 4px 0 0;
+}
+.workspace .apply {
+  color: #122638;
+  background: var(--primary);
+  border-color: var(--primary);
+  font-weight: 700;
+  min-height: 40px;
+}
+.workspace .deleteButton {
+  align-self: flex-end;
+  color: #f4b8b8;
+  border-color: transparent;
+}
 .error {
   color: #ffb4b4;
 }
 
-.pageNation span {
-  margin-inline: 15px;
+/* The sidebar changes the available space independently of the viewport. */
+@container (max-width: 740px) {
+  .panels {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+  .userList {
+    max-height: 55vh;
+  }
 }
-
-.deleteButton {
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  min-width: 72px;
-  height: 45px;
-  padding: 0 16px;
-  border: 1px solid #626262;
-  border-radius: 26px;
-  background-color: #bcbcbc;
-  color: #000;
-  font-family: inherit;
-  font-size: 18px;
-  font-weight: 700;
-  text-align: center;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.deleteButton:hover:not(:disabled) {
-  background-color: #d0d0d0;
-}
-
-.deleteButton:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 3px;
-}
-
-.deleteButton:disabled {
-  opacity: 0.5;
-  cursor: default;
+@container (max-width: 420px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .search {
+    grid-column: 1 / -1;
+  }
 }

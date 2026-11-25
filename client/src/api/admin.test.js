@@ -94,7 +94,7 @@ test("undecided LEVEL is sent as NONE for the existing server", async () => {
   expect(result.content[0].memberType).toBe("UNDECIDED");
 });
 
-test("memberType responses and ROLE/LEVEL pagination remain supported", async () => {
+test("name search supports combined ROLE/LEVEL filters and pagination", async () => {
   const user = {
     id: 5,
     name: "회원",
@@ -108,10 +108,12 @@ test("memberType responses and ROLE/LEVEL pagination remain supported", async ()
     12,
     "ROLE_MEMBER",
     "ASSOCIATE",
+    "회원",
   );
 
   expect(apiClient.get).toHaveBeenCalledWith("/admin/role", {
     params: {
+      name: "회원",
       page: 1,
       size: 12,
       role: "ROLE_MEMBER",
