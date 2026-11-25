@@ -28,9 +28,6 @@ public class TeamMember {
     private String memberName;
 
     @Column
-    private Long userId;
-
-    @Column
     private String memberRole;
 
     @ManyToOne(fetch = FetchType.LAZY)

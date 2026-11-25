@@ -19,9 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.id = :id")
     Optional<User> findByIdForUpdate(@Param("id") Long id);
 
-    @Query("SELECT u FROM User u WHERE u.deleted = false AND u.signupCompleted = true AND u.role IN :roles ORDER BY u.name, u.id")
-    List<User> findBySignupCompletedTrueAndRoleInOrderByNameAscIdAsc(@Param("roles") List<Role> roles);
-
     Optional<User> findByEmail(String email);
 
     Boolean existsByEmail(String email);
