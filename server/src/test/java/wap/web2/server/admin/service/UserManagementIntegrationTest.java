@@ -78,7 +78,7 @@ class UserManagementIntegrationTest {
             assertThat(users.findById(first).orElseThrow().getMembershipLevel()).isEqualTo(MembershipLevel.NONE);
             assertThat(users.findById(first).orElseThrow().getRole()).isEqualTo(Role.ROLE_ADMIN);
             assertThat(users.findById(second).orElseThrow().getMembershipLevel()).isEqualTo(MembershipLevel.REGULAR);
-            assertThat(users.findUserByOffset(12, 0, Role.ROLE_ADMIN, MembershipLevel.NONE))
+            assertThat(users.findUserByOffset(12, 0, Role.ROLE_ADMIN, MembershipLevel.NONE, null))
                 .extracting(User::getId).containsExactly(first);
         });
     }
@@ -109,18 +109,33 @@ class UserManagementIntegrationTest {
         assertPages(Role.ROLE_GUEST, null, List.of());
     }
 
+    @Test
+    void nameSearchFiltersBeforePaginationAndTreatsWildcardsLiterally() {
+        long first = member("김A_1"), second = member("김a_2");
+        member("김ab3");
+        long guest = member("김a_4");
+        service.update(new UserAttributesRequest(List.of(guest), Role.ROLE_GUEST, null));
+        var listing = new UserRoleService(users);
+        var page = listing.getUsersForAdmin(1, 0, Role.ROLE_MEMBER, MembershipLevel.NEW, "  a_  ");
+        var next = listing.getUsersForAdmin(1, 1, Role.ROLE_MEMBER, MembershipLevel.NEW, "a_");
+        assertThat(page.hasNext()).isTrue();
+        assertThat(next.hasNext()).isFalse();
+        assertThat(List.of(page.content().get(0).id(), next.content().get(0).id()))
+            .containsExactlyInAnyOrder(first, second);
+    }
+
     private void assertPages(Role role, MembershipLevel level, List<Long> expected) {
         var service = new UserRoleService(users);
         for (int size : List.of(1, 5, 12)) {
             var actual = new java.util.ArrayList<Long>();
             int pageCount = Math.max(1, (expected.size() + size - 1) / size);
             for (int page = 0; page < pageCount; page++) {
-                var result = service.getUsersForAdmin(size, page, role, level);
+                var result = service.getUsersForAdmin(size, page, role, level, null);
                 assertThat(result.hasNext()).isEqualTo((page + 1) * size < expected.size());
                 actual.addAll(result.content().stream().map(user -> user.id()).toList());
             }
             assertThat(actual).containsExactlyElementsOf(expected).doesNotHaveDuplicates();
-            var beyondLastPage = service.getUsersForAdmin(size, pageCount, role, level);
+            var beyondLastPage = service.getUsersForAdmin(size, pageCount, role, level, null);
             assertThat(beyondLastPage.content()).isEmpty();
             assertThat(beyondLastPage.hasNext()).isFalse();
         }
@@ -147,7 +162,7 @@ class UserManagementIntegrationTest {
         assertThat(deleted.getPassword()).isNull();
         assertThat(deleted.getTokenVersion()).isEqualTo(1);
         assertThat(deleted.getRole()).isEqualTo(Role.ROLE_GUEST);
-        assertThat(users.findUserByOffset(12, 0, null, null)).isEmpty();
+        assertThat(users.findUserByOffset(12, 0, null, null, null)).isEmpty();
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM refresh_token", Long.class)).isZero();
     }
 
