@@ -3,7 +3,7 @@
   border: 1px solid #555;
   border-radius: 36px;
   padding: 0;
-  width: min(540px, calc(100vw - 32px));
+  width: min(620px, calc(100vw - 32px));
   max-width: calc(100vw - 32px);
   max-height: calc(100dvh - 32px);
   box-sizing: border-box;
@@ -19,7 +19,7 @@
 .dialogContent p { margin: 0 auto; max-width: 340px; color: #bbb; font-size: 13px; line-height: 1.7; word-break: keep-all; }
 .closeModal { position: absolute; top: 18px; right: 18px; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #626262; border-radius: 50%; background: #414141; color: #ddd; cursor: pointer; font-size: 15px; }
 .closeModal:hover { background: #595959; }
-.qrFrame { margin: 26px auto 18px; padding: 12px; max-width: 340px; border: 1px solid #ddd; border-radius: 26px; background: #fff; }
+.qrFrame { margin: 26px auto 18px; padding: 12px; max-width: 480px; border: 1px solid #ddd; border-radius: 26px; background: #fff; }
 .largeQr { display: block; width: 100%; height: auto; border-radius: 14px; }
 .dialogContent .pageLink { margin-bottom: 24px; }
 .pageLink a { color: var(--qr-accent); text-underline-offset: 4px; }

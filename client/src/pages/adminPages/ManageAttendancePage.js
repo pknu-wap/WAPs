@@ -111,6 +111,8 @@ const ManageAttendancePage = () => {
   const [sortDirection, setSortDirection] = useState(1);
   const [sortBy, setSortBy] = useState("role");
   const [error, setError] = useState("");
+  const [syncError, setSyncError] = useState("");
+  const mutationVersion = useRef(0);
   const mutationPending = useRef(false);
   const mounted = useRef(false);
   const selectedId = useRef(null);
@@ -194,8 +196,53 @@ const ManageAttendancePage = () => {
     };
   }, [selectedSessionId, revision]);
 
+  const selectedStatus = selectedSession?.status;
+  useEffect(() => {
+    setSyncError("");
+    if (selectedStatus !== "ONGOING" || saving) return undefined;
+    let active = true;
+    let pending = false;
+    const syncAttendance = async () => {
+      if (pending || mutationPending.current || document.hidden) return;
+      pending = true;
+      const version = mutationVersion.current;
+      const isCurrent = () =>
+        active &&
+        selectedId.current === selectedSessionId &&
+        version === mutationVersion.current &&
+        !mutationPending.current;
+      try {
+        const response = await adminAttendanceApi.getDetail(selectedSessionId);
+        if (!isCurrent()) return;
+        if (response.attendanceId !== selectedSessionId)
+          throw new Error("Unexpected attendance ID");
+        const next = toSession(response);
+        setDetail(next);
+        setSessions((current) =>
+          current.map((session) => (session.id === next.id ? next : session)),
+        );
+        setSyncError("");
+      } catch (error) {
+        if (isCurrent())
+          setSyncError(
+            `출석 현황 자동 갱신에 실패했습니다. ${requestError(error)}`,
+          );
+      } finally {
+        pending = false;
+      }
+    };
+    const timer = window.setInterval(syncAttendance, 3000);
+    document.addEventListener("visibilitychange", syncAttendance);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", syncAttendance);
+    };
+  }, [selectedSessionId, selectedStatus, saving, revision]);
+
   const runMutation = async (operation) => {
     if (mutationPending.current) return;
+    mutationVersion.current += 1;
     mutationPending.current = true;
     setSaving(true);
     setError("");
@@ -618,6 +665,11 @@ const ManageAttendancePage = () => {
       </section>
 
       <section className={styles.detailPanel} aria-label="회원 출석 현황">
+        {syncError && (
+          <p className={styles.error} role="status">
+            {syncError}
+          </p>
+        )}
         {detailLoading ? (
           <div className={styles.empty}>출석 상세를 불러오는 중입니다.</div>
         ) : selectedSession ? (
