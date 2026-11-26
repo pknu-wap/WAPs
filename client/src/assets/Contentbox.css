@@ -779,7 +779,7 @@ button {
 
     width: 100%;
 
-    margin: 8px 0 0;
+    margin: 8px 0 55px;
 
     font-size: 19px;
     font-weight: 600;
@@ -798,7 +798,7 @@ button {
 
     width: auto;
 
-    margin: 55px 0 0;
+    margin: 0;
 
     font-size: 15px;
     font-weight: 700;
@@ -816,7 +816,8 @@ button {
     width: 100%;
     max-width: none;
 
-    margin: 55px 0 0;
+    margin: 0;
+    align-self: center;
   }
 
   .project-page .hero__search .search-bar {
@@ -832,7 +833,7 @@ button {
 
     width: auto !important;
 
-    margin: 55px 0 0;
+    margin: 0;
     padding: 0;
 
     display: flex;
