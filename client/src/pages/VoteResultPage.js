@@ -146,31 +146,16 @@ const VoteResultPage = () => {
         <div className={`${styles.project_vote_form} ${styles.mount1}`}>
           <div className={styles.header_bg_zone}>
             <div className={styles.title_form}>
-              <div className={styles.title}>
-                VOTING RESULTS
-              </div>
-              <div
-                className={styles.title}
-                style={{
-                  fontSize: "12px",
-                  marginTop: "4px",
-                  color: "#ffffffad",
-                }}
-              >
-                투표결과를 확인해보세요
-              </div>
+              <h1 className={styles.result_heading}>
+                VOTING <span>RESULTS</span>
+              </h1>
+              <p className={styles.result_subtitle}>투표결과를 확인해보세요</p>
 
               {/* 드롭다운 */}
-              <div
-                className={`${styles.voteFilter} filter-container`}
-                style={{
-                  marginTop: "20px",
-                  justifyContent: "flex-end",
-                  paddingRight: "20px",
-                }}
-              >
+              <div className={`${styles.voteFilter} filter-container`}>
                 <div className="filter-dropdown">
                   <button
+                    aria-expanded={semesterFilter.open}
                     onClick={toggleYearAccordion}
                     className="dropdown-button"
                   >
