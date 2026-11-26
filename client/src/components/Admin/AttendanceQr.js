@@ -120,8 +120,15 @@ function AttendanceQrDialog({ attendanceId, onClose }) {
       }
     };
     const timer = window.setInterval(tick, 250);
+    const resume = () => {
+      if (document.visibilityState === "visible") tick();
+    };
+    document.addEventListener("visibilitychange", resume);
     tick();
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", resume);
+    };
   }, [qr, issueQr]);
 
   useEffect(() => {
@@ -160,7 +167,6 @@ function AttendanceQrDialog({ attendanceId, onClose }) {
           type="button"
           className={qrStyles.closeModal}
           onClick={onClose}
-          autoFocus
           aria-label="QR 모달 닫기"
         >
           ✕

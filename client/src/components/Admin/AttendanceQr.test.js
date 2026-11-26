@@ -250,3 +250,50 @@ test.each(["출석 변경", "출석 종료", "페이지 이탈"])(
     expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(1);
   },
 );
+
+test("서버 만료가 60초보다 빠르면 만료 시각에 갱신한다", async () => {
+  jest.useFakeTimers();
+  adminAttendanceApi.issueQr.mockResolvedValueOnce({
+    attendanceId: 4,
+    qrToken: "short-lived",
+    expiresAt: new Date(Date.now() + 10000).toISOString(),
+  });
+  render(<AttendanceQr attendanceId={4} closed={false} />);
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: "QR 생성" })),
+  );
+  expect(screen.getByRole("timer")).toHaveTextContent("10초");
+  await act(async () => jest.advanceTimersByTime(10000));
+  expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(2);
+});
+
+test("백그라운드에서 돌아오면 지연된 QR을 즉시 갱신하고 중복 요청을 막는다", async () => {
+  jest.useFakeTimers();
+  render(<AttendanceQr attendanceId={4} closed={false} />);
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: "QR 생성" })),
+  );
+  let finish;
+  adminAttendanceApi.issueQr.mockReturnValueOnce(
+    new Promise((resolve) => {
+      finish = resolve;
+    }),
+  );
+  jest.setSystemTime(Date.now() + 120000);
+  fireEvent(document, new Event("visibilitychange"));
+  expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(2);
+  expect(screen.queryByTestId("attendance-qr")).not.toBeInTheDocument();
+  await act(async () => jest.advanceTimersByTime(60000));
+  expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(2);
+  await act(async () =>
+    finish({
+      attendanceId: 4,
+      qrToken: "resumed-token",
+      expiresAt: new Date(Date.now() + 120000).toISOString(),
+    }),
+  );
+  expect(screen.getByTestId("attendance-qr")).toHaveAttribute(
+    "data-value",
+    expect.stringContaining("resumed-token"),
+  );
+});
