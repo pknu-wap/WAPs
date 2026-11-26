@@ -2,7 +2,6 @@ package wap.web2.server.auth;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
@@ -100,8 +99,8 @@ class DevLoginConcurrencyTest {
             service.release(sessions.get(0)); // A delayed old logout must not release the new occupant.
             assertTrue(tokens.validateToken(replacement.accessToken()));
 
-            jdbc.update("UPDATE dev_login_slot SET expires_at = ? WHERE slot_number = ?",
-                java.sql.Timestamp.from(Instant.now().minusSeconds(1)), replacement.accountNumber());
+            jdbc.update("UPDATE dev_login_slot SET expires_at = UTC_TIMESTAMP(6) - INTERVAL 1 SECOND WHERE slot_number = ?",
+                replacement.accountNumber());
             assertFalse(tokens.validateToken(replacement.accessToken()));
             var nextSession = UUID.randomUUID();
             // Concurrent retries for one browser all reuse the same free slot.

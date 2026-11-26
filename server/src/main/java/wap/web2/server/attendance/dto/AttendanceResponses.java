@@ -17,16 +17,17 @@ public final class AttendanceResponses {
     public record Content<T>(List<T> content) {}
 
     @Schema(name = "AttendanceSummary", requiredProperties = {
-        "attendanceId", "title", "date", "status", "totalCount", "presentCount", "absentCount"
+        "attendanceId", "title", "date", "status", "totalCount", "presentCount", "lateCount", "absentCount"
     })
     public record Summary(
         @Schema(minimum = "1", example = "1") Long attendanceId,
         @Schema(example = "시작발표") String title,
         @Schema(description = "한국 시간 기준 출석 날짜 (YYYY-MM-DD)", example = "2026-10-10") LocalDate date,
         AttendanceStatus status,
-        @Schema(description = "전체 대상자 수. presentCount + absentCount와 같습니다.", minimum = "0", example = "30") long totalCount,
+        @Schema(description = "전체 대상자 수. presentCount + lateCount + absentCount와 같습니다.", minimum = "0", example = "30") long totalCount,
         @Schema(minimum = "0", example = "20") long presentCount,
-        @Schema(minimum = "0", example = "10") long absentCount
+        @Schema(minimum = "0", example = "2") long lateCount,
+        @Schema(minimum = "0", example = "8") long absentCount
     ) {}
 
     @Schema(name = "AttendanceDetail", requiredProperties = "participants")
@@ -43,7 +44,7 @@ public final class AttendanceResponses {
     public record CheckIn(
         @Schema(minimum = "1", example = "1") Long attendanceId,
         @Schema(minimum = "1", example = "10") Long userId,
-        @Schema(implementation = String.class, allowableValues = "PRESENT", example = "PRESENT") PresenceStatus status,
+        @Schema(implementation = String.class, allowableValues = {"PRESENT", "LATE"}, example = "PRESENT") PresenceStatus status,
         @Schema(description = "최초 출석 처리 시각. 유효한 QR로 재요청하면 기존 시각을 반환합니다.", example = "2026-10-10T10:00:15Z") Instant checkedInAt
     ) {}
 

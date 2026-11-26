@@ -13,6 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import wap.web2.server.member.dto.UserRegistrationRequest;
 import wap.web2.server.member.dto.MemberSignupRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +43,15 @@ public class UserController {
     public ResponseEntity<UserResponse> findUserDetail(@CurrentUser UserPrincipal userPrincipal) {
         UserResponse response = userService.getUserDetail(userPrincipal);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/registration")
+    @Operation(summary = "기존 가입 정보 수정", description = "회원 여부·이름·학번을 수정합니다. 관리자 권한과 회원 단계는 변경하지 않습니다.")
+    public ResponseEntity<UserResponse> updateRegistration(
+        @CurrentUser UserPrincipal principal,
+        @Valid @RequestBody UserRegistrationRequest request
+    ) {
+        return ResponseEntity.ok(userService.updateRegistration(principal.getId(), request));
     }
 
     @GetMapping("/vote/{semester}")

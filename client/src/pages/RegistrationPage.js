@@ -36,10 +36,22 @@ export default function RegistrationPage() {
     userApi.getMe().then(
       (user) => {
         if (!active) return;
-        if (registrationRequired(user) === false) {
-          navigate(editing ? "/settings" : consumePendingAttendance(), { replace: true });
-        } else if (registrationRequired(user) === true) {
+        const needsSignup = registrationRequired(user);
+        if (editing && needsSignup === false) {
+          if (user.registrationEditable !== true) {
+            navigate("/settings", { replace: true });
+            return;
+          }
+          setMembership(user.wapMember === true ? "yes" : user.wapMember === false ? "no"
+            : user.studentNumber || user.studentId || user.memberType ? "yes" : "");
+          setName(user.userName ?? user.name ?? "");
+          setStudentId(normalizeStudentYear(user.studentNumber ?? user.studentId));
           setRegistrationStatus("pending");
+        } else if (needsSignup === false) {
+          navigate(consumePendingAttendance(), { replace: true });
+        } else if (needsSignup === true) {
+          if (editing) navigate("/signup", { replace: true });
+          else setRegistrationStatus("pending");
         } else {
           setRegistrationStatus("failed");
         }
@@ -64,6 +76,10 @@ export default function RegistrationPage() {
   }
 
   function closeRegistration() {
+    if (editing) {
+      navigate("/settings", { replace: true });
+      return;
+    }
     clearPendingAttendance();
     for (const key of ["authToken", "userName", "userRole", "lastPage"]) {
       authStorage.remove(key);
@@ -95,7 +111,11 @@ export default function RegistrationPage() {
     setSubmitting(true);
     try {
       let user;
-      try {
+      if (editing) {
+        user = await userApi.updateRegistration(wapMember
+          ? { member: true, name: trimmedName, studentNumber: studentId }
+          : { member: false });
+      } else try {
         user = await userApi.signup(wapMember
           ? { member: true, name: trimmedName, studentNumber: studentId, memberType }
           : { member: false });
@@ -109,6 +129,10 @@ export default function RegistrationPage() {
       }
       if (user.userName) {
         authStorage.set("userName", user.userName, { expires: 7 });
+      }
+      if (editing) {
+        navigate("/settings", { replace: true });
+        return;
       }
       const role = await userApi.getRole().catch(() => null);
       if (role?.role) authStorage.set("userRole", role.role, { expires: 7 });
@@ -144,7 +168,7 @@ export default function RegistrationPage() {
       )}
       <div className={`${styles.content} ${styles.registrationContent}`}>
         <header className={styles.header}>
-          <h1 className={styles.eyebrow}>CREATE AN ACCOUNT</h1>
+          <h1 className={styles.eyebrow}>{editing ? "회원가입 정보 수정" : "CREATE AN ACCOUNT"}</h1>
           <img className={styles.logo} src={wapsLogo} alt="WAPs" />
         </header>
         {registrationStatus === "loading" && (
@@ -242,14 +266,14 @@ export default function RegistrationPage() {
                 <p id="student-id-help" className={styles.fieldHint}>
                   입학 연도 뒤 두 자리를 입력해주세요. 예: 2026 → 26
                 </p>
-                <label className={styles.fieldLabel}>
+                {!editing && <label className={styles.fieldLabel}>
                   회원 구분
                   <select value={memberType} disabled={submitting} onChange={(event) => setMemberType(event.target.value)}>
                     <option value="NEW">신입회원</option>
                     <option value="ASSOCIATE">준회원</option>
                     <option value="REGULAR">정회원</option>
                   </select>
-                </label>
+                </label>}
               </div>
             )}
             {errorMessage && (
@@ -262,7 +286,7 @@ export default function RegistrationPage() {
               type="submit"
               disabled={submitting}
             >
-              {submitting ? "저장 중…" : "회원가입하기"}
+              {submitting ? "저장 중…" : editing ? "가입 정보 저장" : "회원가입하기"}
             </button>
           </form>
         )}

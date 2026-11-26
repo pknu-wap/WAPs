@@ -23,48 +23,12 @@
   font-family: "Pretendard-Regular";
 }
 
-#qr-reader {
+.qr-scan-video {
   position: absolute;
-
-  top: 0;
-  left: 0;
-
-  width: 100% !important;
-  height: 100% !important;
-
-  border: none !important;
-  background: #000 !important;
-
-  overflow: hidden;
-}
-
-#qr-reader video {
-  position: absolute;
-
-  top: 0;
-  left: 0;
-
-  width: 100% !important;
-  height: 100% !important;
-
-  object-fit: cover !important;
-}
-
-#qr-reader__dashboard {
-  display: none !important;
-}
-
-#qr-reader__scan_region {
-  width: 100% !important;
-  height: 100% !important;
-
-  min-height: 100% !important;
-
-  background: transparent !important;
-}
-
-#qr-reader__scan_region img {
-  display: none !important;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .qr-scan-close {
@@ -191,23 +155,6 @@
     margin: 0;
 
     z-index: 1000;
-  }
-
-  #qr-reader {
-    width: 100vw !important;
-    height: 100vh !important;
-  }
-
-  #qr-reader video {
-    width: 100vw !important;
-    height: 100vh !important;
-
-    object-fit: cover !important;
-  }
-
-  #qr-reader__scan_region {
-    width: 100vw !important;
-    height: 100vh !important;
   }
 
   .qr-scan-close {

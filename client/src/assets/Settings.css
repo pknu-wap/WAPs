@@ -874,3 +874,31 @@
     margin-bottom: 28px;
   }
 }
+.settings-actions {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-family: "Pretendard-Regular";
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.settings-action--primary { background: #abd4fd; color: #101820; }
+.settings-action--primary:hover { background: #c1e2fc; }
+.settings-actions .back-menu-button {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.85);
+}

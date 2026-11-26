@@ -1,0 +1,53 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+}
+
+.dialog {
+  width: 100%;
+  max-width: 340px;
+  padding: 32px 24px 24px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  background: #27292d;
+  color: #fff;
+  text-align: center;
+  font-family: "Pretendard-Regular", sans-serif;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.4);
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: #abd4fd;
+  color: #172b3b;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.dialog h2 { margin: 0 0 14px; font-size: 25px; }
+.dialog p { margin: 0 0 28px; font-size: 15px; line-height: 1.6; }
+.dialog button {
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: #abd4fd;
+  color: #101820;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.dialog button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }

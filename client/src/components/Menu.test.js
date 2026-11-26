@@ -47,3 +47,22 @@ test("메뉴가 열린 동안 로그인 만료 시 설정 대신 로그인으로
   fireEvent.click(screen.getByRole("button", { name: "설정 Settings" }));
   expect(screen.getByTestId("location")).toHaveTextContent("/login");
 });
+
+test("로그인한 사용자의 이름을 조회하는 중에는 로그인 안내를 표시하지 않는다", () => {
+  const view = (name) => <MemoryRouter><Menu menuOpen toggleMenu={jest.fn()} userName={name} /></MemoryRouter>;
+  const { rerender } = render(view(""));
+  expect(screen.getByText("환영합니다.")).toBeInTheDocument();
+  expect(screen.queryByText("로그인을 해주십시오.")).toBeNull();
+  rerender(view("김하늘"));
+  expect(screen.getByText("김하늘님 환영합니다.")).toBeInTheDocument();
+});
+
+test("팀빌딩 결과 화면에서 같은 메뉴를 선택해도 메뉴를 닫는다", () => {
+  const close = jest.fn();
+  render(<MemoryRouter initialEntries={["/team-build/result"]}>
+    <Menu menuOpen toggleMenu={close} /><Location />
+  </MemoryRouter>);
+  fireEvent.click(screen.getByRole("button", { name: /팀빌딩 결과/ }));
+  expect(screen.getByTestId("location")).toHaveTextContent("/team-build/result");
+  expect(close).toHaveBeenCalledTimes(1);
+});

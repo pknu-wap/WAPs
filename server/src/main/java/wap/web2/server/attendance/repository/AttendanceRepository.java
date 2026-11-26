@@ -19,7 +19,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     @Query("""
         select a.id as attendanceId, a.title as title, a.date as date, a.status as status,
             count(p.id) as totalCount,
-            sum(case when p.status = wap.web2.server.attendance.entity.PresenceStatus.PRESENT then 1 else 0 end) as presentCount
+            sum(case when p.status = wap.web2.server.attendance.entity.PresenceStatus.PRESENT then 1 else 0 end) as presentCount,
+            sum(case when p.status = wap.web2.server.attendance.entity.PresenceStatus.LATE then 1 else 0 end) as lateCount
         from Attendance a left join AttendanceParticipant p on p.attendance = a
         where :status is null or a.status = :status
         group by a.id, a.title, a.date, a.status
@@ -34,5 +35,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         AttendanceStatus getStatus();
         long getTotalCount();
         long getPresentCount();
+        long getLateCount();
     }
 }

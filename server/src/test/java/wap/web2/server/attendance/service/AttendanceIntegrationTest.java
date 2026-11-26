@@ -70,7 +70,8 @@ class AttendanceIntegrationTest {
         new ResourceDatabasePopulator(new ClassPathResource("db/migration/V13__create_attendances.sql"),
             new ClassPathResource("db/migration/V14__persist_attendance_status.sql"),
             new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"),
-            new ClassPathResource("db/migration/V17__snapshot_attendance_membership_level.sql"))
+            new ClassPathResource("db/migration/V17__snapshot_attendance_membership_level.sql"),
+            new ClassPathResource("db/migration/V24__add_late_attendance_status.sql"))
             .execute(dataSource);
         var entityManager = SharedEntityManagerCreator.createSharedEntityManager(factory.getObject());
         var repositories = new JpaRepositoryFactory(entityManager);
@@ -107,6 +108,36 @@ class AttendanceIntegrationTest {
     }
 
     @Test
+    void lateMigrationPreservesExistingRecordsAndPersistsEndedCorrections() {
+        long first = user("출석", Role.ROLE_MEMBER);
+        long second = user("지각", Role.ROLE_MEMBER);
+        long third = user("미출석", Role.ROLE_MEMBER);
+        long event = create(today);
+        service.update(event, first, new AttendanceRequests.Update(PresenceStatus.PRESENT, "기존 비고"));
+        jdbc.execute("ALTER TABLE attendance_participant MODIFY COLUMN status ENUM('PRESENT', 'ABSENT') NOT NULL DEFAULT 'ABSENT'");
+        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V24__add_late_attendance_status.sql"))
+            .execute(jdbc.getDataSource());
+        assertThat(jdbc.queryForObject("SELECT status FROM attendance_participant WHERE attendance_id = ? AND user_id = ?",
+            String.class, event, first)).isEqualTo("PRESENT");
+        assertThat(jdbc.queryForObject("SELECT note FROM attendance_participant WHERE attendance_id = ? AND user_id = ?",
+            String.class, event, first)).isEqualTo("기존 비고");
+        service.changeStatus(event, new AttendanceRequests.ChangeStatus(AttendanceStatus.ENDED));
+        service.update(event, second, new AttendanceRequests.Update(PresenceStatus.LATE, "종료 후 확인"));
+        assertThat(jdbc.queryForObject("SELECT status FROM attendance_participant WHERE attendance_id = ? AND user_id = ?",
+            String.class, event, second)).isEqualTo("LATE");
+        var detail = service.detail(event, PresenceStatus.LATE, "status,asc");
+        assertThat(detail.participants().content()).extracting(p -> p.userId()).containsExactly(second);
+        assertThat(detail.summary().presentCount()).isEqualTo(1);
+        assertThat(detail.summary().lateCount()).isEqualTo(1);
+        assertThat(detail.summary().absentCount()).isEqualTo(1);
+        var listed = service.listAdmin(AttendanceStatus.ENDED).content().get(0);
+        assertThat(listed.lateCount()).isEqualTo(1);
+        assertThat(listed.absentCount()).isEqualTo(1);
+        assertThat(service.listMine(second, AttendanceStatus.ENDED).get(0).myStatus()).isEqualTo(PresenceStatus.LATE);
+        assertThat(service.listMine(third, AttendanceStatus.ENDED).get(0).myStatus()).isEqualTo(PresenceStatus.ABSENT);
+    }
+
+    @Test
     void migrationPreservesExistingStatusesAndDefaultsNewRowsToScheduled() {
         jdbc.execute("ALTER TABLE attendance DROP COLUMN status");
         jdbc.update("""
@@ -134,21 +165,22 @@ class AttendanceIntegrationTest {
     void previousQrMigrationPreservesAnExistingTokensExpiry() {
         long userId = user("가", Role.ROLE_MEMBER);
         long event = create(today);
-        String token = service.issueQr(event).qrToken();
+        var originalQr = service.issueQr(event);
+        String token = originalQr.qrToken();
+        Instant retainedExpiry = originalQr.expiresAt().minusSeconds(30);
         jdbc.execute("ALTER TABLE attendance DROP COLUMN previous_qr_token, DROP COLUMN previous_qr_expires_at");
         jdbc.update("UPDATE attendance SET qr_expires_at = DATE_SUB(qr_expires_at, INTERVAL 30 SECOND) WHERE id = ?", event);
-        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"),
-            new ClassPathResource("db/migration/V17__snapshot_attendance_membership_level.sql"))
+        new ResourceDatabasePopulator(new ClassPathResource("db/migration/V15__retain_previous_attendance_qr.sql"))
             .execute(jdbc.getDataSource());
         var migrated = attendances.findById(event).orElseThrow();
         assertThat(migrated.getQrToken()).isEqualTo(token);
-        assertThat(migrated.getQrExpiresAt()).isEqualTo(now.plusSeconds(30));
+        assertThat(migrated.getQrExpiresAt()).isEqualTo(retainedExpiry);
         assertThat(migrated.getPreviousQrToken()).isNull();
         assertThat(migrated.getPreviousQrExpiresAt()).isNull();
         when(clock.instant()).thenReturn(now.plusSeconds(10));
         String current = service.issueQr(event).qrToken();
         assertThat(service.checkIn(event, userId, token).status()).isEqualTo(PresenceStatus.PRESENT);
-        when(clock.instant()).thenReturn(now.plusSeconds(30));
+        when(clock.instant()).thenReturn(retainedExpiry);
         assertThatThrownBy(() -> service.checkIn(event, userId, token)).isInstanceOf(BadRequestException.class);
         assertThat(service.checkIn(event, userId, current).status()).isEqualTo(PresenceStatus.PRESENT);
     }

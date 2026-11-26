@@ -7,7 +7,7 @@ import { userApi } from "../../api/user";
 import authStorage from "../../utils/authStorage";
 
 jest.mock("../../api/user", () => ({
-  userApi: { getMe: jest.fn(), signup: jest.fn(), getRole: jest.fn() },
+  userApi: { getMe: jest.fn(), signup: jest.fn(), getRole: jest.fn(), updateRegistration: jest.fn() },
 }));
 jest.mock("../../utils/authStorage", () => ({
   __esModule: true,
@@ -175,10 +175,60 @@ test("expired signup session returns to login", async () => {
   expect(authStorage.remove).toHaveBeenCalledWith("authToken");
 });
 
-test("completed account edit link returns to supported settings without changing membership", async () => {
-  userApi.getMe.mockResolvedValue(completed);
+
+test.each([false, undefined])("수정 가능 여부가 %s이면 수정 링크에서 설정으로 돌아간다", async (registrationEditable) => {
+  userApi.getMe.mockResolvedValue({ ...completed, registrationEditable });
   open("/signup?edit=true");
   await screen.findByRole("heading", { name: "설정" });
+  expect(userApi.updateRegistration).not.toHaveBeenCalled();
+});
+
+const editProfile = { ...completed, registrationEditable: true, wapMember: true, studentNumber: "21", membershipLevel: "REGULAR" };
+
+test("existing users load, edit and save their profile without submitting signup or assigning a role", async () => {
+  userApi.getMe.mockResolvedValue(editProfile);
+  userApi.updateRegistration.mockResolvedValue({ ...editProfile, userName: "수정이름", studentNumber: "26" });
+  open("/signup?edit=true");
+  expect(await screen.findByLabelText(/학번/)).toHaveValue("21");
+  expect(screen.getByLabelText(/이름/)).toHaveValue("남궁민수");
+  expect(screen.queryByLabelText("회원 구분")).not.toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText(/이름/), { target: { value: "수정이름" } });
+  fireEvent.change(screen.getByLabelText(/학번/), { target: { value: "26" } });
+  fireEvent.click(screen.getByRole("button", { name: "가입 정보 저장" }));
+  await screen.findByRole("heading", { name: "설정" });
+  expect(userApi.updateRegistration).toHaveBeenCalledWith({ member: true, name: "수정이름", studentNumber: "26" });
   expect(userApi.signup).not.toHaveBeenCalled();
+  expect(userApi.getRole).not.toHaveBeenCalled();
+});
+
+test("closing profile edits preserves the login", async () => {
+  userApi.getMe.mockResolvedValue(editProfile);
+  open("/signup?edit=true");
+  await screen.findByLabelText(/학번/);
+  fireEvent.click(screen.getByRole("button", { name: "가입 화면 닫기" }));
+  await screen.findByRole("heading", { name: "설정" });
   expect(authStorage.remove).not.toHaveBeenCalled();
+});
+
+test("failed edits preserve input and can be retried", async () => {
+  userApi.getMe.mockResolvedValue(editProfile);
+  userApi.updateRegistration.mockRejectedValueOnce(new Error("failed")).mockResolvedValue(editProfile);
+  open("/signup?edit=true");
+  await screen.findByLabelText(/학번/);
+  fireEvent.click(screen.getByRole("button", { name: "가입 정보 저장" }));
+  await screen.findByRole("alert");
+  expect(screen.getByLabelText(/학번/)).toHaveValue("21");
+  fireEvent.click(screen.getByRole("button", { name: "가입 정보 저장" }));
+  await screen.findByRole("heading", { name: "설정" });
+});
+
+test("nonmember edit only sends the membership answer", async () => {
+  userApi.getMe.mockResolvedValue(editProfile);
+  userApi.updateRegistration.mockResolvedValue({ ...completed, wapMember: false });
+  open("/signup?edit=true");
+  await screen.findByLabelText(/학번/);
+  fireEvent.click(screen.getByRole("radio", { name: "아니요" }));
+  fireEvent.click(screen.getByRole("button", { name: "가입 정보 저장" }));
+  await screen.findByRole("heading", { name: "설정" });
+  expect(userApi.updateRegistration).toHaveBeenCalledWith({ member: false });
 });

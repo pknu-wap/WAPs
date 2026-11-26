@@ -16,7 +16,8 @@ public interface AttendanceParticipantRepository extends JpaRepository<Attendanc
 
     @Query("""
         select count(p.id) as totalCount,
-            coalesce(sum(case when p.status = wap.web2.server.attendance.entity.PresenceStatus.PRESENT then 1 else 0 end), 0) as presentCount
+            coalesce(sum(case when p.status = wap.web2.server.attendance.entity.PresenceStatus.PRESENT then 1 else 0 end), 0) as presentCount,
+            coalesce(sum(case when p.status = wap.web2.server.attendance.entity.PresenceStatus.LATE then 1 else 0 end), 0) as lateCount
         from AttendanceParticipant p where p.attendance.id = :attendanceId
         """)
     Counts countForAttendance(@Param("attendanceId") long attendanceId);
@@ -35,5 +36,6 @@ public interface AttendanceParticipantRepository extends JpaRepository<Attendanc
     interface Counts {
         long getTotalCount();
         long getPresentCount();
+        long getLateCount();
     }
 }

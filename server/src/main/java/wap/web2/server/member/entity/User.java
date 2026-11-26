@@ -68,6 +68,9 @@ public class User {
     @Column(length = 20)
     private String studentNumber;
 
+    @Column(name = "wap_member")
+    private Boolean wapMember;
+
     // Existing and non-OAuth accounts do not need the Kakao signup flow.
     @Column(nullable = false)
     private boolean signupCompleted = true;
@@ -77,6 +80,10 @@ public class User {
 
     @Column(nullable = false)
     private long tokenVersion = 0;
+
+    public boolean canEditRegistration() {
+        return signupCompleted && !deleted && provider == AuthProvider.kakao;
+    }
 
     public void deactivate() {
         deleted = true;
