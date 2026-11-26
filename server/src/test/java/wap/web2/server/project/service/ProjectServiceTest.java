@@ -272,6 +272,8 @@ class ProjectServiceTest {
             .isInstanceOf(ForbiddenException.class);
         assertThatThrownBy(() -> projectService.update(10L, baseRequestBuilder().build(), principal))
             .isInstanceOf(ForbiddenException.class);
+        assertThatThrownBy(() -> projectService.update(10L, baseRequestBuilder().password("wrong").build(), principal))
+            .isInstanceOf(ForbiddenException.class);
         when(projectRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(project));
         assertThatThrownBy(() -> projectService.delete(10L, principal))
             .isInstanceOf(ForbiddenException.class);
@@ -291,14 +293,22 @@ class ProjectServiceTest {
             .isInstanceOf(ForbiddenException.class);
     }
 
-    @Test
-    void 관리자도_수정할_때_게시물_비밀번호_검증을_거친다() {
-        UserPrincipal principal = mock(UserPrincipal.class);
+    @ParameterizedTest
+    @CsvSource({ "1, ROLE_GUEST", "2, ROLE_ADMIN" })
+    void 수정_권한이_있어도_프로젝트_인증번호가_필요하다(Long id, Role role) {
+        User user = new User();
+        user.setId(id);
+        user.setRole(role);
+        Project project = project(owner());
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        when(projectRepository.findById(10L)).thenReturn(Optional.of(project));
+        UserPrincipal principal = principal(id);
         ProjectRequest request = baseRequestBuilder().password("wrong").build();
 
         assertThatThrownBy(() -> projectService.update(10L, request, principal))
             .isInstanceOf(ProjectPasswordInvalidException.class);
-        verifyNoInteractions(projectRepository, objectStorageService);
+        assertThat(project.getTitle()).isEqualTo("old title");
+        verifyNoInteractions(objectStorageService);
     }
 
     @Test

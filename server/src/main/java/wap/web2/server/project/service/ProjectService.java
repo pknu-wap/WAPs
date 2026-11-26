@@ -174,15 +174,15 @@ public class ProjectService {
     @Transactional
     public String update(Long projectId, ProjectRequest request, UserPrincipal userPrincipal)
         throws IOException {
-        if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
-            throw new ProjectPasswordInvalidException();
-        }
-
         User user = findUser(userPrincipal.getId());
         Project project = findProject(projectId);
 
         if (!canEdit(project, user)) {
             throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
+        }
+
+        if (request.getPassword() == null || !request.getPassword().equals(projectPassword)) {
+            throw new ProjectPasswordInvalidException();
         }
 
         RecruitmentPositionDto.toEntities(request.getRecruitmentPositions());
