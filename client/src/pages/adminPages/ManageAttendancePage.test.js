@@ -503,3 +503,155 @@ beforeAll(() => {
     this.removeAttribute("open");
   };
 });
+
+const renderLiveAttendance = async () => {
+  jest.useFakeTimers();
+  summary.status = "ONGOING";
+  let view;
+  await act(async () => {
+    view = render(<ManageAttendancePage />);
+  });
+  expect(screen.getByText("회원")).toBeInTheDocument();
+  return view;
+};
+
+afterEach(() => jest.useRealTimers());
+
+test("자동 조회로 출석 상태와 집계를 갱신하면서 QR과 비고 초안을 유지한다", async () => {
+  await renderLiveAttendance();
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: "QR 생성" })),
+  );
+  const qr = screen.getByTestId("attendance-qr");
+  fireEvent.change(screen.getByLabelText("회원 비고"), {
+    target: { value: "작성 중" },
+  });
+  participants = participants.map((member) => ({
+    ...member,
+    status: "PRESENT",
+  }));
+  await act(async () => jest.advanceTimersByTime(3000));
+  expect(screen.getByRole("button", { name: "출석", exact: true })).toHaveClass(
+    "presentActive",
+  );
+  expect(screen.getByRole("button", { name: /정기 모임/ })).toHaveTextContent(
+    "출석 : 1명",
+  );
+  expect(screen.getByLabelText("회원 비고")).toHaveValue("작성 중");
+  expect(screen.getByTestId("attendance-qr")).toBe(qr);
+  expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(1);
+});
+
+test("느린 자동 조회는 중복하지 않고 종료 상태 수신 후 갱신을 멈춘다", async () => {
+  await renderLiveAttendance();
+  let finish;
+  adminAttendanceApi.getDetail.mockReturnValueOnce(
+    new Promise((resolve) => {
+      finish = resolve;
+    }),
+  );
+  await act(async () => jest.advanceTimersByTime(12000));
+  expect(adminAttendanceApi.getDetail).toHaveBeenCalledTimes(2);
+  await act(async () =>
+    finish({
+      ...summary,
+      status: "ENDED",
+      participants: { content: participants },
+    }),
+  );
+  expect(screen.getByRole("button", { name: "수정" })).toBeInTheDocument();
+  await act(async () => jest.advanceTimersByTime(12000));
+  expect(adminAttendanceApi.getDetail).toHaveBeenCalledTimes(2);
+});
+
+test("자동 조회 실패 후 기존 명단을 유지하고 다음 조회에서 회복한다", async () => {
+  await renderLiveAttendance();
+  adminAttendanceApi.getDetail.mockRejectedValueOnce(new Error("offline"));
+  await act(async () => jest.advanceTimersByTime(3000));
+  expect(screen.getByText("회원")).toBeInTheDocument();
+  expect(screen.getByRole("status")).toHaveTextContent("자동 갱신에 실패");
+  await act(async () => jest.advanceTimersByTime(3000));
+  expect(screen.queryByText(/자동 갱신에 실패/)).not.toBeInTheDocument();
+});
+
+test("자동 조회의 이전 응답이 관리자 수정 결과를 덮어쓰지 않는다", async () => {
+  await renderLiveAttendance();
+  const stale = { ...summary, participants: { content: participants } };
+  let finish;
+  adminAttendanceApi.getDetail.mockReturnValueOnce(
+    new Promise((resolve) => {
+      finish = resolve;
+    }),
+  );
+  await act(async () => jest.advanceTimersByTime(3000));
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: "출석", exact: true })),
+  );
+  await act(async () => finish(stale));
+  expect(screen.getByRole("button", { name: "출석", exact: true })).toHaveClass(
+    "presentActive",
+  );
+});
+
+test("숨긴 탭은 조회를 멈추고 복귀 시 즉시 조회하며 페이지 이탈 시 정리한다", async () => {
+  const { unmount } = await renderLiveAttendance();
+  const hidden = jest.spyOn(document, "hidden", "get").mockReturnValue(true);
+  await act(async () => jest.advanceTimersByTime(6000));
+  expect(adminAttendanceApi.getDetail).toHaveBeenCalledTimes(1);
+  hidden.mockReturnValue(false);
+  await act(async () => fireEvent(document, new Event("visibilitychange")));
+  expect(adminAttendanceApi.getDetail).toHaveBeenCalledTimes(2);
+  unmount();
+  await act(async () => {
+    jest.advanceTimersByTime(6000);
+    fireEvent(document, new Event("visibilitychange"));
+  });
+  expect(adminAttendanceApi.getDetail).toHaveBeenCalledTimes(2);
+});
+
+test.each(["SCHEDULED", "ENDED"])(
+  "%s 출석은 주기적으로 조회하지 않는다",
+  async (status) => {
+    jest.useFakeTimers();
+    summary.status = status;
+    await act(async () => render(<ManageAttendancePage />));
+    await act(async () => jest.advanceTimersByTime(6000));
+    expect(adminAttendanceApi.getDetail).toHaveBeenCalledTimes(1);
+  },
+);
+
+test("출석을 바꾼 뒤 도착한 이전 자동 조회 응답은 무시한다", async () => {
+  const other = { ...summary, attendanceId: 5, title: "다른 모임" };
+  adminAttendanceApi.getList.mockImplementation(async () => ({
+    content: [summary, other],
+  }));
+  adminAttendanceApi.getDetail.mockImplementation(async (id) => ({
+    ...(id === 5 ? other : summary),
+    participants: { content: participants },
+  }));
+  await renderLiveAttendance();
+  let finish;
+  adminAttendanceApi.getDetail.mockReturnValueOnce(
+    new Promise((resolve) => {
+      finish = resolve;
+    }),
+  );
+  await act(async () => jest.advanceTimersByTime(3000));
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: /다른 모임/ })),
+  );
+  await act(async () =>
+    finish({
+      ...summary,
+      participants: { content: [{ ...participants[0], status: "PRESENT" }] },
+    }),
+  );
+  expect(
+    screen.getByRole("heading", { name: "다른 모임" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "출석", exact: true }),
+  ).not.toHaveClass("presentActive");
+  await act(async () => jest.advanceTimersByTime(6000));
+  expect(adminAttendanceApi.getDetail).toHaveBeenCalledTimes(3);
+});
