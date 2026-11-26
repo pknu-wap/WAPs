@@ -4,37 +4,25 @@ import Cookies from "../utils/authStorage";
 import { FaChevronRight } from "react-icons/fa";
 import "../assets/Menu.css";
 
-const Menu = ({ menuOpen, toggleMenu, userName }) => {
+const Menu = ({ menuOpen, toggleMenu, userName, menuRef }) => {
   const navigate = useNavigate();
 
   const [canNavigate, setCanNavigate] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!Cookies.get("authToken"));
-  const [userRole, setUserRole] = useState(Cookies.get("userRole") || null);
+  const isLoggedIn = Boolean(Cookies.get("authToken"));
+  const userRole = isLoggedIn ? Cookies.get("userRole") : null;
 
-  useEffect(() => {
-    const token = Cookies.get("authToken");
-    setIsLoggedIn(!!token);
-    setUserRole(token ? Cookies.get("userRole") : null);
-    if (!menuOpen) return;
-
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
-    };
-  }, [menuOpen]);
+  const navigateAndClose = (path) => {
+    navigate(path);
+    toggleMenu();
+  };
 
   const handleNavigationWithAuth = (path) => {
     const token = Cookies.get("authToken");
     if (!token) {
       alert("해당 페이지는 로그인을 해야 접속 가능합니다.");
-      navigate("/login");
+      navigateAndClose("/login");
     } else {
-      navigate(path);
-      toggleMenu();
+      navigateAndClose(path);
     }
   };
 
@@ -44,13 +32,12 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
 
     if (!token) {
       alert("해당 페이지는 로그인을 해야 접속 가능합니다.");
-      navigate("/login");
+      navigateAndClose("/login");
     } else if (role !== "ROLE_ADMIN") {
       alert("관리자 권한이 없습니다.");
     } else {
       Cookies.set("previousPage", window.location.pathname, { expires: 1 });
-      navigate("/admin/vote");
-      toggleMenu();
+      navigateAndClose("/admin/vote");
     }
   };
 
@@ -75,11 +62,8 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     Cookies.remove("authToken");
     Cookies.remove("userName");
     Cookies.remove("userRole");
-    setIsLoggedIn(false);
-    setUserRole(null);
     alert("로그아웃 되었습니다.");
-    toggleMenu();
-    navigate("/");
+    navigateAndClose("/");
   };
 
   const handleCheckInNavigate = () => handleNavigationWithAuth("/CheckIn");
@@ -87,12 +71,16 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   return (
     <div className="menuContainer">
       {menuOpen && (
-        <nav className="menu">
+        <nav className="menu" aria-label="주 메뉴" id="site-menu" ref={menuRef}>
           <div className="menu-content">
-            {isLoggedIn && userName ? (
-              <p className="welcome-message">{userName}님 환영합니다.</p>
+            {isLoggedIn ? (
+              <p className="welcome-message">
+                {userName ? `${userName}님 환영합니다.` : "환영합니다."}
+              </p>
             ) : (
-              <p className="welcome-message">로그인을 해주십시오.</p>
+              <p className="welcome-message welcome-message--signed-out">
+                로그인을 해주십시오.
+              </p>
             )}
 
             <h2 className="menu-title">MENU PAGE</h2>
@@ -102,10 +90,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
               <div className="menu-items">
                 <button
                   className="menu-item"
-                  onClick={() => {
-                    navigate("/ProjectPage");
-                    toggleMenu();
-                  }}
+                  onClick={() => navigateAndClose("/ProjectPage")}
                 >
                   <span>프로젝트 Projects</span>
                   <span className="arrow">
@@ -130,10 +115,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
               <div className="menu-items">
                 <button
                   className="menu-item"
-                  onClick={() => {
-                    navigate("/calendar");
-                    toggleMenu();
-                  }}
+                  onClick={() => navigateAndClose("/calendar")}
                 >
                   <span>캘린더 Calendar</span>
                   <span className="arrow">
@@ -158,7 +140,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
 
                 <button
                   className="menu-item"
-                  onClick={() => navigate("/team-build/result")}
+                  onClick={() => navigateAndClose("/team-build/result")}
                 >
                   <span>팀빌딩 결과 Team Building Result</span>
                   <span className="arrow">
@@ -194,10 +176,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
 
                 <button
                   className="menu-item"
-                  onClick={() => {
-                    navigate("/vote/result");
-                    toggleMenu();
-                  }}
+                  onClick={() => navigateAndClose("/vote/result")}
                 >
                   <span>투표 결과 Vote Result</span>
                   <span className="arrow">
@@ -236,10 +215,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
               className="logout-button"
               onClick={() => {
                 if (isLoggedIn) handleLogout();
-                else {
-                  toggleMenu();
-                  navigate("/login");
-                }
+                else navigateAndClose("/login");
               }}
             >
               {isLoggedIn ? "로그아웃 Logout" : "로그인 Login"}

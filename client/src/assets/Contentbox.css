@@ -147,10 +147,11 @@
 
 /* 프로젝트 박스 디자인 */
 .content-box {
+  --project-row-gap: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 12px;
   font-family: "Pretendard-Regular";
   padding: 0 20px;
 }
@@ -187,16 +188,22 @@
   width: 100%;
   max-width: 700px;
   height: auto;
-  margin: 10px 0;
+  margin: calc(var(--project-row-gap) / 2) 0;
   background-color: transparent;
   border-radius: 12px;
   padding: 0;
-  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  gap: 20px;
+  gap: var(--project-row-gap);
   position: relative;
+}
+
+.content-box .box:focus-visible {
+  outline: 2px solid #abd4fd;
+  outline-offset: 3px;
 }
 
 .content-box .box .image {
@@ -209,6 +216,10 @@
   position: relative;
   margin-top: 0;
   align-self: flex-start;
+}
+
+.content-box .box:first-child {
+  margin-top: 0;
 }
 
 .content-box .box .project-image {
@@ -227,8 +238,9 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 10px;
-  padding: 1px;
+  gap: var(--project-row-gap);
+  box-sizing: border-box;
+  padding: 0 0 0 6px;
   background: transparent;
   color: #ffffff;
   position: relative;
@@ -241,7 +253,7 @@
   gap: 6px;
   margin: 0;
   padding: 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   width: 100%;
   justify-content: flex-start;
   text-align: left;
@@ -250,13 +262,13 @@
 /* 제목 */
 .content-box .box .titlebox h2 {
   margin: 0;
-  margin-top: 5px;
   padding: 0;
+  font-family: "Pretendard Bold", "Pretendard-Regular", sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: #ffffff;
   line-height: 1.1;
-  flex-basis: 100%;
+  min-width: 0;
   text-align: left !important;
   max-width: 100%;
   white-space: nowrap;
@@ -266,8 +278,8 @@
 
 /* 본문: 제목/태그 아래 줄 */
 .content-box .box .titlebox p {
-  margin: 2px 0 0 0;
-  font-size: 10px;
+  margin: 0;
+  font-size: 11px;
   color: #b0b0b0;
   line-height: 1.5;
   display: -webkit-box;
@@ -282,9 +294,11 @@
 .content-box .box .project-type-tag {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
   padding: 3px 5px;
   border-radius: 20px;
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 600;
   color: #ffffff;
   line-height: 1;
@@ -298,10 +312,10 @@
   display: flex;
   align-items: flex-end;
   /* The absolute mobile header occupies the first 60px. Keep wrapped titles below it. */
-  padding: 80px 20px 28px;
+  padding: 80px var(--project-content-gutter) 8px;
   box-sizing: border-box;
   isolation: isolate;
-  background: linear-gradient(90deg, #a0aeffe8 0%, #b4edfed2 100%);
+  background: var(--project-header-colors);
   overflow: visible;
   z-index: 1;
 }
@@ -311,22 +325,20 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(30, 30, 30, 0.6) 40%,
-      rgba(102, 102, 102, 0) 100%);
+  background: var(--project-header-shade);
   z-index: -1;
 }
 
 .hero__inner {
   width: 100%;
-  max-width: 1040px;
+  max-width: var(--project-content-max);
   margin-left: 3px;
   margin: 0 auto;
   color: #fff;
 }
 
 .hero__badge {
+  display: none;
   font-weight: 800;
   letter-spacing: 0.5px;
   opacity: 0.95;
@@ -337,9 +349,10 @@
 .hero__title {
   margin: 0;
   margin-left: 5px;
+  font-family: "Pretendard Bold", "Pretendard-Regular", sans-serif;
   font-size: 19px;
   line-height: 1.2;
-  font-weight: 600;
+  font-weight: 700;
   text-align: left;
 }
 
@@ -348,7 +361,7 @@
   margin-left: 5px;
   font-size: 20px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.632);
+  color: rgba(255, 255, 255, 0.453);
 }
 
 /* Hero 내부 필터바 — 배경/그림자 제거(검은 박스 제거) */
@@ -368,6 +381,7 @@
 
 /* 필터 바가 가로폭을 꽉 쓰게 */
 .hero .filter-container {
+  flex-wrap: wrap;
   width: 100% !important;
   justify-content: flex-start !important;
   padding-right: 0 !important;
@@ -388,12 +402,17 @@
   flex: 0 0 auto;
 }
 
+.hero .filter-container .dropdown-button {
+  padding-inline-end: 6px;
+}
+
 /* Hero 내부 드롭다운 메뉴 */
 .hero .filter-container>.filter-dropdown .dropdown-content {
   position: absolute;
-  top: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
+  top: 100%;
+  right: 0;
+  left: auto;
+  transform: none;
   z-index: 1000;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
@@ -469,8 +488,8 @@
 }
 
 .hero__search .search-icon-img {
-  width: 100%;
-  height: 100%;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
   object-fit: contain;
   opacity: 0.8;
   filter: grayscale(20%);
@@ -553,15 +572,13 @@ button {
   .project-page .hero {
     width: 100%;
     min-height: auto;
-    padding: 145px 28px 48px;
+    padding: 145px var(--project-content-gutter) 10px;
     box-sizing: border-box;
     align-items: stretch;
-    overflow: hidden;
   }
 
   .project-page .hero__inner {
     width: 100%;
-    max-width: 850px;
     margin: 0 auto;
     box-sizing: border-box;
   }
@@ -651,18 +668,19 @@ button {
   }
 
   .project-page .content-box {
+    --project-row-gap: 36px;
     width: calc(100% - 56px);
     max-width: 850px;
 
-    margin: 35px auto 0;
+    margin: 14px auto 0;
     padding: 0 0 80px;
 
     display: grid;
 
     grid-template-columns: repeat(2, minmax(0, 1fr));
 
-    column-gap: 22px;
-    row-gap: 50px;
+    column-gap: 18px;
+    row-gap: var(--project-row-gap);
 
     box-sizing: border-box;
   }
@@ -676,8 +694,6 @@ button {
 
     display: flex;
     flex-direction: column;
-
-    gap: 12px;
   }
 
   .project-page .content-box .box .image {
@@ -694,8 +710,6 @@ button {
 
     width: 100%;
     height: auto;
-
-    padding: 0;
   }
 }
 
@@ -706,28 +720,24 @@ button {
 
   .project-page .hero {
     width: 100%;
-    min-height: 440px;
+    min-height: auto;
 
-    padding: 0 40px;
+    padding: 0 var(--project-content-gutter) 10px;
 
     box-sizing: border-box;
 
     align-items: stretch;
-
-    overflow: hidden;
   }
 
   .project-page .hero__inner {
     width: 100%;
-    max-width: 1200px;
-    min-height: 440px;
 
     margin: 0 auto;
 
     display: grid;
 
-    grid-template-columns: 110px minmax(300px, 1fr) auto;
-    grid-template-rows: auto auto 1fr;
+    grid-template-columns: max-content minmax(300px, 1fr) auto;
+    grid-template-rows: auto auto auto;
 
     grid-template-areas:
       "title title title"
@@ -750,8 +760,7 @@ button {
 
     margin: 150px 0 0;
 
-    font-size: 30px;
-    font-weight: 700;
+    font-size: 24px;
     line-height: 1.2;
 
     text-align: center;
@@ -772,13 +781,12 @@ button {
 
     margin: 8px 0 0;
 
-    font-size: 16px;
+    font-size: 19px;
     font-weight: 600;
 
     text-align: center;
 
     white-space: normal;
-    color: #aaa;
     line-height: 1.5;
   }
 
@@ -808,12 +816,13 @@ button {
     width: 100%;
     max-width: none;
 
-    margin: 73px 0 0;
+    margin: 55px 0 0;
   }
 
   .project-page .hero__search .search-bar {
     width: 100%;
     height: 38px;
+    background-color: rgba(255, 255, 255, 0.443);
   }
 
   .project-page .hero .filter-container {
@@ -866,23 +875,21 @@ button {
   }
 
   .project-page .content-box {
-    position: relative;
-
-    z-index: 5;
-
+    --project-row-gap: 48px;
     width: calc(100% - 80px);
     max-width: 1200px;
 
-    margin: 30px auto 0;
+    margin: 14px auto 0;
 
     padding: 0 0 100px;
 
     display: grid;
 
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
 
-    column-gap: 22px;
-    row-gap: 68px;
+    column-gap: 18px;
+    row-gap: var(--project-row-gap);
 
     box-sizing: border-box;
   }
@@ -899,7 +906,6 @@ button {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-
     gap: 14px;
 
     background: transparent;
@@ -933,54 +939,20 @@ button {
     min-width: 0;
     height: auto;
 
-    padding: 0;
-
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-
     gap: 7px;
 
     background: transparent;
   }
 
   .project-page .content-box .box .titlebox .title-row {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-
     gap: 5px;
-
-    flex-wrap: nowrap;
   }
 
   .project-page .content-box .box .titlebox h2 {
-    margin: 0;
-    padding: 0;
-
-    min-width: 0;
-
-    flex-basis: auto;
-    flex-shrink: 1;
-
     font-size: 21px;
-    font-weight: 700;
     line-height: 1.15;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .project-page .content-box .box .project-type-tag {
-    flex-shrink: 0;
-  }
-
-  .project-page .content-box .box .titlebox p {
-    margin: 0;
-
-    font-size: 10px;
-    line-height: 1.45;
   }
 }

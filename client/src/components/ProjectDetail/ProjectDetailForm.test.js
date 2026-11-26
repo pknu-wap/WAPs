@@ -52,6 +52,31 @@ beforeEach(() => {
 
 afterEach(() => jest.restoreAllMocks());
 
+test.each([undefined, [], [{ imageFile: " " }]])(
+  "첨부 이미지 주소가 없으면 상단 썸네일만 표시한다 (%j)",
+  async (images) => {
+    projectApi.getProjectDetail.mockResolvedValue({ images });
+    openPage(ProjectDetailForm);
+    const thumbnail = await screen.findByRole("img", {
+      name: "Project Thumbnail",
+    });
+    expect(screen.getAllByRole("img")).toEqual([thumbnail]);
+  },
+);
+
+test("주소가 있는 하단 이미지만 첨부 순서대로 표시한다", async () => {
+  projectApi.getProjectDetail.mockResolvedValue({
+    images: [{ imageFile: "/first.png" }, {}, { imageFile: "/second.png" }],
+  });
+  openPage(ProjectDetailForm);
+  await screen.findByRole("img", { name: "Project Thumbnail" });
+  const images = screen.getAllByRole("img", { name: /^이미지 / });
+  expect(images.map((image) => image.getAttribute("src"))).toEqual([
+    "/first.png",
+    "/second.png",
+  ]);
+});
+
 describe.each([
   ["상세 화면", ProjectDetailForm],
   ["삭제 화면", ProjectDelete],

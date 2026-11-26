@@ -82,6 +82,9 @@ const ProjectDetailForm = () => {
   }
 
   const semesterInfo = formatSemester(projectData.semester);
+  const images = (projectData.images ?? []).filter((image) =>
+    image?.imageFile?.trim(),
+  );
 
   return (
     <div className={`${styles.project_detail_form} ${styles.mount1}`}>
@@ -139,20 +142,18 @@ const ProjectDetailForm = () => {
       </section>
 
       {/* 이미지 섹션 */}
-      <div className={styles.images}>
-        {projectData.images && projectData.images.length > 0 ? (
-          projectData.images.map((image, index) => (
+      {images.length > 0 && (
+        <div className={styles.images}>
+          {images.map((image, index) => (
             <img
               key={index}
               className={styles.image}
-              src={image.imageFile || dogImage}
+              src={image.imageFile}
               alt={`이미지 ${index + 1}`}
             />
-          ))
-        ) : (
-          <img className={styles.image} src={dogImage} alt="기본 이미지" />
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* 팀원 정보 */}
       <div className={styles.projectListInfo}>
