@@ -1,3 +1,8 @@
+html:has(nav.menu),
+body:has(nav.menu) {
+  overflow: hidden;
+}
+
 /* 메뉴가 열렸을 때만 헤더를 최상단으로 */
 body:has(nav.menu) .App-header {
   position: fixed;
@@ -71,6 +76,7 @@ body:has(nav.menu) .App-header {
   font-weight: 500;
   margin-top: 20px;
   margin-bottom: 1px;
+  overflow-wrap: anywhere;
   text-align: center;
 }
 
@@ -124,7 +130,8 @@ body:has(nav.menu) .App-header {
   font-size: clamp(11px, 3.75vw, 15px);
   font-weight: 500;
   text-align: left;
-  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   cursor: pointer;
   transition: background 0.2s;
   font-family: "Pretendard-Regular";
@@ -169,22 +176,6 @@ body:has(nav.menu) .App-header {
 
 .logout-button:hover {
   opacity: 0.8;
-}
-
-/* ===== 메뉴 컨테이너 ===== */
-.menuContainer {
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* ===== 스크롤바 숨기기 ===== */
-.menu::-webkit-scrollbar {
-  display: none;
-}
-
-.menu {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 
 /* ===== 설정 버튼 ===== */
@@ -235,8 +226,8 @@ body:has(nav.menu) .App-header {
     width: 100vw;
     max-width: none;
 
+    height: 100vh;
     height: 100dvh;
-    min-height: 100vh;
 
     margin: 0;
 

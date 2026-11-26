@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "../utils/authStorage";
 import Menu from "./Menu";
@@ -9,6 +9,9 @@ const Header = () => {
   const userName = useCurrentUserName();
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const brandButton = useRef(null);
+  const menuButton = useRef(null);
+  const menuPanel = useRef(null);
 
   const navigate = useNavigate();
 
@@ -24,6 +27,30 @@ const Header = () => {
       sessionStorage.removeItem("openMenuAfterBack");
     }
   }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    menuButton.current.focus();
+
+    const handleKey = (event) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuButton.current.focus();
+      } else if (event.key === "Tab") {
+        const actions = menuPanel.current.querySelectorAll("button:enabled");
+        const lastAction = actions[actions.length - 1];
+        if (event.shiftKey && document.activeElement === brandButton.current) {
+          event.preventDefault();
+          lastAction.focus();
+        } else if (!event.shiftKey && document.activeElement === lastAction) {
+          event.preventDefault();
+          brandButton.current.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [menuOpen]);
 
   const handleLogout = () => {
     Cookies.remove("authToken");
@@ -49,7 +76,11 @@ const Header = () => {
               type="button"
               aria-label="WAPs 프로젝트 페이지"
               className="waplogo brand-button"
-              onClick={() => navigate("/ProjectPage")}
+              ref={brandButton}
+              onClick={() => {
+                setMenuOpen(false);
+                navigate("/ProjectPage");
+              }}
               style={{ cursor: "pointer" }}
             >
               <img
@@ -87,6 +118,8 @@ const Header = () => {
             type="button"
             aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
             aria-expanded={menuOpen}
+            aria-controls={menuOpen ? "site-menu" : undefined}
+            ref={menuButton}
             className="menu-icon"
             onClick={toggleMenu}
           >
@@ -99,6 +132,7 @@ const Header = () => {
 
       <Menu
         menuOpen={menuOpen}
+        menuRef={menuPanel}
         toggleMenu={toggleMenu}
         userName={userName}
         handleLogin={handleLogin}
