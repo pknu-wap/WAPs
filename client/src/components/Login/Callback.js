@@ -1,93 +1,47 @@
-import React, { useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import Cookies, { clearDevSession } from "../../utils/authStorage";
-import LoadingPage from "../../components/LoadingPage";
+import React, { useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import authStorage, { clearDevSession } from "../../utils/authStorage";
+import { userApi } from "../../api/user";
+import LoadingPage from "../LoadingPage";
+import { registrationRequired } from "../../utils/accountProfile";
+import { consumePendingAttendance } from "../../utils/pendingAttendance";
 
-const Callback = () => {
+export default function Callback() {
   const navigate = useNavigate();
-  const hasHandled = useRef(false);
-
-  const fetchUserInfo = useCallback(
-    (token) => {
-      fetch(`${process.env.REACT_APP_API_BASE_URL}/user/me`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to fetch user info.");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          clearDevSession();
-          Cookies.set("userName", data.userName, { expires: 7 });
-          Cookies.set("authToken", token, { expires: 7 });
-
-          // 로그인 성공 후 이동한 위치 기억용 쿠키 저장
-          Cookies.set("lastPage", "/", { expires: 7 }); // 필요하면 "/" 대신 원하는 경로로 수정
-
-          alert("로그인에 성공했습니다!"); // alert창 없애기
-          // navigate("/"); // 또는 "/mystudy", 등 원하는 경로
-
-          return fetch(`${process.env.REACT_APP_API_BASE_URL}/user/role`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-        })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to fetch role info.");
-          }
-          return response.json();
-        })
-        .then((roleData) => {
-          console.log("역할 정보:", roleData);
-
-          // 역할 정보 저장
-          if (roleData.role) {
-            Cookies.set("userRole", roleData.role, { expires: 7 });
-          }
-
-          if (roleData.roleAssigned) {
-            // 역할을 이미 선택했다면
-            navigate("/ProjectPage"); // 홈페이지로
-          } else {
-            navigate("/select/role");
-          }
-        })
-        .catch((error) => {
-          console.error("사용자 정보를 가져오는 동안 에러 발생:", error);
-          alert("사용자 정보를 가져오는 중 오류가 발생했습니다.");
-          navigate("/login");
-        });
-    },
-    [navigate],
-  );
-
+  const { search } = useLocation();
+  const request = useRef(null);
   useEffect(() => {
-    if (hasHandled.current) return;
-    hasHandled.current = true;
-
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(search);
     const token = params.get("token");
-
-    if (params.get("code") === "AUTH_OAUTH2_FAILURE") {
-      alert("카카오 로그인에 실패했습니다. 잠시 후 다시 시도해주세요.");
-      navigate("/login");
-    } else if (token) {
-      fetchUserInfo(token);
-    } else {
-      alert("로그인 토큰이 없습니다. 다시 로그인해주세요.");
-      navigate("/login");
+    if (!token || params.get("code") === "AUTH_OAUTH2_FAILURE") {
+      navigate("/login", { replace: true });
+      return undefined;
     }
-  }, [navigate, fetchUserInfo]);
-
+    if (request.current?.token !== token) {
+      clearDevSession();
+      authStorage.set("authToken", token, { expires: 7 });
+      request.current = {
+        token,
+        promise: Promise.all([userApi.getMe(), userApi.getRole().catch(() => null)]),
+      };
+    }
+    let active = true;
+    request.current.promise.then(([profile, role]) => {
+      if (!active) return;
+      authStorage.set("userName", profile.userName, { expires: 7 });
+      if (role?.role) authStorage.set("userRole", role.role, { expires: 7 });
+      else authStorage.remove("userRole");
+      authStorage.set("lastPage", "/", { expires: 7 });
+      navigate(registrationRequired(profile) === false ? consumePendingAttendance() : "/signup", { replace: true });
+    }).catch(() => {
+      if (active) {
+        authStorage.remove("authToken");
+        authStorage.remove("userName");
+        authStorage.remove("userRole");
+        navigate("/login", { replace: true });
+      }
+    });
+    return () => { active = false; };
+  }, [navigate, search]);
   return <LoadingPage />;
-};
-
-export default Callback;
+}

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import wap.web2.server.exception.BadRequestException;
+import wap.web2.server.exception.ConflictException;
 import wap.web2.server.exception.ForbiddenException;
 import wap.web2.server.exception.ProjectPasswordInvalidException;
 import wap.web2.server.exception.ResourceNotFoundException;
@@ -199,20 +200,8 @@ public class ProjectService {
             project.updateThumbnail(thumbnailUrl);
         }
 
-        // 기존 프로젝트의 이미지 삭제
-        log.info("[프로젝트 수정] ({})의 삭제 요청된 이미지 삭제", project.getTitle());
-        List<String> removedImageUrls = project.removeImages(getRemovalTargets(request));
-        for (String imageUrl : removedImageUrls) {
-            log.info("[프로젝트 수정] 삭제하려는 image url: {}", imageUrl);
-            if (!objectStorageService.supports(imageUrl)) {
-                log.info(
-                    "[프로젝트 수정] 현재 스토리지에서 관리하지 않는 image url 이므로 물리 삭제를 건너뜁니다: {}",
-                    imageUrl
-                );
-                continue;
-            }
-            objectStorageService.deleteImage(imageUrl);
-        }
+        // 다른 환경에서 사용할 수 있는 버킷 객체는 보존하고 게시물의 이미지 참조만 제거합니다.
+        project.removeImages(getRemovalTargets(request));
 
         // 추가 이미지를 Project에 삽입, 만약 ImageS3가 null이라면 skip
         List<MultipartFile> imageFiles = getNonEmptyImageFiles(request);
@@ -238,12 +227,18 @@ public class ProjectService {
     @CacheEvict(value = "projectList", allEntries = true)
     @Transactional
     public void delete(Long projectId, UserPrincipal userPrincipal) {
+        // 투표 개설의 프로젝트 잠금과 동기화한 뒤 참조 여부를 확인한다.
+        Project project = projectRepository.findByIdForUpdate(projectId)
+            .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다."));
         User user = findUser(userPrincipal.getId());
-        Project project = findProject(projectId);
 
         if (!canManage(project, user)) {
             throw new ForbiddenException("프로젝트 삭제 권한이 없습니다.");
         }
+        if (projectRepository.participatesInVote(projectId)) {
+            throw new ConflictException("투표에 포함된 프로젝트는 투표 기록 보존을 위해 삭제할 수 없습니다.");
+        }
+        // 다른 환경의 DB에서도 같은 이미지 URL을 사용할 수 있으므로 버킷 객체는 보존합니다.
         projectRepository.delete(project);
     }
 

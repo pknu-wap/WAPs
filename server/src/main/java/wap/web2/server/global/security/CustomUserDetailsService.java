@@ -25,6 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository
             .findByEmail(email)
+            .filter(account -> !account.isDeleted())
             .orElseThrow(() ->
                 new UsernameNotFoundException("User not found with email : " + email)
             );
@@ -36,6 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserById(Long id) {
         User user = userRepository
             .findById(id)
+            .filter(account -> !account.isDeleted())
             .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
         return UserPrincipal.create(user);

@@ -1,17 +1,28 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "../../assets/Admin/ManagePlan.module.css";
 import { adminPlanApi } from "../../api/admin";
 
+const getDefaultSchedule = () => {
+  const now = new Date();
+  const pad = (value) => String(value).padStart(2, "0");
+  return {
+    date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+    time: "18:30",
+  };
+};
+
 const ManagePlanPage = () => {
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState("");
+  const [{ date, time }, setSchedule] = useState(getDefaultSchedule);
   const [content, setContent] = useState("");
   const [target, setTarget] = useState("");
   const [location, setLocation] = useState("");
+  const [publishing, setPublishing] = useState(false);
+  const pending = useRef(false);
 
   const generatePreview = () => {
     return {
-      date: date,
+      date: [date, time].filter(Boolean).join(" "),
       title: title.trim(),
       content: content.trim(),
       target: target.trim(),
@@ -28,21 +39,30 @@ const ManagePlanPage = () => {
     preview.target;
 
   const handlePublish = async () => {
-    if (!title || !date || !content || !target || !location) {
+    if (pending.current) return;
+    if (
+      !preview.title ||
+      !date ||
+      !time ||
+      !preview.content ||
+      !preview.target ||
+      !preview.location
+    ) {
       alert("항목을 모두 입력해 주세요.");
       return;
     }
 
-    // 날짜 형식: YYYY-MM-DD HH:mm
-    const pattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
-    if (!pattern.test(date)) {
-      alert("날짜 형식을 지켜주세요! (예: 2025-11-20 18:30)");
+    if (
+      preview.title.length > 30 ||
+      preview.target.length > 30 ||
+      preview.location.length > 30 ||
+      preview.content.length > 2000
+    ) {
+      alert("제목, 참여인원, 위치는 30자, 내용은 2000자 이내로 입력해 주세요.");
       return;
     }
 
-    // 프런트에서 ISO 타입으로 변환: 2025-11-20 18:30 → 2025-11-20T18:30:00
-    const [datePart, timePart] = date.split(" ");
-    const isoString = `${datePart}T${timePart}:00`;
+    const isoString = `${date}T${time}:00`;
 
     // 유효한 날짜인지 체크
     const dateObj = new Date(isoString);
@@ -52,74 +72,152 @@ const ManagePlanPage = () => {
     }
 
     const requestBody = {
-      title,
+      title: preview.title,
       dateTime: isoString, // 서버가 인식하는 ISO 포맷
-      content,
-      target,
-      location,
+      content: preview.content,
+      target: preview.target,
+      location: preview.location,
     };
 
+    pending.current = true;
+    setPublishing(true);
     try {
       await adminPlanApi.createEvent(requestBody);
       alert("일정이 성공적으로 발행되었습니다!");
 
       // 입력 초기화
       setTitle("");
-      setDate("");
+      setSchedule(getDefaultSchedule());
       setContent("");
       setTarget("");
       setLocation("");
     } catch (error) {
-      console.error("일정 등록 실패:", error);
-      console.log("서버 응답 데이터:", error.response?.data);
-      alert("일정 등록 중 오류가 발생했습니다.");
+      const message = error.response?.data?.message;
+      alert(
+        typeof message === "string" && message.trim()
+          ? message
+          : "일정 등록 중 오류가 발생했습니다. 다시 시도해주세요.",
+      );
+    } finally {
+      pending.current = false;
+      setPublishing(false);
     }
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.title}>행사 일정</div>
+      <header>
+        <h1 className={styles.title}>행사 일정 관리</h1>
+        <p className={styles.description}>
+          행사 정보를 입력하고 미리보기를 확인한 뒤 발행해주세요.
+        </p>
+      </header>
 
       <div className={styles.pageContent}>
         {/* 입력 섹션 */}
         <div className={styles.inputSection}>
           <div className={styles.inputRow}>
-            <label className={styles.label}>제목</label>
+            <label className={styles.label} htmlFor="event-title">
+              제목
+            </label>
             <input
               className={styles.titleInput}
               type="text"
               placeholder="제목을 입력하세요"
+              id="event-title"
+              disabled={publishing}
+              maxLength={30}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
-          <div className={styles.inputRow}>
-            <label className={styles.label}>날짜</label>
-            <input
-              className={styles.dateInput}
-              type="text"
-              placeholder="YYYY-MM-DD HH:mm"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
+          <fieldset className={styles.scheduleFields} disabled={publishing}>
+            <legend className={styles.label}>일정</legend>
+            <div className={styles.scheduleInputs}>
+              <div className={styles.inputRow}>
+                <input
+                  className={styles.dateInput}
+                  type="date"
+                  id="event-date"
+                  aria-label="날짜"
+                  value={date}
+                  onChange={(e) =>
+                    setSchedule((prev) => ({ ...prev, date: e.target.value }))
+                  }
+                />
+              </div>
+              <div className={styles.timeInputs} role="group" aria-label="시각">
+                <select
+                  className={styles.dateInput}
+                  aria-label="시"
+                  value={time.split(":")[0]}
+                  onChange={(e) =>
+                    setSchedule((prev) => ({
+                      ...prev,
+                      time: `${e.target.value}:${prev.time.split(":")[1]}`,
+                    }))
+                  }
+                >
+                  {Array.from({ length: 24 }, (_, hour) => {
+                    const value = String(hour).padStart(2, "0");
+                    return (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    );
+                  })}
+                </select>
+                <span aria-hidden="true">:</span>
+                <select
+                  className={styles.dateInput}
+                  aria-label="분"
+                  value={time.split(":")[1]}
+                  onChange={(e) =>
+                    setSchedule((prev) => ({
+                      ...prev,
+                      time: `${prev.time.split(":")[0]}:${e.target.value}`,
+                    }))
+                  }
+                >
+                  {Array.from({ length: 60 }, (_, minute) => {
+                    const value = String(minute).padStart(2, "0");
+                    return (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+          </fieldset>
 
           <div className={styles.inputRow}>
-            <label className={styles.label}>내용</label>
+            <label className={styles.label} htmlFor="event-content">
+              내용
+            </label>
             <textarea
               className={styles.contentInput}
               placeholder="내용을 입력해주세요"
+              id="event-content"
+              disabled={publishing}
+              maxLength={2000}
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
           </div>
 
           <div className={styles.targetBox}>
-            <label className={styles.targetLabel}>필수 참여인원</label>
+            <label className={styles.targetLabel} htmlFor="event-target">
+              필수 참여인원
+            </label>
             <input
               className={styles.targetInput}
               type="text"
+              id="event-target"
+              disabled={publishing}
+              maxLength={30}
               value={target}
               onChange={(e) => setTarget(e.target.value)}
               placeholder="신입은 필수!"
@@ -127,10 +225,15 @@ const ManagePlanPage = () => {
           </div>
 
           <div className={styles.inputRow}>
-            <label className={styles.label}>위치</label>
+            <label className={styles.label} htmlFor="event-location">
+              위치
+            </label>
             <input
               className={styles.targetInput}
               type="text"
+              id="event-location"
+              disabled={publishing}
+              maxLength={30}
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="장소를 입력해주세요"
@@ -144,9 +247,11 @@ const ManagePlanPage = () => {
 
           <div className={`${styles.scheduleBox} ${styles.previewFixedHeight}`}>
             {!hasPreview ? (
-              <div className={styles.emptyPreview}></div>
+              <div className={styles.emptyPreview}>
+                입력한 행사 정보가 여기에 표시됩니다.
+              </div>
             ) : (
-              <div className={styles.previewContent}>
+              <div>
                 <div className={styles.scheduleDate}>{preview.date}</div>
                 <div className={styles.scheduleTitle}>{preview.title}</div>
                 <div className={styles.scheduleContent}>{preview.content}</div>
@@ -155,13 +260,19 @@ const ManagePlanPage = () => {
                     {preview.location}
                   </div>
                 )}
-                <div className={styles.miniTarget}>#{preview.target}</div>
+                {preview.target && (
+                  <div className={styles.miniTarget}>#{preview.target}</div>
+                )}
               </div>
             )}
           </div>
 
-          <button className={styles.publishButton} onClick={handlePublish}>
-            발행
+          <button
+            className={styles.publishButton}
+            onClick={handlePublish}
+            disabled={publishing}
+          >
+            {publishing ? "발행 중..." : "일정 발행"}
           </button>
         </div>
       </div>

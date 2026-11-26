@@ -1,11 +1,12 @@
+# Gradle
 HELP.md
-.gradle
+.gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### STS ###
+# Spring Tool Suite / Eclipse
 .apt_generated
 .classpath
 .factorypath
@@ -17,27 +18,19 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# IntelliJ IDEA build output
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
-
-### 설정 파일 ###
+# Local application configuration
 src/main/resources/application-db.yml
 src/main/resources/application-oauth.yml
 src/main/resources/application-s3.yml
-.env

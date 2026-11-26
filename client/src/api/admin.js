@@ -1,5 +1,11 @@
 import apiClient from "./client";
 
+const normalizeUserLevel = (user) => {
+  if (!user || typeof user !== "object") return user;
+  const level = user.memberType ?? user.membershipLevel ?? "UNDECIDED";
+  return { ...user, memberType: level === "NONE" ? "UNDECIDED" : level };
+};
+
 // 투표 관리 API
 export const adminVoteApi = {
   // 투표 상태 조회
@@ -13,6 +19,10 @@ export const adminVoteApi = {
       { projectIds },
       { params: { semester } },
     ),
+
+  // 종료된 투표와 투표 기록 완전 삭제
+  delete: (semester) =>
+    apiClient.delete("/admin/vote", { params: { semester } }),
 
   // 투표 종료
   close: (semester) =>
@@ -32,6 +42,18 @@ export const adminVoteApi = {
 
 // 권한 관리 API
 export const adminPermissonApi = {
+  updateMembershipLevel: (newMembershipLevel, selectedUserMap) =>
+    apiClient.patch("/admin/role/user/membership-level", {
+      newMembershipLevel,
+      userIds: Array.from(selectedUserMap.keys()),
+    }),
+  deleteUsers: (userIds) => apiClient.delete("/admin/role/users", { data: { userIds } }),
+  updateUserAttributes: (changes) =>
+    apiClient.patch("/admin/role/attributes", changes).then((data) =>
+      Array.isArray(data) ? data.map(normalizeUserLevel) : data,
+    ),
+  updateMemberType: (memberType, userIds) =>
+    apiClient.patch("/admin/role/member-type", { memberType, userIds }),
   // 사용자 권한 변경
   updateUserRole: (newRole, selectedUserMap) =>
     apiClient.patch("/admin/role/user", {
@@ -40,10 +62,27 @@ export const adminPermissonApi = {
     }),
 
   // 사용자 권한 목록 가져오기
-  getUserRoleList: (page, size, role) =>
-    apiClient.get("/admin/role", {
-      params: { page: page, size: size, ...(role ? { role: role } : {}) },
-    }),
+  getUserRoleList: (page, size, role, memberType, name) =>
+    apiClient
+      .get("/admin/role", {
+        params: {
+          page,
+          size,
+          ...(role ? { role } : {}),
+          ...(name ? { name } : {}),
+          // 기존 서버와 memberType 서버 모두 페이지를 나누기 전에 필터링한다.
+          ...(memberType
+            ? {
+                memberType,
+                membershipLevel: memberType === "UNDECIDED" ? "NONE" : memberType,
+              }
+            : {}),
+        },
+      })
+      .then((data) => ({
+        ...data,
+        content: (data.content || []).map(normalizeUserLevel),
+      })),
 };
 
 // 일정 관리 API
@@ -51,6 +90,19 @@ export const adminPlanApi = {
   // 캘린더 이벤트 등록
   createEvent: (eventBody) =>
     apiClient.post("/admin/calendar/event", eventBody),
+};
+
+// 출석 관리 API
+export const adminAttendanceApi = {
+  getEvents: () => apiClient.get("/calendar/events"),
+  create: ({ title, date }) => apiClient.post("/admin/attendances", { title, date }),
+  getList: () => apiClient.get("/admin/attendances"),
+  getDetail: (attendanceId) => apiClient.get(`/admin/attendances/${attendanceId}`),
+  changeStatus: (attendanceId, status) => apiClient.patch(`/admin/attendances/${attendanceId}`, { status }),
+  updateParticipant: (attendanceId, userId, patch) =>
+    apiClient.patch(`/admin/attendances/${attendanceId}/users/${userId}`, patch),
+  remove: (attendanceId) => apiClient.delete(`/admin/attendances/${attendanceId}`),
+  issueQr: (attendanceId) => apiClient.post(`/admin/attendances/${attendanceId}/qr`),
 };
 
 // 팀빌딩 관리 API
@@ -82,5 +134,6 @@ export const adminTeamBuildApi = {
   // 현재 학기 배정 결과와 진행 단계 초기화
   resetTeamBuild: () => apiClient.post("/admin/team/building/reset/current"),
   // 현재 학기의 모든 차수 지원·모집을 포함한 완전 초기화
-  resetTeamBuildCompletely: () => apiClient.post("/admin/team/building/reset/current/complete"),
+  resetTeamBuildCompletely: () =>
+    apiClient.post("/admin/team/building/reset/current/complete"),
 };

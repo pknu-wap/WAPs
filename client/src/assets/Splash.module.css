@@ -22,8 +22,10 @@
 
 .mainContainer {
   margin: 0 auto;
+  width: 100%;
   max-width: 400px;
-  height: 100vh;
+  min-height: max(100vh, calc(var(--vh, 1vh) * 100));
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* 상하 여백 균등 분배 */
@@ -45,30 +47,19 @@
   z-index: -1; /* 배경 뒤로 보냄 */
 }
 
-.mount1 {
-  animation: 0.7s ease-in-out loadEffect1;
-}
-
-@keyframes loadEffect1 {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 .titleBox {
-  margin-top: 80px;
-  margin-left: 40px;
-  font-size: 40px;
+  padding: 100px clamp(24px, 10vw, 40px) 64px;
+  box-sizing: border-box;
+  min-width: 0;
+  font-size: clamp(30px, 10vw, 40px);
   color: rgba(255, 255, 255, 0.632);
   font-family: "Pretendard-Bold";
-  height: 100%;
 }
 
 .title p {
-  line-height: 0.1;
+  margin: 0;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
 }
 
 .title p::first-letter {
@@ -76,6 +67,8 @@
 }
 
 .caption1 {
+  margin-top: 24px;
+  line-height: 1.5;
   font-size: 15px;
   color: white;
   font-family: "Pretendard-Regular";
@@ -93,17 +86,22 @@
   font-size: 15px;
   color: white;
   font-family: "Pretendard-Regular";
-  line-height: 0.5;
+  line-height: 1.5;
+}
+
+.caption2 p {
+  margin: 0;
 }
 
 .submit_button {
   margin-top: 50px;
-  margin-left: 160px;
+  margin-left: auto;
   display: flex;
   align-items: center;
   justify-content: center; /* 내부 콘텐츠(텍스트+SVG)를 중앙에 정렬 */
   gap: 8px; /* 텍스트와 화살표 사이에 간격 추가 */
   width: 158px; /* 버튼 너비 설정 */
+  max-width: 100%;
   height: 42px; /* 버튼 높이 설정 */
   padding: 4px 4px;
   background: rgba(255, 255, 255, 0.2);
@@ -127,4 +125,92 @@
 .submit_button:hover {
   background: rgba(255, 255, 255, 0.35);
   transform: translateY(-2px);
+}
+
+/* ===Responsive=== */
+
+@media (min-width: 600px) {
+  .mainContainer {
+    width: 100%;
+    max-width: none;
+
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .titleBox {
+    width: 100%;
+    height: auto;
+
+    margin: 0;
+
+    padding-top: clamp(120px, 18vh, 160px);
+
+    box-sizing: border-box;
+
+    font-size: clamp(30px, 3vw, 40px);
+
+    text-align: center;
+  }
+
+  .title {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    flex-wrap: nowrap;
+  }
+
+  .title p {
+    margin: 0;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+  }
+
+  .caption1 {
+    margin-top: 20px;
+
+    font-size: clamp(14px, 1.2vw, 16px);
+
+    text-align: center;
+  }
+
+  .line {
+    height: 55px;
+
+    margin: 35px auto;
+  }
+
+  .caption2 {
+    font-size: clamp(14px, 1.2vw, 16px);
+
+    line-height: 1.8;
+
+    text-align: center;
+  }
+
+  .submit_button {
+    width: 150px;
+    height: 48px;
+
+    margin: 38px auto 0;
+
+    font-size: 15px;
+  }
+}
+
+@media (max-height: 500px) {
+  .titleBox {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .line {
+    height: 64px;
+  }
 }

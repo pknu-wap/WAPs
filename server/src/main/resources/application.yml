@@ -1,9 +1,13 @@
+server:
+  # Restore the external HTTPS scheme/host supplied by the Caddy reverse proxy.
+  forward-headers-strategy: framework
+
 spring:
   application:
     name: server
 
   config:
-    import: optional:file:.env[.yml]
+    import: optional:file:.env[.properties]
 
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?createDatabaseIfNotExist=true
@@ -60,6 +64,7 @@ app:
     authorizedRedirectUris:
       - https://waps.im/oauth2/redirect
       - https://dev.waps.im/oauth2/redirect
+      - https://*.waps.im/oauth2/redirect
       - https://wapst.netlify.app/oauth2/redirect
       - https://waps-deploy.netlify.app/oauth2/redirect
       - https://waps-web.netlify.app/oauth2/redirect
@@ -70,15 +75,6 @@ app:
 
 swagger:
   server-url: ${SERVER_URL}
-
-springdoc:
-  swagger-ui:
-    urls:
-      - name: WAPs API
-        url: /v3/api-docs
-      - name: QR 출석 API (설계)
-        url: /openapi.yaml
-    urls-primary-name: QR 출석 API (설계)
 
 project:
   password: 1248

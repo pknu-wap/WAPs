@@ -8,10 +8,15 @@ import { useParams, useNavigate } from "react-router-dom";
 
 import { projectApi } from "../../api/project";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
+import teamStyles from "../../assets/ProjectCreation/TeamMemberInputForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
+import useProjectLeaveWarning, {
+  projectDraftSnapshot,
+} from "../../hooks/ProjectCreation/useProjectLeaveWarning";
 import ImageUploader from "./ImageUploader";
 import RadioButton from "./RadioButton";
 import TextInputForm from "./TextInputForm";
+import MarkdownEditor from "../Markdown/MarkdownEditor";
 import TechStackSelector from "./TechStackSelector";
 import TeamMemberInputForm from "./TeamMemberInputForm";
 import InputPin from "./InputPin";
@@ -49,8 +54,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const navigate = useNavigate(); // navigate 함수
   const [recruitmentPositions, setRecruitmentPositions] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null);
   const [isSemesterLoading, setIsSemesterLoading] = useState(!isEdit);
   const [semesterError, setSemesterError] = useState("");
+  const [semesterRetry, setSemesterRetry] = useState(0);
   const {
     title,
     setTitle,
@@ -76,7 +83,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     password,
     handleImgUpload,
     handleRemoveImage,
-    handleMemberNameFocus,
     handleMemberNameChange,
     handleRoleChange,
     addTeamMember,
@@ -89,6 +95,33 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     removalList,
     // setRemovalList,
   } = useProjectForm();
+
+  const initialDraft = isEdit
+    ? {
+        ...existingProject,
+        teamMembers: existingProject?.teamMember,
+        techStacks: existingProject?.techStack,
+        images: existingProject?.images?.map((image) => image.imageFile),
+      }
+    : { teamMembers: [] };
+  const currentDraft = {
+    title,
+    summary,
+    content,
+    projectType,
+    password,
+    thumbnail,
+    images,
+    teamMembers,
+    techStacks: selectedTechStacks,
+    recruitmentPositions,
+  };
+  const markSaved = useProjectLeaveWarning(
+    isSubmitting ||
+      ((!isEdit || Boolean(existingProject)) &&
+        projectDraftSnapshot(currentDraft) !==
+          projectDraftSnapshot(initialDraft)),
+  );
 
   useEffect(() => {
     if (isEdit) {
@@ -123,7 +156,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     return () => {
       ignore = true;
     };
-  }, [isEdit, setSemester]);
+  }, [isEdit, setSemester, semesterRetry]);
 
   // 기존 데이터 초기화
   useEffect(() => {
@@ -141,7 +174,10 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       }
       // 멤버가 존재하면 추가
       if (Array.isArray(existingProject.teamMember)) {
-        setTeamMembers(existingProject.teamMember.map((member) => member));
+        setTeamMembers([
+          ...existingProject.teamMember,
+          { memberName: "", memberRole: "" },
+        ]);
       }
       setSelectedTechStacks(existingProject.techStack || []);
       setPassword("");
@@ -163,13 +199,38 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       return;
     }
 
-    const recruitmentError = recruitmentPositionsError(recruitmentPositions, !isEdit);
+    const recruitmentError = recruitmentPositionsError(
+      recruitmentPositions,
+      !isEdit,
+    );
     if (recruitmentError) {
       alert(recruitmentError);
       return;
     }
 
+    const selectedMembers = teamMembers.filter(
+      (member) => member.memberName || member.memberRole,
+    );
+    if (
+      selectedMembers.some(
+        (member) => !(member.memberName || "").trim() || !member.memberRole,
+      )
+    ) {
+      alert("팀원 이름과 역할을 입력해 주세요.");
+      return;
+    }
+
+    setUploadProgress(null);
     setIsSubmitting(true);
+    let requestActive = true;
+    const onUploadProgress = ({ loaded, total }) => {
+      if (!requestActive) return;
+      setUploadProgress(
+        Number.isFinite(total) && total > 0 && Number.isFinite(loaded)
+          ? Math.min(100, Math.max(0, Math.floor((loaded / total) * 100)))
+          : null,
+      );
+    };
 
     const formData = new FormData();
     const projectData = {
@@ -181,8 +242,8 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       projectType,
       content,
       summary,
-      teamMember: teamMembers.map((member) => ({
-        memberName: member.memberName,
+      teamMember: selectedMembers.map((member) => ({
+        memberName: (member.memberName || "").trim(),
         memberRole: member.memberRole,
       })),
       techStack: selectedTechStacks.map((stack) => ({
@@ -210,20 +271,30 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     });
     try {
       if (isEdit) {
-        await projectApi.updateProject(projectId, formData);
+        await projectApi.updateProject(projectId, formData, onUploadProgress);
 
+        markSaved();
         alert("프로젝트가 성공적으로 수정되었습니다.");
         navigate(`/project/${projectId}`);
       } else {
-        await projectApi.createProject(formData);
+        await projectApi.createProject(formData, onUploadProgress);
+        markSaved();
         alert("프로젝트가 성공적으로 생성되었습니다.");
         navigate(`/ProjectPage`);
       }
       resetForm();
     } catch (error) {
-      alert("프로젝트 요청에 실패했습니다. 다시 시도해 주세요.");
+      alert(
+        error.response?.data?.code === "PROJECT_PASSWORD_INVALID"
+          ? "올바른 인증번호를 입력해주세요."
+          : error.code === "ECONNABORTED" || error.code === "ETIMEDOUT"
+            ? "업로드 요청 시간이 초과되었습니다. 다시 시도해 주세요."
+            : "프로젝트 요청에 실패했습니다. 다시 시도해 주세요.",
+      );
     } finally {
+      requestActive = false;
       setIsSubmitting(false);
+      setUploadProgress(null);
     }
   };
 
@@ -254,11 +325,24 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           </span>
         </div>
         {semesterError && (
-          <p className={styles.semester_error}>{semesterError}</p>
+          <div className={styles.semester_error}>
+            <p role="alert">{semesterError}</p>
+            <button
+              type="button"
+              disabled={isSemesterLoading}
+              onClick={() => {
+                setIsSemesterLoading(true);
+                setSemesterRetry((retry) => retry + 1);
+              }}
+            >
+              학기 다시 불러오기
+            </button>
+          </div>
         )}
         <RadioButton
           labelname={"프로젝트 타입"}
           name="projectType"
+          required={!isEdit}
           options={projectTypeOptions}
           selected={projectType}
           setSelected={setProjectType}
@@ -285,16 +369,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           }}
           errorMessage={errorMessage}
         />
-        <TextInputForm
-          name="content"
-          placeholder="상세 설명"
-          maxLen={MAX_PROJECT_CONTENT_LENGTH}
+        <MarkdownEditor
+          disabled={isSubmitting}
           value={content}
-          onChange={(e) => {
-            setContent(e.target.value);
-            handleInputLimit(e);
-          }}
-          errorMessage={errorMessage}
+          onChange={setContent}
+          maxLength={MAX_PROJECT_CONTENT_LENGTH}
+          error={errorMessage.content}
         />
         <div className={styles.images}>
           {Array.from({ length: maxImageCount }).map((_, index) => (
@@ -310,7 +390,11 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
             />
           ))}
         </div>
-        <div className="form-group">
+        <section
+          className={teamStyles.teammember_section}
+          aria-label="팀원 등록"
+        >
+          <h2 className={teamStyles.teammember_label}>팀원 등록</h2>
           {teamMembers.map((member, index) => (
             <TeamMemberInputForm
               key={index}
@@ -318,14 +402,13 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
               index={index}
               handleMemberNameChange={handleMemberNameChange}
               handleRoleChange={handleRoleChange}
-              handleMemberNameFocus={handleMemberNameFocus}
               roleOptions={roleOptions}
               addTeamMember={addTeamMember}
               handleRemoveTeamMember={handleRemoveTeamMember}
               teamMembers={teamMembers}
             />
           ))}
-        </div>
+        </section>
 
         <RecruitmentPositionInput
           required={!isEdit}
@@ -338,6 +421,22 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         />
         <InputPin password={password} setPassword={setPassword} />
         {uploadError && <p className="error-message">{uploadError}</p>}
+        {isSubmitting && (
+          <div className={styles.upload_progress}>
+            <progress
+              aria-label="프로젝트 업로드 진행률"
+              max="100"
+              value={uploadProgress ?? undefined}
+            />
+            <p role="status">
+              {uploadProgress === 100
+                ? "저장 처리 중…"
+                : uploadProgress === null
+                  ? "업로드 중…"
+                  : `업로드 중… ${uploadProgress}%`}
+            </p>
+          </div>
+        )}
         <button
           type="submit"
           className={styles.submit_button}
@@ -352,7 +451,9 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           }}
         >
           {isSubmitting
-            ? "업로드 중..."
+            ? uploadProgress === 100
+              ? "저장 처리 중…"
+              : "업로드 중..."
             : isEdit
               ? "프로젝트 수정"
               : "프로젝트 생성"}

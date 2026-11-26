@@ -95,6 +95,21 @@
   font-size: 16px;
 }
 
+.recruitment {
+  margin-inline: 5%;
+}
+
+.recruitmentList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 0.25em;
+}
+
+.recruitmentList li {
+  white-space: nowrap;
+}
+
 .image {
   width: 100%;
   max-width: 400px;

@@ -57,9 +57,42 @@ public class User {
     @Column
     private String providerId;
 
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.ROLE_GUEST;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MembershipLevel membershipLevel = MembershipLevel.NONE;
+
+    @Column(length = 20)
+    private String studentNumber;
+
+    // Existing and non-OAuth accounts do not need the Kakao signup flow.
+    @Column(nullable = false)
+    private boolean signupCompleted = true;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    @Column(nullable = false)
+    private long tokenVersion = 0;
+
+    public void deactivate() {
+        deleted = true;
+        password = null;
+        tokenVersion++;
+        role = Role.ROLE_GUEST;
+        membershipLevel = MembershipLevel.NONE;
+        signupCompleted = false;
+    }
+
+    public void reactivate() {
+        deleted = false;
+        tokenVersion++;
+        role = Role.ROLE_GUEST;
+        membershipLevel = MembershipLevel.NONE;
+    }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Project> projects = new ArrayList<>();

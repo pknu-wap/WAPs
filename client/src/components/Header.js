@@ -2,30 +2,42 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "../utils/authStorage";
 import Menu from "./Menu";
+import useCurrentUserName from "../hooks/useCurrentUserName";
 import wapsLogo from "../assets/img/waps_logo.png";
 
 const Header = () => {
-  const [userName, setUserName] = useState(Cookies.get("userName") || null);
+  const userName = useCurrentUserName();
+
   const [menuOpen, setMenuOpen] = useState(false);
+
   const navigate = useNavigate();
 
-  const toggleMenu = () => setMenuOpen((p) => !p);
+  const toggleMenu = () => {
+    setMenuOpen((prev) => !prev);
+  };
 
   useEffect(() => {
-    const token = Cookies.get("authToken");
-    const savedUserName = Cookies.get("userName");
-    if (token && savedUserName) setUserName(savedUserName);
+    const shouldOpenMenu = sessionStorage.getItem("openMenuAfterBack");
+
+    if (shouldOpenMenu === "true") {
+      setMenuOpen(true);
+      sessionStorage.removeItem("openMenuAfterBack");
+    }
   }, []);
 
   const handleLogout = () => {
     Cookies.remove("authToken");
     Cookies.remove("userName");
-    setUserName(null);
+
     navigate("/login");
   };
 
   const handleLogin = () => {
-    navigate("/login", { state: { from: window.location.pathname } });
+    navigate("/login", {
+      state: {
+        from: window.location.pathname,
+      },
+    });
   };
 
   return (
@@ -33,9 +45,10 @@ const Header = () => {
       <header className="App-header">
         <div className="header-inner">
           <div>
-            <p
-              className="waplogo"
-              alt="wap"
+            <button
+              type="button"
+              aria-label="WAPs 프로젝트 페이지"
+              className="waplogo brand-button"
               onClick={() => navigate("/ProjectPage")}
               style={{ cursor: "pointer" }}
             >
@@ -43,16 +56,48 @@ const Header = () => {
                 src={wapsLogo}
                 alt="WAPs"
                 className="waplogo"
-                onClick={() => navigate("/ProjectPage")}
-                style={{ cursor: "pointer", height: "15px" }} // 크기 조절
+                style={{
+                  cursor: "pointer",
+                  height: "15px",
+                }}
               />
-            </p>
+            </button>
           </div>
 
-          {/* 아이콘은 CSS에서 absolute로 오른쪽 고정 */}
-          <div className="menu-icon" onClick={toggleMenu}>
-            {menuOpen ? <p>✕</p> : <p className="menu-bar">☰</p>}
-          </div>
+          {!menuOpen && (
+            <nav className="desktop-nav">
+              <button onClick={() => navigate("/ProjectPage")}>PROJECT</button>
+
+              <button onClick={() => navigate("/team-build")}>
+                TEAMBUILDING
+              </button>
+
+              <button onClick={() => navigate("/vote")}>VOTE</button>
+
+              <button
+                className="desktop-login"
+                onClick={Cookies.get("authToken") ? handleLogout : handleLogin}
+              >
+                {Cookies.get("authToken") ? "LOGOUT" : "LOGIN"}
+              </button>
+            </nav>
+          )}
+
+          <button
+            type="button"
+            aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={menuOpen}
+            className="menu-icon"
+            onClick={toggleMenu}
+          >
+            {menuOpen ? (
+              <span aria-hidden="true">✕</span>
+            ) : (
+              <span className="menu-bar" aria-hidden="true">
+                ☰
+              </span>
+            )}
+          </button>
         </div>
       </header>
 

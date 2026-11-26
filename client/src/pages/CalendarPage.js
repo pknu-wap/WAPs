@@ -5,19 +5,30 @@ import "../assets/CalendarPage.css";
 
 const CalendarPage = () => {
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [revision, setRevision] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setError("");
     const fetchEvents = async () => {
       try {
         const data = await calendarApi.getEvents();
-        setEvents(data);
+        if (active) setEvents(data);
       } catch (error) {
-        console.error("일정 데이터를 불러오지 못했습니다:", error);
+        if (active) setError("일정을 불러오지 못했습니다. 다시 시도해주세요.");
+      } finally {
+        if (active) setLoading(false);
       }
     };
     fetchEvents();
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [revision]);
 
   return (
     <div className="calendar-page">
@@ -31,7 +42,16 @@ const CalendarPage = () => {
 
       {/* 일정 리스트 영역 */}
       <div className={`calendar-list ${events.length === 0 ? "empty" : ""}`}>
-        {events.length > 0 ? (
+        {loading ? (
+          <p role="status">일정을 불러오는 중입니다...</p>
+        ) : error ? (
+          <div>
+            <p role="alert">{error}</p>
+            <button onClick={() => setRevision((value) => value + 1)}>
+              다시 시도
+            </button>
+          </div>
+        ) : events.length > 0 ? (
           events.map((event, index) => (
             <div key={index} className="schedule-wrapper">
               <div className="schedule-box">

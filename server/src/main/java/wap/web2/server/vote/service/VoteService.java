@@ -5,11 +5,11 @@ import static wap.web2.server.vote.service.VotePolicy.REQUIRED_VOTE_COUNT;
 import static wap.web2.server.util.SemesterGenerator.generateSemester;
 
 import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.admin.entity.VoteMeta;
@@ -48,7 +48,9 @@ public class VoteService {
         Role userRole = resolveUserRole(userPrincipal);
         String semester = voteRequest.semester();
 
-        VoteMeta voteMeta = findVoteMeta(semester);
+        // ponytail: serialize writes per semester; use shared meta + per-user locks if throughput requires it.
+        VoteMeta voteMeta = voteMetaRepository.findBySemesterForUpdate(semester)
+            .orElseThrow(() -> new ResourceNotFoundException("투표를 찾을 수 없습니다."));
         if (voteMeta.getStatus() != VoteStatus.VOTING) {
             throw new ConflictException(
                 String.format("%s 학기의 투표가 진행 중이 아닙니다.", semester)
@@ -56,6 +58,11 @@ public class VoteService {
         }
 
         List<Long> projectIds = voteRequest.projectIds();
+        if (projectIds == null || projectIds.size() != REQUIRED_VOTE_COUNT
+            || projectIds.stream().anyMatch(id -> id == null || id <= 0)
+            || new HashSet<>(projectIds).size() != REQUIRED_VOTE_COUNT) {
+            throw new BadRequestException("서로 다른 " + REQUIRED_VOTE_COUNT + "개의 프로젝트에 투표해야 합니다.");
+        }
         validateUserBallot(semester, userId);
         validateParticipatingProjects(semester, userId, projectIds, voteMeta.getId());
 
@@ -76,7 +83,7 @@ public class VoteService {
         return VoteInfoResponse.builder().isVotedUser(isVotedUser).isOpen(isOpen).build();
     }
 
-    @Cacheable(value = "voteResults", key = "#semester")
+    // 공개 여부는 DB에서 매번 확인한다. 로컬 결과 캐시는 다른 서버의 비공개 전환을 반영하지 못한다.
     @Transactional(readOnly = true)
     public VoteResultsResponse getVoteResults(String semester) {
         validateResultVisibility(semester);
@@ -92,7 +99,6 @@ public class VoteService {
         return VoteResultsResponse.of(semester, results);
     }
 
-    @Cacheable(value = "voteResults", key = "'latest'")
     @Transactional(readOnly = true)
     public VoteResultsResponse getMostRecentResults() {
         String currentSemester = generateSemester();
@@ -100,25 +106,15 @@ public class VoteService {
             currentSemester,
             VoteStatus.ENDED
         );
-        List<ProjectVoteCount> latestVotes = ballotRepository.findPublicLatestBallots(
-            latestSemester
-        );
-
-        if (latestVotes.isEmpty()) {
+        if (latestSemester == null) {
             throw new ResourceNotFoundException("공개된 투표 결과가 없습니다.");
         }
-
-        long totalVotes = calculateTotalVotes(latestVotes);
-        List<VoteResultResponse> results = latestVotes
-            .stream()
-            .map(latestVote -> VoteResultResponse.of(latestVote, totalVotes))
-            .toList();
-
-        return VoteResultsResponse.of(latestSemester, results);
+        return getVoteResults(latestSemester);
     }
 
     @Transactional(readOnly = true)
     public List<VoteParticipantsResponse> getParticipants(String semester) {
+        findVoteMeta(semester);
         List<VoteParticipants> participants = voteMetaRepository.findParticipantsProjectBySemester(
             semester
         );
@@ -147,7 +143,7 @@ public class VoteService {
     private VoteStatus findVoteStatus(String semester) {
         return voteMetaRepository
             .findStatusBySemester(semester)
-            .orElseThrow(() -> new ResourceNotFoundException("투표를 찾을 수 없습니다."));
+            .orElse(VoteStatus.NOT_CREATED);
     }
 
     private long calculateTotalVotes(List<ProjectVoteCount> projectVoteCounts) {
@@ -156,8 +152,8 @@ public class VoteService {
 
     private void validateUserBallot(String semester, Long userId) {
         long votedCount = ballotRepository.countBallotsBySemesterAndUserId(semester, userId);
-        if (votedCount >= REQUIRED_VOTE_COUNT) {
-            throw new BadRequestException("투표는 최대 " + REQUIRED_VOTE_COUNT + "개까지 가능합니다.");
+        if (votedCount > 0) {
+            throw new ConflictException("이미 투표에 참여했습니다.");
         }
     }
 
@@ -188,8 +184,8 @@ public class VoteService {
     }
 
     private void validateResultVisibility(String semester) {
-        boolean isPublic = voteMetaRepository.isResultPublic(semester);
-        if (!isPublic) {
+        VoteMeta meta = findVoteMeta(semester);
+        if (meta.getStatus() != VoteStatus.ENDED || !meta.isResultPublic()) {
             throw new ForbiddenException("해당 투표 결과는 비공개입니다.");
         }
     }

@@ -7,6 +7,7 @@ import dogImage from "../../assets/img/dog.png";
 import EditButton from "./EditButton";
 import Comments from "./Comments/Comments";
 import CommentsList from "./Comments/CommentsList";
+import MarkdownContent from "../Markdown/MarkdownContent";
 import LoadingPage from "../../components/LoadingPage";
 
 const formatSemester = (semester) => {
@@ -113,19 +114,25 @@ const ProjectDetailForm = () => {
             {formatText(projectData.summary) || "요약 정보 없음"}
           </div>
           <div className={styles.content}>
-            {formatText(projectData.content) || "내용이 없습니다."}
+            <MarkdownContent value={projectData.content} />
           </div>
         </div>
       </div>
 
-      <section aria-label="모집 인원 (팀장 제외)">
+      <section
+        className={styles.recruitment}
+        aria-label="모집 인원 (팀장 제외)"
+      >
         <h3>모집 인원 (팀장 제외)</h3>
         {projectData.recruitmentPositions?.length > 0 ? (
-          <p>
-            {projectData.recruitmentPositions
-              .map(({ role, count }) => `${role} ${count}명`)
-              .join(", ")}
-          </p>
+          <ul className={styles.recruitmentList}>
+            {projectData.recruitmentPositions.map(({ role, count }, index) => (
+              <li key={role}>
+                {role} {count}명
+                {index < projectData.recruitmentPositions.length - 1 && ","}
+              </li>
+            ))}
+          </ul>
         ) : (
           <p>등록된 모집 인원 정보가 없습니다.</p>
         )}

@@ -28,6 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry
             .addMapping("/**")
             .allowedOrigins(allowedOrigins)
+            .allowedOriginPatterns("https://*.waps.im")
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true)

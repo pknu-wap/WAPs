@@ -11,8 +11,10 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!Cookies.get("authToken"));
   const [userRole, setUserRole] = useState(Cookies.get("userRole") || null);
 
-  // 메뉴 열릴 때 배경 스크롤만 막고, 화면 밀림(shift) 방지
   useEffect(() => {
+    const token = Cookies.get("authToken");
+    setIsLoggedIn(!!token);
+    setUserRole(token ? Cookies.get("userRole") : null);
     if (!menuOpen) return;
 
     document.documentElement.style.overflow = "hidden";
@@ -53,11 +55,6 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
   };
 
   useEffect(() => {
-    const token = Cookies.get("authToken");
-    const role = Cookies.get("userRole");
-    setIsLoggedIn(!!token);
-    setUserRole(role);
-
     const allowedDate = new Date("2024-11-29T18:00:00");
     const now = new Date();
 
@@ -84,6 +81,8 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
     toggleMenu();
     navigate("/");
   };
+
+  const handleCheckInNavigate = () => handleNavigationWithAuth("/CheckIn");
 
   return (
     <div className="menuContainer">
@@ -192,6 +191,7 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                     <FaChevronRight />
                   </span>
                 </button>
+
                 <button
                   className="menu-item"
                   onClick={() => {
@@ -206,6 +206,31 @@ const Menu = ({ menuOpen, toggleMenu, userName }) => {
                 </button>
               </div>
             </div>
+
+            <div className="menu-section">
+              <h3 className="section-title">ATTENDANCE CHECK</h3>
+
+              <div className="menu-items">
+                <button
+                  className="menu-item"
+                  onClick={handleCheckInNavigate}
+                >
+                  <span>출석체크 Attendance Check</span>
+                  <span className="arrow">
+                    <FaChevronRight />
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {isLoggedIn && (
+              <button
+                className="settings-button"
+                onClick={() => handleNavigationWithAuth("/settings")}
+              >
+                <span>설정 Settings</span>
+              </button>
+            )}
 
             <button
               className="logout-button"

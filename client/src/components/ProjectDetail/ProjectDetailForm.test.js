@@ -1,5 +1,11 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { projectApi } from "../../api/project";
 import Cookies from "../../utils/authStorage";
@@ -125,7 +131,14 @@ test("상세 화면에 직무별 모집 인원을 표시한다", async () => {
     ],
   });
   openPage(ProjectDetailForm);
-  expect(await screen.findByText("프론트엔드 3명, 백엔드 2명")).toBeTruthy();
+  const region = await screen.findByRole("region", {
+    name: "모집 인원 (팀장 제외)",
+  });
+  const positions = within(region).getAllByRole("listitem");
+  expect(positions.map((position) => position.textContent)).toEqual([
+    "프론트엔드 3명,",
+    "백엔드 2명",
+  ]);
 });
 
 test("기존 게시글에는 모집 정보가 없음을 표시한다", async () => {

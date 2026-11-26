@@ -14,6 +14,7 @@ import wap.web2.server.member.entity.User;
 public class UserPrincipal implements OAuth2User, UserDetails {
 
     private Long id;
+    private long tokenVersion;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
@@ -45,7 +46,9 @@ public class UserPrincipal implements OAuth2User, UserDetails {
             new SimpleGrantedAuthority(user.getRole().toString())
         );
 
-        return new UserPrincipal(user.getId(), user.getEmail(), user.getPassword(), authorities);
+        UserPrincipal principal = new UserPrincipal(user.getId(), user.getEmail(), user.getPassword(), authorities);
+        principal.tokenVersion = user.getTokenVersion();
+        return principal;
     }
 
     public static UserPrincipal create(User user, Map<String, Object> attributes) {
@@ -57,6 +60,8 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     public Long getId() {
         return id;
     }
+
+    public long getTokenVersion() { return tokenVersion; }
 
     public String getEmail() {
         return email;

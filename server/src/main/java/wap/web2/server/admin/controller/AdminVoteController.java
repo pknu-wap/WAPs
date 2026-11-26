@@ -1,10 +1,13 @@
 package wap.web2.server.admin.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +24,7 @@ import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.util.Semester;
 
 @RestController
+@Validated
 @RequestMapping("/admin/vote")
 @RequiredArgsConstructor
 public class AdminVoteController {
@@ -42,14 +46,26 @@ public class AdminVoteController {
     @PostMapping("/open")
     @Operation(
         summary = "투표 열기",
-        description = "희망하는 학기의 투표를 생성하거나 개시합니다. 이제 투표를 진행할 수 있습니다."
+        description = "해당 학기의 프로젝트를 최소 3개 선택하여 새 투표를 생성합니다. 기존 투표는 종료 후 삭제해야 새로 생성할 수 있습니다."
     )
     public ResponseEntity<Void> openVoteMeta(
         @CurrentUser UserPrincipal currentUser,
-        @RequestBody VoteParticipants voteParticipants,
+        @RequestBody @Valid VoteParticipants voteParticipants,
         @RequestParam("semester") @Semester String semester
     ) {
         adminVoteService.openVote(semester, currentUser.getId(), voteParticipants);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping
+    @Operation(
+        summary = "투표 삭제",
+        description = "종료된 투표의 투표 기록, 참여 프로젝트 연결 및 투표 정보를 완전히 삭제합니다. 프로젝트 원본은 유지됩니다."
+    )
+    public ResponseEntity<Void> deleteVoteMeta(
+        @RequestParam("semester") @Semester String semester
+    ) {
+        adminVoteService.deleteVote(semester);
         return ResponseEntity.ok().build();
     }
 
