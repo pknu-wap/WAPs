@@ -58,7 +58,7 @@ public class AdminAttendanceController {
 
     @GetMapping
     @Operation(operationId = "listAdminAttendances", summary = "출석체크 목록 조회", description = """
-        상태별 출석체크와 출석·미출석 인원을 조회합니다. status를 생략하면 예정된 출석을 포함한 전체 목록을 반환합니다.
+        상태별 출석체크와 출석·지각·미출석 인원을 조회합니다. status를 생략하면 예정된 출석을 포함한 전체 목록을 반환합니다.
         date 내림차순, 같은 날짜이면 attendanceId 내림차순으로 정렬합니다.
         조건에 맞는 전체 목록을 반환하며, 결과가 없으면 content는 빈 배열입니다.
         """)
@@ -71,10 +71,10 @@ public class AdminAttendanceController {
 
     @GetMapping("/{attendanceId}")
     @Operation(operationId = "getAttendanceDetail", summary = "출석 현황·결과 및 대상자 명단 조회", description = """
-        전체 대상자의 출석·미출석 인원과 대상자별 이름, 출석 상태, 출석 시각, 비고를 반환합니다.
+        전체 대상자의 출석·지각·미출석 인원과 대상자별 이름, 출석 상태, 출석 시각, 비고를 반환합니다.
         조건에 맞는 전체 명단을 반환하며, 결과가 없으면 participants.content는 빈 배열입니다.
         인원 집계는 출석 상태 필터와 무관하게 전체 대상자를 기준으로 합니다.
-        status 오름차순은 PRESENT 먼저, 내림차순은 ABSENT 먼저입니다. 정렬 값이 같으면 userId 오름차순입니다.
+        status 오름차순은 PRESENT, LATE, ABSENT 순서이고 내림차순은 그 반대입니다. 정렬 값이 같으면 userId 오름차순입니다.
         회원 등급에 따른 필드, 필터, 정렬은 사용하지 않습니다.
         """)
     @ApiResponses({
@@ -138,7 +138,8 @@ public class AdminAttendanceController {
     @Operation(operationId = "updateAttendanceParticipant", summary = "대상자 출석 상태·비고 수정", description = """
         진행 중이거나 종료된 출석의 상태 또는 비고를 수정합니다. 예정된 출석은 수정할 수 없습니다.
         status와 note 중 하나 이상을 전송해야 하며, 생략한 필드는 기존 값을 유지합니다. null은 허용하지 않습니다.
-        ABSENT에서 PRESENT로 변경하면 checkedInAt은 서버의 현재 시각, ABSENT로 변경하면 null입니다.
+        ABSENT에서 PRESENT 또는 LATE로 변경하면 checkedInAt은 서버의 현재 시각, ABSENT로 변경하면 null입니다.
+        PRESENT와 LATE 사이에서 변경하면 최초 checkedInAt을 유지합니다. 지각은 관리자가 직접 지정합니다.
         같은 status를 다시 전송하면 기존 checkedInAt을 유지합니다. 빈 문자열 note는 비고를 지웁니다.
         """)
     @ApiResponses({

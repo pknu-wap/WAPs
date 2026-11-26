@@ -109,6 +109,10 @@
   letter-spacing: 0.5px;
 }
 
+.ongoing-card + .ongoing-card {
+  margin-top: 10px;
+}
+
 .ongoing-card {
   width: 100%;
 

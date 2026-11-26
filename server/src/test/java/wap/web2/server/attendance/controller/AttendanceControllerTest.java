@@ -101,7 +101,7 @@ class AttendanceControllerTest {
                     .andExpect(jsonPath("$.code").value("COMMON_INVALID_INPUT"));
             }
             for (String body : List.of("{}", "{\"status\":null}", "{\"note\":null}", "{\"status\":0}",
-                "{\"status\":\"LATE\"}", "{\"note\":1}", "{\"note\":\"\",\"extra\":true}",
+                "{\"status\":\"INVALID\"}", "{\"note\":1}", "{\"note\":\"\",\"extra\":true}",
                 "{\"note\":\"" + "가".repeat(501) + "\"}")) {
                 mvc.perform(patch("/admin/attendances/1/users/10").with(user("admin").roles("ADMIN"))
                     .contentType("application/json").content(body)).andExpect(status().isBadRequest());
@@ -132,7 +132,7 @@ class AttendanceControllerTest {
     void serializesAdminResponsesAndPreservesPatchOmissions() {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
-            var summary = new Summary(1L, "발표", LocalDate.of(2026, 10, 10), AttendanceStatus.SCHEDULED, 1, 0, 1);
+            var summary = new Summary(1L, "발표", LocalDate.of(2026, 10, 10), AttendanceStatus.SCHEDULED, 1, 0, 0, 1);
             var participant = new Participant(10L, "가", wap.web2.server.member.entity.MembershipLevel.NEW, PresenceStatus.ABSENT, null, "");
             when(service.create(any())).thenReturn(summary);
             when(service.listAdmin(null)).thenReturn(new Content<>(List.of(summary)));
@@ -167,7 +167,7 @@ class AttendanceControllerTest {
             for (AttendanceStatus state : AttendanceStatus.values()) {
                 var request = new AttendanceRequests.ChangeStatus(state);
                 when(service.changeStatus(1, request)).thenReturn(
-                    new Summary(1L, "발표", LocalDate.of(2026, 10, 10), state, 3, 1, 2));
+                    new Summary(1L, "발표", LocalDate.of(2026, 10, 10), state, 3, 1, 0, 2));
                 mvc.perform(patch("/admin/attendances/1").with(user("admin").roles("ADMIN"))
                     .contentType("application/json").content("{\"status\":\"" + state + "\"}"))
                     .andExpect(status().isOk()).andExpect(jsonPath("$.attendanceId").value(1))
@@ -284,6 +284,29 @@ class AttendanceControllerTest {
         });
     }
 
+    @Test
+    void administratorCanSubmitLateAndRetrieveALateFilteredRoster() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            var instant = Instant.parse("2026-11-23T10:00:00Z");
+            var request = new AttendanceRequests.Update(PresenceStatus.LATE, null);
+            var participant = new Participant(10L, "회원", wap.web2.server.member.entity.MembershipLevel.NEW, PresenceStatus.LATE, instant, "");
+            when(service.update(1, 10, request)).thenReturn(participant);
+            mvc.perform(patch("/admin/attendances/1/users/10").with(user("admin").roles("ADMIN"))
+                .contentType("application/json").content("{\"status\":\"LATE\"}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("LATE"));
+            var summary = new Summary(1L, "정기 회의", LocalDate.of(2026, 11, 23),
+                AttendanceStatus.ENDED, 1, 0, 1, 0);
+            when(service.detail(1, PresenceStatus.LATE, "userName,asc"))
+                .thenReturn(new Detail(summary, new Content<>(List.of(participant))));
+            mvc.perform(get("/admin/attendances/1?status=LATE").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.lateCount").value(1))
+                .andExpect(jsonPath("$.absentCount").value(0))
+                .andExpect(jsonPath("$.participants.content[0].status").value("LATE"));
+            verify(service).update(1, 10, request);
+        });
+    }
+
     private UserPrincipal principal(String role) {
         return new UserPrincipal(10L, "user@example.com", "", List.of(
             new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + role)));
@@ -356,7 +379,7 @@ class AttendanceControllerTest {
             assertThat(listSchema.at("/properties/content/items/$ref").asText()).isEqualTo("#/components/schemas/AttendanceSummary");
             var detail = schemas.path("AttendanceDetail");
             assertThat(detail.path("properties").has("summary")).isFalse();
-            for (String field : List.of("attendanceId", "title", "date", "status", "totalCount", "presentCount", "absentCount", "participants")) {
+            for (String field : List.of("attendanceId", "title", "date", "status", "totalCount", "presentCount", "lateCount", "absentCount", "participants")) {
                 assertThat(detail.path("properties").has(field)).as(field).isTrue();
                 assertThat(detail.path("required")).contains(text(field));
             }
@@ -392,7 +415,7 @@ class AttendanceControllerTest {
             assertThat(checkIn.at("/responses/200/content/application~1json/schema/$ref").asText()).isEqualTo("#/components/schemas/AttendanceCheckInResponse");
             assertThat(checkIn.at("/responses/409").isMissingNode()).isFalse();
             assertThat(schemas.at("/AttendanceCheckInRequest/properties/qrToken/maxLength").asInt()).isEqualTo(512);
-            assertThat(schemas.at("/AttendanceCheckInResponse/properties/status/enum")).containsExactly(text("PRESENT"));
+            assertThat(schemas.at("/AttendanceCheckInResponse/properties/status/enum")).containsExactly(text("PRESENT"), text("LATE"));
             assertThat(schemas.at("/ErrorResponse/required"))
                 .containsExactlyInAnyOrder(text("timestamp"), text("status"), text("code"), text("message"), text("path"));
         });

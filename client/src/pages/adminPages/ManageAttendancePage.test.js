@@ -188,7 +188,7 @@ test("시작 → 실제 ID QR 발급 → 종료하면 QR이 제거된다", async
   expect(screen.getByRole("button", { name: "QR 생성" })).toBeDisabled();
 });
 
-test("진행 중 출석 상태와 비고는 서버에 저장하고 지각은 전송하지 않는다", async () => {
+test("진행 중 출석 상태와 비고는 서버에 저장하고 지각도 처리한다", async () => {
   summary.status = "ONGOING";
   render(<ManageAttendancePage />);
   await screen.findByText("회원");
@@ -210,6 +210,61 @@ test("진행 중 출석 상태와 비고는 서버에 저장하고 지각은 전
       note: "관리자 확인",
     }),
   );
+  const lateButton = screen.getByRole("button", { name: "지각" });
+  await waitFor(() => expect(lateButton).toBeEnabled());
+  await act(async () => fireEvent.click(lateButton));
+  expect(adminAttendanceApi.updateParticipant).toHaveBeenLastCalledWith(4, 8, {
+    status: "LATE",
+  });
+});
+
+test("종료된 출석은 수정 모드에서 지각으로 바꾸고 저장·재조회할 수 있다", async () => {
+  summary.status = "ENDED";
+  render(<ManageAttendancePage />);
+  const edit = await screen.findByRole("button", { name: "수정", exact: true });
+  expect(screen.getByRole("button", { name: "지각" })).toBeDisabled();
+  fireEvent.click(edit);
+  const late = screen.getByRole("button", { name: "지각" });
+  expect(late).toBeEnabled();
+  fireEvent.click(late);
+  expect(late).toHaveClass("lateActive");
+  expect(adminAttendanceApi.updateParticipant).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "수정내용 저장" }));
+  await screen.findByRole("button", { name: "수정", exact: true });
+  expect(adminAttendanceApi.updateParticipant).toHaveBeenCalledWith(4, 8, {
+    status: "LATE",
+  });
+  fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
+  await waitFor(() =>
+    expect(adminAttendanceApi.getDetail).toHaveBeenCalledTimes(2),
+  );
+  await screen.findByRole("button", { name: "수정", exact: true });
+  expect(screen.getByRole("button", { name: "지각" })).toHaveClass(
+    "lateActive",
+  );
+  expect(screen.getByRole("button", { name: "지각" })).toBeDisabled();
+  expect(screen.getByText("지각 :")).toHaveTextContent("지각 : 01명");
+});
+
+test("종료된 출석의 지각 수정은 취소하면 저장하지 않는다", async () => {
+  summary.status = "ENDED";
+  render(<ManageAttendancePage />);
+  fireEvent.click(
+    await screen.findByRole("button", { name: "수정", exact: true }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "지각" }));
+  fireEvent.click(screen.getByRole("button", { name: "취소" }));
+  expect(adminAttendanceApi.updateParticipant).not.toHaveBeenCalled();
+  expect(
+    screen.getByRole("button", { name: "미출석", exact: true }),
+  ).toHaveClass("absentActive");
+  expect(screen.getByRole("button", { name: "지각" })).not.toHaveClass(
+    "lateActive",
+  );
+});
+
+test("예정된 출석은 지각 처리를 허용하지 않는다", async () => {
+  await renderReady();
   expect(screen.getByRole("button", { name: "지각" })).toBeDisabled();
 });
 

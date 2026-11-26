@@ -1,6 +1,9 @@
 import { createRoutesFromElements, matchRoutes } from "react-router-dom";
 import attendancePreviewRoute from "./attendancePreviewRoute";
 
+// Routing tests do not render the admin layout or call its profile API.
+jest.mock("../components/Admin/AdminPageLayout", () => () => null);
+
 const originalEnv = process.env.NODE_ENV;
 afterEach(() => { process.env.NODE_ENV = originalEnv; });
 

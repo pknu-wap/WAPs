@@ -150,4 +150,42 @@ class MemberSignupControllerTest {
         return new UserPrincipal(1L, "test@example.com", null,
             List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_GUEST")));
     }
+
+    @Test
+    void profileEditingRequiresLoginAndValidatesTheRequest() {
+        context.run(ctx -> {
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            mvc.perform(patch("/user/registration").contentType("application/json").content("{\"member\":false}"))
+                .andExpect(status().isUnauthorized());
+            for (String body : List.of("{}", "{\"member\":null}", "{\"member\":true,\"name\":\"다섯글자명\"}",
+                "{\"member\":true,\"studentNumber\":\"2026\"}")) {
+                mvc.perform(patch("/user/registration").with(user(principal())).contentType("application/json").content(body))
+                    .andExpect(status().isBadRequest());
+            }
+            verifyNoInteractions(repository);
+        });
+    }
+
+    @Test
+    void savesTheAuthenticatedUsersProfileWithoutChangingPermissions() {
+        context.run(ctx -> {
+            var account = new User();
+            account.setId(1L);
+            account.setProvider(AuthProvider.kakao);
+            account.setRole(Role.ROLE_ADMIN);
+            account.setMembershipLevel(MembershipLevel.REGULAR);
+            when(repository.findByIdForUpdate(1L)).thenReturn(Optional.of(account));
+            var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
+            mvc.perform(patch("/user/registration").with(user(principal())).contentType("application/json")
+                .content("{\"member\":true,\"name\":\"홍길동\",\"studentNumber\":\"26\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userName").value("홍길동"))
+                .andExpect(jsonPath("$.studentNumber").value("26"))
+                .andExpect(jsonPath("$.wapMember").value(true))
+                .andExpect(jsonPath("$.signupCompleted").value(true));
+            assertThat(account.getRole()).isEqualTo(Role.ROLE_ADMIN);
+            assertThat(account.getMembershipLevel()).isEqualTo(MembershipLevel.REGULAR);
+            verify(repository).findByIdForUpdate(1L);
+        });
+    }
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaPen } from "react-icons/fa";
 import NameChange from "../components/NameChange";
+import PageBrand from "../components/PageBrand";
 import { userApi } from "../api/user";
 import authStorage from "../utils/authStorage";
 import { memberTypeLabel } from "../utils/accountProfile";
@@ -12,6 +13,7 @@ const Settings = () => {
 
   const [userName, setUserName] = useState("");
   const [userType, setUserType] = useState("");
+  const [registrationEditable, setRegistrationEditable] = useState(false);
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSavingName, setIsSavingName] = useState(false);
@@ -35,6 +37,7 @@ const Settings = () => {
           authStorage.set("userName", currentName, { expires: 7 });
         }
         setUserType(memberTypeLabel(data));
+        setRegistrationEditable(data.registrationEditable === true);
       } catch (error) {
         if (active) setLoadError("회원 정보를 불러오지 못했습니다.");
       } finally {
@@ -86,6 +89,7 @@ const Settings = () => {
 
   return (
     <div className="settingsContainer">
+      <PageBrand />
       <div className="settings-content">
         <button
           type="button"
@@ -180,13 +184,25 @@ const Settings = () => {
           </div>
         </section>
 
-        <button
-          type="button"
-          className="back-menu-button"
-          onClick={handleMenuNavigate}
-        >
-          메뉴 페이지로 돌아가기
-        </button>
+        <div className="settings-actions">
+          {registrationEditable && (
+            <button
+              type="button"
+              className="settings-action settings-action--primary"
+              disabled={isLoading || Boolean(loadError) || isSavingName}
+              onClick={() => navigate("/signup?edit=true")}
+            >
+              회원가입 정보 수정
+            </button>
+          )}
+          <button
+            type="button"
+            className="back-menu-button"
+            onClick={handleMenuNavigate}
+          >
+            메뉴 페이지로 돌아가기
+          </button>
+        </div>
       </div>
 
       {isNameModalOpen && (

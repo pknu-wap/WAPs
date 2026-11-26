@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import apiClient from "../api/client";
 import authStorage from "../utils/authStorage";
+import AttendanceCompleteDialog from "../components/AttendanceCompleteDialog";
 
 const errorMessages = {
   400: "유효하지 않거나 만료된 QR입니다. 현재 QR을 다시 스캔해 주세요.",
@@ -41,7 +42,8 @@ function AttendanceCheckIn({ attendanceId, qrToken }) {
     };
   }, [attendanceId, qrToken]);
 
-  if (result?.succeeded) return <Navigate to="/ProjectPage" replace />;
+  if (result?.confirmed) return <Navigate to="/ProjectPage" replace />;
+  if (result?.succeeded) return <AttendanceCompleteDialog onConfirm={() => setResult({ confirmed: true })} />;
   if (result) return <p role="alert">{result.message}</p>;
   return <p role="status">출석을 확인하고 있습니다.</p>;
 }
