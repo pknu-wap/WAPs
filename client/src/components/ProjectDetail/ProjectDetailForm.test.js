@@ -128,6 +128,15 @@ describe.each([
   });
 });
 
+test("게스트 작성자는 삭제 버튼 없이 수정 화면으로 이동할 수 있다", async () => {
+  projectApi.getProjectDetail.mockResolvedValue({ isOwner: true, canManage: false });
+  openPage(ProjectDetailForm);
+  const edit = await screen.findByRole("button", { name: "수정하기" });
+  expect(screen.queryByRole("button", { name: "삭제하기" })).toBeNull();
+  fireEvent.click(edit);
+  await screen.findByText("Edit page");
+});
+
 test("관리자는 타인의 게시물 수정 화면으로 이동할 수 있다", async () => {
   openPage(ProjectDetailForm);
   fireEvent.click(await screen.findByRole("button", { name: "수정하기" }));
