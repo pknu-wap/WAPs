@@ -225,11 +225,6 @@ body:has(nav.menu) .App-header {
 
 @media (min-width: 600px) {
 
-  .menuContainer {
-    width: 100vw;
-    max-width: none;
-  }
-
   .menu {
     --menu-gradient-height: calc(341px + clamp(27.5px, 3.75vw, 33.75px));
     position: fixed;

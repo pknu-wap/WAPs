@@ -14,7 +14,7 @@ const useProjectForm = () => {
   const [removalList, setRemovalList] = useState([]); // 삭제된 이미지 URL들 저장용
 
   const [teamMembers, setTeamMembers] = useState([
-    { userId: null, memberName: "", image: null, memberRole: "" },
+    { memberName: "", image: null, memberRole: "" },
   ]);
 
   const [thumbnail, setThumbnail] = useState(null);
@@ -83,13 +83,9 @@ const useProjectForm = () => {
   };
 
   // 팀원 이름 변경 핸들러
-  const handleMemberSelect = (member, index) => {
+  const handleMemberNameChange = (e, index) => {
     const newTeamMembers = [...teamMembers];
-    newTeamMembers[index] = {
-      ...newTeamMembers[index],
-      userId: member?.userId || null,
-      memberName: member?.memberName || "",
-    };
+    newTeamMembers[index].memberName = e.target.value;
     setTeamMembers(newTeamMembers);
   };
 
@@ -114,20 +110,14 @@ const useProjectForm = () => {
   const addTeamMember = () => {
     const lastMember = teamMembers[teamMembers.length - 1];
     // 마지막 팀원의 이름이 비어있지 않고, 역할이 비어있지 않은 경우에만 추가
-    if (lastMember.userId && lastMember.memberRole.trim() !== "") {
-      if (
-        teamMembers
-          .slice(0, -1)
-          .some((member) => member.userId === lastMember.userId)
-      ) {
-        alert("같은 회원을 중복 등록할 수 없습니다.");
-        return;
-      }
+    if (
+      (lastMember.memberName || "").trim() !== "" &&
+      (lastMember.memberRole || "").trim() !== ""
+    ) {
       setTeamMembers([
         ...teamMembers,
-        { userId: null, memberName: "", memberRole: "" },
+        { memberName: "", image: null, memberRole: "" },
       ]);
-      // console.log(teamMembers);
     } else {
       alert("모든 필드를 입력해 주세요."); // 사용자에게 알림 추가
     }
@@ -139,7 +129,7 @@ const useProjectForm = () => {
       index === teamMembers.length - 1
         ? teamMembers.map((member, i) =>
             i === index
-              ? { userId: null, memberName: "", memberRole: "" }
+              ? { memberName: "", image: null, memberRole: "" }
               : member,
           )
         : teamMembers.filter((_, i) => i !== index);
@@ -195,7 +185,7 @@ const useProjectForm = () => {
     setSummary("");
     setSemester("");
     setTeamMembers([
-      { userId: null, memberName: "", image: null, memberRole: "" },
+      { memberName: "", image: null, memberRole: "" },
     ]); // 이름을 일관되게 수정(기존: name, role)
     setThumbnail(null);
     setImages([null, null, null, null]);
@@ -278,7 +268,7 @@ const useProjectForm = () => {
     // 핸들러
     handleImgUpload,
     handleRemoveImage,
-    handleMemberSelect,
+    handleMemberNameChange,
     handleMemberImageUpload,
     handleRoleChange,
     addTeamMember,

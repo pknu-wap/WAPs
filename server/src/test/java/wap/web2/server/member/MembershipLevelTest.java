@@ -45,13 +45,13 @@ class MembershipLevelTest {
         var users = mock(UserRepository.class);
         var member = new User();
         member.setMembershipLevel(MembershipLevel.NEW);
-        when(users.findUserByOffset(2, 2, Role.ROLE_MEMBER, MembershipLevel.NEW))
+        when(users.findUserByOffset(2, 2, Role.ROLE_MEMBER, MembershipLevel.NEW, null))
             .thenReturn(List.of(member, member));
-        var result = new UserRoleService(users).getUsersForAdmin(1, 2, Role.ROLE_MEMBER, MembershipLevel.NEW);
+        var result = new UserRoleService(users).getUsersForAdmin(1, 2, Role.ROLE_MEMBER, MembershipLevel.NEW, null);
         assertThat(result.content()).hasSize(1);
         assertThat(result.hasNext()).isTrue();
         assertThat(result.content().get(0).membershipLevel()).isEqualTo(MembershipLevel.NEW);
-        verify(users).findUserByOffset(2, 2, Role.ROLE_MEMBER, MembershipLevel.NEW);
+        verify(users).findUserByOffset(2, 2, Role.ROLE_MEMBER, MembershipLevel.NEW, null);
     }
 
     @Test

@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useNavigate } from "react-router-dom";
 import ContentBox from "./ContentBox";
 import { projectApi } from "../api/project";
 
@@ -67,10 +67,32 @@ test("이전 학기의 늦은 응답이 최신 학기 검색 결과를 덮지 �
   fireEvent.click(screen.getByRole("button", { name: /25년 2학기/ }));
   fireEvent.click(screen.getByRole("button", { name: "25-1" }));
   await waitFor(() => expect(projectApi.getProjectList).toHaveBeenLastCalledWith("2025-01"));
+  expect(screen.getByRole("status")).toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: /WAP Web/ })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: /25년 1학기/ }));
   fireEvent.click(screen.getByRole("button", { name: "25-2" }));
   await screen.findByRole("heading", { name: "최신 프로젝트" });
   await act(async () => finishOld({ projectsResponse: [{ ...projects[0], title: "이전 프로젝트" }] }));
   expect(screen.getByRole("heading", { name: "최신 프로젝트" })).toBeInTheDocument();
   expect(screen.queryByRole("heading", { name: "이전 프로젝트" })).not.toBeInTheDocument();
+});
+
+test("뒤로 가면 URL에 해당하는 학기의 프로젝트 링크를 복원한다", async () => {
+  function BackButton() {
+    const navigate = useNavigate();
+    return <button onClick={() => navigate(-1)}>뒤로</button>;
+  }
+  projectApi.getProjectList.mockImplementation((semester) => Promise.resolve({
+    projectsResponse: semester === "2025-02" ? [projects[0]] : [projects[1]],
+  }));
+  render(<MemoryRouter initialEntries={["/ProjectPage?semester=2025-02"]}>
+    <ContentBox /><BackButton />
+  </MemoryRouter>);
+  expect(await screen.findByRole("link", { name: /WAP Web/ })).toHaveAttribute("href", "/project/1");
+  fireEvent.click(screen.getByRole("button", { name: /25년 2학기/ }));
+  fireEvent.click(screen.getByRole("button", { name: "25-1" }));
+  expect(await screen.findByRole("link", { name: /WAP App/ })).toHaveAttribute("href", "/project/2");
+  fireEvent.click(screen.getByRole("button", { name: "뒤로" }));
+  await screen.findByRole("link", { name: /WAP Web/ });
+  expect(screen.getByRole("button", { name: /25년 2학기/ })).toHaveAttribute("aria-expanded", "false");
 });

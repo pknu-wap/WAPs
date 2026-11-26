@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { projectApi } from "../api/project";
 import "../App.css";
 import "../assets/Contentbox.css";
@@ -62,19 +62,16 @@ const ContentBox = () => {
   // useSemester 훅을 사용하여 초기 학기/년도 상태 설정
   const semesterString = useSemester();
 
-  // URL에서 값을 읽어와 초기 상태 설정, 없으면 useSemester 값 사용
-  const initialSemester = normalizeSemesterParam(
+  // URL에 학기가 없으면 현재 학기를 표시한다.
+  const semesterFilter = normalizeSemesterParam(
     searchParams.get("semester"),
     searchParams.get("projectYear"),
     semesterString,
   );
 
-  const [semesterFilter, setSemesterFilter] = useState(initialSemester);
-
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     setIsLoading(true);
@@ -128,7 +125,6 @@ const ContentBox = () => {
 
   const handleSemesterChange = (year, semester) => {
     const nextSemester = toSemester(year, semester);
-    setSemesterFilter(nextSemester);
     setSearchParams({ semester: nextSemester });
     setYearAccordionOpen(false);
   };
@@ -196,7 +192,11 @@ const ContentBox = () => {
 
             {/* 연도 + 학기 필터 드롭다운 */}
             <div className="filter-dropdown">
-              <button onClick={toggleYearAccordion} className="dropdown-button">
+              <button
+                onClick={toggleYearAccordion}
+                className="dropdown-button"
+                aria-expanded={yearAccordionOpen}
+              >
                 {yearAccordionOpen
                   ? "년도/학기 ▲"
                   : `${formatSemesterLabel(semesterFilter)} ▼`}
@@ -255,13 +255,12 @@ const ContentBox = () => {
           </div>
         )}
 
-        {!isBaseEmpty &&
-          !isFilteredEmpty &&
-          filteredData.map((item, index) => (
-            <div
-              key={item.projectId ?? index}
+        {!isLoading &&
+          filteredData.map((item) => (
+            <Link
+              key={item.projectId}
               className="box"
-              onClick={() => navigate(`/project/${item.projectId}`)}
+              to={`/project/${item.projectId}`}
             >
               <div className="image">
                 {item.thumbnail && (
@@ -284,7 +283,7 @@ const ContentBox = () => {
                 </div>
                 <p>{item.summary}</p>
               </div>
-            </div>
+            </Link>
           ))}
       </div>
     </div>

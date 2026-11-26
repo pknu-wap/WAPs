@@ -1,5 +1,11 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { projectApi } from "../../api/project";
 import Cookies from "../../utils/authStorage";
@@ -45,6 +51,31 @@ beforeEach(() => {
 });
 
 afterEach(() => jest.restoreAllMocks());
+
+test.each([undefined, [], [{ imageFile: " " }]])(
+  "첨부 이미지 주소가 없으면 상단 썸네일만 표시한다 (%j)",
+  async (images) => {
+    projectApi.getProjectDetail.mockResolvedValue({ images });
+    openPage(ProjectDetailForm);
+    const thumbnail = await screen.findByRole("img", {
+      name: "Project Thumbnail",
+    });
+    expect(screen.getAllByRole("img")).toEqual([thumbnail]);
+  },
+);
+
+test("주소가 있는 하단 이미지만 첨부 순서대로 표시한다", async () => {
+  projectApi.getProjectDetail.mockResolvedValue({
+    images: [{ imageFile: "/first.png" }, {}, { imageFile: "/second.png" }],
+  });
+  openPage(ProjectDetailForm);
+  await screen.findByRole("img", { name: "Project Thumbnail" });
+  const images = screen.getAllByRole("img", { name: /^이미지 / });
+  expect(images.map((image) => image.getAttribute("src"))).toEqual([
+    "/first.png",
+    "/second.png",
+  ]);
+});
 
 describe.each([
   ["상세 화면", ProjectDetailForm],
@@ -125,7 +156,14 @@ test("상세 화면에 직무별 모집 인원을 표시한다", async () => {
     ],
   });
   openPage(ProjectDetailForm);
-  expect(await screen.findByText("프론트엔드 3명, 백엔드 2명")).toBeTruthy();
+  const region = await screen.findByRole("region", {
+    name: "모집 인원 (팀장 제외)",
+  });
+  const positions = within(region).getAllByRole("listitem");
+  expect(positions.map((position) => position.textContent)).toEqual([
+    "프론트엔드 3명,",
+    "백엔드 2명",
+  ]);
 });
 
 test("기존 게시글에는 모집 정보가 없음을 표시한다", async () => {

@@ -7,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { projectApi } from "../../api/project";
-import { userApi } from "../../api/user";
 import styles from "../../assets/ProjectCreation/ProjectForm.module.css";
 import teamStyles from "../../assets/ProjectCreation/TeamMemberInputForm.module.css";
 import useProjectForm from "../../hooks/ProjectCreation/useProjectForm";
@@ -59,11 +58,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
   const [isSemesterLoading, setIsSemesterLoading] = useState(!isEdit);
   const [semesterError, setSemesterError] = useState("");
   const [semesterRetry, setSemesterRetry] = useState(0);
-  const [memberOptions, setMemberOptions] = useState([]);
-  const [membersLoading, setMembersLoading] = useState(true);
-  const [membersError, setMembersError] = useState("");
-  const [membersRetry, setMembersRetry] = useState(0);
-  const [defaultMember, setDefaultMember] = useState(null);
   const {
     title,
     setTitle,
@@ -89,7 +83,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     password,
     handleImgUpload,
     handleRemoveImage,
-    handleMemberSelect,
+    handleMemberNameChange,
     handleRoleChange,
     addTeamMember,
     handleRemoveTeamMember,
@@ -109,7 +103,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         techStacks: existingProject?.techStack,
         images: existingProject?.images?.map((image) => image.imageFile),
       }
-    : { teamMembers: defaultMember ? [defaultMember] : [] };
+    : { teamMembers: [] };
   const currentDraft = {
     title,
     summary,
@@ -164,39 +158,6 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     };
   }, [isEdit, setSemester, semesterRetry]);
 
-  useEffect(() => {
-    let ignore = false;
-    setMembersLoading(true);
-    setMembersError("");
-    Promise.all([
-      projectApi.getMemberOptions(),
-      isEdit ? Promise.resolve(null) : userApi.getMe(),
-    ])
-      .then(([members, currentUser]) => {
-        if (ignore) return;
-        setMemberOptions(members);
-        const defaultMember = members.find(
-          (member) => member.userId === currentUser?.userId,
-        );
-        if (!isEdit && defaultMember) {
-          setDefaultMember(defaultMember);
-          setTeamMembers((previous) => {
-            if (previous[0]?.userId || previous[0]?.memberName) return previous;
-            return [{ ...previous[0], ...defaultMember }, ...previous.slice(1)];
-          });
-        }
-      })
-      .catch(() => {
-        if (!ignore) setMembersError("회원 목록을 불러오지 못했습니다.");
-      })
-      .finally(() => {
-        if (!ignore) setMembersLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [membersRetry, isEdit, setTeamMembers]);
-
   // 기존 데이터 초기화
   useEffect(() => {
     if (isEdit && existingProject) {
@@ -215,7 +176,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       if (Array.isArray(existingProject.teamMember)) {
         setTeamMembers([
           ...existingProject.teamMember,
-          { userId: null, memberName: "", memberRole: "" },
+          { memberName: "", memberRole: "" },
         ]);
       }
       setSelectedTechStacks(existingProject.techStack || []);
@@ -248,19 +209,14 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
     }
 
     const selectedMembers = teamMembers.filter(
-      (member) => member.userId || member.memberName || member.memberRole,
+      (member) => member.memberName || member.memberRole,
     );
     if (
-      selectedMembers.some((member) => !member.userId || !member.memberRole)
+      selectedMembers.some(
+        (member) => !(member.memberName || "").trim() || !member.memberRole,
+      )
     ) {
-      alert("등록된 회원과 역할을 선택해 주세요.");
-      return;
-    }
-    if (
-      new Set(selectedMembers.map((member) => member.userId)).size !==
-      selectedMembers.length
-    ) {
-      alert("같은 회원을 중복 등록할 수 없습니다.");
+      alert("팀원 이름과 역할을 입력해 주세요.");
       return;
     }
 
@@ -287,7 +243,7 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
       content,
       summary,
       teamMember: selectedMembers.map((member) => ({
-        userId: member.userId,
+        memberName: (member.memberName || "").trim(),
         memberRole: member.memberRole,
       })),
       techStack: selectedTechStacks.map((stack) => ({
@@ -439,25 +395,12 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
           aria-label="팀원 등록"
         >
           <h2 className={teamStyles.teammember_label}>팀원 등록</h2>
-          {membersError && (
-            <p role="alert">
-              {membersError}{" "}
-              <button
-                type="button"
-                onClick={() => setMembersRetry((retry) => retry + 1)}
-              >
-                다시 시도
-              </button>
-            </p>
-          )}
           {teamMembers.map((member, index) => (
             <TeamMemberInputForm
               key={index}
               member={member}
               index={index}
-              handleMemberSelect={handleMemberSelect}
-              memberOptions={memberOptions}
-              membersLoading={membersLoading}
+              handleMemberNameChange={handleMemberNameChange}
               handleRoleChange={handleRoleChange}
               roleOptions={roleOptions}
               addTeamMember={addTeamMember}

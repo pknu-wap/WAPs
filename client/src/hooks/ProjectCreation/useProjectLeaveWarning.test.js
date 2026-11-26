@@ -102,11 +102,11 @@ test("저장 성공 직후에는 렌더링을 기다리지 않아도 경고 없�
 });
 
 test("기본 팀원과 빈 추가 행은 같은 상태로 비교한다", () => {
-  const initial = { teamMembers: [{ userId: 1, memberName: "사용자" }] };
+  const initial = { teamMembers: [{ memberName: "사용자" }] };
   expect(
     projectDraftSnapshot({
       teamMembers: [
-        { userId: 1, memberName: "사용자", memberRole: "" },
+        { memberName: "사용자", memberRole: "" },
         { memberName: "", memberRole: "" },
       ],
     }),
@@ -121,7 +121,7 @@ test.each([
   { password: "1234" },
   { thumbnail: new File(["image"], "a.png") },
   { images: [new File(["image"], "a.png")] },
-  { teamMembers: [{ userId: 1, memberRole: "PM" }] },
+  { teamMembers: [{ memberName: "사용자", memberRole: "PM" }] },
   { techStacks: [{ techStackName: "React", techStackType: "FRONTEND" }] },
   { recruitmentPositions: [{ role: "백엔드", count: 1 }] },
 ])("저장 대상 변경을 감지한다: %p", (draft) => {
