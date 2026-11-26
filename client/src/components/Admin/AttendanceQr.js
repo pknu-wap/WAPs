@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { adminAttendanceApi } from "../../api/admin";
 import styles from "../../assets/Admin/ManageAttendance.module.css";
@@ -35,19 +35,7 @@ export default function AttendanceQr({ attendanceId, closed }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (!qr) return undefined;
-    const tick = () => {
-      const time = Date.now();
-      setNow(time);
-      if (time >= qr.expiresAtMs) setQr(null);
-    };
-    tick();
-    const timer = window.setInterval(tick, 250);
-    return () => window.clearInterval(timer);
-  }, [qr]);
-
-  const issueQr = async () => {
+  const issueQr = useCallback(async () => {
     if (pending.current || !validId || closed) return;
     pending.current = true;
     setLoading(true);
@@ -69,7 +57,11 @@ export default function AttendanceQr({ attendanceId, closed }) {
         return;
       }
       setNow(time);
-      setQr({ ...response, expiresAtMs });
+      setQr({
+        ...response,
+        expiresAtMs,
+        refreshAtMs: Math.min(time + 60000, expiresAtMs),
+      });
       setIssued(true);
     } catch (requestError) {
       if (mounted.current) setError(errorMessage(requestError));
@@ -77,10 +69,25 @@ export default function AttendanceQr({ attendanceId, closed }) {
       pending.current = false;
       if (mounted.current) setLoading(false);
     }
-  };
+  }, [attendanceId, closed, validId]);
+
+  useEffect(() => {
+    if (!qr || closed) return undefined;
+    const tick = () => {
+      const time = Date.now();
+      setNow(time);
+      if (time >= qr.refreshAtMs) {
+        window.clearInterval(timer);
+        issueQr();
+      }
+    };
+    const timer = window.setInterval(tick, 250);
+    tick();
+    return () => window.clearInterval(timer);
+  }, [qr, closed, issueQr]);
 
   const remaining = qr
-    ? Math.max(0, Math.ceil((qr.expiresAtMs - now) / 1000))
+    ? Math.max(0, Math.ceil((qr.refreshAtMs - now) / 1000))
     : 0;
 
   return (

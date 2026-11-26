@@ -86,17 +86,49 @@ test("발급 중 중복 클릭을 막는다", async () => {
   expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(1);
 });
 
-test("expiresAt이 지나면 QR을 숨기고 재발급할 수 있다", async () => {
+test("서버 유효기간이 120초여도 60초마다 새 토큰을 발급한다", async () => {
+  jest.useFakeTimers();
+  let sequence = 0;
+  adminAttendanceApi.issueQr.mockImplementation(async () => ({
+    attendanceId: 4,
+    qrToken: `token-${++sequence}`,
+    expiresAt: new Date(Date.now() + 120000).toISOString(),
+  }));
+  render(<AttendanceQr attendanceId={4} closed={false} />);
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: "QR 생성" })),
+  );
+  await act(async () => jest.advanceTimersByTime(59000));
+  expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole("timer")).toHaveTextContent("1초");
+  await act(async () => jest.advanceTimersByTime(1000));
+  expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(2);
+  expect(screen.getByTestId("attendance-qr")).toHaveAttribute(
+    "data-value",
+    expect.stringContaining("token-2"),
+  );
+  await act(async () => jest.advanceTimersByTime(60000));
+  expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(3);
+});
+
+test("자동 갱신 실패 시 QR을 숨기고 요청 반복 없이 재시도할 수 있다", async () => {
   jest.useFakeTimers();
   render(<AttendanceQr attendanceId={4} closed={false} />);
   await act(async () =>
     fireEvent.click(screen.getByRole("button", { name: "QR 생성" })),
   );
-  expect(screen.getByTestId("attendance-qr")).toBeInTheDocument();
-  act(() => jest.advanceTimersByTime(60000));
+  adminAttendanceApi.issueQr.mockRejectedValueOnce(new Error("offline"));
+  await act(async () => jest.advanceTimersByTime(60000));
   expect(screen.queryByTestId("attendance-qr")).not.toBeInTheDocument();
-  expect(screen.getByRole("status")).toHaveTextContent("만료");
-  expect(screen.getByRole("button", { name: "QR 재발급" })).toBeEnabled();
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "QR을 발급하지 못했습니다",
+  );
+  await act(async () => jest.advanceTimersByTime(60000));
+  expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(2);
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: "QR 재발급" })),
+  );
+  expect(screen.getByTestId("attendance-qr")).toBeInTheDocument();
 });
 
 test("서버가 409를 반환하면 오류를 표시한다", async () => {
