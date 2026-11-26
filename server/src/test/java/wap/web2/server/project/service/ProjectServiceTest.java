@@ -231,6 +231,29 @@ class ProjectServiceTest {
         verify(projectRepository).delete(project);
     }
 
+    @Test
+    void 게스트_작성자는_기존_프로젝트를_수정할_수_있고_삭제는_거절된다() throws Exception {
+        User owner = owner();
+        owner.setRole(Role.ROLE_GUEST);
+        Project project = project(owner);
+        UserPrincipal principal = principal(owner.getId());
+        when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
+        when(projectRepository.findById(10L)).thenReturn(Optional.of(project));
+
+        for (var details : List.of(projectService.getProjectDetails(10L, principal),
+                projectService.getProjectDetailsForUpdate(10L, principal))) {
+            assertThat(details.getIsOwner()).isTrue();
+            assertThat(details.getCanManage()).isFalse();
+        }
+        projectService.update(10L, baseRequestBuilder().build(), principal);
+        assertThat(project.getTitle()).isEqualTo("updated title");
+
+        when(projectRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(project));
+        assertThatThrownBy(() -> projectService.delete(10L, principal))
+            .isInstanceOf(ForbiddenException.class);
+        verify(projectRepository, never()).delete(project);
+    }
+
     @ParameterizedTest
     @CsvSource({ "ROLE_MEMBER", "ROLE_GUEST" })
     void 작성자가_아닌_일반_사용자는_수정_조회와_수정_삭제가_금지된다(Role role) {

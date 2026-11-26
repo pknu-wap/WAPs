@@ -118,6 +118,9 @@ public class SecurityConfig {
                     .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.POST, "/project", "/project/**", "/team-build/**")
                     .hasAnyRole("MEMBER", "ADMIN")
+                    // The update service checks ownership of this specific project.
+                    .requestMatchers(HttpMethod.PUT, "/project/{projectId:[0-9]+}")
+                    .authenticated()
                     .requestMatchers(HttpMethod.PUT, "/project", "/project/**")
                     .hasAnyRole("MEMBER", "ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/project", "/project/**")

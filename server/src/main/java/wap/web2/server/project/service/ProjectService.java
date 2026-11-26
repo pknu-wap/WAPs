@@ -161,13 +161,13 @@ public class ProjectService {
         );
         Project project = findProject(projectId);
 
-        if (!canManage(project, user)) {
+        if (!canEdit(project, user)) {
             throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
         }
 
         return ProjectDetailsResponse.from(project)
             .changeIsOwner(project.isOwner(user))
-            .changeCanManage(true);
+            .changeCanManage(canManage(project, user));
     }
 
     @CacheEvict(value = "projectList", allEntries = true)
@@ -181,7 +181,7 @@ public class ProjectService {
         User user = findUser(userPrincipal.getId());
         Project project = findProject(projectId);
 
-        if (!canManage(project, user)) {
+        if (!canEdit(project, user)) {
             throw new ForbiddenException("프로젝트 수정 권한이 없습니다.");
         }
 
@@ -262,6 +262,11 @@ public class ProjectService {
     }
 
     private boolean canManage(Project project, User user) {
+        return user.getRole() == Role.ROLE_ADMIN
+            || (user.getRole() == Role.ROLE_MEMBER && project.isOwner(user));
+    }
+
+    private boolean canEdit(Project project, User user) {
         return user.getRole() == Role.ROLE_ADMIN || project.isOwner(user);
     }
 
