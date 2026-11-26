@@ -8,9 +8,12 @@
 /* 본문과 헤더 폭을 맞추는 공통 값 */
 :root {
   --container-max: min(100vw, 400px);
+  /* 필요 시 한 곳만 수정 */
+}
+
+.project-page {
   --project-content-gutter: 20px;
   --project-content-max: 1040px;
-  /* 필요 시 한 곳만 수정 */
 }
 
 /* ===== 헤더: 전폭 fixed + 내부 래퍼로 실제 표시 폭 제한 ===== */
@@ -48,8 +51,6 @@
 
 /* 아이콘 */
 .menu-icon {
-  position: absolute;
-  inset-inline-end: max(var(--project-content-gutter), calc((100% - var(--project-content-max)) / 2));
   background: none;
   border: 0;
   color: inherit;
@@ -224,14 +225,9 @@ ul {
 }
 
 @media (min-width: 600px) {
-  :root {
+  .project-page {
     --project-content-gutter: 28px;
     --project-content-max: 850px;
-  }
-
-  .App-header {
-    left: 0;
-    max-width: none;
   }
 
   html:has(.project-page),
@@ -291,6 +287,11 @@ ul {
     justify-content: space-between;
   }
 
+  .project-page .header-inner {
+    width: calc(100% - 2 * var(--project-content-gutter));
+    max-width: var(--project-content-max);
+  }
+
   .project-page .waplogo img,
   .container.vote-page .waplogo img {
     height: 18px !important;
@@ -303,7 +304,7 @@ ul {
 }
 
 @media (min-width: 1024px) {
-  :root {
+  .project-page {
     --project-content-gutter: 40px;
     --project-content-max: 1200px;
   }
@@ -332,11 +333,6 @@ ul {
     margin-left: auto;
     margin-right: 24px;
     gap: 34px;
-  }
-
-  .project-page .desktop-nav + .menu-icon,
-  .container.vote-page .desktop-nav + .menu-icon {
-    position: static;
   }
 
   .project-page .desktop-nav button,

@@ -229,11 +229,6 @@ body:has(nav.menu) .App-header {
 
 @media (min-width: 600px) {
 
-  .menuContainer {
-    width: 100vw;
-    max-width: none;
-  }
-
   .menu {
     position: fixed;
 
