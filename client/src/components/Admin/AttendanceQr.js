@@ -172,9 +172,6 @@ function AttendanceQrDialog({ attendanceId, onClose }) {
           ✕
         </button>
         <h2 id={titleId}>출석체크 QR</h2>
-        <p>
-          휴대폰 카메라로 QR을 스캔해 주세요. QR은 60초마다 자동 갱신됩니다.
-        </p>
         {error && (
           <p className={styles.error} role="alert">
             {error}
