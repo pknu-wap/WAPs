@@ -7,7 +7,7 @@ import "../assets/CheckIn.css";
 const CheckIn = () => {
   const navigate = useNavigate();
 
-  const [ongoingAttendance, setOngoingAttendance] = useState(null);
+  const [ongoingAttendances, setOngoingAttendances] = useState([]);
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,7 +27,7 @@ const CheckIn = () => {
         ]);
 
         if (!active) return;
-        setOngoingAttendance(ongoingData[0] || null);
+        setOngoingAttendances(ongoingData);
 
         setAttendanceHistory(
           Array.isArray(endedData) ? endedData : []
@@ -50,12 +50,6 @@ const CheckIn = () => {
     if (status === "PRESENT") return "출석";
     if (status === "LATE") return "지각";
     return "미출석";
-  };
-
-  const handleQrScan = () => {
-    if (!ongoingAttendance) return;
-
-    navigate(`/CheckIn/scan/${ongoingAttendance.attendanceId}`);
   };
 
   return (
@@ -86,23 +80,25 @@ const CheckIn = () => {
             진행중인 출석
           </h2>
 
-          {isLoading ? (
+          {isLoading && (
             <div className="ongoing-card">
               출석 정보를 불러오는 중입니다.
             </div>
-          ) : error ? null : ongoingAttendance ? (
-            <div className="ongoing-card">
+          )}
+          {!isLoading && !error && ongoingAttendances.length === 0 && <p>진행 중인 출석이 없습니다.</p>}
+          {ongoingAttendances.map((attendance) => (
+            <div className="ongoing-card" key={attendance.attendanceId}>
               <div className="attendance-top">
                 <div className="attendance-left">
                   <span className="attendance-dot attendance-dot-active" />
 
                   <div className="attendance-text">
-                    <h3>{ongoingAttendance.title}</h3>
+                    <h3>{attendance.title}</h3>
 
                     <p>
                       나의 출석 상태 :{" "}
                       {getStatusText(
-                        ongoingAttendance.myStatus
+                        attendance.myStatus
                       )}
                     </p>
                   </div>
@@ -113,16 +109,16 @@ const CheckIn = () => {
                 </span>
               </div>
 
-              {!["PRESENT", "LATE"].includes(ongoingAttendance.myStatus) && (
+              {!["PRESENT", "LATE"].includes(attendance.myStatus) && (
                 <button
                   className="qr-button"
-                  onClick={handleQrScan}
+                  onClick={() => navigate(`/CheckIn/scan/${attendance.attendanceId}`)}
                 >
                   출석 QR 찍기
                 </button>
               )}
             </div>
-          ) : <p>진행 중인 출석이 없습니다.</p>}
+          ))}
         </section>
 
         <div className="checkin-divider" />
