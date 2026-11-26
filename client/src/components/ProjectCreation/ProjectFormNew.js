@@ -418,6 +418,9 @@ const ProjectFormNew = ({ isEdit = false, existingProject = null }) => {
         <TechStackSelector
           selectedTechStacks={selectedTechStacks}
           toggleTechStack={toggleTechStack}
+          onRemove={(selected) =>
+            setSelectedTechStacks((stacks) => stacks.filter((stack) => stack !== selected))
+          }
         />
         <InputPin password={password} setPassword={setPassword} />
         {uploadError && <p className="error-message">{uploadError}</p>}
