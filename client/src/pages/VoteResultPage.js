@@ -147,7 +147,9 @@ const VoteResultPage = () => {
           <div className={styles.header_bg_zone}>
             <div className={styles.title_form}>
               <div className={styles.title}>
-                VOTING RESULTS
+                VOTING
+                <br />
+                RESULTS
               </div>
               <div
                 className={styles.title}
