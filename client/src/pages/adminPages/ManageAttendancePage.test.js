@@ -494,3 +494,12 @@ test("한국 시간 자정을 넘긴 제출은 최신 날짜로 검증한다", a
     jest.useRealTimers();
   }
 });
+
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute("open");
+  };
+});

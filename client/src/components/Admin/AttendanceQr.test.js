@@ -163,3 +163,90 @@ test("선택을 변경하면 이전 요청 결과가 새 출석에 표시되지 
   );
   expect(screen.queryByTestId("attendance-qr")).not.toBeInTheDocument();
 });
+
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute("open");
+  };
+});
+
+test.each(["닫기", "Escape", "배경"])(
+  "%s로 모달을 닫으면 자동 갱신을 중단한다",
+  async (method) => {
+    jest.useFakeTimers();
+    render(<AttendanceQr attendanceId={4} closed={false} />);
+    const trigger = screen.getByRole("button", { name: "QR 생성" });
+    trigger.focus();
+    await act(async () => fireEvent.click(trigger));
+    expect(
+      screen.getByRole("dialog", { name: "출석체크 QR" }),
+    ).toBeInTheDocument();
+    expect(document.body.style.overflow).toBe("hidden");
+    if (method === "닫기")
+      fireEvent.click(screen.getByRole("button", { name: "QR 모달 닫기" }));
+    else if (method === "Escape")
+      fireEvent(
+        screen.getByRole("dialog"),
+        new Event("cancel", { bubbles: true, cancelable: true }),
+      );
+    else fireEvent.click(screen.getByRole("dialog"));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(document.body.style.overflow).toBe("");
+    expect(trigger).toHaveFocus();
+    await act(async () => jest.advanceTimersByTime(120000));
+    expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(1);
+  },
+);
+
+test("발급 중 닫았다 다시 열어도 이전 응답이 새 QR을 덮어쓰지 않는다", async () => {
+  let finish;
+  adminAttendanceApi.issueQr.mockReturnValueOnce(
+    new Promise((resolve) => {
+      finish = resolve;
+    }),
+  );
+  render(<AttendanceQr attendanceId={4} closed={false} />);
+  fireEvent.click(screen.getByRole("button", { name: "QR 생성" }));
+  fireEvent.click(screen.getByRole("button", { name: "QR 모달 닫기" }));
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: "QR 생성" })),
+  );
+  await act(async () =>
+    finish({
+      attendanceId: 4,
+      qrToken: "stale-token",
+      expiresAt: new Date(Date.now() + 120000).toISOString(),
+    }),
+  );
+  expect(screen.getByTestId("attendance-qr")).toHaveAttribute(
+    "data-value",
+    expect.stringContaining("test-attendance-token"),
+  );
+});
+
+test.each(["출석 변경", "출석 종료", "페이지 이탈"])(
+  "%s 시 모달과 타이머를 정리한다",
+  async (change) => {
+    jest.useFakeTimers();
+    const { rerender, unmount } = render(
+      <AttendanceQr attendanceId={4} closed={false} />,
+    );
+    await act(async () =>
+      fireEvent.click(screen.getByRole("button", { name: "QR 생성" })),
+    );
+    if (change === "페이지 이탈") unmount();
+    else
+      rerender(
+        <AttendanceQr
+          attendanceId={change === "출석 변경" ? 5 : 4}
+          closed={change === "출석 종료"}
+        />,
+      );
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    await act(async () => jest.advanceTimersByTime(120000));
+    expect(adminAttendanceApi.issueQr).toHaveBeenCalledTimes(1);
+  },
+);

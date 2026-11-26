@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { adminAttendanceApi } from "../../api/admin";
+import qrStyles from "../../assets/Admin/AttendanceQr.module.css";
 import styles from "../../assets/Admin/ManageAttendance.module.css";
 
 const errorMessage = (error) => {
@@ -19,14 +20,52 @@ const errorMessage = (error) => {
 };
 
 export default function AttendanceQr({ attendanceId, closed }) {
+  const [openId, setOpenId] = useState(null);
+  const validId = Number.isSafeInteger(attendanceId) && attendanceId > 0;
+
+  useEffect(() => setOpenId(null), [attendanceId, closed]);
+
+  return (
+    <section aria-label="출석체크 QR">
+      <button
+        type="button"
+        className={styles.closeButton}
+        disabled={!validId || closed}
+        onClick={() => setOpenId(attendanceId)}
+      >
+        QR 생성
+      </button>
+      {!validId && (
+        <p className={styles.storageNote}>
+          서버 attendanceId가 없는 로컬 출석입니다. 출석 생성·목록 API 연동이
+          필요합니다.
+        </p>
+      )}
+      {closed && (
+        <p className={styles.storageNote}>
+          진행 중인 출석체크에서만 QR을 발급할 수 있습니다.
+        </p>
+      )}
+      {validId && !closed && openId === attendanceId && (
+        <AttendanceQrDialog
+          key={attendanceId}
+          attendanceId={attendanceId}
+          onClose={() => setOpenId(null)}
+        />
+      )}
+    </section>
+  );
+}
+
+function AttendanceQrDialog({ attendanceId, onClose }) {
   const [qr, setQr] = useState(null);
-  const [issued, setIssued] = useState(false);
   const [now, setNow] = useState(Date.now);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const pending = useRef(false);
   const mounted = useRef(false);
-  const validId = Number.isSafeInteger(attendanceId) && attendanceId > 0;
+  const dialogRef = useRef(null);
+  const titleId = useId();
 
   useEffect(() => {
     mounted.current = true;
@@ -36,7 +75,7 @@ export default function AttendanceQr({ attendanceId, closed }) {
   }, []);
 
   const issueQr = useCallback(async () => {
-    if (pending.current || !validId || closed) return;
+    if (pending.current) return;
     pending.current = true;
     setLoading(true);
     setError("");
@@ -62,17 +101,16 @@ export default function AttendanceQr({ attendanceId, closed }) {
         expiresAtMs,
         refreshAtMs: Math.min(time + 60000, expiresAtMs),
       });
-      setIssued(true);
     } catch (requestError) {
       if (mounted.current) setError(errorMessage(requestError));
     } finally {
       pending.current = false;
       if (mounted.current) setLoading(false);
     }
-  }, [attendanceId, closed, validId]);
+  }, [attendanceId]);
 
   useEffect(() => {
-    if (!qr || closed) return undefined;
+    if (!qr) return undefined;
     const tick = () => {
       const time = Date.now();
       setNow(time);
@@ -84,60 +122,87 @@ export default function AttendanceQr({ attendanceId, closed }) {
     const timer = window.setInterval(tick, 250);
     tick();
     return () => window.clearInterval(timer);
-  }, [qr, closed, issueQr]);
+  }, [qr, issueQr]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    dialog.showModal();
+    document.body.style.overflow = "hidden";
+    issueQr();
+    return () => {
+      dialog.close();
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus?.isConnected) previousFocus.focus();
+    };
+  }, [issueQr]);
 
   const remaining = qr
     ? Math.max(0, Math.ceil((qr.refreshAtMs - now) / 1000))
     : 0;
 
   return (
-    <section aria-label="출석체크 QR">
-      <button
-        type="button"
-        className={styles.closeButton}
-        onClick={issueQr}
-        disabled={!validId || closed || loading}
-        aria-busy={loading}
-      >
-        {loading ? "QR 발급 중…" : issued ? "QR 재발급" : "QR 생성"}
-      </button>
-      {!validId && (
-        <p className={styles.storageNote}>
-          서버 attendanceId가 없는 로컬 출석입니다. 출석 생성·목록 API 연동이
-          필요합니다.
+    <dialog
+      ref={dialogRef}
+      className={qrStyles.qrDialog}
+      aria-labelledby={titleId}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className={qrStyles.dialogContent}>
+        <button
+          type="button"
+          className={qrStyles.closeModal}
+          onClick={onClose}
+          autoFocus
+          aria-label="QR 모달 닫기"
+        >
+          ✕
+        </button>
+        <h2 id={titleId}>출석체크 QR</h2>
+        <p>
+          휴대폰 카메라로 QR을 스캔해 주세요. QR은 60초마다 자동 갱신됩니다.
         </p>
-      )}
-      {closed && (
-        <p className={styles.storageNote}>
-          진행 중인 출석체크에서만 QR을 발급할 수 있습니다.
-        </p>
-      )}
-      {error && (
-        <p className={styles.error} role="alert">
-          {error}
-        </p>
-      )}
-      {qr && remaining > 0 && !closed ? (
-        <>
-          <QRCodeSVG
-            value={`${window.location.origin}/attendance?${new URLSearchParams({
-              attendanceId: qr.attendanceId,
-              token: qr.qrToken,
-            })}`}
-            size={192}
-            marginSize={4}
-            title="출석체크 QR 코드"
-          />
-          <p role="timer">남은 시간: {remaining}초</p>
-        </>
-      ) : (
-        issued &&
-        !loading && (
-          <p role="status">
-            QR이 만료되었거나 무효화되었습니다. 다시 발급해 주세요.
+        {error && (
+          <p className={styles.error} role="alert">
+            {error}
           </p>
-        )
-      )}
-    </section>
+        )}
+        {qr && remaining > 0 && (
+          <>
+            <div className={qrStyles.qrFrame}>
+              <QRCodeSVG
+                className={qrStyles.largeQr}
+                value={`${window.location.origin}/attendance?${new URLSearchParams(
+                  {
+                    attendanceId: qr.attendanceId,
+                    token: qr.qrToken,
+                  },
+                )}`}
+                size={480}
+                marginSize={4}
+                title="출석체크 QR 코드"
+              />
+            </div>
+            <p role="timer">남은 시간: {remaining}초</p>
+          </>
+        )}
+        <button
+          type="button"
+          className={qrStyles.regenerateButton}
+          onClick={issueQr}
+          disabled={loading}
+          aria-busy={loading}
+        >
+          {loading ? "QR 발급 중…" : "QR 재발급"}
+        </button>
+      </div>
+    </dialog>
   );
 }

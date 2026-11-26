@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import styles from "../../assets/Admin/ManageAttendance.module.css";
-import previewStyles from "./AttendancePreviewPage.module.css";
+import previewStyles from "../../assets/Admin/AttendanceQr.module.css";
 
 const previewDate = (offset, timestamp) => {
   const date = new Date(timestamp);
