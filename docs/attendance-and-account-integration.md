@@ -5,7 +5,7 @@
 
 ## 복원한 가입 정보 수정
 
-- 설정에서 `/signup?edit=true`로 이동해 기존 이름과 학번을 불러오고 저장한다.
+- 설정에서 가입을 완료한 카카오 계정은 `/signup?edit=true`로 이동해 기존 이름과 학번을 수정할 수 있다. 클라이언트는 `GET /user/me`의 `registrationEditable` 값으로 수정 버튼과 직접 링크의 접근을 결정한다.
 - 최초 가입은 기존 `POST /user/signup` 계약을 유지한다.
 - 수정은 `PATCH /user/registration`을 사용한다.
   요청 예: `{ "member": true, "name": "홍길동", "studentNumber": "26" }`.

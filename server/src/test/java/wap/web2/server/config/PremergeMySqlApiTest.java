@@ -79,6 +79,7 @@ class PremergeMySqlApiTest {
         mvc.perform(get("/user/me").header("Authorization", authorization))
             .andExpect(status().isOk()).andExpect(jsonPath("$.userName").value("수정이름"))
             .andExpect(jsonPath("$.studentNumber").value("25"))
+            .andExpect(jsonPath("$.registrationEditable").value(true))
             .andExpect(jsonPath("$.membershipLevel").value("NEW"));
         assertThat(users.findById(member.getId()).orElseThrow().getRole()).isEqualTo(Role.ROLE_MEMBER);
         mvc.perform(patch("/user/registration").contentType("application/json").content("{\"member\":false}"))

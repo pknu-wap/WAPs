@@ -64,13 +64,13 @@ public class UserService {
                 throw new BadRequestException("학번은 입학 연도 뒤 두 자리 숫자여야 합니다.");
             }
             user.setName(request.name().strip());
-            user.setStudentNumber(request.studentNumber());
             user.setMembershipLevel(MembershipLevel.valueOf(request.memberType().name()));
             user.setRole(Role.ROLE_MEMBER);
         } else if (request.name() != null || request.studentNumber() != null || request.memberType() != null) {
             throw new BadRequestException("비회원은 회원 여부만 입력해 주세요.");
         }
         user.setWapMember(request.member());
+        user.setStudentNumber(request.studentNumber());
         user.setSignupCompleted(true);
         return UserResponse.of(user);
     }
@@ -79,7 +79,7 @@ public class UserService {
     public UserResponse updateRegistration(Long userId, UserRegistrationRequest request) {
         User user = userRepository.findByIdForUpdate(userId)
             .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다."));
-        if (user.isDeleted() || !user.isSignupCompleted() || user.getProvider() != AuthProvider.kakao) {
+        if (!user.canEditRegistration()) {
             throw new ForbiddenException("가입을 완료한 카카오 계정만 가입 정보를 수정할 수 있습니다.");
         }
         if (request.member() == null) throw new BadRequestException("회원 여부를 선택해주세요.");

@@ -176,7 +176,14 @@ test("expired signup session returns to login", async () => {
 });
 
 
-const editProfile = { ...completed, wapMember: true, studentNumber: "21", membershipLevel: "REGULAR" };
+test.each([false, undefined])("수정 가능 여부가 %s이면 수정 링크에서 설정으로 돌아간다", async (registrationEditable) => {
+  userApi.getMe.mockResolvedValue({ ...completed, registrationEditable });
+  open("/signup?edit=true");
+  await screen.findByRole("heading", { name: "설정" });
+  expect(userApi.updateRegistration).not.toHaveBeenCalled();
+});
+
+const editProfile = { ...completed, registrationEditable: true, wapMember: true, studentNumber: "21", membershipLevel: "REGULAR" };
 
 test("existing users load, edit and save their profile without submitting signup or assigning a role", async () => {
   userApi.getMe.mockResolvedValue(editProfile);

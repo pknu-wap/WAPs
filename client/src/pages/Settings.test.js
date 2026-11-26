@@ -24,6 +24,7 @@ beforeEach(() => {
   userApi.getMe.mockResolvedValue({
     userName: "기존이름",
     memberType: "정회원",
+    registrationEditable: true,
   });
   jest.spyOn(window, "alert").mockImplementation(() => {});
 });
@@ -146,6 +147,14 @@ test("설정은 메뉴 경로와 가입 정보 수정 경로를 제공한다", a
     await screen.findByRole("heading", { name: "프로젝트" }),
   ).toBeInTheDocument();
   expect(sessionStorage.getItem("openMenuAfterBack")).toBe("true");
+});
+
+test("수정할 수 없는 계정은 이름만 변경할 수 있다", async () => {
+  userApi.getMe.mockResolvedValue({ userName: "로컬계정", registrationEditable: false });
+  openSettings();
+  await screen.findAllByText("로컬계정");
+  expect(screen.queryByRole("button", { name: "회원가입 정보 수정" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "이름 변경" })).toBeEnabled();
 });
 
 test("가입 정보 수정 버튼은 실제 수정 화면으로 이동한다", async () => {

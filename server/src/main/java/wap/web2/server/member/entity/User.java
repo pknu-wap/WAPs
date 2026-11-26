@@ -81,6 +81,10 @@ public class User {
     @Column(nullable = false)
     private long tokenVersion = 0;
 
+    public boolean canEditRegistration() {
+        return signupCompleted && !deleted && provider == AuthProvider.kakao;
+    }
+
     public void deactivate() {
         deleted = true;
         password = null;

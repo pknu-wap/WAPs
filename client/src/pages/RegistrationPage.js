@@ -36,15 +36,20 @@ export default function RegistrationPage() {
     userApi.getMe().then(
       (user) => {
         if (!active) return;
-        if (editing && registrationRequired(user) === false) {
+        const needsSignup = registrationRequired(user);
+        if (editing && needsSignup === false) {
+          if (user.registrationEditable !== true) {
+            navigate("/settings", { replace: true });
+            return;
+          }
           setMembership(user.wapMember === true ? "yes" : user.wapMember === false ? "no"
             : user.studentNumber || user.studentId || user.memberType ? "yes" : "");
           setName(user.userName ?? user.name ?? "");
           setStudentId(normalizeStudentYear(user.studentNumber ?? user.studentId));
           setRegistrationStatus("pending");
-        } else if (registrationRequired(user) === false) {
+        } else if (needsSignup === false) {
           navigate(consumePendingAttendance(), { replace: true });
-        } else if (registrationRequired(user) === true) {
+        } else if (needsSignup === true) {
           if (editing) navigate("/signup", { replace: true });
           else setRegistrationStatus("pending");
         } else {
@@ -72,7 +77,7 @@ export default function RegistrationPage() {
 
   function closeRegistration() {
     if (editing) {
-      navigate("/settings");
+      navigate("/settings", { replace: true });
       return;
     }
     clearPendingAttendance();
@@ -132,7 +137,7 @@ export default function RegistrationPage() {
       const role = await userApi.getRole().catch(() => null);
       if (role?.role) authStorage.set("userRole", role.role, { expires: 7 });
       else authStorage.remove("userRole");
-      navigate(editing ? "/settings" : consumePendingAttendance(), { replace: true });
+      navigate(consumePendingAttendance(), { replace: true });
     } catch (error) {
       if (error.response?.status === 401) {
         authStorage.remove("authToken");
@@ -163,7 +168,7 @@ export default function RegistrationPage() {
       )}
       <div className={`${styles.content} ${styles.registrationContent}`}>
         <header className={styles.header}>
-          <h1 className={styles.eyebrow}>CREATE AN ACCOUNT</h1>
+          <h1 className={styles.eyebrow}>{editing ? "회원가입 정보 수정" : "CREATE AN ACCOUNT"}</h1>
           <img className={styles.logo} src={wapsLogo} alt="WAPs" />
         </header>
         {registrationStatus === "loading" && (

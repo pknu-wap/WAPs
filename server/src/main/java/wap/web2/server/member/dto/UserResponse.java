@@ -33,6 +33,9 @@ public class UserResponse {
     @Schema(description = "가입 완료 여부. false이면 회원가입 창을 표시합니다. 기존 계정은 true입니다.", example = "true")
     private boolean signupCompleted;
 
+    @Schema(description = "현재 계정의 카카오 회원가입 정보 수정 가능 여부")
+    private boolean registrationEditable;
+
     public static UserResponse of(User user) {
         return UserResponse.builder()
             .membershipLevel(user.getMembershipLevel())
@@ -45,6 +48,7 @@ public class UserResponse {
             .memberType(user.getMembershipLevel() == MembershipLevel.NONE
                 ? null : MemberType.valueOf(user.getMembershipLevel().name()))
             .signupCompleted(user.isSignupCompleted())
+            .registrationEditable(user.canEditRegistration())
             .build();
     }
 
