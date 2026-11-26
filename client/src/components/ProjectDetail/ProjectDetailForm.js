@@ -82,6 +82,9 @@ const ProjectDetailForm = () => {
   }
 
   const semesterInfo = formatSemester(projectData.semester);
+  const images = (projectData.images ?? []).filter((image) =>
+    image?.imageFile?.trim(),
+  );
 
   return (
     <div className={`${styles.project_detail_form} ${styles.mount1}`}>
@@ -119,34 +122,38 @@ const ProjectDetailForm = () => {
         </div>
       </div>
 
-      <section aria-label="모집 인원 (팀장 제외)">
+      <section
+        className={styles.recruitment}
+        aria-label="모집 인원 (팀장 제외)"
+      >
         <h3>모집 인원 (팀장 제외)</h3>
         {projectData.recruitmentPositions?.length > 0 ? (
-          <p>
-            {projectData.recruitmentPositions
-              .map(({ role, count }) => `${role} ${count}명`)
-              .join(", ")}
-          </p>
+          <ul className={styles.recruitmentList}>
+            {projectData.recruitmentPositions.map(({ role, count }, index) => (
+              <li key={role}>
+                {role} {count}명
+                {index < projectData.recruitmentPositions.length - 1 && ","}
+              </li>
+            ))}
+          </ul>
         ) : (
           <p>등록된 모집 인원 정보가 없습니다.</p>
         )}
       </section>
 
       {/* 이미지 섹션 */}
-      <div className={styles.images}>
-        {projectData.images && projectData.images.length > 0 ? (
-          projectData.images.map((image, index) => (
+      {images.length > 0 && (
+        <div className={styles.images}>
+          {images.map((image, index) => (
             <img
               key={index}
               className={styles.image}
-              src={image.imageFile || dogImage}
+              src={image.imageFile}
               alt={`이미지 ${index + 1}`}
             />
-          ))
-        ) : (
-          <img className={styles.image} src={dogImage} alt="기본 이미지" />
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* 팀원 정보 */}
       <div className={styles.projectListInfo}>

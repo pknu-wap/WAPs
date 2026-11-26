@@ -67,7 +67,7 @@ class RoleAccessTest {
                 .param("size", "12").param("page", "0").param("memberType", "UNDECIDED"))
                 .andExpect(status().isOk());
             org.mockito.Mockito.verify(ctx.getBean(UserRoleService.class)).getUsersForAdmin(
-                12, 0, null, wap.web2.server.member.entity.MembershipLevel.NONE);
+                12, 0, null, wap.web2.server.member.entity.MembershipLevel.NONE, null);
             mvc.perform(get("/admin/role").with(user("admin").roles("ADMIN"))
                 .param("size", "12").param("page", "0").param("memberType", "NEW")
                 .param("membershipLevel", "REGULAR")).andExpect(status().isBadRequest());
@@ -207,16 +207,16 @@ class RoleAccessTest {
     }
 
     @Test
-    void acceptsOptionalLevelFilterAndRejectsUnknownLevels() {
+    void acceptsCombinedRoleLevelAndNameFiltersAndRejectsUnknownLevels() {
         context.run(ctx -> {
             var mvc = MockMvcBuilders.webAppContextSetup(ctx).apply(springSecurity()).build();
             mvc.perform(get("/admin/role").with(user("admin").roles("ADMIN"))
                 .param("size", "12").param("page", "0")
-                .param("role", "ROLE_MEMBER").param("membershipLevel", "NEW"))
+                .param("role", "ROLE_MEMBER").param("membershipLevel", "NEW").param("name", "하늘"))
                 .andExpect(status().isOk());
             org.mockito.Mockito.verify(ctx.getBean(UserRoleService.class)).getUsersForAdmin(
                 12, 0, wap.web2.server.member.entity.Role.ROLE_MEMBER,
-                wap.web2.server.member.entity.MembershipLevel.NEW);
+                wap.web2.server.member.entity.MembershipLevel.NEW, "하늘");
             mvc.perform(get("/admin/role").with(user("admin").roles("ADMIN"))
                 .param("size", "12").param("page", "0").param("membershipLevel", "UNKNOWN"))
                 .andExpect(status().isBadRequest());

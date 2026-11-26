@@ -59,29 +59,24 @@ class ProjectServiceTest {
     }
 
     @Test
-    void detailsAndEditUseCurrentNamesButPreserveDeletedMissingAndLegacyMembers() {
+    void detailsAndEditKeepStoredTeamMemberNamesAndRoles() {
         var owner = owner();
         var project = project(owner);
-        var current = new User(); current.setId(20L); current.setName("현재 이름");
-        var deleted = new User(); deleted.setId(30L); deleted.setName("삭제 후 이름"); deleted.deactivate();
-        project.getTeamMembers().addAll(List.of(
-            wap.web2.server.project.entity.TeamMember.builder().userId(20L).memberName("이전 이름").memberRole("PM").build(),
-            wap.web2.server.project.entity.TeamMember.builder().userId(30L).memberName("삭제 회원").build(),
-            wap.web2.server.project.entity.TeamMember.builder().userId(40L).memberName("없는 회원").build(),
-            wap.web2.server.project.entity.TeamMember.builder().memberName("과거 회원").build()));
+        project.getTeamMembers().add(
+            wap.web2.server.project.entity.TeamMember.builder()
+                .memberName("저장된 이름")
+                .memberRole("PM")
+                .build());
         when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
-        when(userRepository.findAllById(List.of(20L, 30L, 40L))).thenReturn(List.of(current, deleted));
         when(userRepository.findById(owner.getId())).thenReturn(Optional.of(owner));
 
         var details = projectService.getProjectDetails(project.getProjectId(), null);
         var edit = projectService.getProjectDetailsForUpdate(project.getProjectId(), principal(owner.getId()));
         for (var response : List.of(details, edit)) {
             assertThat(response.getTeamMember()).extracting(TeamMemberDto::getMemberName)
-                .containsExactly("현재 이름", "삭제 회원", "없는 회원", "과거 회원");
+                .containsExactly("저장된 이름");
             assertThat(response.getTeamMember().get(0).getMemberRole()).isEqualTo("PM");
         }
-        assertThat(project.getTeamMembers().get(0).getMemberName()).isEqualTo("이전 이름");
-        verify(userRepository, org.mockito.Mockito.times(2)).findAllById(List.of(20L, 30L, 40L));
     }
 
     @Test
@@ -228,7 +223,7 @@ class ProjectServiceTest {
         assertThat(updateDetails.getCanManage()).isTrue();
         assertThat(updateDetails.getIsOwner()).isEqualTo(userId.equals(owner.getId()));
         projectService.update(10L, baseRequestBuilder().teamMember(List.of(
-            TeamMemberDto.builder().userId(userId).memberRole("PM").build())).build(), principal);
+            TeamMemberDto.builder().memberName("member").memberRole("PM").build())).build(), principal);
         assertThat(project.getTitle()).isEqualTo("updated title");
         assertThat(project.getUser()).isSameAs(owner);
         when(projectRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(project));
@@ -407,67 +402,26 @@ class ProjectServiceTest {
     }
 
     @Test
-    void selectedMemberUsesStoredNameAndReturnsAccountId() throws Exception {
+    void savesTextTeamMembersIncludingDuplicateNames() throws Exception {
         User owner = owner();
         when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
         ProjectRequest request = baseRequestBuilder()
-            .recruitmentPositions(List.of(new RecruitmentPositionDto("백엔드", 1))).build();
+            .recruitmentPositions(List.of(new RecruitmentPositionDto("백엔드", 1)))
+            .teamMember(List.of(
+                TeamMemberDto.builder().memberName("김회원").memberRole("PM").build(),
+                TeamMemberDto.builder().memberName("김회원").memberRole("Server").build()))
+            .build();
+
         projectService.save(request, principal(1L));
+
         var saved = org.mockito.ArgumentCaptor.forClass(Project.class);
         verify(projectRepository).save(saved.capture());
-        var member = TeamMemberDto.from(saved.getValue().getTeamMembers().get(0));
-        assertThat(member.getUserId()).isEqualTo(1L);
-        assertThat(member.getMemberName()).isEqualTo("owner");
-    }
-
-    @Test
-    void rejectsUnknownGuestPendingAndDuplicateMembersBeforeStorage() {
-        User owner = owner();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
-        User guest = new User();
-        guest.setId(2L);
-        when(userRepository.findById(2L)).thenReturn(Optional.of(guest));
-        User pending = owner();
-        pending.setId(3L);
-        pending.setSignupCompleted(false);
-        when(userRepository.findById(3L)).thenReturn(Optional.of(pending));
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
-        for (Long id : java.util.Arrays.asList(null, 99L, 2L, 3L)) {
-            var request = baseRequestBuilder()
-                .recruitmentPositions(List.of(new RecruitmentPositionDto("백엔드", 1)))
-                .teamMember(List.of(TeamMemberDto.builder().userId(id).memberName("fake").memberRole("PM").build()))
-                .build();
-            assertThatThrownBy(() -> projectService.save(request, principal(1L)))
-                .isInstanceOf(BadRequestException.class);
-        }
-        var duplicate = TeamMemberDto.builder().userId(1L).memberRole("PM").build();
-        var request = baseRequestBuilder().recruitmentPositions(List.of(new RecruitmentPositionDto("백엔드", 1)))
-            .teamMember(List.of(duplicate, duplicate)).build();
-        assertThatThrownBy(() -> projectService.save(request, principal(1L)))
-            .isInstanceOf(BadRequestException.class).hasMessageContaining("중복");
-        verifyNoInteractions(objectStorageService, projectRepository);
-    }
-
-    @Test
-    void updateAlsoRejectsNameOnlyMembersBeforeStorage() {
-        User owner = owner();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(owner));
-        when(projectRepository.findById(10L)).thenReturn(Optional.of(project(owner)));
-        var request = baseRequestBuilder().teamMember(List.of(
-            TeamMemberDto.builder().memberName("fake").memberRole("PM").build())).build();
-        assertThatThrownBy(() -> projectService.update(10L, request, principal(1L)))
-            .isInstanceOf(BadRequestException.class);
-        verifyNoInteractions(objectStorageService);
-    }
-
-    @Test
-    void memberOptionsOnlyQueryCompletedMembersAndAdmins() {
-        when(userRepository.findBySignupCompletedTrueAndRoleInOrderByNameAscIdAsc(
-            List.of(Role.ROLE_MEMBER, Role.ROLE_ADMIN))).thenReturn(List.of(owner()));
-        assertThat(projectService.getMemberOptions()).singleElement().satisfies(option -> {
-            assertThat(option.userId()).isEqualTo(1L);
-            assertThat(option.memberName()).isEqualTo("owner");
-        });
+        assertThat(saved.getValue().getTeamMembers())
+            .extracting(wap.web2.server.project.entity.TeamMember::getMemberName)
+            .containsExactly("김회원", "김회원");
+        assertThat(saved.getValue().getTeamMembers())
+            .extracting(wap.web2.server.project.entity.TeamMember::getMemberRole)
+            .containsExactly("PM", "Server");
     }
 
     @Test
@@ -522,7 +476,7 @@ class ProjectServiceTest {
             .summary("updated summary")
             .password("pw")
             .teamMember(
-                List.of(TeamMemberDto.builder().userId(1L).memberName("member").memberRole("backend").build())
+                List.of(TeamMemberDto.builder().memberName("member").memberRole("backend").build())
             )
             .techStack(
                 List.of(

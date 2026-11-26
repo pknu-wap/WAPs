@@ -19,9 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.id = :id")
     Optional<User> findByIdForUpdate(@Param("id") Long id);
 
-    @Query("SELECT u FROM User u WHERE u.deleted = false AND u.signupCompleted = true AND u.role IN :roles ORDER BY u.name, u.id")
-    List<User> findBySignupCompletedTrueAndRoleInOrderByNameAscIdAsc(@Param("roles") List<Role> roles);
-
     Optional<User> findByEmail(String email);
 
     Boolean existsByEmail(String email);
@@ -44,6 +41,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         FROM User u
         WHERE u.deleted = false AND (:role IS NULL OR u.role = :role)
         AND (:membershipLevel IS NULL OR u.membershipLevel = :membershipLevel)
+        AND (:name IS NULL OR LOCATE(LOWER(:name), LOWER(u.name)) > 0)
         ORDER BY u.name, u.id
         LIMIT :limit OFFSET :offset
         """
@@ -52,6 +50,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         @Param("limit") Integer limit,
         @Param("offset") Integer offset,
         @Param("role") Role role,
-        @Param("membershipLevel") MembershipLevel membershipLevel
+        @Param("membershipLevel") MembershipLevel membershipLevel,
+        @Param("name") String name
     );
 }
