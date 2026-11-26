@@ -1,25 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Html5Qrcode } from "html5-qrcode";
+import QrScanner from "qr-scanner";
 import { attendanceApi } from "../api/attendance";
 import AttendanceCompleteDialog from "../components/AttendanceCompleteDialog";
 import "../assets/CheckInScan.css";
 
 const CheckInScan = () => {
-  const navigate = useNavigate();
   const { attendanceId } = useParams();
+  return <ScanSession key={attendanceId} attendanceId={attendanceId} />;
+};
 
-  const scannerRef = useRef(null);
-  const isProcessingRef = useRef(false);
-
+function ScanSession({ attendanceId }) {
+  const navigate = useNavigate();
+  const video = useRef(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
     let active = true;
-    const scanner = new Html5Qrcode("qr-reader");
-
-    scannerRef.current = scanner;
+    let processing = false;
 
     const parseQrData = (decodedText) => {
       try {
@@ -58,10 +57,10 @@ const CheckInScan = () => {
       };
     };
 
-    const handleScanSuccess = async (decodedText) => {
-      if (!active || isProcessingRef.current) return;
+    const handleScanSuccess = async ({ data: decodedText }) => {
+      if (!active || processing) return;
 
-      isProcessingRef.current = true;
+      processing = true;
 
       try {
         const qrData = parseQrData(decodedText);
@@ -91,7 +90,7 @@ const CheckInScan = () => {
         if (!active) return;
         setErrorMessage("");
         setCompleted(true);
-        if (scanner.isScanning) await scanner.stop().catch(() => {});
+        scanner.stop();
       } catch (error) {
         if (!active) return;
         console.error("출석체크 실패:", error);
@@ -120,68 +119,41 @@ const CheckInScan = () => {
           );
         }
 
-        isProcessingRef.current = false;
+        processing = false;
       }
     };
 
-    const startScanner = async () => {
+    const scanner = new QrScanner(video.current, handleScanSuccess, {
+      preferredCamera: "environment",
+      maxScansPerSecond: 10,
+      returnDetailedScanResult: true,
+    });
+    Promise.resolve().then(async () => {
+      if (!active) return;
       try {
-        await scanner.start(
-          {
-            facingMode: "environment",
-          },
-          {
-            fps: 10,
-          },
-          handleScanSuccess,
-          () => {}
-        );
+        await scanner.start();
       } catch (error) {
-        if (!active) return;
-        console.error("카메라 실행 실패:", error);
-
-        setErrorMessage(
-          "카메라를 실행할 수 없습니다."
-        );
+        if (active) {
+          console.error("카메라 실행 실패:", error);
+          setErrorMessage("카메라를 실행할 수 없습니다.");
+        }
       }
-    };
-
-    startScanner();
+    });
 
     return () => {
       active = false;
-      if (scanner.isScanning) {
-        scanner
-          .stop()
-          .then(() => scanner.clear())
-          .catch(() => {});
-      }
+      scanner.destroy();
     };
-  }, [attendanceId, navigate]);
-
-  const handleClose = async () => {
-    try {
-      if (
-        scannerRef.current &&
-        scannerRef.current.isScanning
-      ) {
-        await scannerRef.current.stop();
-      }
-    } catch (error) {
-      console.error("QR 스캐너 종료 실패:", error);
-    }
-
-    navigate(-1);
-  };
+  }, [attendanceId]);
 
   return (
     <div className="qr-scan-page">
       {completed && <AttendanceCompleteDialog onConfirm={() => navigate("/CheckIn", { replace: true })} />}
-      <div id="qr-reader" />
+      <video ref={video} className="qr-scan-video" muted playsInline aria-label="QR 스캔 카메라" />
 
       <button
         className="qr-scan-close"
-        onClick={handleClose}
+        onClick={() => navigate(-1)}
         aria-label="닫기"
       >
         ×
@@ -205,6 +177,6 @@ const CheckInScan = () => {
       </div>
     </div>
   );
-};
+}
 
 export default CheckInScan;
