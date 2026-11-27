@@ -7,6 +7,8 @@ import Menu from "../components/Menu";
 import VoteForm from "../components/Vote/VoteForm";
 import FloatingButton from "../components/FloatingButton";
 import Cookies from "../utils/authStorage";
+import { saveVoteRedirect } from "../utils/pendingLoginRedirect";
+import { registrationRequired } from "../utils/accountProfile";
 
 // 분기를 결정함.
 // 현재 투표 기간인지에 따라 분기 구별함.
@@ -35,15 +37,25 @@ const VotePage = () => {
       // 토큰 여부 확인
       if (!token) {
         alert("로그인이 필요합니다.");
-        navigate("/login");
+        saveVoteRedirect();
+        navigate("/login", { replace: true });
         return;
       }
       // 토큰 만료 여부 확인
       try {
-        await userApi.getMe();
+        const profile = await userApi.getMe();
+        if (registrationRequired(profile) === true) {
+          saveVoteRedirect();
+          navigate("/signup", { replace: true });
+          return;
+        }
       } catch (error) {
+        Cookies.remove("authToken");
+        Cookies.remove("userName");
+        Cookies.remove("userRole");
         alert("로그인 유효기간이 만료되었습니다. 재로그인 해주세요.");
-        navigate("/login");
+        saveVoteRedirect();
+        navigate("/login", { replace: true });
         return;
       }
 
