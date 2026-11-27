@@ -27,7 +27,9 @@ jest.mock("../../api/project", () => ({
   },
 }));
 jest.mock("./ImageUploader", () => () => null);
-jest.mock("./TechStackSelector", () => () => null);
+jest.mock("../../api/techstack", () => ({
+  stackApi: { getTechStack: async () => ({ techStackResponse: [] }) },
+}));
 jest.mock("./TeamMemberInputForm", () => () => null);
 jest.mock("./InputPin", () => ({ password, setPassword }) => (
   <input
@@ -53,13 +55,17 @@ const readProject = (data) =>
     reader.readAsText(data.get("project"));
   });
 
-test("수정 페이지에서 실제 폼으로 저장하면 현재 프로젝트 API를 호출한다", async () => {
-  projectApi.getprojectUpdatePage.mockResolvedValue({ title: "원본 제목", semester: "2026-02" });
+function openEditPage() {
   const router = createMemoryRouter([
     { path: "/project/edit/:projectId", element: <ProjectCreatePage /> },
     { path: "/project/:projectId", element: <p>저장 후 상세 화면</p> },
   ], { initialEntries: ["/project/edit/42"] });
   render(<RouterProvider router={router} />);
+}
+
+test("수정 페이지에서 실제 폼으로 저장하면 현재 프로젝트 API를 호출한다", async () => {
+  projectApi.getprojectUpdatePage.mockResolvedValue({ title: "원본 제목", semester: "2026-02" });
+  openEditPage();
   await screen.findByDisplayValue("원본 제목");
   fireEvent.change(screen.getByLabelText("비밀번호"), { target: { value: "pw" } });
   fireEvent.change(screen.getByPlaceholderText("프로젝트 명"), { target: { value: "수정된 제목" } });
@@ -68,6 +74,31 @@ test("수정 페이지에서 실제 폼으로 저장하면 현재 프로젝트 A
   expect(projectApi.updateProject).toHaveBeenCalledWith("42", expect.any(FormData), expect.any(Function));
   expect((await readProject(projectApi.updateProject.mock.calls[0][1])).title).toBe("수정된 제목");
 });
+
+test.each([false, true])(
+  "수정 화면에서 기존 기술 스택을 삭제하고 남은 목록을 저장한다 (전체 삭제 %s)",
+  async (removeAll) => {
+    const front = { techStackName: "Legacy", techStackType: "FRONT" };
+    const back = { techStackName: "Legacy", techStackType: "BACK" };
+    projectApi.getprojectUpdatePage.mockResolvedValue({
+      semester: "2026-02", techStack: [front, back],
+    });
+    openEditPage();
+
+    const removeFront = await screen.findByRole("button", { name: "Legacy - FRONT 삭제" });
+    fireEvent.change(screen.getByLabelText("비밀번호"), { target: { value: "pw" } });
+    fireEvent.click(removeFront);
+    expect(screen.queryByText("Legacy - FRONT")).toBeNull();
+    const removeBack = screen.getByRole("button", { name: "Legacy - BACK 삭제" });
+    if (removeAll) fireEvent.click(removeBack);
+    expect(projectApi.updateProject).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "프로젝트 수정" }));
+    await screen.findByText("저장 후 상세 화면");
+    const [, formData] = projectApi.updateProject.mock.calls[0];
+    expect((await readProject(formData)).techStack).toEqual(removeAll ? [] : [back]);
+  },
+);
 
 test("학기 조회 실패 후 작성 내용을 유지하며 재시도한다", async () => {
   projectApi.getCurrentSemester.mockRejectedValueOnce(new Error("offline"));

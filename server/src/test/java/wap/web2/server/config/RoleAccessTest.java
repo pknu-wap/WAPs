@@ -178,8 +178,8 @@ class RoleAccessTest {
                     .andExpect(role.equals("GUEST") ? status().isForbidden() : status().isOk());
                 mvc.perform(post(path)).andExpect(status().isUnauthorized());
             }
-            mvc.perform(put("/project/1").with(identity))
-                .andExpect(role.equals("GUEST") ? status().isForbidden() : status().isOk());
+            mvc.perform(put("/project/1").with(identity)).andExpect(status().isOk());
+            mvc.perform(put("/project/1")).andExpect(status().isUnauthorized());
             mvc.perform(delete("/project/1").with(identity))
                 .andExpect(role.equals("GUEST") ? status().isForbidden() : status().isOk());
             for (String path : new String[]{"/admin/role/user", "/admin/role/user/membership-level"}) {

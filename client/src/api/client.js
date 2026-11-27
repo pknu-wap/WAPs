@@ -1,6 +1,7 @@
 // 공통 axios 인스턴트 설정
 import axios from "axios";
 import Cookies from "../utils/authStorage";
+import { saveVoteRedirect } from "../utils/pendingLoginRedirect";
 
 const apiClient = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL || "http://localhost:8080",
@@ -27,6 +28,7 @@ apiClient.interceptors.response.use(
   (response) => response.data, // response.data를 바로 반환하면 컴포넌트에서 .data를 두 번 안 써도 됨
   (error) => {
     if (error.response?.status === 401) {
+      if (window.location.pathname === "/vote") saveVoteRedirect();
       Cookies.remove("authToken");
       window.location.href = "/login";
     }

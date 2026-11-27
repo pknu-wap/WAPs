@@ -3,19 +3,7 @@ import styles from "../../assets/ProjectCreation/TechStackSelector.module.css";
 import TechStackList from "./TechStackList";
 import { stackApi } from "../../api/techstack";
 
-const SelectedTechStacks = ({ selectedTechStacks }) => {
-  return (
-    <div className={styles.techstack_select}>
-      {selectedTechStacks.map((selected, index) => (
-        <div key={index}>
-          {selected.techStackName} - {selected.techStackType}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
+const TechStackSelector = ({ selectedTechStacks, toggleTechStack, onRemove }) => {
   const [techStacks, setTechStacks] = useState([]);
   const [showTechStackList, setShowTechStackList] = useState(false);
   const scrollRef = useRef(null);
@@ -49,7 +37,21 @@ const TechStackSelector = ({ selectedTechStacks, toggleTechStack }) => {
     <div className={styles.teckstack_form}>
       <label className={styles.techstack_label}>기술스택</label>
 
-      <SelectedTechStacks selectedTechStacks={selectedTechStacks} />
+      <div className={styles.techstack_select}>
+        {selectedTechStacks.map((stack, index) => (
+          <div className={styles.selected_stack} key={index}>
+            <span>{stack.techStackName} - {stack.techStackType}</span>
+            <button
+              type="button"
+              className={styles.remove_button}
+              aria-label={`${stack.techStackName} - ${stack.techStackType} 삭제`}
+              onClick={() => onRemove(stack)}
+            >
+              삭제
+            </button>
+          </div>
+        ))}
+      </div>
       <div className={styles.techstack_btn}>
         <svg
           id="custom_image_uploader"
