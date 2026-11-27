@@ -5,7 +5,7 @@ import styles from "../assets/Account.module.css";
 import wapsLogo from "../assets/img/waps_logo.png";
 import kakaoLogo from "../assets/img/pngwing.com.png";
 import authStorage from "../utils/authStorage";
-import { clearPendingAttendance, savePendingAttendance } from "../utils/pendingAttendance";
+import { clearPendingLoginRedirect, savePendingAttendance } from "../utils/pendingLoginRedirect";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function Login() {
   }, [state]);
 
   const leaveLogin = (destination) => {
-    clearPendingAttendance();
+    clearPendingLoginRedirect();
     navigate(destination);
   };
 
@@ -35,7 +35,7 @@ export default function Login() {
   };
 
   const handleLogout = () => {
-    clearPendingAttendance();
+    clearPendingLoginRedirect();
     authStorage.remove("authToken");
     authStorage.remove("userName");
     authStorage.remove("userRole");

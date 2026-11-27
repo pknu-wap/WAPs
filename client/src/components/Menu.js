@@ -54,7 +54,7 @@ const Menu = ({ menuOpen, toggleMenu, userName, menuRef }) => {
   }, []);
 
   const handleVotePageNavigate = () => {
-    if (canNavigate) handleNavigationWithAuth("/vote");
+    if (canNavigate) navigateAndClose("/vote");
     else alert("투표는 로그인 이후에 가능합니다.");
   };
 
